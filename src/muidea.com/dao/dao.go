@@ -12,7 +12,7 @@ type Dao struct {
 	rowsHandle *sql.Rows
 }
 
-func Fetch(user string, password string, address string, dbName string) (Dao, error) {
+func Fetch(user string, password string, address string, dbName string) (*Dao, error) {
 	connectStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", user,password,address,dbName)
 	
 	dao := Dao{}
@@ -23,10 +23,8 @@ func Fetch(user string, password string, address string, dbName string) (Dao, er
 		dao.dbHandle = db		
 	}
 	
-	return dao,err
+	return &dao,err
 }
-
-
 
 func (this *Dao) Release() {
 	if this.rowsHandle != nil {

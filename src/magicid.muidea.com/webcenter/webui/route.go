@@ -21,9 +21,10 @@ func InitRoute() {
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
     // 获取cookie
-    cookie, err := r.Cookie("admin_name")
+    cookie, err := r.Cookie("loginAccount")
     if err != nil || cookie.Value == ""{
         http.Redirect(w, r, "/login/", http.StatusFound)
+        return
     }
     
     pathInfo := strings.Trim(r.URL.Path, "/")
@@ -73,7 +74,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ajaxHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("URL:%s",r.URL.Path)
     pathInfo := strings.Trim(r.URL.Path, "/")
     parts := strings.Split(pathInfo, "/")
     var action = ""
@@ -96,7 +96,10 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
     if r.URL.Path == "/" {
         http.Redirect(w, r, "/login/", http.StatusFound)
     }
-     
+    
+	w.Header().Set("content-type", "text/html")
+	w.Header().Set("charset", "utf-8")
+	     
     t, err := template.ParseFiles("template/html/404.html")
     if (err != nil) {
         log.Println(err)
