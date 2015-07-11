@@ -6,6 +6,7 @@ import (
     "magicid.muidea.com/webcenter/webui"
     "magicid.muidea.com/webcenter/rpc"
     "magicid.muidea.com/webcenter/datamanager"
+    "magicid.muidea.com/webcenter/session"
 )
  
 func main() {
@@ -15,10 +16,13 @@ func main() {
 	
 	defer datamanager.UninitDataManager()
 	
+	session.Initialize()
+	defer session.Uninitialize()
+	
 	webui.InitRoute()
 	
 	rpc.InitRoute()
-	
+		
     http.ListenAndServe(":8888", nil)
  
 }
