@@ -25,6 +25,30 @@ $(document).ready(function(){
 				}
 			);
 
+		$("#main-nav li ul li a.patrol-line").click( // When a top menu item is clicked...
+				function () {
+					$("#main-content").children(".content-box").children(".content-box-header").children(".content-box-tabs").hide();
+					$("#main-content").children(".content-box").children(".content-box-content").hide();
+					
+					$("#main-content .patrol-line .content-box-header .content-box-tabs").show();
+					$("#main-content .patrol-line .content-box-content").show();
+					
+					return false;
+				}
+			);
+		
+		$("#main-nav li ul li a.patrol-point").click( // When a top menu item is clicked...
+				function () {
+					$("#main-content").children(".content-box").children(".content-box-header").children(".content-box-tabs").hide();
+					$("#main-content").children(".content-box").children(".content-box-content").hide();
+
+					$("#main-content .patrol-point .content-box-header .content-box-tabs").show();
+					$("#main-content .patrol-point .content-box-content").show();
+					
+					return false;
+				}
+			);
+		
 		$("#main-nav li a.no-submenu").click( // When a menu item with no sub menu is clicked...
 			function () {
 				window.location.href=(this.href); // Just open the link instead of a sub menu

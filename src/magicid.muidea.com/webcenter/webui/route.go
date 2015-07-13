@@ -14,6 +14,7 @@ func InitRoute() {
     http.Handle("/resources/scripts/", http.FileServer(http.Dir("template")))
     http.Handle("/resources/images/", http.FileServer(http.Dir("template")))
      
+    http.HandleFunc("/admin/patrol", adminPatrolHandler)
     http.HandleFunc("/admin/", adminHandler)
     http.HandleFunc("/login/",loginHandler)
     http.HandleFunc("/logout/",logoutHandler)
@@ -74,6 +75,35 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
     sessionValue := reflect.ValueOf(session)
     method.Call([]reflect.Value{responseValue, requestValue, sessionValue})
 }
+
+func adminPatrolHandler(w http.ResponseWriter, r *http.Request) {
+	session := getSession(w,r)
+	
+	_, found := session.GetOption("account")		
+    if !found {
+        http.Redirect(w, r, "/login/", http.StatusFound)
+        return
+    }
+    
+    pathInfo := strings.Trim(r.URL.Path, "/")
+    parts := strings.Split(pathInfo, "/")
+    var action = ""
+    if len(parts) > 0 {
+        action = strings.Title(parts[0]) + "PatrolAction"
+    }
+    
+    admin := &adminController{}
+    controller := reflect.ValueOf(admin)
+    method := controller.MethodByName(action)
+    if !method.IsValid() {
+        method = controller.MethodByName(strings.Title("admin") + "PatrolAction")
+    }
+    requestValue := reflect.ValueOf(r)
+    responseValue := reflect.ValueOf(w)
+    sessionValue := reflect.ValueOf(session)
+    method.Call([]reflect.Value{responseValue, requestValue, sessionValue})
+}
+
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	session := getSession(w,r)

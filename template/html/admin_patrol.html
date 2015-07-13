@@ -19,7 +19,7 @@
 	src="/resources/scripts/jquery-1.3.2.min.js"></script>
 <!-- jQuery Configuration -->
 <script type="text/javascript"
-	src="/resources/scripts/admin.jquery.configuration.js"></script>
+	src="/resources/scripts/admin_patrol.jquery.configuration.js"></script>
 <!-- Facebox jQuery Plugin -->
 <script type="text/javascript" src="/resources/scripts/facebox.js"></script>
 <!-- jQuery WYSIWYG Plugin -->
@@ -51,8 +51,8 @@
 					<!-- Accordion Menu -->
 					<li><a href="/admin/patrol" class="nav-top-item current">签到管理 </a>
 						<ul>
-							<li><a class="nav-sub-item current" href="#">签到路线</a></li>
-							<li><a class="nav-sub-item" href="#">签到点</a></li>
+							<li><a class="nav-sub-item patrol-line current" href="#">签到路线</a></li>
+							<li><a class="nav-sub-item patrol-point" href="#">签到点</a></li>
 						</ul></li>
 
 					<li><a href="/admin/user" class="nav-top-item"> <!-- Add the class "current" to current menu item -->
@@ -129,8 +129,6 @@
 				</div>
 			</noscript>
 			<!-- Page Head -->
-			<h2>Welcome</h2>
-			<p id="page-intro">What would you like to do?</p>
 			<ul class="shortcut-buttons-set">
 				<li><a class="shortcut-button" href="#"><span> <img
 							src="/resources/images/icons/pencil_48.png" alt="icon" /><br />
@@ -156,7 +154,7 @@
 			<!-- End .shortcut-buttons-set -->
 			<div class="clear"></div>
 			<!-- End .clear -->
-			<div class="content-box">
+			<div class="content-box patrol-line">
 				<!-- Start Content Box -->
 				<div class="content-box-header">
 					<h3>签到路线</h3>
@@ -381,20 +379,20 @@
 			</div>
 			<!-- End .content-box -->
 			<div class="clear"></div>
-			<div class="content-box  closed-box">
+			<div class="content-box patrol-point closed-box">
 				<!-- Start Content Box -->
 				<div class="content-box-header">
 					<h3>签到点</h3>
 					<ul class="content-box-tabs">
-						<li><a href="#tab1" class="default-tab">Table</a></li>
+						<li><a href="#tab3" class="default-tab">Table</a></li>
 						<!-- href must be unique and match the id of target div -->
-						<li><a href="#tab2">Forms</a></li>
+						<li><a href="#tab4">Forms</a></li>
 					</ul>
 					<div class="clear"></div>
 				</div>
 				<!-- End .content-box-header -->
 				<div class="content-box-content">
-					<div class="tab-content default-tab" id="tab1">
+					<div class="tab-content default-tab" id="tab3">
 						<!-- This is the target div. id must match the href of this div's tab -->
 						<div class="notification attention png_bg">
 							<a href="#" class="close"><img
@@ -571,7 +569,7 @@
 						</table>
 					</div>
 					<!-- End #tab1 -->
-					<div class="tab-content" id="tab2">
+					<div class="tab-content" id="tab4">
 						<form action="#" method="post">
 							<fieldset>
 								<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->

@@ -30,7 +30,7 @@ func (this *CheckpointManager) Unload() {
 }
 
 func (this *CheckpointManager) AddCheckpoint(checkpoint Checkpoint) bool {
-	sql := fmt.Sprintf("insert into magicid_db.checkpoint value (%d, %s, %d)", checkpoint.Id, checkpoint.Name, checkpoint.Rid)
+	sql := fmt.Sprintf("insert into magicid_db.checkpoint value (%d, %s,%d, %d)", checkpoint.Id, checkpoint.Name, checkpoint.Creater, checkpoint.Rid)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
@@ -71,7 +71,7 @@ func (this *CheckpointManager) FindCheckpointById(id int) (Checkpoint, bool) {
 
 		for this.dao.Next() {
 			checkpoint := Checkpoint{}
-			this.dao.GetField(&checkpoint.Id, &checkpoint.Name, &checkpoint.Rid)
+			this.dao.GetField(&checkpoint.Id, &checkpoint.Name, &checkpoint.Creater, &checkpoint.Rid)
 			this.checkpointInfo[checkpoint.Id] = checkpoint
 		}
 	}
@@ -90,7 +90,7 @@ func (this *CheckpointManager) FindCheckpointByRId(id int) ([]Checkpoint, bool) 
 
 	for this.dao.Next() {
 		checkpoint := Checkpoint{}
-		this.dao.GetField(&checkpoint.Id, &checkpoint.Name, &checkpoint.Rid)
+		this.dao.GetField(&checkpoint.Id, &checkpoint.Name, &checkpoint.Creater, &checkpoint.Rid)
 		this.checkpointInfo[checkpoint.Id] = checkpoint
 		checkpoints = append(checkpoints, checkpoint)
 	}

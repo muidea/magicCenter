@@ -30,7 +30,7 @@ func (this *RoutelineManager) Unload() {
 }
 
 func (this *RoutelineManager) AddRouteline(routeline Routeline) bool {
-	sql := fmt.Sprintf("insert into magicid_db.routeline value (%d, %s, %s)", routeline.Id, routeline.Name, routeline.Description)
+	sql := fmt.Sprintf("insert into magicid_db.routeline value (%d, %s, %s, %d)", routeline.Id, routeline.Name, routeline.Description,routeline.Creater)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
@@ -40,7 +40,7 @@ func (this *RoutelineManager) AddRouteline(routeline Routeline) bool {
 }
 
 func (this *RoutelineManager) ModRouteline(routeline Routeline) bool {
-	sql := fmt.Sprintf("update magicid_db.routeline set name ='%s', description='%s', lastetime=%s where id =%d", routeline.Name, routeline.Description, routeline.Lasttime, routeline.Id)
+	sql := fmt.Sprintf("update magicid_db.routeline set name ='%s', description='%s' where id =%d", routeline.Name, routeline.Description, routeline.Id)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
@@ -71,7 +71,7 @@ func (this *RoutelineManager) FindRoutelineById(id int) (Routeline, bool) {
 
 		for this.dao.Next() {
 			routeline := Routeline{}
-			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Lasttime)
+			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater)
 			this.routelineInfo[routeline.Id] = routeline
 		}
 	}
@@ -82,8 +82,7 @@ func (this *RoutelineManager) FindRoutelineById(id int) (Routeline, bool) {
 
 func (this *RoutelineManager) GetAll() []Routeline {
 	ret := []Routeline{}
-	//if len(this.routelineInfo) == 0 {
-	if true {
+	if len(this.routelineInfo) == 0 {
 		log.Println("select routeline info from database.")
 		sql := "select * from magicid_db.routeline order by id"
 		if !this.dao.Query(sql) {
@@ -93,7 +92,7 @@ func (this *RoutelineManager) GetAll() []Routeline {
 
 		for this.dao.Next() {
 			routeline := Routeline{}
-			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Lasttime)
+			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater)
 			this.routelineInfo[routeline.Id] = routeline
 		}
 	}
