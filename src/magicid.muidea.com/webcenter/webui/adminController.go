@@ -12,6 +12,11 @@ type adminPage struct {
     AccessToken string
 }
 
+type adminPatrolPage struct {
+	adminPage
+	
+}
+
 type adminController struct {
 }
 

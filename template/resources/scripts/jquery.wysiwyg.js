@@ -12,17 +12,24 @@
  */
 (function( $ )
 {
+	var Sys = {};
+	var ua = navigator.userAgent.toLowerCase();
+	var s;
+	(s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :
+	(s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :
+	(s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
+	(s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
+	(s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
+		
     $.fn.document = function()
     {
         var element = this[0];
 
         if ( element.nodeName.toLowerCase() == 'iframe' )
-            return element.contentWindow.document;
-            /*
-            return ( $.browser.msie )
+            //return element.contentWindow.document;
+            return ( Sys.ie )
                 ? document.frames[element.id].document
                 : element.contentWindow.document // contentDocument;
-             */
         else
             return $(this);
     };
@@ -220,7 +227,7 @@
 
                     if ( selection.length > 0 )
                     {
-                        if ( $.browser.msie )
+                        if ( Sys.ie )
                             this.editorDoc.execCommand('createLink', true, null);
                         else
                         {
@@ -244,7 +251,7 @@
                 visible : true,
                 exec    : function()
                 {
-                    if ( $.browser.msie )
+                    if ( Sys.ie )
                         this.editorDoc.execCommand('insertImage', true, null);
                     else
                     {
@@ -260,13 +267,13 @@
 
             separator06 : { separator : true },
 
-            h1mozilla : { visible : true && $.browser.mozilla, className : 'h1', command : 'heading', arguments : ['h1'], tags : ['h1'] },
-            h2mozilla : { visible : true && $.browser.mozilla, className : 'h2', command : 'heading', arguments : ['h2'], tags : ['h2'] },
-            h3mozilla : { visible : true && $.browser.mozilla, className : 'h3', command : 'heading', arguments : ['h3'], tags : ['h3'] },
+            h1mozilla : { visible : true && Sys.opera, className : 'h1', command : 'heading', arguments : ['h1'], tags : ['h1'] },
+            h2mozilla : { visible : true && Sys.opera, className : 'h2', command : 'heading', arguments : ['h2'], tags : ['h2'] },
+            h3mozilla : { visible : true && Sys.opera, className : 'h3', command : 'heading', arguments : ['h3'], tags : ['h3'] },
 
-            h1 : { visible : true && !( $.browser.mozilla ), className : 'h1', command : 'formatBlock', arguments : ['Heading 1'], tags : ['h1'] },
-            h2 : { visible : true && !( $.browser.mozilla ), className : 'h2', command : 'formatBlock', arguments : ['Heading 2'], tags : ['h2'] },
-            h3 : { visible : true && !( $.browser.mozilla ), className : 'h3', command : 'formatBlock', arguments : ['Heading 3'], tags : ['h3'] },
+            h1 : { visible : true && !( Sys.opera ), className : 'h1', command : 'formatBlock', arguments : ['Heading 1'], tags : ['h1'] },
+            h2 : { visible : true && !( Sys.opera ), className : 'h2', command : 'formatBlock', arguments : ['Heading 2'], tags : ['h2'] },
+            h3 : { visible : true && !( Sys.opera ), className : 'h3', command : 'formatBlock', arguments : ['Heading 3'], tags : ['h3'] },
 
             separator07 : { visible : false, separator : true },
 
@@ -274,10 +281,10 @@
             copy  : { visible : false },
             paste : { visible : false },
 
-            separator08 : { separator : true && !( $.browser.msie ) },
+            separator08 : { separator : true && !( Sys.ie ) },
 
-            increaseFontSize : { visible : true && !( $.browser.msie ), tags : ['big'] },
-            decreaseFontSize : { visible : true && !( $.browser.msie ), tags : ['small'] },
+            increaseFontSize : { visible : true && !( Sys.ie ), tags : ['big'] },
+            decreaseFontSize : { visible : true && !( Sys.ie ), tags : ['small'] },
 
             separator09 : { separator : true },
 
@@ -346,7 +353,7 @@
                     width     : ( newX - 8 ).toString() + 'px'
                 }).attr('id', $(element).attr('id') + 'IFrame');
 
-                if ( $.browser.msie )
+                if ( Sys.ie )
                 {
                     this.editor
                         .css('height', ( newY ).toString() + 'px');
@@ -437,7 +444,7 @@
             this.editorDoc.close();
             this.editorDoc.contentEditable = 'true';
 
-            if ( $.browser.msie )
+            if ( Sys.ie )
             {
                 /**
                  * Remove the horrible border it has on IE.
@@ -490,7 +497,7 @@
 
             $(this.editorDoc).keydown(function( event )
             {
-                if ( $.browser.msie && self.options.brIE && event.keyCode == 13 )
+                if ( Sys.ie && self.options.brIE && event.keyCode == 13 )
                 {
                     var rng = self.getRange();
                         rng.pasteHTML('<br />');
@@ -636,7 +643,7 @@
             {
                 var value = elements[i].getAttribute(attributeName);
 
-                if ( $.browser.msie )
+                if ( Sys.ie )
                 {
                     /** IE add full path, so I check by the last chars. */
                     value = value.substr(value.length - attributeValue.length);

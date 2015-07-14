@@ -3,8 +3,7 @@ $(document).ready(function(){
                 var options = { 
                     beforeSubmit:  showRequest,  // pre-submit callback
                     success:       showResponse,  // post-submit callback
-                    dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type) 
-                    resetForm: true        // reset the form after successful submit 
+                    dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
                 };
                // 绑定表单提交事件处理器
                 $('#login_form').submit(function() {					
