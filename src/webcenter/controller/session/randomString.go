@@ -1,4 +1,4 @@
-package randomString
+package session
  
 import (
     _ "errors"

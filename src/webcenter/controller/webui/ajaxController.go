@@ -3,8 +3,8 @@ package webui
 import (
     "net/http"
     "encoding/json"
-    "magicid.muidea.com/webcenter/datamanager"
-    "magicid.muidea.com/webcenter/session"
+    "webcenter/model/datamanager"
+    "webcenter/controller/session"
 )
  
 type Result struct{

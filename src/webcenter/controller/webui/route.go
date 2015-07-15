@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 	"reflect"
-	"magicid.muidea.com/webcenter/session"
+	"webcenter/controller/session"
 )
 
 func InitRoute() {

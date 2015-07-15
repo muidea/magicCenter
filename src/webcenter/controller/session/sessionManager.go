@@ -2,7 +2,6 @@ package session
 
 import (
 	"log"
-	"muidea.com"
 )
 
 type Session struct {
@@ -36,7 +35,7 @@ func SessionManger() *SessionManager {
 }
 
 func createUUID() string {
-	return randomString.RandomAlphanumeric(32)
+	return RandomAlphanumeric(32)
 }
 
 func CreateSession() *Session {
@@ -183,7 +182,6 @@ func (right sessionManagerImpl) count() int {
 }
 
 func (right sessionManagerImpl) run() {
-	log.Print("session manager impl running")
 	sessionInfo := make(map[string]interface{})
 	for command := range right {
 		switch command.action {

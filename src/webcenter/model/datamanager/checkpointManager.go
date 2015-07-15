@@ -3,7 +3,7 @@ package datamanager
 import (
 	"fmt"
 	"log"
-	"muidea.com/dao"
+	"webcenter/model/dao"
 )
 
 type CheckpointManager struct {

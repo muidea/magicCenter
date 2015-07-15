@@ -4,7 +4,7 @@ import (
     "log"
     "net/http"
     "html/template"
-    "magicid.muidea.com/webcenter/session"
+    "webcenter/controller/session"
 )
 
 type adminPage struct {

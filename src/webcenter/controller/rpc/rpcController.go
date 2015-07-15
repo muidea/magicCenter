@@ -3,8 +3,8 @@ package rpc
 import (
 	"log"
 	"encoding/json"
-	"magicid.muidea.com/webcenter/datamanager"
 	"net/http"
+	"webcenter/model/datamanager"
 )
 
 type rpcController struct {

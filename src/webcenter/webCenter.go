@@ -3,10 +3,10 @@ package main
 import (
     "net/http"
     "log"
-    "magicid.muidea.com/webcenter/webui"
-    "magicid.muidea.com/webcenter/rpc"
-    "magicid.muidea.com/webcenter/datamanager"
-    "magicid.muidea.com/webcenter/session"
+    "webcenter/controller/webui"
+    "webcenter/controller/rpc"
+    "webcenter/controller/session"
+    "webcenter/model/datamanager"
 )
  
 func main() {

@@ -4,7 +4,7 @@ import (
     "net/http"
     "html/template"
     "log"
-    "magicid.muidea.com/webcenter/session"
+    "webcenter/controller/session"
 )
  
 type loginController struct {
