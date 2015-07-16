@@ -9,7 +9,7 @@ type Routeline struct {
 	Name string
 	Description string
 	Creater int
-	
+	CreateDate string
 }
 
 func (this *Routeline)Valid() bool {

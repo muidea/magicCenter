@@ -3,7 +3,7 @@ package datamanager
 import (
 	"fmt"
 	"log"
-	"webcenter/model/dao"
+	"muidea.com/dao"
 )
 
 type UserManager struct {
@@ -30,7 +30,7 @@ func (this *UserManager) Unload() {
 }
 
 func (this * UserManager) AddUser(user User) bool {
-	sql := fmt.Sprintf("insert into magicid_db.user value (%d, %s, %s, %s, %d)", user.id, user.name, user.password, user.email, user.group)
+	sql := fmt.Sprintf("insert into magicid_db.user value (%d, %s, %s, %s, %d)", user.Id, user.Name, user.Password, user.Email, user.Group)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
@@ -40,13 +40,13 @@ func (this * UserManager) AddUser(user User) bool {
 }
 
 func (this * UserManager) ModUser(user User) bool {
-	sql := fmt.Sprintf("update magicid_db.user set name ='%s', password='%s', group=%d where id =%d", user.name, user.password, user.group, user.id)
+	sql := fmt.Sprintf("update magicid_db.user set name ='%s', password='%s', group=%d where id =%d", user.Name, user.Password, user.Group, user.Id)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
 	}
 	
-	this.userInfo[user.id] = user	
+	this.userInfo[user.Id] = user	
 	return true
 }
 
@@ -62,7 +62,7 @@ func (this * UserManager) DelUser(id int) {
 
 func (this * UserManager) DelUserByGroup(group int) {
 	for id, user := range this.userInfo {
-		if user.group == group {
+		if user.Group == group {
 			delete(this.userInfo, id)
 		}
 	}
@@ -86,8 +86,8 @@ func (this * UserManager) FindUserById(id int) (User, bool) {
 	
 		for this.dao.Next() {
 			user := User{}
-			this.dao.GetField(&user.id, &user.name, &user.password, &user.email, &user.group)
-			this.userInfo[user.id] = user
+			this.dao.GetField(&user.Id, &user.Name, &user.Password, &user.Email, &user.Group)
+			this.userInfo[user.Id] = user
 		}
 	
 	}
@@ -106,8 +106,8 @@ func (this * UserManager) FindUserByEMail(email string) (User, bool) {
 	
 	found := false
 	for this.dao.Next() {
-		this.dao.GetField(&user.id, &user.name, &user.password, &user.email, &user.group)
-		this.userInfo[user.id] = user
+		this.dao.GetField(&user.Id, &user.Name, &user.Password, &user.Email, &user.Group)
+		this.userInfo[user.Id] = user
 		found = true
 	}
 	

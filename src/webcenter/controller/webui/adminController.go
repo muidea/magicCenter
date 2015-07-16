@@ -4,6 +4,7 @@ import (
     "log"
     "net/http"
     "html/template"
+    "webcenter/model"
     "webcenter/controller/session"
 )
 
@@ -14,7 +15,7 @@ type adminPage struct {
 
 type adminPatrolPage struct {
 	adminPage
-	
+	Routeline []model.Routeline
 }
 
 type adminController struct {
@@ -48,7 +49,11 @@ func (this *adminController)AdminPatrolAction(w http.ResponseWriter, r *http.Req
         log.Println(err)
     }
  
- 	pageInfo := adminPage{Account:account.(string), AccessToken:access_token}
+ 	routeline := model.GetRouteLine()
+ 	pageInfo := adminPatrolPage{}
+ 	pageInfo.Account = account.(string)
+ 	pageInfo.AccessToken = access_token
+ 	pageInfo.Routeline = routeline
     
     t.Execute(w, pageInfo)
 }

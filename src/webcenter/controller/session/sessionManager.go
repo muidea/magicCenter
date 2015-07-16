@@ -2,6 +2,7 @@ package session
 
 import (
 	"log"
+	"muidea.com"
 )
 
 type Session struct {
@@ -35,7 +36,7 @@ func SessionManger() *SessionManager {
 }
 
 func createUUID() string {
-	return RandomAlphanumeric(32)
+	return randomString.RandomAlphanumeric(32)
 }
 
 func CreateSession() *Session {

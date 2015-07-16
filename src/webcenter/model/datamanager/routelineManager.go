@@ -3,7 +3,7 @@ package datamanager
 import (
 	"fmt"
 	"log"
-	"webcenter/model/dao"
+	"muidea.com/dao"
 )
 
 type RoutelineManager struct {
@@ -29,8 +29,8 @@ func (this *RoutelineManager) Unload() {
 	this.routelineInfo = nil
 }
 
-func (this *RoutelineManager) AddRouteline(routeline Routeline) bool {
-	sql := fmt.Sprintf("insert into magicid_db.routeline value (%d, %s, %s, %d)", routeline.Id, routeline.Name, routeline.Description,routeline.Creater)
+func (this *RoutelineManager) Insert(routeline Routeline) bool {
+	sql := fmt.Sprintf("insert into magicid_db.routeline value (%d, %s, %s, %d, %s)", routeline.Id, routeline.Name, routeline.Description,routeline.Creater,"2015-07-16")
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
 		return false
@@ -39,7 +39,7 @@ func (this *RoutelineManager) AddRouteline(routeline Routeline) bool {
 	return true
 }
 
-func (this *RoutelineManager) ModRouteline(routeline Routeline) bool {
+func (this *RoutelineManager) Modify(routeline Routeline) bool {
 	sql := fmt.Sprintf("update magicid_db.routeline set name ='%s', description='%s' where id =%d", routeline.Name, routeline.Description, routeline.Id)
 	if !this.dao.Execute(sql) {
 		log.Printf("execute failed, sql:%s", sql)
@@ -50,7 +50,7 @@ func (this *RoutelineManager) ModRouteline(routeline Routeline) bool {
 	return true
 }
 
-func (this *RoutelineManager) DelRouteline(id int) {
+func (this *RoutelineManager) Delete(id int) {
 	delete(this.routelineInfo, id)
 
 	sql := fmt.Sprintf("delete from magicid_db.routeline where id =%d", id)
@@ -60,7 +60,7 @@ func (this *RoutelineManager) DelRouteline(id int) {
 	}
 }
 
-func (this *RoutelineManager) FindRoutelineById(id int) (Routeline, bool) {
+func (this *RoutelineManager) FindById(id int) (Routeline, bool) {
 	routeline, found := this.routelineInfo[id]
 	if !found {
 		sql := fmt.Sprintf("select * from magicid_db.routeline where id=%d", id)
@@ -71,7 +71,7 @@ func (this *RoutelineManager) FindRoutelineById(id int) (Routeline, bool) {
 
 		for this.dao.Next() {
 			routeline := Routeline{}
-			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater)
+			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater, &routeline.CreateDate)
 			this.routelineInfo[routeline.Id] = routeline
 		}
 	}
@@ -92,7 +92,7 @@ func (this *RoutelineManager) GetAll() []Routeline {
 
 		for this.dao.Next() {
 			routeline := Routeline{}
-			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater)
+			this.dao.GetField(&routeline.Id, &routeline.Name, &routeline.Description, &routeline.Creater, &routeline.CreateDate)
 			this.routelineInfo[routeline.Id] = routeline
 		}
 	}

@@ -203,12 +203,14 @@
 								</tr>
 							</tfoot>
 							<tbody>
+								{{with .Routeline}}
+								{{range .}}
 								<tr>
 									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
+									<td>{{.Name}}</td>
+									<td><a href="#" title="title">{{.Description}}</a></td>
+									<td>{{.Creater}}</td>
+									<td>{{.CreateDate}}</td>
 									<td>
 										<!-- Icons --> <a href="#" title="Edit"><img
 											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
@@ -219,118 +221,8 @@
 											alt="Edit Meta" /></a>
 									</td>
 								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
-								<tr>
-									<td><input type="checkbox" /></td>
-									<td>Lorem ipsum dolor</td>
-									<td><a href="#" title="title">Sit amet</a></td>
-									<td>Consectetur adipiscing</td>
-									<td>Donec tortor diam</td>
-									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
-									</td>
-								</tr>
+								{{end}}  
+								{{end}} 
 							</tbody>
 						</table>
 					</div>

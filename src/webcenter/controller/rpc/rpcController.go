@@ -4,22 +4,21 @@ import (
 	"log"
 	"encoding/json"
 	"net/http"
-	"webcenter/model/datamanager"
+	"webcenter/model"
 )
 
 type rpcController struct {
 }
 
 type Result struct {
-	Route []datamanager.Routeline
+	Route []model.Routeline
 }
 
 func (this *rpcController) RpcAction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	w.Header().Set("charset", "utf-8")
 
-	routelineManager := datamanager.GetRoutelineManager()
-	routelist := routelineManager.GetAll()
+	routelist := model.GetRouteLine()
 	
 	log.Printf("routelist size:%d", len(routelist))
 	result := Result{Route:routelist}	

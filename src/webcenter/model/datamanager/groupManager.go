@@ -3,7 +3,7 @@ package datamanager
 import (
 	"fmt"
 	"log"
-	"webcenter/model/dao"
+	"muidea.com/dao"
 )
 
 type GroupManager struct {

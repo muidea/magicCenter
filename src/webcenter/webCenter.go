@@ -3,26 +3,21 @@ package main
 import (
     "net/http"
     "log"
-    "webcenter/controller/webui"
-    "webcenter/controller/rpc"
-    "webcenter/controller/session"
-    "webcenter/model/datamanager"
+    "webcenter/controller"
+    "webcenter/model"
 )
  
 func main() {
 	log.Println("MagicID WebCenter V1.0");
 	
-	datamanager.InitDataManager()
+	controller.Initialize()
 	
-	defer datamanager.UninitDataManager()
+	defer controller.Uninitialized();
 	
-	session.Initialize()
-	defer session.Uninitialize()
+	model.Initialize()
 	
-	webui.InitRoute()
+	defer model.Uninitialized();
 	
-	rpc.InitRoute()
-		
     http.ListenAndServe(":8888", nil)
  
 }
