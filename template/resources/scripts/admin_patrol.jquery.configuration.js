@@ -100,13 +100,10 @@ $(document).ready(function(){
 
 		$('.patrol-line .routeline .showInfo').click(
 				function() {
-					$(this).parents().filter(".patrol-line").children(".patrol-line-header").children(".content-box-tabs").find("a.routelineList").removeClass('current');
-					$(this).parents().filter(".patrol-line").children(".patrol-line-header").children(".content-box-tabs").find("a.routelineEdit").addClass('current');
-					$(this).parents().filter(".patrol-line").children(".patrol-line-content").children("#routelineList");
-					$(this).parents().filter(".patrol-line").children(".patrol-line-content").children("#routelineList").hide();
-					$(this).parents().filter(".patrol-line").children(".patrol-line-content").children("#routelineEdit");
-					$(this).parents().filter(".patrol-line").children(".patrol-line-content").children("#routelineEdit").show();
-					
+					$('.patrol-line .patrol-line-header .content-box-tabs a.routelineList').removeClass('current');
+					$('.patrol-line .patrol-line-header .content-box-tabs a.routelineEdit').addClass('current');
+					$('.patrol-line .patrol-line-content #routelineList').hide();
+					$('.patrol-line .patrol-line-content #routelineEdit').show();					
 					return false;
 				}
 		);
