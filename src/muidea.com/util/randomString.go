@@ -1,4 +1,4 @@
-package randomString
+package util
  
 import (
     _ "errors"

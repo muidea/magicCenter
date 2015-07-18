@@ -49,7 +49,7 @@ func (this *adminController)AdminPatrolAction(w http.ResponseWriter, r *http.Req
         log.Println(err)
     }
  
- 	routeline := model.GetRouteLine()
+ 	routeline := model.GetAllRouteLine()
  	pageInfo := adminPatrolPage{}
  	pageInfo.Account = account.(string)
  	pageInfo.AccessToken = access_token

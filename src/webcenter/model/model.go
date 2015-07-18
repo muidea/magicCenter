@@ -19,7 +19,7 @@ func Uninitialized() {
 }
 
 // 获取全部路径
-func GetRouteLine() []Routeline {
+func GetAllRouteLine() []Routeline {
 	routeLine := []Routeline{}
 	
 	userManager := datamanager.GetUserManager()
@@ -43,3 +43,27 @@ func GetRouteLine() []Routeline {
 		
 	return routeLine
 }
+
+func GetRouline(id int) (Routeline, bool) {
+	userManager := datamanager.GetUserManager()
+	routelineManager := datamanager.GetRoutelineManager()
+	
+	routeline := Routeline{}
+	line, found := routelineManager.FindById(id)
+	if found {
+		routeline.Id = id
+		routeline.Name = line.Name
+		routeline.Description = line.Description
+		routeline.CreateDate = line.CreateDate
+		user, found := userManager.FindUserById(line.Creater)
+		if found {
+			routeline.Creater = user.Name
+		} else {
+			routeline.Creater = "admin"
+		}
+	}
+	
+	return routeline, found
+}
+
+

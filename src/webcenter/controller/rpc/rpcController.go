@@ -18,7 +18,7 @@ func (this *rpcController) RpcAction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	w.Header().Set("charset", "utf-8")
 
-	routelist := model.GetRouteLine()
+	routelist := model.GetAllRouteLine()
 	
 	log.Printf("routelist size:%d", len(routelist))
 	result := Result{Route:routelist}	

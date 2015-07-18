@@ -51,8 +51,8 @@
 					<!-- Accordion Menu -->
 					<li><a href="/admin/patrol" class="nav-top-item current">签到管理 </a>
 						<ul>
-							<li><a class="nav-sub-item patrol-line current" href="#">签到路线</a></li>
-							<li><a class="nav-sub-item patrol-point" href="#">签到点</a></li>
+							<li><a class="nav-sub-item patrol-line current" href="/admin/patrol">签到路线</a></li>
+							<li><a class="nav-sub-item patrol-point" href="/admin/patrol">签到点</a></li>
 						</ul></li>
 
 					<li><a href="/admin/user" class="nav-top-item"> <!-- Add the class "current" to current menu item -->
@@ -156,18 +156,18 @@
 			<!-- End .clear -->
 			<div class="content-box patrol-line">
 				<!-- Start Content Box -->
-				<div class="content-box-header">
+				<div class="content-box-header patrol-line-header">
 					<h3>签到路线</h3>
 					<ul class="content-box-tabs">
-						<li><a href="#tab1" class="default-tab">查看</a></li>
+						<li><a href="#routelineList" class="routelineList default-tab">列表</a></li>
 						<!-- href must be unique and match the id of target div -->
-						<li><a href="#tab2">编辑</a></li>
+						<li><a href="#routelineEdit" class="routelineEdit">编辑</a></li>
 					</ul>
 					<div class="clear"></div>
 				</div>
 				<!-- End .content-box-header -->
-				<div class="content-box-content">
-					<div class="tab-content default-tab" id="tab1">
+				<div class="content-box-content patrol-line-content">
+					<div class="tab-content default-tab" id="routelineList">
 						<table>
 							<thead>
 								<tr>
@@ -205,10 +205,10 @@
 							<tbody>
 								{{with .Routeline}}
 								{{range .}}
-								<tr>
+								<tr class="routeline">
 									<td><input type="checkbox" /></td>
 									<td>{{.Name}}</td>
-									<td><a href="#" title="title">{{.Description}}</a></td>
+									<td><a class="showInfo" href="/patrol/patrolline/query?{{.Id}}" title="title">{{.Description}}</a></td>
 									<td>{{.Creater}}</td>
 									<td>{{.CreateDate}}</td>
 									<td>
@@ -227,7 +227,7 @@
 						</table>
 					</div>
 					<!-- End #tab1 -->
-					<div class="tab-content" id="tab2">
+					<div class="tab-content" id="routelineEdit">
 						<form action="#" method="post">
 							<fieldset>
 								<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
