@@ -20,7 +20,7 @@
 	(s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
 	(s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
 	(s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
-		
+	
     $.fn.document = function()
     {
         var element = this[0];
@@ -172,6 +172,12 @@
                 self.saveContent();
         },
 
+		getContent : function()
+		{
+			var self = $.data(this, 'wysiwyg');
+			return self.getContent();
+		},
+		
         clear : function()
         {
             var self = $.data(this, 'wysiwyg');
@@ -186,8 +192,8 @@
         TOOLBAR : {
             bold          : { visible : true, tags : ['b', 'strong'], css : { fontWeight : 'bold' } },
             italic        : { visible : true, tags : ['i', 'em'], css : { fontStyle : 'italic' } },
-            strikeThrough : { visible : false, tags : ['s', 'strike'], css : { textDecoration : 'line-through' } },
-            underline     : { visible : false, tags : ['u'], css : { textDecoration : 'underline' } },
+            strikeThrough : { visible : true, tags : ['s', 'strike'], css : { textDecoration : 'line-through' } },
+            underline     : { visible : true, tags : ['u'], css : { textDecoration : 'underline' } },
 
             separator00 : { visible : false, separator : true },
 
@@ -281,10 +287,10 @@
             copy  : { visible : false },
             paste : { visible : false },
 
-            separator08 : { separator : true && !( Sys.ie ) },
+            separator08 : { separator : false && !( Sys.ie ) },
 
-            increaseFontSize : { visible : true && !( Sys.ie ), tags : ['big'] },
-            decreaseFontSize : { visible : true && !( Sys.ie ), tags : ['small'] },
+            increaseFontSize : { visible : false && !( Sys.ie ), tags : ['big'] },
+            decreaseFontSize : { visible : false && !( Sys.ie ), tags : ['small'] },
 
             separator09 : { separator : true },
 

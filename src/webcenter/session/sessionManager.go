@@ -1,22 +1,12 @@
 package session
 
 import (
+	"net/http"
 	"log"
-	"muidea.com/util"
+	"muidea.com/util"	
 )
 
-type Session struct {
-	id      string // session id
-	context map[string]interface{}
-}
-
-type SessionManager struct {
-	impl sessionManagerImpl
-}
-
-var sessionManager *SessionManager = nil
-
-func Initialize() {
+func initialize() {
 	if sessionManager == nil {
 		sessionManager = &SessionManager{}
 		sessionManager.impl = make(sessionManagerImpl)
@@ -24,22 +14,43 @@ func Initialize() {
 	}
 }
 
-func Uninitialize() {
+func uninitialize() {
 	if sessionManager != nil {
 		sessionManager.impl.close()
 		sessionManager = nil
 	}
 }
 
-func SessionManger() *SessionManager {
-	return sessionManager
+func GetSession(w http.ResponseWriter, r *http.Request) *Session {
+	var userSession *Session
+	
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie.Value == ""{
+		userSession = createSession()
+		log.Printf("can't find cookie,create new session")
+	} else {
+		cur, found := sessionManager.Find(cookie.Value)
+		if !found {
+			userSession = createSession()
+			log.Printf("invalid cookie,create new session, cookieValue:%s", cookie.Value)
+		} else {
+			userSession = cur
+			log.Print("find exist ession from cookie")
+		}
+	}
+	
+    // 存入cookie,使用cookie存储
+    session_cookie := http.Cookie{Name: "session_id", Value: userSession.Id(), Path: "/magic.muidea.com/webcenter"}
+    http.SetCookie(w, &session_cookie)
+	
+	return userSession
 }
 
 func createUUID() string {
 	return util.RandomAlphanumeric(32)
 }
 
-func CreateSession() *Session {
+func createSession() *Session {
 	session := new(Session)
 	session.id = createUUID()
 	session.context = make(map[string]interface{})
@@ -49,52 +60,11 @@ func CreateSession() *Session {
 	return session
 }
 
-func (this *Session) Id() string {
-	return this.id
+type SessionManager struct {
+	impl sessionManagerImpl
 }
 
-func (this *Session) Account() (string, bool) {
-	account, found := this.context["account"]
-	if found {
-		return account.(string), found
-	}
-
-	return "", found
-}
-
-func (this *Session) AccessToken() string {
-	token := createUUID()
-
-	this.context["access_token"] = token
-	return token
-}
-
-func (this *Session) ValidToken(token string) bool {
-	cur, found := this.context["access_token"]
-	if !found {
-		return false
-	}
-
-	return cur.(string) == token
-}
-
-func (this *Session) ReleaseAccessToken() {
-	delete(this.context, "access_token")
-}
-
-func (this *Session) SetOption(key string, value interface{}) {
-	this.context[key] = value
-}
-
-func (this *Session) GetOption(key string) (interface{}, bool) {
-	value, found := this.context[key]
-	
-	return value, found	
-}
-
-func (this *Session) RemoveOption(key string) {
-	delete(this.context, key)
-}
+var sessionManager *SessionManager = nil
 
 func (this *SessionManager) Insert(session *Session) {
 	this.impl.insert(session)

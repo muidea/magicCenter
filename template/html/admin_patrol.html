@@ -17,6 +17,8 @@
 <!-- jQuery -->
 <script type="text/javascript"
 	src="/resources/scripts/jquery-2.1.4.js"></script>
+<!-- jQuery form-->
+<script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>	
 <!-- jQuery Configuration -->
 <script type="text/javascript"
 	src="/resources/scripts/admin_patrol.jquery.configuration.js"></script>
@@ -208,57 +210,38 @@
 								<tr class="routeline">
 									<td><input type="checkbox" /></td>
 									<td>{{.Name}}</td>
-									<td><a class="showInfo" href="/patrol/patrolline/query?{{.Id}}" title="title">{{.Description}}</a></td>
+									<td><a class="edit" href="/patrol/patrolline/query?{{.Id}}" title="title">{{.Description}}</a></td>
 									<td>{{.Creater}}</td>
 									<td>{{.CreateDate}}</td>
 									<td>
-										<!-- Icons --> <a href="#" title="Edit"><img
-											src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-										href="#" title="Delete"><img
-											src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-										href="#" title="Edit Meta"><img
-											src="/resources/images/icons/hammer_screwdriver.png"
-											alt="Edit Meta" /></a>
+										<!-- Icons --> 
+										<a class="edit" href="/patrol/patrolline/query?{{.Id}}" title="Edit"><img src="/resources/images/icons/pencil.png" alt="Edit" /></a>
+										<a class="delete" href="/patrol/patrolline/delete?{{.Id}}" title="Delete"><img src="/resources/images/icons/cross.png" alt="Delete" /></a>
 									</td>
 								</tr>
-								{{end}}  
-								{{end}} 
+								{{end}}
+								{{end}}
 							</tbody>
 						</table>
 					</div>
 					<!-- End #tab1 -->
 					<div class="tab-content" id="routelineEdit">
-						<form action="#" method="post">
+						<form id="routeline" action="/patrol/patrolline/modify" method="post">
 							<fieldset>
 								<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
 								<p>
 									<label>路线名称</label> <input
-										class="text-input small-input" type="text" id="small-input"
-										name="small-input" />
+										class="text-input small-input" type="text" id="routeline-name"
+										name="routeline-name" />
 									<!-- Classes for input-notification: success, error, information, attention -->
-									<br /> <small>签到路线的名称</small>
 								</p>
 								<p>
 									<label>签到路线描述信息</label>
-									<textarea class="text-input textarea wysiwyg" id="textarea"
-										name="textfield" cols="79" rows="15"></textarea>
+									<textarea class="text-input textarea wysiwyg" id="routeline-description"
+										name="routeline-description" cols="79" rows="15"></textarea>
 								</p>
 								<p>
-									<label>参与人员</label> <input type="checkbox"
-										name="checkbox1" /> This is a checkbox <input type="checkbox"
-										name="checkbox2" /> And this is another checkbox
-								</p>
-								<p>
-									<label>截至日期</label> <select name="dropdown"
-										class="small-input">
-										<option value="option1">Option 1</option>
-										<option value="option2">Option 2</option>
-										<option value="option3">Option 3</option>
-										<option value="option4">Option 4</option>
-									</select>
-								</p>
-								<p>
-									<input class="button" type="submit" value="提交" />
+									<input class="button" type="submit" value="提交" /><input id="routeline-id" name="routeline-id"  type="hidden"/>
 								</p>
 							</fieldset>
 							<div class="clear"></div>

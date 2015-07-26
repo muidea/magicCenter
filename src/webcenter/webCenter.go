@@ -3,21 +3,16 @@ package main
 import (
     "net/http"
     "log"
-    "webcenter/controller"
-    "webcenter/model"
+    _"webcenter/datamanager"
+    _"webcenter/session"
+    _"webcenter/common"
+    _"webcenter/user"
+    _"webcenter/patrol"
 )
  
 func main() {
 	log.Println("MagicID WebCenter V1.0");
-	
-	controller.Initialize()
-	
-	defer controller.Uninitialized();
-	
-	model.Initialize()
-	
-	defer model.Uninitialized();
-	
+		
     http.ListenAndServe(":8888", nil)
  
 }

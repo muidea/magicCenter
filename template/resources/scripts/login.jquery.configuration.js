@@ -20,11 +20,11 @@ $(document).ready(function(){
                 } 
                 // post-submit callback
                 function showResponse(re) {
-					if (re.Ret > 0) {
+					if (re.ErrCode > 0) {
 						$("#alertInfo #content").html(re.Reason);
 						$("#alertInfo #content").show();						
 					} else {
-						location.href = re.Data						
+						location.href = re.RedirectUrl;
 					}
                 }
 });

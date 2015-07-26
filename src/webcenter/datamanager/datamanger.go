@@ -4,12 +4,16 @@ import (
 
 )
 
+func init() {
+	initDataManager()
+}
+
 var userManager *UserManager
 var groupManager *GroupManager
 var routelineManager *RoutelineManager
 var checkpointManager *CheckpointManager
 
-func InitDataManager() {
+func initDataManager() {
 	userManager = &UserManager{}
 	groupManager = &GroupManager{}
 	routelineManager = &RoutelineManager{}
@@ -21,7 +25,7 @@ func InitDataManager() {
 	checkpointManager.Load()
 }
 
-func UninitDataManager() {
+func uninitDataManager() {
 	userManager.Unload()
 	groupManager.Unload()
 	routelineManager.Unload()

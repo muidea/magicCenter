@@ -1,21 +1,12 @@
-package model
+package patrol
 
 import (
-	"webcenter/model/datamanager"
+	"webcenter/datamanager"
 )
 
 type Routeline struct {
 	datamanager.Routeline
 	Creater string
-}
-
-func Initialize() {
-	datamanager.InitDataManager()	
-	
-}
-
-func Uninitialized() {
-	datamanager.UninitDataManager()	
 }
 
 // 获取全部路径
@@ -44,7 +35,7 @@ func GetAllRouteLine() []Routeline {
 	return routeLine
 }
 
-func GetRouline(id int) (Routeline, bool) {
+func FindRouteline(id int) (Routeline, bool) {
 	userManager := datamanager.GetUserManager()
 	routelineManager := datamanager.GetRoutelineManager()
 	
@@ -66,4 +57,24 @@ func GetRouline(id int) (Routeline, bool) {
 	return routeline, found
 }
 
+func ModifyRouteline(routeline Routeline) (int, bool)  {
+	routelineManager := datamanager.GetRoutelineManager()
+	
+	line, found := routelineManager.FindById(routeline.Id)
+	if found {
+		line.Name = routeline.Name
+		line.Description = routeline.Description
+		
+		found = routelineManager.Modify(line)
+	}
+	
+	return routeline.Id, found
+}
 
+func DeleteRouteline(id int) (int, bool)  {
+	routelineManager := datamanager.GetRoutelineManager()
+	
+	routelineManager.Delete(id)
+	
+	return id, true
+}
