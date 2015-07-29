@@ -11,6 +11,7 @@ type AdminPage struct {
 
 type Result struct {
 	ErrCode int
-	Reason string	
+	Reason string
+	RedirectUrl string	
 }
 

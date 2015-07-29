@@ -4,6 +4,7 @@ import (
     "net/http"
 	"strings"
 	"reflect"
+	"log"
 	"webcenter/session"	
 )
 
@@ -43,15 +44,17 @@ func adminPatrolHandler(w http.ResponseWriter, r *http.Request) {
 
 func patrolLineHandler(w http.ResponseWriter, r *http.Request) {
 	pathInfo := strings.Trim(r.URL.Path, "/")
-	pathInfo = strings.ToLower(pathInfo)
+	//pathInfo = strings.ToLower(pathInfo)
 	parts := strings.Split(pathInfo, "/")
 	
 	var action string
 	if len(parts) <= 2 {
-		action = "GetAllPatrolLineAction"
+		action = "GetallPatrolLineAction"
 	} else {
 		action = strings.Title(parts[len(parts) -1]) + "PatrolLineAction"
 	}
+	
+	log.Print(action)
 	
     patrolController := &patrolController{}
     controller := reflect.ValueOf(patrolController)

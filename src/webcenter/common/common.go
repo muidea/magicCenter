@@ -102,6 +102,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
         	return
     	}
 	    t.Execute(w, nil)
+	    return;
     }
     
     t, err := template.ParseFiles("template/html/404.html")

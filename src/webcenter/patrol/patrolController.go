@@ -83,9 +83,12 @@ func (this *patrolController)AdminPatrolAction(w http.ResponseWriter, r *http.Re
         return        
     }
  
+ 	routelines := GetAllRouteLine()
+ 
  	pageInfo := AdminPatrolPage{}
  	pageInfo.Account = account.(string)
  	pageInfo.AccessToken = access_token
+ 	pageInfo.Routeline = routelines
     
     t.Execute(w, pageInfo)
 }
@@ -165,6 +168,7 @@ func (this *patrolController)ModifyPatrolLineAction(w http.ResponseWriter, r *ht
 		reason = "操作失败"
 	}
 
+	reason = "修改成功"
     this.OutputUpdatePatrolLineResult(w, errCode, reason)
 }
 
