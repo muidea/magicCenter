@@ -3,11 +3,11 @@ package main
 import (
     "net/http"
     "log"
-    _"webcenter/datamanager"
     _"webcenter/session"
     _"webcenter/common"
-    _"webcenter/user"
-    _"webcenter/patrol"
+    _"webcenter/auth"
+    _"webcenter/admin"
+    _"webcenter/content"
 )
  
 func main() {
@@ -16,3 +16,4 @@ func main() {
     http.ListenAndServe(":8888", nil)
  
 }
+

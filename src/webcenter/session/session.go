@@ -29,6 +29,7 @@ func (this *Session) AccessToken() string {
 	token := createUUID()
 
 	this.context["access_token"] = token
+	
 	return token
 }
 
@@ -59,6 +60,9 @@ func (this *Session) RemoveOption(key string) {
 	delete(this.context, key)
 }
 
+func (this *Session) Save() {
+	updateSession(this)
+}
 
 
 

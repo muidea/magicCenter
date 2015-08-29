@@ -6,6 +6,8 @@ import (
 	"muidea.com/util"	
 )
 
+var SESSION_COOKIE_ID string = "session_id"
+
 func initialize() {
 	if sessionManager == nil {
 		sessionManager = &SessionManager{}
@@ -24,40 +26,45 @@ func uninitialize() {
 func GetSession(w http.ResponseWriter, r *http.Request) *Session {
 	var userSession *Session
 	
-	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie.Value == ""{
+	cookie, err := r.Cookie(SESSION_COOKIE_ID)	
+	if err != nil {
+		log.Printf("can't find cookie,create new session, err:" + err.Error())
 		userSession = createSession()
-		log.Printf("can't find cookie,create new session")
 	} else {
 		cur, found := sessionManager.Find(cookie.Value)
 		if !found {
-			userSession = createSession()
 			log.Printf("invalid cookie,create new session, cookieValue:%s", cookie.Value)
+			userSession = createSession()
 		} else {
-			userSession = cur
 			log.Print("find exist ession from cookie")
+			userSession = &cur
 		}
 	}
 	
     // 存入cookie,使用cookie存储
-    session_cookie := http.Cookie{Name: "session_id", Value: userSession.Id(), Path: "/magic.muidea.com/webcenter"}
+    session_cookie := http.Cookie{Name: SESSION_COOKIE_ID, Value: userSession.Id(),Path:"/"}
     http.SetCookie(w, &session_cookie)
 	
 	return userSession
 }
 
+func updateSession(session *Session) bool {
+	return sessionManager.Update(session)
+}
+
 func createUUID() string {
-	return util.RandomAlphanumeric(32)
+	result := util.RandomAlphanumeric(64)
+	return result
 }
 
 func createSession() *Session {
-	session := new(Session)
+	session := Session{}
 	session.id = createUUID()
 	session.context = make(map[string]interface{})
 	
 	sessionManager.Insert(session)
 	
-	return session
+	return &session
 }
 
 type SessionManager struct {
@@ -66,20 +73,24 @@ type SessionManager struct {
 
 var sessionManager *SessionManager = nil
 
-func (this *SessionManager) Insert(session *Session) {
+func (this *SessionManager) Insert(session Session) {
 	this.impl.insert(session)
 }
 
 func (this *SessionManager) Delete(id string) {
-	this.impl.delete(id)
+	this.impl.remove(id)
 }
 
-func (this *SessionManager) Find(id string) (*Session, bool) {
+func (this *SessionManager) Find(id string) (Session, bool) {
 	return this.impl.find(id)
 }
 
 func (this *SessionManager) Count() int {
 	return this.impl.count()
+}
+
+func (this *SessionManager) Update(session *Session) bool {
+	return this.impl.update(*session)
 }
 
 type commandData struct {
@@ -107,18 +118,18 @@ type findResult struct {
 
 type sessionManagerImpl chan commandData
 
-func (right sessionManagerImpl) insert(session *Session) {
+func (right sessionManagerImpl) insert(session Session) {
 	log.Printf("insert session, id:%s", session.Id())
 	
 	right <- commandData{action: insert, value: session}
 }
 
-func (right sessionManagerImpl) delete(id string) {
+func (right sessionManagerImpl) remove(id string) {
 	log.Printf("delete session, id:%s", id)
 	right <- commandData{action: remove, value: id}
 }
 
-func (right sessionManagerImpl) update(session *Session) bool {
+func (right sessionManagerImpl) update(session Session) bool {
 	log.Printf("update session, id:%s", session.Id())
 	
 	reply := make(chan interface{})
@@ -128,7 +139,7 @@ func (right sessionManagerImpl) update(session *Session) bool {
 	return result
 }
 
-func (right sessionManagerImpl) find(id string) (*Session, bool) {
+func (right sessionManagerImpl) find(id string) (Session, bool) {
 	log.Printf("find session by id,id:%s", id)
 	reply := make(chan interface{})
 	right <- commandData{action: find, value: id, result: reply}
@@ -136,9 +147,9 @@ func (right sessionManagerImpl) find(id string) (*Session, bool) {
 	result := (<-reply).(findResult)
 
 	if result.found {
-		return result.value.(*Session), result.found
+		return result.value.(Session), result.found
 	} else {
-		return nil, false
+		return Session{}, false
 	}
 }
 
@@ -157,13 +168,13 @@ func (right sessionManagerImpl) run() {
 	for command := range right {
 		switch command.action {
 		case insert:
-			session := command.value.(*Session)
+			session := command.value.(Session)
 			sessionInfo[session.id] = session
 		case remove:
 			id := command.value.(string)
 			delete(sessionInfo, id)
 		case update:
-			session := command.value.(*Session)
+			session := command.value.(Session)
 			_, found := sessionInfo[session.id]
 			if found {
 				sessionInfo[session.id] = session
