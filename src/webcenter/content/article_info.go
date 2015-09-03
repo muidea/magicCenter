@@ -16,6 +16,15 @@ type ArticleInfo struct {
 }
 
 
+type Article struct {
+	Id int
+	Title string
+	Content string
+	CreateDate string
+	Catalog Catalog
+	Author auth.User
+}
+
 func newArticleInfo() ArticleInfo {
 	articleInfo := ArticleInfo{}
 	articleInfo.Id = -1
@@ -23,6 +32,15 @@ func newArticleInfo() ArticleInfo {
 	articleInfo.Author = auth.NewUser()
 	
 	return articleInfo
+}
+
+func newArticle() Article {
+	article := Article{}
+	article.Id = -1
+	article.Catalog = newCatalog()
+	article.Author = auth.NewUser()
+	
+	return article
 }
 
 func GetAllArticleInfo(dao * dao.Dao) []ArticleInfo {
@@ -37,14 +55,77 @@ func GetAllArticleInfo(dao * dao.Dao) []ArticleInfo {
 		articleInfo := newArticleInfo()
 		dao.GetField(&articleInfo.Id, &articleInfo.Title, &articleInfo.Author.Id, &articleInfo.CreateDate, &articleInfo.Catalog.Id)
 		
-		articleInfo.Catalog.Query(dao)
-		articleInfo.Author.Query(dao)
-		
-		log.Printf("%d,%s", articleInfo.Id, articleInfo.Title)
-						
 		articleInfoList = append(articleInfoList, articleInfo)
+	}
+	
+	for i:=0; i < len(articleInfoList); i++ {
+		articleInfo := &articleInfoList[i]
+		articleInfo.Author.Query(dao)
+		articleInfo.Catalog.Query(dao)
 	}
 	
 	return articleInfoList
 }
+
+func (this *Article)Query(dao * dao.Dao) bool {
+	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id=%d", this.Id)
+	if !dao.Query(sql) {
+		log.Printf("query article failed, sql:%s", sql)
+		return false
+	}
+
+	result := false;
+	for dao.Next() {
+		result = dao.GetField(&this.Id, &this.Title, &this.Content, &this.Author.Id, &this.CreateDate, &this.Catalog.Id)
+	}
+
+	if result {
+		result = this.Author.Query(dao)
+	}
+	
+	if result {
+		result = this.Catalog.Query(dao)
+	}
+	
+	return result		
+}
+
+
+
+func (this *Article)delete(dao * dao.Dao) bool {
+	sql := fmt.Sprintf("delete from article where id=%d", this.Id)
+	
+	result := dao.Execute(sql)
+	
+	return result		
+}
+
+func (this *Article)save(dao * dao.Dao) bool {
+	sql := fmt.Sprintf("select id from article where id=%d", this.Id)
+	if !dao.Query(sql) {
+		log.Printf("query article failed, sql:%s", sql)
+		return false
+	}
+
+	result := false;
+	for dao.Next() {
+		var id = 0
+		result = dao.GetField(&id)
+		result = true
+	}
+
+	if !result {
+		// insert
+		sql = fmt.Sprintf("insert into article (title,content,author,createdate,catalog) values ('%s','%s',%d,'%s',%d)", this.Title, this.Content, this.Author.Id, this.CreateDate, this.Catalog.Id)
+	} else {
+		// modify
+		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", this.Title, this.Content, this.Author.Id, this.CreateDate, this.Catalog.Id, this.Id)
+	}
+	
+	result = dao.Execute(sql)	
+	
+	return result		
+}
+
+
 

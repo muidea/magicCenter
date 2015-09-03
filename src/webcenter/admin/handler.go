@@ -51,6 +51,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/404/", http.StatusNotFound)
         return
     }
+    
+    log.Print(r.URL.RawQuery)
  
     controller := &adminController{}
     view := controller.Action(session)

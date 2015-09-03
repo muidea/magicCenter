@@ -59,8 +59,9 @@ func (this *Dao) Next() bool {
 	if this.rowsHandle == nil {
 		return false
 	}
+	ret := this.rowsHandle.Next()
 	
-	return this.rowsHandle.Next()
+	return ret
 }
 
 func (this *Dao) GetField(value ... interface{}) bool {

@@ -35,9 +35,13 @@ func GetAllUser(dao * dao.Dao) []User {
 		user := NewUser()
 		dao.GetField(&user.Id, &user.Account, &user.password, &user.NickName, &user.Email, &user.Group.Id)
 		
-		user.Group.query(dao)
-		
 		userList = append(userList, user)
+	}
+	
+	for i:=0; i < len(userList); i++ {
+		user := &userList[i]
+		
+		user.Group.query(dao)
 	}
 	
 	return userList

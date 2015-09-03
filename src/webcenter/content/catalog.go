@@ -33,9 +33,12 @@ func GetAllCatalog(dao * dao.Dao) []Catalog {
 		catalog := newCatalog()
 		dao.GetField(&catalog.Id, &catalog.Name, &catalog.Creater.Id)
 		
-		catalog.Creater.Query(dao)
-		
 		catalogList = append(catalogList, catalog)
+	}
+	
+	for i :=0; i<len(catalogList); i++ {
+		catalog := &catalogList[i]
+		catalog.Creater.Query(dao)
 	}
 	
 	return catalogList

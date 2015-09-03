@@ -1,4 +1,6 @@
 
+var adminWebCenter = {}
+
 $(document).ready(function() {
 
 	// Sidebar Accordion Menu:
@@ -21,8 +23,6 @@ $(document).ready(function() {
 			var currentDiv = $(this).attr('href');
 			$(currentDiv).siblings('.main-content-box').hide();
 			$(currentDiv).show();
-			
-			currentDiv.initialze();
 			
 			return false;
 		}
@@ -90,41 +90,9 @@ $(document).ready(function() {
 			$(this).addClass('current'); // Add class "current" to clicked tab
 			
 			var currentTab = $(this).attr('href'); // Set variable "currentTab" to the value of href of clicked tab
+			$(currentTab).siblings().find("div.notification").hide();
 			$(currentTab).siblings().hide(); // Hide all content divs
 			$(currentTab).show(); // Show the content div with the id equal to the id of clicked tab
-			return false;
-		}
-	);
-
-	$('#admin-content').click(
-			function() {
-				$('#main-content').load("/content/admin/");
-				return false;
-			}
-	);
-	
-	// 
-	$('#article-List .article .edit').click(
-		function() {
-			edit_article($(this).attr('href'));
-			return false;
-		}
-	);
-
-	$('#article-List .article .delete').click(
-		function() {
-			delete_article($(this).attr('href'));
-			return false;
-		}
-	);
-
-	// 绑定表单提交事件处理器
-	$('#patrollineForm').submit(
-		function() {
-			submit_patrolline();
-			//submit_route($(this).attr('action'));
-			// !!! Important !!!
-			// 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
 			return false;
 		}
 	);
@@ -159,5 +127,5 @@ $(document).ready(function() {
 
 	$(".wysiwyg").wysiwyg(); // Applies WYSIWYG editor to any textarea with the class "wysiwyg"
 	
-	content.initialze();
+	content.initialize(adminWebCenter.accesscode, $("#content"));
 });
