@@ -22,8 +22,8 @@ content.initialize = function(accessCode, view) {
 	$.post("/content/admin/queryAllContent/", {
 		accesscode: accessCode
 	}, function(result){
-		content.ErrCode = result.ErrCode;
-		content.Reason = result.Reason;
+		content.errCode = result.ErrCode;
+		content.reason = result.Reason;
 		
 		content.article.articleInfo = result.ArticleInfo;		
 		content.catalog.catalogInfo = result.Catalog;
@@ -49,31 +49,69 @@ content.initialize = function(accessCode, view) {
         function showResponse(result) {
         	if (result.ErrCode > 0) {
         		var notificationDiv = $(content.article.view).find("#article-Edit div.error");
-        		notificationDiv.children("div").html(result.Reason);
-        		notificationDiv.show();
+        		$(notificationDiv).children("div").html(result.Reason);
+        		$(notificationDiv).siblings(".notification").hide();
+        		$(notificationDiv).show();
         	} else {
         		var notificationDiv = $(content.article.view).find("#article-Edit div.success");
-        		notificationDiv.children("div").html(result.Reason);
-        		notificationDiv.show();
+        		$(notificationDiv).children("div").html(result.Reason);
+        		$(notificationDiv).siblings(".notification").hide();
+        		$(notificationDiv).show();
         		
         		content.refreshArticle();
         	}
         }
         //提交表单
-        $(this).ajaxSubmit(options);
-
+        $(this).ajaxSubmit(options);	
+    	
         // !!! Important !!!
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
-    });	
+    });
+    
+    // 绑定表单提交事件处理器
+    $('#catalog-content .catalog-Form').submit(function() {
+        var options = { 
+                beforeSubmit:  showRequest,  // pre-submit callback
+                success:       showResponse,  // post-submit callback
+                dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+            };
+        
+        // pre-submit callback
+        function showRequest() {
+            //alert("before submit");
+        } 
+        // post-submit callback
+        function showResponse(result) {
+        	if (result.ErrCode > 0) {
+        		var notificationDiv = $(content.catalog.view).find("#catalog-Edit div.error");
+        		$(notificationDiv).children("div").html(result.Reason);
+        		$(notificationDiv).siblings(".notification").hide();
+        		$(notificationDiv).show();
+        	} else {
+        		var notificationDiv = $(content.catalog.view).find("#catalog-Edit div.success");
+        		$(notificationDiv).children("div").html(result.Reason);
+        		$(notificationDiv).siblings(".notification").hide();
+        		$(notificationDiv).show();
+        		
+        		content.refreshCatalog();
+        	}
+        }
+        //提交表单
+        $(this).ajaxSubmit(options);	
+    	
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });	    
 };
 
 content.refreshArticle = function() {
 	$.post("/content/admin/queryAllArticle/", {
 		accesscode: content.accessCode
 	}, function(result){
-		content.ErrCode = result.ErrCode;
-		content.Reason = result.Reason;
+		content.errCode = result.ErrCode;
+		content.reason = result.Reason;
 		
 		content.article.articleInfo = result.ArticleInfo;		
 		
@@ -81,21 +119,37 @@ content.refreshArticle = function() {
 	}, "json");	
 }
 
+content.refreshCatalog = function() {
+	$.post("/content/admin/queryAllCatalog/", {
+		accesscode: content.accessCode
+	}, function(result){
+		content.errCode = result.ErrCode;
+		content.reason = result.Reason;
+		
+		content.catalog.catalogInfo = result.Catalog;		
+		
+		content.fillCatalogView();		
+	}, "json");	
+}
+
 content.fillArticleView = function() {
 	var articleTable = content.article.view.find("#article-List").children("table");
 	var notificationDiv = content.article.view.find("#article-List").children("div");
-	if (content.ErrCode > 0) {
-		notificationDiv.children("div").html(content.Reason);
-		notificationDiv.show();
+	if (content.errCode > 0) {
+		$(notificationDiv).children("div").html(result.Reason);
+		$(notificationDiv).siblings(".notification").hide();
+		$(notificationDiv).show();
+		
 		articleTable.hide();
 		return;
 	}
 	
+	$("#article-List .notification").hide();
 	var articleListBody = articleTable.children("tbody");
 	articleListBody.children("tr").remove();
 	
 	var articleInfoList = content.article.articleInfo;
-	for (ii =0; ii < articleInfoList.length; ++ii) {
+	for (var ii =0; ii < articleInfoList.length; ++ii) {
 		var articleInfo = articleInfoList[ii];
 		var trContent = content.constructArticleItem(articleInfo);
 		if (ii % 2 == 1) {
@@ -109,7 +163,7 @@ content.fillArticleView = function() {
 	$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
 	$("#article-Edit .article-Form .article-catalog").empty();	
 	$("#article-Edit .article-Form .article-catalog").append("<option value=-1>请选择分类</option>");
-	for (ii =0; ii < content.catalog.catalogInfo.length; ++ii) {
+	for (var ii =0; ii < content.catalog.catalogInfo.length; ++ii) {
 		catalog = content.catalog.catalogInfo[ii];
 		
 		$("#article-Edit .article-Form .article-catalog").append("<option value="+  catalog.Id + ">" + catalog.Name + "</option>");
@@ -177,18 +231,21 @@ content.constructArticleItem = function(articleInfo) {
 content.fillCatalogView = function() {
 	var catalogTable = content.catalog.view.find("#catalog-List").children("table");
 	var notificationDiv = content.catalog.view.find("#catalog-List").children("div");
-	if (content.ErrCode > 0) {
-		notificationDiv.children("div").html(content.Reason);
-		notificationDiv.show();
+	if (content.errCode > 0) {
+		$(notificationDiv).children("div").html(result.Reason);
+		$(notificationDiv).siblings(".notification").hide();
+		$(notificationDiv).show();
+		
 		catalogTable.hide();
 		return;
 	}
 	
+	$("#catalog-List .notification").hide();
 	var catalogListBody = catalogTable.children("tbody");
 	catalogListBody.children("tr").remove();
 	
 	var catalogList = content.catalog.catalogInfo;
-	for (ii =0; ii < catalogList.length; ++ii) {
+	for (var ii =0; ii < catalogList.length; ++ii) {
 		var catalog = catalogList[ii];
 		var trContent = content.constructCatalogItem(catalog);
 		if (ii % 2 == 1) {
@@ -196,6 +253,9 @@ content.fillCatalogView = function() {
 		}
 		catalogListBody.append(trContent);
 	}
+	
+	$("#catalog-Edit .catalog-Form .catalog-id").val(-1);
+	$("#catalog-Edit .catalog-Form .catalog-name").val("");	
 };
 
 
@@ -254,7 +314,7 @@ content.editArticle = function(editUrl) {
 		accesscode: content.accessCode
 	}, function(result) {
 		if (result.ErrCode > 0) {
-			$("#article-List .notification div").html(result.Reason);
+			$("#article-List div.error div").html(result.Reason);
 			$("#article-List .notification").show();
 			return
 		}
@@ -265,7 +325,7 @@ content.editArticle = function(editUrl) {
 		$("#article-Edit .article-Form .article-catalog").empty();
 		
 		$("#article-Edit .article-Form .article-catalog").append("<option value=-1>请选择分类</option>");
-		for (ii =0; ii < content.catalog.catalogInfo.length; ++ii) {
+		for (var ii =0; ii < content.catalog.catalogInfo.length; ++ii) {
 			catalog = content.catalog.catalogInfo[ii];
 			
 			$("#article-Edit .article-Form .article-catalog").append("<option value="+  catalog.Id + ">" + catalog.Name + "</option>");
@@ -281,16 +341,12 @@ content.editArticle = function(editUrl) {
 	}, "json");
 }
 
-content.submitArticle = function() {
-	
-}
-
-content.deleteArticle = function(deleteUril) {
-	$.post(deleteUril, {
+content.deleteArticle = function(deleteUrl) {
+	$.post(deleteUrl, {
 		accesscode: content.accessCode
 	}, function(result) {
 		if (result.ErrCode > 0) {
-			$("#article-List .notification div.error").html(result.Reason);
+			$("#article-List div.error div").html(result.Reason);
 			$("#article-List .notification").show();
 			return
 		}
@@ -301,20 +357,36 @@ content.deleteArticle = function(deleteUril) {
 
 content.editCatalog = function(editUrl) {
 	$.post(editUrl, {
-		accesscode: content.catalog.accesscode
-	}, function(result){
-		alert(result.ErrCode);
-		//content.catalog.catalogInfo = result;
+		accesscode: content.accessCode
+	}, function(result) {
+		if (result.ErrCode > 0) {
+			$("#catalog-List div.error div").html(result.Reason);
+			$("#catalog-List .notification").show();
+			return;
+		}
 		
-		//console.log("content.catalog.queryAllCatalog, ret:%d", result.ErrCode);
+		$("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
+		$("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
 		
-		//fillCatalogViewCallBack();
+		$(content.catalog.view).find(".content-box-tabs li a").removeClass('current');
+		$(content.catalog.view).find(".content-box-tabs li a.catalog-Edit-tab").addClass('current');
+		$("#catalog-Edit").siblings().hide();
+		$("#catalog-Edit").show();
 	}, "json");
 }
 
 content.deleteCatalog = function(deleteUrl) {
-	alert(deleteUrl);
-	return false;
+	$.post(deleteUrl, {
+		accesscode: content.accessCode
+	}, function(result) {
+		if (result.ErrCode > 0) {
+			$("#catalog-List div.error div").html(result.Reason);
+			$("#catalog-List .notification").show();
+			return;
+		}
+		
+		content.refreshCatalog();
+	}, "json");
 }
 
 

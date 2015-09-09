@@ -20,7 +20,7 @@ $(document).ready(function() {
 			$(this).next().slideToggle("normal"); // Slide down the clicked sub menu
 			$(this).addClass("current");
 			
-			var currentDiv = $(this).attr('href');
+			var currentDiv = $(this).attr('href');			
 			$(currentDiv).siblings('.main-content-box').hide();
 			$(currentDiv).show();
 			
@@ -35,6 +35,13 @@ $(document).ready(function() {
 			$(this).addClass("current"); // Add class "current" to clicked tab
 			
 			var currentDiv = $(this).attr('href');
+			$(currentDiv).siblings('.content-box').find("fieldset input.text-input").val("");
+			$(currentDiv).siblings('.content-box').find("fieldset textarea.wysiwyg").wysiwyg("setContent", "");
+			var options = $(currentDiv).siblings('.content-box').find("fieldset select").get(0);
+			if (options) {
+				options.selectedIndex = 0;
+			} 
+						
 			$(currentDiv).siblings('.content-box').children(".content-box-header").children(".content-box-tabs").find("a").removeClass("current");
 			$(currentDiv).siblings('.content-box').children(".content-box-header").children(".content-box-tabs").find("a.default-tab").addClass("current");
 			$(currentDiv).siblings('.content-box').children(".content-box-header").children(".content-box-tabs").hide();
@@ -69,6 +76,7 @@ $(document).ready(function() {
 	$(".closed-box .content-box-content").hide(); // Hide the content of the header if it has the class "closed"
 	$(".closed-box .content-box-tabs").hide(); // Hide the tabs in the header if it has the class "closed"
 
+	/*
 	$(".content-box-header h3").click( 
 		// When the h3 is clicked...
 		function() {
@@ -76,7 +84,7 @@ $(document).ready(function() {
 			$(this).parent().parent().toggleClass("closed-box"); // Toggle the class "closed-box" on the content box
 			$(this).parent().find(".content-box-tabs").toggle(); // Toggle the tabs
 		}
-	);
+	);*/
 
 	// Content box tabs:
 	$('.content-box .content-box-content div.tab-content').hide(); // Hide the content divs
@@ -128,4 +136,5 @@ $(document).ready(function() {
 	$(".wysiwyg").wysiwyg(); // Applies WYSIWYG editor to any textarea with the class "wysiwyg"
 	
 	content.initialize(adminWebCenter.accesscode, $("#content"));
+	account.initialize(adminWebCenter.accesscode, $("#account"));
 });

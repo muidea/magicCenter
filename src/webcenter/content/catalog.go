@@ -65,32 +65,40 @@ func (this *Catalog)Query(dao *dao.Dao) bool {
 }
 
 
-func (this *Catalog)insert(dao *dao.Dao) bool {
-	sql := fmt.Sprintf("insert into catalog value (%d, %s, %d)", this.Id, this.Name, this.Creater.Id)
-	if !dao.Execute(sql) {
-		log.Printf("inser catalog failed, sql:%s", sql)
-		return false
-	}
-		
-	return true
-}
-
-func (this *Catalog)update(dao *dao.Dao) bool {
-	sql := fmt.Sprintf("update catalog set name ='%s' where id =%d", this.Name, this.Id)
-	if !dao.Execute(sql) {
-		log.Printf("update catalog failed, sql:%s", sql)
-		return false
-	}
-	
-	return true
-}
-
-func (this *Catalog)remove(dao *dao.Dao) {
+func (this *Catalog)delete(dao *dao.Dao) {
 	sql := fmt.Sprintf("delete from catalog where id =%d", this.Id)
 	if !dao.Execute(sql) {
 		log.Printf("delete catalog failed, sql:%s", sql)
 	}
 }
+
+func (this *Catalog)save(dao *dao.Dao) bool {
+	sql := fmt.Sprintf("select id from catalog where id=%d", this.Id)
+	if !dao.Query(sql) {
+		log.Printf("query catalog failed, sql:%s", sql)
+		return false
+	}
+
+	result := false;
+	for dao.Next() {
+		var id = 0
+		result = dao.GetField(&id)
+		result = true
+	}
+
+	if !result {
+		// insert
+		sql = fmt.Sprintf("insert into catalog (name,creater) values ('%s',%d)", this.Name, this.Creater.Id)
+	} else {
+		// modify
+		sql = fmt.Sprintf("update catalog set name ='%s', creater =%d where id=%d", this.Name, this.Creater.Id, this.Id)
+	}
+	
+	result = dao.Execute(sql)
+	
+	return result
+}
+
 
 
 

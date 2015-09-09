@@ -58,6 +58,17 @@ type GetCatalogReault struct {
 	Catalog Catalog
 }
 
+
+type DeleteCatalogParam struct {
+	session *session.Session
+	accessCode string
+	id int
+}
+
+type DeleteCatalogReault struct {
+	common.Result
+}
+
 type GetAllCatalogParam struct {
 	session *session.Session
 	accessCode string	
@@ -80,6 +91,20 @@ type SubmitArticleParam struct {
 }
 
 type SubmitArticleResult struct {
+	common.Result
+}
+
+
+type SubmitCatalogParam struct {
+	session *session.Session
+	accessCode string
+	id int
+	name string
+	author int
+	submitDate string	
+}
+
+type SubmitCatalogResult struct {
 	common.Result
 }
 
@@ -147,7 +172,6 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 	return result
 }
 
-
 func (this *contentController)deleteArticleAction(param DeleteArticleParam) DeleteArticleReault {
 	result := DeleteArticleReault{}
 	
@@ -208,7 +232,31 @@ func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalog
 	return result
 }
 
- 
+func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) DeleteCatalogReault {
+	result := DeleteCatalogReault{}
+	
+	model, err := NewModel()
+	if err != nil {
+		result.ErrCode = 1
+		result.Reason = "创建Model失败"
+		return result
+	}
+	
+	articleInfoList := model.QueryArticleByCatalog(param.id)
+	if (len(articleInfoList) >0) {
+		result.ErrCode = 1
+		result.Reason = "该分类被引用，无法立即删除"
+		return result
+	}
+	
+	model.DeleteCatalog(param.id)
+	result.ErrCode = 0
+	
+	model.Release()
+	
+	return result
+}
+
 func (this *contentController)submitArticleAction(param SubmitArticleParam) SubmitArticleResult {
 	result := SubmitArticleResult{}
 	
@@ -239,4 +287,33 @@ func (this *contentController)submitArticleAction(param SubmitArticleParam) Subm
 
 	return result
 }
+
+func (this *contentController)submitCatalogAction(param SubmitCatalogParam) SubmitCatalogResult {
+	result := SubmitCatalogResult{}
+	
+	model, err := NewModel()
+	if err != nil {
+		result.ErrCode = 1
+		result.Reason = "创建Model失败"
+		return result
+	} 
+
+	catalog := newCatalog()
+	catalog.Id = param.id
+	catalog.Name = param.name
+	catalog.Creater.Id = param.author
+	
+	if !model.SaveCatalog(catalog) {
+		result.ErrCode = 1
+		result.Reason = "保存分类失败"
+	} else {
+		result.ErrCode = 0
+		result.Reason = "保存分类成功"
+	}
+	
+	model.Release()
+
+	return result
+}
+
 

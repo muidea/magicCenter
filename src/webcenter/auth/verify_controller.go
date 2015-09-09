@@ -38,11 +38,16 @@ func (this *verifyController)Action(param *VerifyParam, session *session.Session
 	
 	if user.password == param.password {
 		result.ErrCode = 0
+		result.Reason = "登陆成功"
 		result.RedirectUrl = "/admin/"
+		
+		session.SetOption(AccountSessionKey, user.Account)
+		session.Save()
+	} else {
+		result.ErrCode = 1
+		result.Reason = "账号或密码错误"
 	}
 	
-	session.SetOption(AccountSessionKey, user.Account)
-	session.Save()
-	
+		
 	return result
 }

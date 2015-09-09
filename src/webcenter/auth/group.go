@@ -23,6 +23,44 @@ func newGroup() Group {
 	return group;
 }
 
+
+func GetAllGroup(dao * dao.Dao) []Group {
+	groupList := []Group{}
+	sql := fmt.Sprintf("select id,name,catalog from `group`")
+	if !dao.Query(sql) {
+		log.Printf("query group failed, sql:%s", sql)
+		return groupList
+	}
+
+	for dao.Next() {
+		group := newGroup()
+		dao.GetField(&group.Id, &group.Name, &group.Catalog)
+		
+		groupList = append(groupList, group)
+	}
+
+	return groupList
+}
+
+func GetAllSubGroup(id int,dao * dao.Dao) []Group {
+	groupList := []Group{}
+	sql := fmt.Sprintf("select id,name,catalog from `group` where catalog=%d",id)
+	if !dao.Query(sql) {
+		log.Printf("query group failed, sql:%s", sql)
+		return groupList
+	}
+
+	for dao.Next() {
+		group := newGroup()
+		dao.GetField(&group.Id, &group.Name, &group.Catalog)
+		
+		groupList = append(groupList, group)
+	}
+
+	return groupList
+}
+
+
 func (this *Group)IsAdminGroup() bool {
 	return this.Catalog == ADMIN_GROUP
 }
@@ -43,28 +81,8 @@ func (this *Group)query(dao *dao.Dao) bool {
 		return result
 }
 
-func (this *Group)inert(dao *dao.Dao) bool {
-	sql := fmt.Sprintf("insert into `group` value (%d, %s, %d)", this.Id, this.Name, this.Catalog)
-	if !dao.Execute(sql) {
-		log.Printf("insert group failed, sql:%s", sql)
-		return false
-	}
-	
-	return true	
-}
 
-func (this *Group)update(dao *dao.Dao) bool {
-	sql := fmt.Sprintf("update `group` set name ='%s', catalog=%d where id =%d", this.Name, this.Catalog, this.Id)
-	if !dao.Execute(sql) {
-		log.Printf("update group failed, sql:%s", sql)
-		return false
-	}
-	
-	return true	
-}
-
-
-func (this *Group)remove(dao *dao.Dao) {
+func (this *Group)delete(dao *dao.Dao) {
 	sql := fmt.Sprintf("delete from `group` where id =%d", this.Id)
 	if !dao.Execute(sql) {
 		log.Printf("delete group failed, sql:%s", sql)
@@ -72,5 +90,32 @@ func (this *Group)remove(dao *dao.Dao) {
 	}
 }
 
+
+func (this *Group)save(dao *dao.Dao) bool {
+	sql := fmt.Sprintf("select id from `group` where id=%d", this.Id)
+	if !dao.Query(sql) {
+		log.Printf("query group failed, sql:%s", sql)
+		return false
+	}
+
+	result := false;
+	for dao.Next() {
+		var id = 0
+		result = dao.GetField(&id)
+		result = true
+	}
+
+	if !result {
+		// insert
+		sql = fmt.Sprintf("insert into `group` (name,catalog) values ('%s',%d)", this.Name, this.Catalog)
+	} else {
+		// modify
+		sql = fmt.Sprintf("update `group` set name ='%s', catalog =%d where id=%d", this.Name, this.Catalog, this.Id)
+	}
+	
+	result = dao.Execute(sql)
+	
+	return result
+}
 
 

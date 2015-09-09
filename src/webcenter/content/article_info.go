@@ -67,6 +67,30 @@ func GetAllArticleInfo(dao * dao.Dao) []ArticleInfo {
 	return articleInfoList
 }
 
+func GetArticleByCatalog(id int, dao* dao.Dao) []ArticleInfo {
+	articleInfoList := []ArticleInfo{}
+	sql := fmt.Sprintf("select id, title, author, createdate, catalog from article where catalog=%d", id)
+	if !dao.Query(sql) {
+		log.Printf("query article failed, sql:%s", sql)
+		return articleInfoList
+	}
+
+	for dao.Next() {
+		articleInfo := newArticleInfo()
+		dao.GetField(&articleInfo.Id, &articleInfo.Title, &articleInfo.Author.Id, &articleInfo.CreateDate, &articleInfo.Catalog.Id)
+		
+		articleInfoList = append(articleInfoList, articleInfo)
+	}
+	
+	for i:=0; i < len(articleInfoList); i++ {
+		articleInfo := &articleInfoList[i]
+		articleInfo.Author.Query(dao)
+		articleInfo.Catalog.Query(dao)
+	}
+	
+	return articleInfoList	
+}
+
 func (this *Article)Query(dao * dao.Dao) bool {
 	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id=%d", this.Id)
 	if !dao.Query(sql) {
@@ -122,9 +146,9 @@ func (this *Article)save(dao * dao.Dao) bool {
 		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", this.Title, this.Content, this.Author.Id, this.CreateDate, this.Catalog.Id, this.Id)
 	}
 	
-	result = dao.Execute(sql)	
+	result = dao.Execute(sql)
 	
-	return result		
+	return result
 }
 
 

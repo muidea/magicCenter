@@ -2,7 +2,8 @@ package content
 
 
 import (
-	"muidea.com/dao"
+	"log"
+	"muidea.com/dao"	
 )
 
 type Model struct {
@@ -49,10 +50,12 @@ func (this *Model)DeleteArticle(Id int) {
 
 func (this *Model)SaveArticle(article Article) bool {
 	if !article.Author.Query(this.dao) {
+		log.Printf("illegal author ,author:%d", article.Author.Id)
 		return false
 	}
 	
 	if !article.Catalog.Query(this.dao) {
+		log.Printf("illegal catalog ,catalog:%d", article.Catalog.Id)
 		return false
 	}
 	
@@ -64,11 +67,30 @@ func (this *Model)GetAllCatalog() []Catalog {
 }
 
 
-func (this *Model)GetCatalog(Id int) (Catalog,bool) {
+func (this *Model)GetCatalog(id int) (Catalog,bool) {
 	catalog := newCatalog()
-	catalog.Id = Id
+	catalog.Id = id
 	
 	result := catalog.Query(this.dao)
 	return catalog,result
+}
+
+func (this *Model)DeleteCatalog(id int) {
+	catalog := newCatalog()
+	catalog.Id = id
+	
+	catalog.delete(this.dao)
+}
+
+func (this *Model)SaveCatalog(catalog Catalog) bool {
+	if !catalog.Creater.Query(this.dao) {
+		return false
+	}
+		
+	return catalog.save(this.dao)
+}
+
+func (this *Model)QueryArticleByCatalog(id int) []ArticleInfo {
+	return GetArticleByCatalog(id, this.dao)
 }
 
