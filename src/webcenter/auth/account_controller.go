@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
     "webcenter/session"
     "webcenter/common"
 )
@@ -33,7 +34,7 @@ type GetUserParam struct {
 	id int
 }
 
-type GetUserReault struct {
+type GetUserResult struct {
 	common.Result
 	User User
 }
@@ -44,7 +45,7 @@ type DeleteUserParam struct {
 	id int
 }
 
-type DeleteUserReault struct {
+type DeleteUserResult struct {
 	common.Result
 }
 
@@ -54,7 +55,7 @@ type GetGroupParam struct {
 	id int
 }
 
-type GetGroupReault struct {
+type GetGroupResult struct {
 	common.Result
 	Group Group
 }
@@ -66,7 +67,7 @@ type DeleteGroupParam struct {
 	id int
 }
 
-type DeleteGroupReault struct {
+type DeleteGroupResult struct {
 	common.Result
 }
 
@@ -118,10 +119,32 @@ func (this *accountController)getAllAccountInfoAction(param GetAllAccountInfoPar
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	result.User = model.GetAllUser()
 	result.Group = model.GetAllGroup()
@@ -137,10 +160,32 @@ func (this *accountController)getAllUserAction(param GetAllUserParam) GetAllUser
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	result.User = model.GetAllUser()
 	result.ErrCode = 0
@@ -150,16 +195,38 @@ func (this *accountController)getAllUserAction(param GetAllUserParam) GetAllUser
 	return result
 }
 
-func (this *accountController)getUserAction(param GetUserParam) GetUserReault {
-	result := GetUserReault{}
+func (this *accountController)getUserAction(param GetUserParam) GetUserResult {
+	result := GetUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, ok := session.GetAccount()
+	if !ok {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+		
 	user, found := model.GetUser(param.id)
 	if !found {
 		result.ErrCode = 1
@@ -174,18 +241,46 @@ func (this *accountController)getUserAction(param GetUserParam) GetUserReault {
 	return result
 }
 
-func (this *accountController)deleteUserAction(param DeleteUserParam) DeleteUserReault {
-	result := DeleteUserReault{}
+func (this *accountController)deleteUserAction(param DeleteUserParam) DeleteUserResult {
+	result := DeleteUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+	if user.Id == param.id {
+		result.ErrCode = 1
+		result.Reason = "不允许删除当前用户"
+		return result
+	}
+
 	model.DeleteUser(param.id)
 	result.ErrCode = 0
+	result.Reason = "删除用户成功"
 	
 	model.Release()
 	
@@ -197,11 +292,33 @@ func (this *accountController)getAllGroupAction(param GetAllGroupParam) GetAllGr
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+		
 	result.Group = model.GetAllGroup()
 	result.ErrCode = 0
 	model.Release()
@@ -210,16 +327,38 @@ func (this *accountController)getAllGroupAction(param GetAllGroupParam) GetAllGr
 }
 
  
-func (this *accountController)getGroupAction(param GetGroupParam) GetGroupReault {
-	result := GetGroupReault{}
+func (this *accountController)getGroupAction(param GetGroupParam) GetGroupResult {
+	result := GetGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+		
 	catalog, found := model.GetGroup(param.id)
 	if !found {
 		result.ErrCode = 1
@@ -234,14 +373,36 @@ func (this *accountController)getGroupAction(param GetGroupParam) GetGroupReault
 	return result
 }
 
-func (this *accountController)deleteGroupAction(param DeleteGroupParam) DeleteGroupReault {
-	result := DeleteGroupReault{}
+func (this *accountController)deleteGroupAction(param DeleteGroupParam) DeleteGroupResult {
+	result := DeleteGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
 	}
 	
 	userInfoList := model.QueryUserByGroup(param.id)
@@ -266,12 +427,34 @@ func (this *accountController)submitUserAction(param SubmitUserParam) SubmitUser
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
 
-	user := NewUser()
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+	
+	user = NewUser()
 	user.Id = param.id
 	user.Account = param.account
 	user.password = param.password
@@ -297,11 +480,33 @@ func (this *accountController)submitGroupAction(param SubmitGroupParam) SubmitGr
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
 
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := model.FindUserByAccount(account)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+	
 	group := newGroup()
 	group.Id = param.id
 	group.Name = param.name

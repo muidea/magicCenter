@@ -369,6 +369,9 @@ account.deleteUser = function(deleteUrl) {
 			return
 		}
 		
+		$("#user-List div.success div").html(result.Reason);
+		$("#user-List .notification").show();
+		
 		account.refreshUser();
 	}, "json");
 }

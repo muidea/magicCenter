@@ -23,7 +23,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("charset", "utf-8")
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -38,7 +38,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		

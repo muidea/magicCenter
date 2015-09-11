@@ -1,6 +1,11 @@
 package session
 
 import (
+	"time"
+)
+
+const (
+	MAX_TIME_OUT = 10
 )
 
 func init() {
@@ -16,8 +21,24 @@ func (this *Session) Id() string {
 	return this.id
 }
 
-func (this *Session) Account() (string, bool) {
-	account, found := this.context["account"]
+func (this *Session) refresh() {
+	this.context["$$refreshTime"] = time.Now()
+}
+
+func (this *Session) timeOut() bool {
+	preTime, found := this.context["$$refreshTime"]
+	if !found {
+		return true
+	}
+	
+	nowTime := time.Now()
+	elapse := nowTime.Sub(preTime.(time.Time)).Minutes()
+	
+	return elapse > MAX_TIME_OUT
+}
+
+func (this *Session) GetAccount() (string, bool) {
+	account, found := this.context["$$account"]
 	if found {
 		return account.(string), found
 	}
@@ -25,16 +46,24 @@ func (this *Session) Account() (string, bool) {
 	return "", found
 }
 
+func (this *Session) SetAccount(account string) {
+	this.context["$$account"] = account
+}
+
+func (this *Session) ResetAccount() {
+	delete(this.context, "$$account")
+}
+
 func (this *Session) AccessToken() string {
 	token := createUUID()
 
-	this.context["access_token"] = token
+	this.context["$$access_token"] = token
 	
 	return token
 }
 
 func (this *Session) ValidToken(token string) bool {
-	cur, found := this.context["access_token"]
+	cur, found := this.context["$$access_token"]
 	if !found {
 		return false
 	}
@@ -43,7 +72,7 @@ func (this *Session) ValidToken(token string) bool {
 }
 
 func (this *Session) ReleaseAccessToken() {
-	delete(this.context, "access_token")
+	delete(this.context, "$$access_token")
 }
 
 func (this *Session) SetOption(key string, value interface{}) {

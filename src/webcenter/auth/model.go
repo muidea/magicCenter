@@ -1,14 +1,13 @@
 package auth
 
 import (
+	"log"
 	"muidea.com/dao"
 )
 
 type Model struct {
 	dao *dao.Dao
 }
-
-var AccountSessionKey string = "account"
 
 func NewModel()(Model, error) {
 	model := Model{}
@@ -28,7 +27,7 @@ func (this *Model)Release() {
 } 
 
 func (this *Model)FindUserByAccount(account string) (User, bool){
-	user := User{}
+	user := NewUser()
 	user.Id = 0
 	user.Account = account
 	found := user.Query(this.dao)
@@ -59,6 +58,8 @@ func (this *Model)DeleteUser(Id int) {
 
 func (this *Model)SaveUser(user User) bool {
 	if !user.Group.query(this.dao) {
+		log.Printf("group isn't exist, gid:%d", user.Group.Id)
+		
 		return false
 	}
 	

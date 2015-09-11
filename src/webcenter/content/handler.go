@@ -31,7 +31,7 @@ func queryAllContentHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllContentHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -46,7 +46,7 @@ func queryAllContentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -81,7 +81,7 @@ func queryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllArticleHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -96,7 +96,7 @@ func queryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -131,7 +131,7 @@ func ajaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxArticleHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -148,7 +148,7 @@ func ajaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		log.Print("crrent account invalid")
 		
@@ -203,7 +203,7 @@ func queryArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryArticleHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -218,7 +218,7 @@ func queryArticleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -272,7 +272,7 @@ func deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteArticleHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -287,7 +287,7 @@ func deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -340,7 +340,7 @@ func queryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllCatalogHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -355,7 +355,7 @@ func queryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -391,7 +391,7 @@ func ajaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxCatalogHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -406,7 +406,7 @@ func ajaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -449,7 +449,7 @@ func queryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryCatalogHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -464,7 +464,7 @@ func queryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		
@@ -508,7 +508,7 @@ func deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteCatalogHandler");
 	
 	session := session.GetSession(w,r)
-	account, found := session.GetOption(auth.AccountSessionKey)
+	account, found := session.GetAccount()
 	if !found {
 		log.Print("can't get account")
 		
@@ -523,7 +523,7 @@ func deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer userModel.Release()
 	
-	user, found := userModel.FindUserByAccount(account.(string))
+	user, found := userModel.FindUserByAccount(account)
 	if !found || !user.IsAdmin() {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return		

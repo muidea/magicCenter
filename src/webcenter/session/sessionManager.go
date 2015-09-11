@@ -3,6 +3,7 @@ package session
 import (
 	"net/http"
 	"log"
+	"time"
 	"muidea.com/util"	
 )
 
@@ -13,6 +14,8 @@ func initialize() {
 		sessionManager = &SessionManager{}
 		sessionManager.impl = make(sessionManagerImpl)
 		go sessionManager.impl.run()
+				
+		go sessionManager.checkTimer()
 	}
 }
 
@@ -62,6 +65,8 @@ func createSession() *Session {
 	session.id = createUUID()
 	session.context = make(map[string]interface{})
 	
+	session.refresh()
+	
 	sessionManager.Insert(session)
 	
 	return &session
@@ -72,6 +77,16 @@ type SessionManager struct {
 }
 
 var sessionManager *SessionManager = nil
+
+func (this *SessionManager)checkTimer() {
+	timeOutTimer := time.NewTicker(5 * time.Second)
+	for {
+		select {
+		case <-timeOutTimer.C:
+			this.impl.checkTimeOut()
+		}
+	}
+}
 
 func (this *SessionManager) Insert(session Session) {
 	this.impl.insert(session)
@@ -107,6 +122,7 @@ const (
 	remove
 	update
 	find
+	checkTimeOut
 	length
 	end
 )
@@ -184,6 +200,15 @@ func (right sessionManagerImpl) run() {
 			id := command.value.(string)
 			session, found := sessionInfo[id]
 			command.result <- findResult{session, found}
+		case checkTimeOut:
+			removeList := []string{}
+			for k, v := range sessionInfo {
+				session := v.(Session)
+				if session.timeOut() {
+					removeList = append(removeList, k)
+					delete(sessionInfo,k)
+				}
+			}
 		case length:
 			command.result <- len(sessionInfo)
 		case end:
@@ -200,3 +225,10 @@ func (right sessionManagerImpl) close() map[string]interface{} {
 	right <- commandData{action: end, data: reply}
 	return <-reply
 }
+
+func (right sessionManagerImpl) checkTimeOut() {
+	right <- commandData{action: checkTimeOut}
+}
+
+
+
