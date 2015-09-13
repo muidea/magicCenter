@@ -208,6 +208,7 @@ func ajaxUserHandler(w http.ResponseWriter, r *http.Request) {
 		nickname := r.FormValue("user-nickname")
 		email := r.FormValue("user-email")
 		group := r.FormValue("user-group")
+		accessCode := r.FormValue("accesscode")
 		
 		param.id, err = strconv.Atoi(id)
 	    if err != nil {
@@ -229,6 +230,7 @@ func ajaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	    param.email = email    
 	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")
 	    param.session = session
+	    param.accessCode = accessCode
 	    
 	    controller := &accountController{}
 	    result = controller.submitUserAction(param)

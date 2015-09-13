@@ -198,7 +198,13 @@ func (right sessionManagerImpl) run() {
 			command.result <- found
 		case find:
 			id := command.value.(string)
-			session, found := sessionInfo[id]
+			
+			var session Session 
+			value, found := sessionInfo[id]
+			if found {
+				session = value.(Session)
+				session.refresh()
+			}
 			command.result <- findResult{session, found}
 		case checkTimeOut:
 			removeList := []string{}

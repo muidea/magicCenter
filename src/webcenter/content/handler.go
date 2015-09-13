@@ -8,7 +8,6 @@ import (
 	"time"
 	"strconv"
 	"webcenter/session"
-	"webcenter/auth"
 )
 
 func init() {
@@ -30,43 +29,29 @@ func registerRouter() {
 func queryAllContentHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllContentHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := GetAllContentResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
+	for true {
+		session := session.GetSession(w,r)
+		param := GetAllContentParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+	    accessCode := r.FormValue("accesscode")
+		param.accessCode = accessCode
+    	param.session = session
+
+    	controller := &contentController{}
+    	result = controller.getAllContentAction(param)
+    	
+    	break
 	}
-	 
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-
-    accessCode := r.FormValue("accesscode")
-    
-	param := GetAllContentParam{}
-	param.accessCode = accessCode
-    param.session = session
-
-    controller := &contentController{}
-    result := controller.getAllContentAction(param)
+	
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -80,43 +65,29 @@ func queryAllContentHandler(w http.ResponseWriter, r *http.Request) {
 func queryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllArticleHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := GetAllArticleResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
+	for true {
+		session := session.GetSession(w,r)
+		param := GetAllArticleParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+	    accessCode := r.FormValue("accesscode")
+		param.accessCode = accessCode
+    	param.session = session
+
+    	controller := &contentController{}
+    	result = controller.getAllArticleAction(param)
+    	
+    	break
 	}
-	 
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-
-    accessCode := r.FormValue("accesscode")
-    
-	param := GetAllArticleParam{}
-	param.accessCode = accessCode
-    param.session = session
-
-    controller := &contentController{}
-    result := controller.getAllArticleAction(param)
+		
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -130,65 +101,53 @@ func queryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
 func ajaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxArticleHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		log.Print("create new model failed")
-		
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := SubmitArticleResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		log.Print("crrent account invalid")
-		
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
+	for true {
+		session := session.GetSession(w,r)
+		param := SubmitArticleParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		id := r.FormValue("article-id")
+		title := r.FormValue("article-title")
+		content := r.FormValue("article-content")
+		catalog := r.FormValue("article-catalog")    
+	    accessCode := r.FormValue("accesscode")
+	    
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Print("parse id failed, id:%s", id)
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }	
+		param.catalog, err = strconv.Atoi(catalog)
+	    if err != nil {
+	    	log.Print("parse catalog failed, catalog:%s", catalog)
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    
+	    param.title = title
+	    param.content = content
+	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")	    
+		param.accessCode = accessCode
+    	param.session = session
+
+    	controller := &contentController{}
+    	result = controller.submitArticleAction(param)
+    	
+    	break
 	}
-
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-	
-	id := r.FormValue("article-id")
-	title := r.FormValue("article-title")
-	content := r.FormValue("article-content")
-	catalog := r.FormValue("article-catalog")
-	
-	param := SubmitArticleParam{}
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	log.Print("illegal param")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }	
-	param.catalog, err = strconv.Atoi(catalog)
-    if err != nil {
-    	log.Print("illegal param")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    param.title = title
-    param.content = content
-    param.author = user.Id
-    param.submitDate = time.Now().Format("2006-01-02 15:04:05")
-
-    controller := &contentController{}
-    result := controller.submitArticleAction(param)
-    
+		
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -202,61 +161,48 @@ func ajaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 func queryArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryArticleHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := GetArticleResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
-	}
-
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-
-	var id = ""
-	idInfo := r.URL.RawQuery
-	if len(idInfo) > 0 {
-		parts := strings.Split(idInfo,"=")
-		if len(parts) == 2 {
-			id = parts[1]
+	for true {
+		session := session.GetSession(w,r)
+		param := GetArticleParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
 		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+    	if err != nil {
+    		log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    
+		param.accessCode = accessCode
+		param.session = session
+		    	
+    	controller := &contentController{}
+    	result = controller.getArticleAction(param)
+    	
+    	break
 	}
-	
-	param := GetArticleParam{}
-	accessCode := r.FormValue("accesscode")
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    
-	param.accessCode = accessCode
-	param.session = session
-	
-	log.Printf("id:%d, accessCode:%s", param.id, param.accessCode);
-	 
-    controller := &contentController{}
-    result := controller.getArticleAction(param)
-    
+		
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -271,60 +217,49 @@ func queryArticleHandler(w http.ResponseWriter, r *http.Request) {
 func deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteArticleHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := DeleteArticleResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
-	}
+	for true {
+		session := session.GetSession(w,r)
+		param := DeleteArticleParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
 
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-
-	var id = ""
-	idInfo := r.URL.RawQuery
-	if len(idInfo) > 0 {
-		parts := strings.Split(idInfo,"=")
-		if len(parts) == 2 {
-			id = parts[1]
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
 		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    
+		param.accessCode = accessCode
+		param.session = session
+		
+		log.Printf("id:%d, accessCode:%s", param.id, param.accessCode);
+		 
+	    controller := &contentController{}
+	    result = controller.deleteArticleAction(param)
+    	
+    	break
 	}
-	
-	param := DeleteArticleParam{}
-	accessCode := r.FormValue("accesscode")
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    
-	param.accessCode = accessCode
-	param.session = session
-	
-	log.Printf("id:%d, accessCode:%s", param.id, param.accessCode);
-	
-    controller := &contentController{}
-    result := controller.deleteArticleAction(param)
     
     b, err := json.Marshal(result)
     if err != nil {
@@ -339,43 +274,29 @@ func deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 func queryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllCatalogHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := GetAllCatalogResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
+	for true {
+		session := session.GetSession(w,r)
+		param := GetAllCatalogParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+	    accessCode := r.FormValue("accesscode")
+		param.accessCode = accessCode
+    	param.session = session
+
+    	controller := &contentController{}
+    	result = controller.getAllCatalogAction(param)
+    	
+    	break
 	}
-	 
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    
-    accessCode := r.FormValue("accesscode")
-    log.Printf("accessCode:%s",accessCode);
-	 
-	param := GetAllCatalogParam{}
-	param.accessCode = accessCode
-	param.session = session
-    controller := &contentController{}
-    result := controller.getAllCatalogAction(param)
+		
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -390,51 +311,42 @@ func queryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func ajaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxCatalogHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
+	result := SubmitCatalogResult{}
+	
+	for true {
+		session := session.GetSession(w,r)
+		param := SubmitCatalogParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		id := r.FormValue("catalog-id")
+		name := r.FormValue("catalog-name")    	
+	    accessCode := r.FormValue("accesscode")
+	    
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Print("parse id failed, id:%s", id)
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    param.name = name
+	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")	    
+		param.accessCode = accessCode
+    	param.session = session
+
+    	controller := &contentController{}
+    	result = controller.submitCatalogAction(param)
+    	
+    	break
+	}
 		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
-	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
-	}
-
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-	
-	id := r.FormValue("catalog-id")
-	name := r.FormValue("catalog-name")
-	
-	param := SubmitCatalogParam{}
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    param.name = name
-    param.author = user.Id
-    param.submitDate = time.Now().Format("2006-01-02 15:04:05")
-
-    controller := &contentController{}
-    result := controller.submitCatalogAction(param)
-    
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -448,51 +360,48 @@ func ajaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func queryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryCatalogHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := GetCatalogResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
-	}
-	 
-	var id = ""
-	idInfo := r.URL.RawQuery
-	if len(idInfo) > 0 {
-		parts := strings.Split(idInfo,"=")
-		if len(parts) == 2 {
-			id = parts[1]
+	for true {
+		session := session.GetSession(w,r)
+		param := GetCatalogParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
 		}
-	}
-	
-	param := GetCatalogParam{}
-	accessCode := r.FormValue("accesscode")
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+    	if err != nil {
+    		log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
     
-	param.accessCode = accessCode
-	param.session = session	 
-	 
-    controller := &contentController{}
-    result := controller.getCatalogAction(param)
+		param.accessCode = accessCode
+		param.session = session
+		    	
+    	controller := &contentController{}
+    	result = controller.getCatalogAction(param)
+    	
+    	break
+	}
+		
     b, err := json.Marshal(result)
     if err != nil {
     	log.Fatal("json marshal failed, err:" + err.Error())
@@ -500,67 +409,56 @@ func queryCatalogHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    w.Write(b)    
+    w.Write(b)
 }
 
 
 func deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteCatalogHandler");
 	
-	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	result := DeleteCatalogResult{}
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return		
-	}
+	for true {
+		session := session.GetSession(w,r)
+		param := DeleteCatalogParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
 
-    err = r.ParseForm()
-    if err != nil {
-    	log.Print("paseform failed")
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-
-	var id = ""
-	idInfo := r.URL.RawQuery
-	if len(idInfo) > 0 {
-		parts := strings.Split(idInfo,"=")
-		if len(parts) == 2 {
-			id = parts[1]
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
 		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    
+		param.accessCode = accessCode
+		param.session = session
+		
+		log.Printf("id:%d, accessCode:%s", param.id, param.accessCode);
+		 
+	    controller := &contentController{}
+	    result = controller.deleteCatalogAction(param)
+    	
+    	break
 	}
-	
-	param := DeleteCatalogParam{}
-	accessCode := r.FormValue("accesscode")
-	param.id, err = strconv.Atoi(id)
-    if err != nil {
-    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
-    }
-    
-	param.accessCode = accessCode
-	param.session = session
-	
-	log.Printf("id:%d, accessCode:%s", param.id, param.accessCode);
-	
-    controller := &contentController{}
-    result := controller.deleteCatalogAction(param)
     
     b, err := json.Marshal(result)
     if err != nil {

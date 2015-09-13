@@ -3,6 +3,8 @@ package content
 import (
     "webcenter/session"
     "webcenter/common"
+	"webcenter/auth"
+	"log"
 )
 
 type GetAllContentParam struct {
@@ -32,7 +34,7 @@ type GetArticleParam struct {
 	id int
 }
 
-type GetArticleReault struct {
+type GetArticleResult struct {
 	common.Result
 	Article Article
 }
@@ -43,7 +45,7 @@ type DeleteArticleParam struct {
 	id int
 }
 
-type DeleteArticleReault struct {
+type DeleteArticleResult struct {
 	common.Result
 }
 
@@ -53,7 +55,7 @@ type GetCatalogParam struct {
 	id int
 }
 
-type GetCatalogReault struct {
+type GetCatalogResult struct {
 	common.Result
 	Catalog Catalog
 }
@@ -65,7 +67,7 @@ type DeleteCatalogParam struct {
 	id int
 }
 
-type DeleteCatalogReault struct {
+type DeleteCatalogResult struct {
 	common.Result
 }
 
@@ -86,7 +88,6 @@ type SubmitArticleParam struct {
 	title string
 	content string
 	catalog int
-	author int
 	submitDate string	
 }
 
@@ -100,7 +101,6 @@ type SubmitCatalogParam struct {
 	accessCode string
 	id int
 	name string
-	author int
 	submitDate string	
 }
 
@@ -116,10 +116,32 @@ func (this *contentController)getAllContentAction(param GetAllContentParam) GetA
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	result.ArticleInfo = model.GetAllArticleInfo()
 	result.Catalog = model.GetAllCatalog()
@@ -135,11 +157,33 @@ func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetA
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+		
 	result.ArticleInfo = model.GetAllArticleInfo()
 	result.ErrCode = 0
 
@@ -148,16 +192,38 @@ func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetA
 	return result
 }
 
-func (this *contentController)getArticleAction(param GetArticleParam) GetArticleReault {
-	result := GetArticleReault{}
+func (this *contentController)getArticleAction(param GetArticleParam) GetArticleResult {
+	result := GetArticleResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
 	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
+		
 	article, found := model.GetArticle(param.id)
 	if !found {
 		result.ErrCode = 1
@@ -172,15 +238,37 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 	return result
 }
 
-func (this *contentController)deleteArticleAction(param DeleteArticleParam) DeleteArticleReault {
-	result := DeleteArticleReault{}
+func (this *contentController)deleteArticleAction(param DeleteArticleParam) DeleteArticleResult {
+	result := DeleteArticleResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	model.DeleteArticle(param.id)
 	result.ErrCode = 0
@@ -195,10 +283,32 @@ func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetA
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	result.Catalog = model.GetAllCatalog()
 	result.ErrCode = 0
@@ -208,15 +318,37 @@ func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetA
 }
 
  
-func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalogReault {
-	result := GetCatalogReault{}
+func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalogResult {
+	result := GetCatalogResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 	
 	catalog, found := model.GetCatalog(param.id)
 	if !found {
@@ -232,14 +364,36 @@ func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalog
 	return result
 }
 
-func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) DeleteCatalogReault {
-	result := DeleteCatalogReault{}
+func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) DeleteCatalogResult {
+	result := DeleteCatalogResult{}
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
 	}
 	
 	articleInfoList := model.QueryArticleByCatalog(param.id)
@@ -262,16 +416,38 @@ func (this *contentController)submitArticleAction(param SubmitArticleParam) Subm
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 
 	article := newArticle()
 	article.Id = param.id
 	article.Title = param.title
 	article.Content = param.content
-	article.Author.Id = param.author
+	article.Author.Id = user.Id
 	article.Catalog.Id = param.catalog
 	article.CreateDate = param.submitDate	
 	
@@ -293,15 +469,37 @@ func (this *contentController)submitCatalogAction(param SubmitCatalogParam) Subm
 	
 	model, err := NewModel()
 	if err != nil {
+		log.Print("create userModel failed")
+		
 		result.ErrCode = 1
 		result.Reason = "创建Model失败"
 		return result
-	} 
+	}
+	defer model.Release()
+
+	session := param.session
+	account, found := session.GetAccount()
+	if !found {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result
+	}
+	
+	user, _ := auth.QueryUserByAccount(account, model.dao)
+	if !user.IsAdmin() {
+		log.Print("illegal authorization")
+		
+		result.ErrCode = 1
+		result.Reason = "权限不足"
+		return result		
+	}
 
 	catalog := newCatalog()
 	catalog.Id = param.id
 	catalog.Name = param.name
-	catalog.Creater.Id = param.author
+	catalog.Creater.Id = user.Id
 	
 	if !model.SaveCatalog(catalog) {
 		result.ErrCode = 1

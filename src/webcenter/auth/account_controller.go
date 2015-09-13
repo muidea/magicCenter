@@ -415,6 +415,7 @@ func (this *accountController)deleteGroupAction(param DeleteGroupParam) DeleteGr
 	
 	model.DeleteGroup(param.id)
 	result.ErrCode = 0
+	result.Reason = "删除分组成功"
 	
 	model.Release()
 	

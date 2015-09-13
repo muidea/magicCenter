@@ -47,6 +47,13 @@ func GetAllUser(dao * dao.Dao) []User {
 	return userList
 }
 
+func QueryUserByAccount(account string, dao *dao.Dao) (User,bool) {
+	user := NewUser()
+	user.Account = account
+	
+	ret := user.Query(dao)
+	return user,ret	
+}
 
 func GetUserByGroup(id int, dao* dao.Dao) []User {
 	userList := []User{}

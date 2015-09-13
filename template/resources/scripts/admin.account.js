@@ -1,22 +1,15 @@
 
 var account = {
 		user :{
-			view :{},
 			userInfo :{}
 		},
 		group :{
-			view :{},
 			groupInfo :{}
 		}
 };
 
 account.initialize = function(accessCode, view) {
-	var userView = view.find("#user-content");
-	var groupView = view.find("#group-content");
-	
 	account.accessCode = accessCode;
-	account.user.view = userView;		
-	account.group.view = groupView;
 	
 	$.post("/account/admin/queryAllInfo/", {
 		accesscode: accessCode
@@ -46,19 +39,19 @@ account.initialize = function(accessCode, view) {
         } 
         // post-submit callback
         function showResponse(result) {
+    		$("#user-Edit div.notification").hide();
+    		
         	if (result.ErrCode > 0) {
-        		var notificationDiv = $(account.user.view).find("#user-Edit div.error");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#user-Edit div.error div").html(result.Reason);
+        		$("#user-Edit div.error").show();
         	} else {
-        		var notificationDiv = $(account.user.view).find("#user-Edit div.success");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#user-Edit div.success div").html(result.Reason);
+        		$("#user-Edit div.success").show();
         		
         		account.refreshUser();
         	}
+        	
+        	return false;
         }
         //提交表单
         $(this).ajaxSubmit(options);	
@@ -82,19 +75,19 @@ account.initialize = function(accessCode, view) {
         } 
         // post-submit callback
         function showResponse(result) {
+        	$("#group-Edit div.notification").hide();
+        	
         	if (result.ErrCode > 0) {
-        		var notificationDiv = $(account.group.view).find("#group-Edit div.error");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#group-Edit div.error div").html(result.Reason);
+        		$("#group-Edit div.error").show();
         	} else {
-        		var notificationDiv = $(account.group.view).find("#group-Edit div.success");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#group-Edit div.success div").html(result.Reason);
+        		$("#group-Edit div.success").show();
         		
-        		account.refreshGroup();
+        		account.refreshGroup();        		
         	}
+        	
+        	return false;
         }
         //提交表单
         $(this).ajaxSubmit(options);	
@@ -115,6 +108,8 @@ account.refreshUser = function() {
 		account.user.userInfo = result.User;		
 		
 		account.fillUserView();
+		
+		return false;
 	}, "json");	
 }
 
@@ -127,26 +122,24 @@ account.refreshGroup = function() {
 		
 		account.group.groupInfo = result.Group;		
 		
-		account.fillGroupView();		
+		account.fillGroupView();
+		
+		return false;
 	}, "json");	
 }
 
 account.fillUserView = function() {
-	var userTable = account.user.view.find("#user-List").children("table");
-	var notificationDiv = account.user.view.find("#user-List").children("div");
+	$("#user-List div.notification").hide()
+	
 	if (account.errCode > 0) {
-		$(notificationDiv).children("div").html(result.Reason);
-		$(notificationDiv).siblings(".notification").hide();
-		$(notificationDiv).show();
+		$("#user-List table").hide()
 		
-		userTable.hide();
+		$("#user-List div.error div").html(result.Reason);
+		$("#user-List div.error").show();
 		return;
 	}
 	
-	$("#user-List .notification").hide();
-	var userListBody = userTable.children("tbody");
-	userListBody.children("tr").remove();
-	
+	$("#user-List table tbody tr").remove();
 	var userInfoList = account.user.userInfo;
 	for (var ii =0; ii < userInfoList.length; ++ii) {
 		var userInfo = userInfoList[ii];
@@ -154,9 +147,10 @@ account.fillUserView = function() {
 		if (ii % 2 == 1) {
 			trContent.setAttribute("class","alt-row");
 		}
-		userListBody.append(trContent);
+		$("#user-List table tbody").append(trContent);
 	}
 	
+	$("#user-Edit div.notification").hide()
 	$("#user-Edit .user-Form .user-id").val(-1);
 	$("#user-Edit .user-Form .user-account").val("");
 	$("#user-Edit .user-Form .user-password").val("");
@@ -186,7 +180,7 @@ account.constructUserItem = function(userInfo) {
 	var accountLink = document.createElement("a");
 	accountLink.setAttribute("class","edit");
 	accountLink.setAttribute("href","#queryUser");
-	accountLink.setAttribute("onclick","account.editUser('/account/admin/queryUser/?id=" + userInfo.Id + "')" );
+	accountLink.setAttribute("onclick","account.editUser('/account/admin/queryUser/?id=" + userInfo.Id + "'); return false;" );
 	accountLink.innerHTML = userInfo.Account;
 	accountTd.appendChild(accountLink);
 	tr.appendChild(accountTd);
@@ -207,7 +201,7 @@ account.constructUserItem = function(userInfo) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#queryUser");
-	editLink.setAttribute("onclick","account.editUser('/account/admin/queryUser/?id=" + userInfo.Id + "')" );
+	editLink.setAttribute("onclick","account.editUser('/account/admin/queryUser/?id=" + userInfo.Id + "'); return false;" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -217,7 +211,7 @@ account.constructUserItem = function(userInfo) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteUser" );
-	deleteLink.setAttribute("onclick","account.deleteUser('/account/admin/deleteUser/?id=" + userInfo.Id + "')" );
+	deleteLink.setAttribute("onclick","account.deleteUser('/account/admin/deleteUser/?id=" + userInfo.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -230,21 +224,16 @@ account.constructUserItem = function(userInfo) {
 }
 
 account.fillGroupView = function() {
-	var groupTable = account.group.view.find("#group-List").children("table");
-	var notificationDiv = account.group.view.find("#group-List").children("div");
+	$("#group-List div.notification").hide()
 	if (account.errCode > 0) {
-		$(notificationDiv).children("div").html(result.Reason);
-		$(notificationDiv).siblings(".notification").hide();
-		$(notificationDiv).show();
+		$("#group-List table").hide()
 		
-		groupTable.hide();
+		$("#group-List div.error div").html(result.Reason);
+		$("#group-List div.error").show();
 		return;
 	}
 	
-	$("#group-List .notification").hide();
-	var groupListBody = groupTable.children("tbody");
-	groupListBody.children("tr").remove();
-	
+	$("#group-List table tbody tr").remove();
 	var groupList = account.group.groupInfo;
 	for (var ii =0; ii < groupList.length; ++ii) {
 		var group = groupList[ii];
@@ -252,9 +241,10 @@ account.fillGroupView = function() {
 		if (ii % 2 == 1) {
 			trContent.setAttribute("class","alt-row");
 		}
-		groupListBody.append(trContent);
+		$("#group-List table tbody").append(trContent);
 	}
 	
+	$("#group-Edit div.notification").hide()
 	$("#group-Edit .group-Form .group-id").val(-1);
 	$("#group-Edit .group-Form .group-name").val("");
 	$("#group-Edit .group-Form .group-parent").empty();		
@@ -283,7 +273,7 @@ account.constructGroupItem = function(group) {
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","edit");
 	nameLink.setAttribute("href","#editGroup" );
-	nameLink.setAttribute("onclick","account.editGroup('/account/admin/queryGroup/?id=" + group.Id + "')" );
+	nameLink.setAttribute("onclick","account.editGroup('/account/admin/queryGroup/?id=" + group.Id + "'); return false;" );
 	nameLink.innerHTML = group.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
@@ -304,7 +294,7 @@ account.constructGroupItem = function(group) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#editGroup" );
-	editLink.setAttribute("onclick","account.editGroup('/account/admin/queryGroup/?id=" + group.Id + "')" );
+	editLink.setAttribute("onclick","account.editGroup('/account/admin/queryGroup/?id=" + group.Id + "'); return false;" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -314,7 +304,7 @@ account.constructGroupItem = function(group) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteGroup" );
-	deleteLink.setAttribute("onclick","account.deleteGroup('/account/admin/deleteGroup/?id=" + group.Id + "')" );
+	deleteLink.setAttribute("onclick","account.deleteGroup('/account/admin/deleteGroup/?id=" + group.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -330,9 +320,10 @@ account.editUser = function(editUrl) {
 	$.post(editUrl, {
 		accesscode: account.accessCode
 	}, function(result) {
+		$("#user-List div.notification").hide()
 		if (result.ErrCode > 0) {
 			$("#user-List div.error div").html(result.Reason);
-			$("#user-List .notification").show();
+			$("#user-List div.error").show();
 			return
 		}
 		
@@ -352,8 +343,8 @@ account.editUser = function(editUrl) {
 			}
 		}
 
-		$(account.user.view).find(".content-box-tabs li a").removeClass('current');
-		$(account.user.view).find(".content-box-tabs li a.user-Edit-tab").addClass('current');
+		$("#user-content .content-box-tabs li a").removeClass('current');
+		$("#user-content .content-box-tabs li a.user-Edit-tab").addClass('current');
 		$("#user-Edit").siblings().hide();
 		$("#user-Edit").show();
 	}, "json");
@@ -363,26 +354,29 @@ account.deleteUser = function(deleteUrl) {
 	$.post(deleteUrl, {
 		accesscode: account.accessCode
 	}, function(result) {
+		$("#user-List div.notification").hide()
 		if (result.ErrCode > 0) {
 			$("#user-List div.error div").html(result.Reason);
-			$("#user-List .notification").show();
+			$("#user-List div.error").show();
 			return
 		}
 		
 		$("#user-List div.success div").html(result.Reason);
-		$("#user-List .notification").show();
-		
+		$("#user-List div.success").show();
+
 		account.refreshUser();
-	}, "json");
+}, "json");
 }
 
 account.editGroup = function(editUrl) {
 	$.post(editUrl, {
 		accesscode: account.accessCode
 	}, function(result) {
+		$("#group-List div.notification").hide()
+		
 		if (result.ErrCode > 0) {
 			$("#group-List div.error div").html(result.Reason);
-			$("#group-List .notification").show();
+			$("#group-List div.error").show();
 			return;
 		}
 		
@@ -406,10 +400,10 @@ account.editGroup = function(editUrl) {
 		}
 		$("#group-Edit .group-Form .group-parent").get(0).selectedIndex = index;				
 		
-		$(account.group.view).find(".content-box-tabs li a").removeClass('current');
-		$(account.group.view).find(".content-box-tabs li a.group-Edit-tab").addClass('current');
+		$("#group-content .content-box-tabs li a").removeClass('current');
+		$("#group-content .content-box-tabs li a.user-Edit-tab").addClass('current');
 		$("#group-Edit").siblings().hide();
-		$("#group-Edit").show();
+		$("#group-Edit").show();		
 	}, "json");
 }
 
@@ -417,13 +411,19 @@ account.deleteGroup = function(deleteUrl) {
 	$.post(deleteUrl, {
 		accesscode: account.accessCode
 	}, function(result) {
+		$("#group-List div.notification").hide()
+		
 		if (result.ErrCode > 0) {
 			$("#group-List div.error div").html(result.Reason);
-			$("#group-List .notification").show();
-			return;
+			$("#group-List div.error").show();
+			return false;
 		}
 		
-		account.refreshGroup();
+		$("#group-List div.success div").html(result.Reason);
+		$("#group-List div.success").show();
+		
+		account.refreshGroup();		
+		return false;
 	}, "json");
 }
 

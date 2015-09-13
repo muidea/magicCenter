@@ -2,22 +2,15 @@
 
 var content = {
 		article :{
-			view :{},
 			articleInfo :{}
 		},
 		catalog :{
-			view :{},
 			catalogInfo :{}
 		}
 };
 
 content.initialize = function(accessCode, view) {
-	var articleView = view.find("#article-content");
-	var catalogView = view.find("#catalog-content");
-	
 	content.accessCode = accessCode;
-	content.article.view = articleView;		
-	content.catalog.view = catalogView;
 	
 	$.post("/content/admin/queryAllContent/", {
 		accesscode: accessCode
@@ -38,6 +31,7 @@ content.initialize = function(accessCode, view) {
         var options = { 
                 beforeSubmit:  showRequest,  // pre-submit callback
                 success:       showResponse,  // post-submit callback
+                resetForm:	 true,
                 dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
             };
         
@@ -47,17 +41,15 @@ content.initialize = function(accessCode, view) {
         } 
         // post-submit callback
         function showResponse(result) {
+        	$("#article-Edit div.notification").hide();
+        	
         	if (result.ErrCode > 0) {
-        		var notificationDiv = $(content.article.view).find("#article-Edit div.error");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#article-Edit div.error div").html(result.Reason);
+        		$("#article-Edit div.error").show();
         	} else {
-        		var notificationDiv = $(content.article.view).find("#article-Edit div.success");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
-        		
+        		$("#article-Edit div.success div").html(result.Reason);
+        		$("#article-Edit div.success").show();
+
         		content.refreshArticle();
         	}
         }
@@ -74,6 +66,7 @@ content.initialize = function(accessCode, view) {
         var options = { 
                 beforeSubmit:  showRequest,  // pre-submit callback
                 success:       showResponse,  // post-submit callback
+                resetForm:	 true,
                 dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
             };
         
@@ -83,19 +76,17 @@ content.initialize = function(accessCode, view) {
         } 
         // post-submit callback
         function showResponse(result) {
+        	$("#catalog-Edit div.notification").hide();
+        	
         	if (result.ErrCode > 0) {
-        		var notificationDiv = $(content.catalog.view).find("#catalog-Edit div.error");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
+        		$("#catalog-Edit div.error div").html(result.Reason);
+        		$("#catalog-Edit div.error").show();
         	} else {
-        		var notificationDiv = $(content.catalog.view).find("#catalog-Edit div.success");
-        		$(notificationDiv).children("div").html(result.Reason);
-        		$(notificationDiv).siblings(".notification").hide();
-        		$(notificationDiv).show();
-        		
+        		$("#catalog-Edit div.success div").html(result.Reason);
+        		$("#catalog-Edit div.success").show();
+
         		content.refreshCatalog();
-        	}
+        	}        	
         }
         //提交表单
         $(this).ajaxSubmit(options);	
@@ -133,21 +124,17 @@ content.refreshCatalog = function() {
 }
 
 content.fillArticleView = function() {
-	var articleTable = content.article.view.find("#article-List").children("table");
-	var notificationDiv = content.article.view.find("#article-List").children("div");
+	$("#article-List div.notification").hide();
+	
 	if (content.errCode > 0) {
-		$(notificationDiv).children("div").html(result.Reason);
-		$(notificationDiv).siblings(".notification").hide();
-		$(notificationDiv).show();
+		$("#article-List div.error div").html(result.Reason);
+		$("#article-List div.error").show();
 		
-		articleTable.hide();
+		$("#article-List table").hide();
 		return;
 	}
 	
-	$("#article-List .notification").hide();
-	var articleListBody = articleTable.children("tbody");
-	articleListBody.children("tr").remove();
-	
+	$("#article-List table tbody tr").remove();
 	var articleInfoList = content.article.articleInfo;
 	for (var ii =0; ii < articleInfoList.length; ++ii) {
 		var articleInfo = articleInfoList[ii];
@@ -155,9 +142,11 @@ content.fillArticleView = function() {
 		if (ii % 2 == 1) {
 			trContent.setAttribute("class","alt-row");
 		}
-		articleListBody.append(trContent);
+		$("#article-List table tbody").append(trContent);
 	}
+	$("#article-List table").show();
 	
+	$("#article-Edit div.notification").hide();
 	$("#article-Edit .article-Form .article-id").val(-1);
 	$("#article-Edit .article-Form .article-title").val("");
 	$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
@@ -185,7 +174,7 @@ content.constructArticleItem = function(articleInfo) {
 	var titleLink = document.createElement("a");
 	titleLink.setAttribute("class","edit");
 	titleLink.setAttribute("href","#queryArticle");
-	titleLink.setAttribute("onclick","content.editArticle('/content/admin/queryArticle/?id=" + articleInfo.Id + "')" );
+	titleLink.setAttribute("onclick","content.editArticle('/content/admin/queryArticle/?id=" + articleInfo.Id + "'); return false;" );
 	titleLink.innerHTML = articleInfo.Title;
 	titleTd.appendChild(titleLink);
 	tr.appendChild(titleTd);
@@ -206,7 +195,7 @@ content.constructArticleItem = function(articleInfo) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#queryArticle");
-	editLink.setAttribute("onclick","content.editArticle('/content/admin/queryArticle/?id=" + articleInfo.Id + "')" );
+	editLink.setAttribute("onclick","content.editArticle('/content/admin/queryArticle/?id=" + articleInfo.Id + "'); return false" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -216,7 +205,7 @@ content.constructArticleItem = function(articleInfo) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteArticle" );
-	deleteLink.setAttribute("onclick","content.deleteArticle('/content/admin/deleteArticle/?id=" + articleInfo.Id + "')" );
+	deleteLink.setAttribute("onclick","content.deleteArticle('/content/admin/deleteArticle/?id=" + articleInfo.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -229,21 +218,17 @@ content.constructArticleItem = function(articleInfo) {
 }
 
 content.fillCatalogView = function() {
-	var catalogTable = content.catalog.view.find("#catalog-List").children("table");
-	var notificationDiv = content.catalog.view.find("#catalog-List").children("div");
+	$("#catalog-List div.notification").hide();
+	
 	if (content.errCode > 0) {
-		$(notificationDiv).children("div").html(result.Reason);
-		$(notificationDiv).siblings(".notification").hide();
-		$(notificationDiv).show();
+		$("#catalog-List div.error div").html(result.Reason);
+		$("#catalog-List div.error").show();
 		
-		catalogTable.hide();
+		$("#catalog-List table").hide();
 		return;
 	}
 	
-	$("#catalog-List .notification").hide();
-	var catalogListBody = catalogTable.children("tbody");
-	catalogListBody.children("tr").remove();
-	
+	$("#catalog-List table tbody tr").remove();
 	var catalogList = content.catalog.catalogInfo;
 	for (var ii =0; ii < catalogList.length; ++ii) {
 		var catalog = catalogList[ii];
@@ -251,9 +236,11 @@ content.fillCatalogView = function() {
 		if (ii % 2 == 1) {
 			trContent.setAttribute("class","alt-row");
 		}
-		catalogListBody.append(trContent);
+		$("#catalog-List table tbody").append(trContent);
 	}
+	$("#catalog-List table").show();
 	
+	$("#catalog-Edit div.notification").hide();		
 	$("#catalog-Edit .catalog-Form .catalog-id").val(-1);
 	$("#catalog-Edit .catalog-Form .catalog-name").val("");	
 };
@@ -274,7 +261,7 @@ content.constructCatalogItem = function(catalog) {
 	var titleLink = document.createElement("a");
 	titleLink.setAttribute("class","edit");
 	titleLink.setAttribute("href","#editCatalog" );
-	titleLink.setAttribute("onclick","content.editCatalog('/content/admin/queryCatalog/?id=" + catalog.Id + "')" );
+	titleLink.setAttribute("onclick","content.editCatalog('/content/admin/queryCatalog/?id=" + catalog.Id + "'); return false;" );
 	titleLink.innerHTML = catalog.Name;
 	titleTd.appendChild(titleLink);
 	tr.appendChild(titleTd);
@@ -287,7 +274,7 @@ content.constructCatalogItem = function(catalog) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#editCatalog" );
-	editLink.setAttribute("onclick","content.editCatalog('/content/admin/queryCatalog/?id=" + catalog.Id + "')" );
+	editLink.setAttribute("onclick","content.editCatalog('/content/admin/queryCatalog/?id=" + catalog.Id + "'); return false;" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -297,7 +284,7 @@ content.constructCatalogItem = function(catalog) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteCatalog" );
-	deleteLink.setAttribute("onclick","content.deleteCatalog('/content/admin/deleteCatalog/?id=" + catalog.Id + "')" );
+	deleteLink.setAttribute("onclick","content.deleteCatalog('/content/admin/deleteCatalog/?id=" + catalog.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -313,9 +300,11 @@ content.editArticle = function(editUrl) {
 	$.post(editUrl, {
 		accesscode: content.accessCode
 	}, function(result) {
+		$("#article-List div.notification").hide();
+		
 		if (result.ErrCode > 0) {
 			$("#article-List div.error div").html(result.Reason);
-			$("#article-List .notification").show();
+			$("#article-List div.error").show();
 			return
 		}
 		
@@ -334,8 +323,8 @@ content.editArticle = function(editUrl) {
 			}
 		}
 				
-		$(content.article.view).find(".content-box-tabs li a").removeClass('current');
-		$(content.article.view).find(".content-box-tabs li a.article-Edit-tab").addClass('current');
+		$("#article-content .content-box-tabs li a").removeClass('current');
+		$("#article-content .content-box-tabs li a.article-Edit-tab").addClass('current');
 		$("#article-Edit").siblings().hide();
 		$("#article-Edit").show();
 	}, "json");
@@ -345,11 +334,16 @@ content.deleteArticle = function(deleteUrl) {
 	$.post(deleteUrl, {
 		accesscode: content.accessCode
 	}, function(result) {
+		$("#article-List div.notification").hide();
+		
 		if (result.ErrCode > 0) {
 			$("#article-List div.error div").html(result.Reason);
-			$("#article-List .notification").show();
+			$("#article-List div.error").show();
 			return
 		}
+		
+		$("#article-List div.success div").html(result.Reason);
+		$("#article-List div.success").show();
 		
 		content.refreshArticle();
 	}, "json");
@@ -359,17 +353,19 @@ content.editCatalog = function(editUrl) {
 	$.post(editUrl, {
 		accesscode: content.accessCode
 	}, function(result) {
+		$("#catalog-List div.notification").hide();
+		
 		if (result.ErrCode > 0) {
 			$("#catalog-List div.error div").html(result.Reason);
-			$("#catalog-List .notification").show();
+			$("#catalog-List div.error").show();
 			return;
 		}
 		
 		$("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
 		$("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
 		
-		$(content.catalog.view).find(".content-box-tabs li a").removeClass('current');
-		$(content.catalog.view).find(".content-box-tabs li a.catalog-Edit-tab").addClass('current');
+		$("#catalog-Edit .content-box-tabs li a").removeClass('current');
+		$("#catalog-Edit .content-box-tabs li a.catalog-Edit-tab").addClass('current');
 		$("#catalog-Edit").siblings().hide();
 		$("#catalog-Edit").show();
 	}, "json");
@@ -379,11 +375,16 @@ content.deleteCatalog = function(deleteUrl) {
 	$.post(deleteUrl, {
 		accesscode: content.accessCode
 	}, function(result) {
+		$("#catalog-List div.notification").hide();
+		
 		if (result.ErrCode > 0) {
 			$("#catalog-List div.error div").html(result.Reason);
-			$("#catalog-List .notification").show();
+			$("#catalog-List div.error").show();
 			return;
 		}
+		
+		$("#catalog-List div.success div").html(result.Reason);
+		$("#catalog-List div.success").show();
 		
 		content.refreshCatalog();
 	}, "json");
