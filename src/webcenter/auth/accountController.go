@@ -1,118 +1,121 @@
-package content
+package auth
 
 import (
-    "webcenter/session"
-    "webcenter/common"
-	"webcenter/auth"
 	"log"
+    "webcenter/session"
+	"webcenter/common"
 )
 
-type GetAllContentParam struct {
+
+type GetAllAccountInfoParam struct {
 	session *session.Session
 	accessCode string	
 }
 
-type GetAllContentResult struct {
+type GetAllAccountInfoResult struct {
 	common.Result
-	ArticleInfo []ArticleInfo
-	Catalog []Catalog
+	User []User
+	Group []Group
 }
 
-type GetAllArticleParam struct {
+type GetAllUserParam struct {
 	session *session.Session
 	accessCode string	
 }
 
-type GetAllArticleResult struct {
+type GetAllUserResult struct {
 	common.Result
-	ArticleInfo []ArticleInfo
+	User []User
 }
 
-type GetArticleParam struct {
+type GetUserParam struct {
 	session *session.Session
 	accessCode string
 	id int
 }
 
-type GetArticleResult struct {
+type GetUserResult struct {
 	common.Result
-	Article Article
+	User User
 }
 
-type DeleteArticleParam struct {
+type DeleteUserParam struct {
 	session *session.Session
 	accessCode string
 	id int
 }
 
-type DeleteArticleResult struct {
+type DeleteUserResult struct {
 	common.Result
 }
 
-type GetCatalogParam struct {
+type GetGroupParam struct {
 	session *session.Session
 	accessCode string
 	id int
 }
 
-type GetCatalogResult struct {
+type GetGroupResult struct {
 	common.Result
-	Catalog Catalog
+	Group Group
 }
 
 
-type DeleteCatalogParam struct {
+type DeleteGroupParam struct {
 	session *session.Session
 	accessCode string
 	id int
 }
 
-type DeleteCatalogResult struct {
+type DeleteGroupResult struct {
 	common.Result
 }
 
-type GetAllCatalogParam struct {
+type GetAllGroupParam struct {
 	session *session.Session
 	accessCode string	
 }
 
-type GetAllCatalogResult struct {
+type GetAllGroupResult struct {
 	common.Result
-	Catalog []Catalog
+	Group []Group
 }
 
-type SubmitArticleParam struct {
+
+type SubmitUserParam struct {
 	session *session.Session
 	accessCode string
 	id int
-	title string
-	content string
-	catalog int
+	account string
+	password string
+	nickname string
+	email string
+	group int
 	submitDate string	
 }
 
-type SubmitArticleResult struct {
+type SubmitUserResult struct {
 	common.Result
 }
 
-
-type SubmitCatalogParam struct {
+type SubmitGroupParam struct {
 	session *session.Session
 	accessCode string
 	id int
 	name string
+	parent int
 	submitDate string	
 }
 
-type SubmitCatalogResult struct {
+type SubmitGroupResult struct {
 	common.Result
 }
 
-type contentController struct {
+type accountController struct {
 }
- 
-func (this *contentController)getAllContentAction(param GetAllContentParam) GetAllContentResult {
-	result := GetAllContentResult{}
+
+func (this *accountController)getAllAccountInfoAction(param GetAllAccountInfoParam) GetAllAccountInfoResult {
+	result := GetAllAccountInfoResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -134,7 +137,7 @@ func (this *contentController)getAllContentAction(param GetAllContentParam) GetA
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -143,8 +146,8 @@ func (this *contentController)getAllContentAction(param GetAllContentParam) GetA
 		return result		
 	}
 	
-	result.ArticleInfo = model.GetAllArticleInfo()
-	result.Catalog = model.GetAllCatalog()
+	result.User = model.GetAllUser()
+	result.Group = model.GetAllGroup()
 	result.ErrCode = 0
 
 	model.Release()
@@ -152,8 +155,8 @@ func (this *contentController)getAllContentAction(param GetAllContentParam) GetA
 	return result
 }
 
-func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetAllArticleResult {
-	result := GetAllArticleResult{}
+func (this *accountController)getAllUserAction(param GetAllUserParam) GetAllUserResult {
+	result := GetAllUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -175,7 +178,7 @@ func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetA
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -183,8 +186,8 @@ func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetA
 		result.Reason = "权限不足"
 		return result		
 	}
-		
-	result.ArticleInfo = model.GetAllArticleInfo()
+	
+	result.User = model.GetAllUser()
 	result.ErrCode = 0
 
 	model.Release()
@@ -192,8 +195,8 @@ func (this *contentController)getAllArticleAction(param GetAllArticleParam) GetA
 	return result
 }
 
-func (this *contentController)getArticleAction(param GetArticleParam) GetArticleResult {
-	result := GetArticleResult{}
+func (this *accountController)getUserAction(param GetUserParam) GetUserResult {
+	result := GetUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -206,8 +209,8 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 	defer model.Release()
 
 	session := param.session
-	account, found := session.GetAccount()
-	if !found {
+	account, ok := session.GetAccount()
+	if !ok {
 		log.Print("illegal authorization")
 		
 		result.ErrCode = 1
@@ -215,7 +218,7 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -224,13 +227,13 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 		return result		
 	}
 		
-	article, found := model.GetArticle(param.id)
+	user, found := model.GetUser(param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"
 	} else {
 		result.ErrCode = 0
-		result.Article = article
+		result.User = user
 	}
 	
 	model.Release()
@@ -238,8 +241,8 @@ func (this *contentController)getArticleAction(param GetArticleParam) GetArticle
 	return result
 }
 
-func (this *contentController)deleteArticleAction(param DeleteArticleParam) DeleteArticleResult {
-	result := DeleteArticleResult{}
+func (this *accountController)deleteUserAction(param DeleteUserParam) DeleteUserResult {
+	result := DeleteUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -261,7 +264,7 @@ func (this *contentController)deleteArticleAction(param DeleteArticleParam) Dele
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -269,17 +272,23 @@ func (this *contentController)deleteArticleAction(param DeleteArticleParam) Dele
 		result.Reason = "权限不足"
 		return result		
 	}
-	
-	model.DeleteArticle(param.id)
+	if user.Id == param.id {
+		result.ErrCode = 1
+		result.Reason = "不允许删除当前用户"
+		return result
+	}
+
+	model.DeleteUser(param.id)
 	result.ErrCode = 0
+	result.Reason = "删除用户成功"
 	
 	model.Release()
 	
 	return result
 }
  
-func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetAllCatalogResult {
-	result := GetAllCatalogResult{}
+func (this *accountController)getAllGroupAction(param GetAllGroupParam) GetAllGroupResult {
+	result := GetAllGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -301,7 +310,7 @@ func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetA
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -309,8 +318,8 @@ func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetA
 		result.Reason = "权限不足"
 		return result		
 	}
-	
-	result.Catalog = model.GetAllCatalog()
+		
+	result.Group = model.GetAllGroup()
 	result.ErrCode = 0
 	model.Release()
 	
@@ -318,8 +327,8 @@ func (this *contentController)getAllCatalogAction(param GetAllCatalogParam) GetA
 }
 
  
-func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalogResult {
-	result := GetCatalogResult{}
+func (this *accountController)getGroupAction(param GetGroupParam) GetGroupResult {
+	result := GetGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -341,7 +350,7 @@ func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalog
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -349,14 +358,14 @@ func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalog
 		result.Reason = "权限不足"
 		return result		
 	}
-	
-	catalog, found := model.GetCatalog(param.id)
+		
+	catalog, found := model.GetGroup(param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"
 	} else {
 		result.ErrCode = 0
-		result.Catalog = catalog
+		result.Group = catalog
 	}
 
 	model.Release()
@@ -364,8 +373,8 @@ func (this *contentController)getCatalogAction(param GetCatalogParam) GetCatalog
 	return result
 }
 
-func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) DeleteCatalogResult {
-	result := DeleteCatalogResult{}
+func (this *accountController)deleteGroupAction(param DeleteGroupParam) DeleteGroupResult {
+	result := DeleteGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -387,7 +396,7 @@ func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) Dele
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -396,23 +405,26 @@ func (this *contentController)deleteCatalogAction(param DeleteCatalogParam) Dele
 		return result		
 	}
 	
-	articleInfoList := model.QueryArticleByCatalog(param.id)
-	if (len(articleInfoList) >0) {
+	userInfoList := model.QueryUserByGroup(param.id)
+	subGroupList := model.QuerySubGroup(param.id)
+	if (len(userInfoList) >0 || len(subGroupList) >0) {
 		result.ErrCode = 1
-		result.Reason = "该分类被引用，无法立即删除"
+		result.Reason = "该分组被引用，无法立即删除"
 		return result
 	}
 	
-	model.DeleteCatalog(param.id)
+	model.DeleteGroup(param.id)
 	result.ErrCode = 0
+	result.Reason = "删除分组成功"
 	
 	model.Release()
 	
 	return result
 }
 
-func (this *contentController)submitArticleAction(param SubmitArticleParam) SubmitArticleResult {
-	result := SubmitArticleResult{}
+
+func (this *accountController)submitUserAction(param SubmitUserParam) SubmitUserResult {
+	result := SubmitUserResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -434,7 +446,7 @@ func (this *contentController)submitArticleAction(param SubmitArticleParam) Subm
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -442,21 +454,21 @@ func (this *contentController)submitArticleAction(param SubmitArticleParam) Subm
 		result.Reason = "权限不足"
 		return result		
 	}
-
-	article := newArticle()
-	article.Id = param.id
-	article.Title = param.title
-	article.Content = param.content
-	article.Author.Id = user.Id
-	article.Catalog.Id = param.catalog
-	article.CreateDate = param.submitDate	
 	
-	if !model.SaveArticle(article) {
+	user = NewUser()
+	user.Id = param.id
+	user.Account = param.account
+	user.password = param.password
+	user.NickName = param.nickname
+	user.Email = param.email
+	user.Group.Id = param.group
+	
+	if !model.SaveUser(user) {
 		result.ErrCode = 1
-		result.Reason = "保存文章失败"
+		result.Reason = "保存用户信息失败"
 	} else {
 		result.ErrCode = 0
-		result.Reason = "保存文章成功"
+		result.Reason = "保存用户信息成功"
 	}
 	
 	model.Release()
@@ -464,8 +476,8 @@ func (this *contentController)submitArticleAction(param SubmitArticleParam) Subm
 	return result
 }
 
-func (this *contentController)submitCatalogAction(param SubmitCatalogParam) SubmitCatalogResult {
-	result := SubmitCatalogResult{}
+func (this *accountController)submitGroupAction(param SubmitGroupParam) SubmitGroupResult {
+	result := SubmitGroupResult{}
 	
 	model, err := NewModel()
 	if err != nil {
@@ -487,7 +499,7 @@ func (this *contentController)submitCatalogAction(param SubmitCatalogParam) Subm
 		return result
 	}
 	
-	user, _ := auth.QueryUserByAccount(account, model.dao)
+	user, _ := model.FindUserByAccount(account)
 	if !user.IsAdmin() {
 		log.Print("illegal authorization")
 		
@@ -495,18 +507,18 @@ func (this *contentController)submitCatalogAction(param SubmitCatalogParam) Subm
 		result.Reason = "权限不足"
 		return result		
 	}
-
-	catalog := newCatalog()
-	catalog.Id = param.id
-	catalog.Name = param.name
-	catalog.Creater.Id = user.Id
 	
-	if !model.SaveCatalog(catalog) {
+	group := newGroup()
+	group.Id = param.id
+	group.Name = param.name
+	group.Catalog = param.parent
+	
+	if !model.SaveGroup(group) {
 		result.ErrCode = 1
-		result.Reason = "保存分类失败"
+		result.Reason = "保存分组失败"
 	} else {
 		result.ErrCode = 0
-		result.Reason = "保存分类成功"
+		result.Reason = "保存分组成功"
 	}
 	
 	model.Release()

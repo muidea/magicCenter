@@ -53,6 +53,68 @@ account.initialize = function(accessCode, view) {
         	
         	return false;
         }
+        
+        function validate() {
+        	var result = true
+        	
+        	$("#user-content .user-Form .user-account").parent().find("span").remove();
+        	var account = $("#user-content .user-Form .user-account").val();
+        	if (account.length == 0) {
+        		$("#user-content .user-Form .user-account").parent().append("<span class=\"input-notification error png_bg\">请输入账号</span>");
+        		result = false;
+        	}
+        	
+        	var id = $("#user-content .user-Form .user-id").val();
+        	if (id == -1) {
+            	$("#user-content .user-Form .user-password").parent().find("span").remove();
+            	var password = $("#user-content .user-Form .user-password").val();
+            	if (password.length == 0) {
+            		$("#user-content .user-Form .user-password").parent().append("<span class=\"input-notification error png_bg\">请输入密码</span>");
+            		result = false;
+            	}
+            	
+            	$("#user-content .user-Form .user-repassword").parent().find("span").remove();
+            	var repassword = $("#user-content .user-Form .user-repassword").val();
+            	if (repassword.length == 0) {
+            		$("#user-content .user-Form .user-repassword").parent().append("<span class=\"input-notification error png_bg\">请输入确认密码</span>");
+            		result = false;
+            	}
+            	if (password != repassword && repassword.length > 0) {
+            		$("#user-content .user-Form .user-repassword").parent().append("<span class=\"input-notification error png_bg\">两次密码不一致</span>");
+            		result = false;        		
+            	}
+        	}
+        	
+        	$("#user-content .user-Form .user-nickname").parent().find("span").remove();
+        	var nickname = $("#user-content .user-Form .user-nickname").val();
+        	if (nickname.length == 0) {
+        		$("#user-content .user-Form .user-nickname").parent().append("<span class=\"input-notification error png_bg\">请输入昵称</span>");
+        		result = false;
+        	}
+        	
+        	$("#user-content .user-Form .user-email").parent().find("span").remove();
+        	var email = $("#user-content .user-Form .user-email").val();
+        	if (email.length == 0) {
+        		$("#user-content .user-Form .user-email").parent().append("<span class=\"input-notification error png_bg\">请输入合法的邮箱</span>");
+        		result = false;
+        	} else if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) == -1) {
+        		$("#user-content .user-Form .user-email").parent().append("<span class=\"input-notification error png_bg\">请输入合法的邮箱</span>");
+        		result = false;        		
+        	}
+        	
+        	$("#user-content .user-Form .user-group").parent().find("span").remove();
+        	var group = $("#user-content .user-Form .user-group").val();
+        	if (group == -1) {
+        		$("#user-content .user-Form .user-group").parent().append("<span class=\"input-notification error png_bg\">请选择分组</span>");
+        		result = false;
+        	}
+        	
+        	return result;
+        }
+        
+        if (!validate()) {
+        	return false;
+        }        
         //提交表单
         $(this).ajaxSubmit(options);	
     	
@@ -89,6 +151,29 @@ account.initialize = function(accessCode, view) {
         	
         	return false;
         }
+        
+        function validate() {
+        	var result = true
+        	
+        	$("#group-content .group-Form .group-name").parent().find("span").remove();
+        	var name = $("#group-content .group-Form .group-name").val();
+        	if (name.length == 0) {
+        		$("#group-content .group-Form .group-name").parent().append("<span class=\"input-notification error png_bg\">请输入分组名</span>");
+        		result = false;
+        	}
+        	
+        	$("#group-content .group-Form .group-parent").parent().find("span").remove();
+        	var group = $("#group-content .group-Form .group-parent").val();
+        	if (group == -1) {
+        		$("#group-content .group-Form .group-parent").parent().append("<span class=\"input-notification error png_bg\">请选择父分组</span>");
+        		result = false;
+        	}        	
+        	return result;
+        }
+        
+        if (!validate()) {
+        	return false;
+        }        
         //提交表单
         $(this).ajaxSubmit(options);	
     	
@@ -134,7 +219,7 @@ account.fillUserView = function() {
 	if (account.errCode > 0) {
 		$("#user-List table").hide()
 		
-		$("#user-List div.error div").html(result.Reason);
+		$("#user-List div.error div").html(account.reason);
 		$("#user-List div.error").show();
 		return;
 	}
@@ -153,7 +238,9 @@ account.fillUserView = function() {
 	$("#user-Edit div.notification").hide()
 	$("#user-Edit .user-Form .user-id").val(-1);
 	$("#user-Edit .user-Form .user-account").val("");
+	
 	$("#user-Edit .user-Form .user-password").val("");
+	$("#user-Edit .user-Form .user-repassword").val("");
 	$("#user-Edit .user-Form .user-nickname").val("");
 	$("#user-Edit .user-Form .user-email").val("");
 	$("#user-Edit .user-Form .user-group").empty();	
@@ -228,7 +315,7 @@ account.fillGroupView = function() {
 	if (account.errCode > 0) {
 		$("#group-List table").hide()
 		
-		$("#group-List div.error div").html(result.Reason);
+		$("#group-List div.error div").html(account.reason);
 		$("#group-List div.error").show();
 		return;
 	}
@@ -248,8 +335,8 @@ account.fillGroupView = function() {
 	$("#group-Edit .group-Form .group-id").val(-1);
 	$("#group-Edit .group-Form .group-name").val("");
 	$("#group-Edit .group-Form .group-parent").empty();		
-	$("#group-Edit .group-Form .group-parent").append("<option value=-1>请选择父类</option>");
-	$("#group-Edit .group-Form .group-parent").append("<option value=0>无父类</option>");
+	$("#group-Edit .group-Form .group-parent").append("<option value=-1>请选择父分组</option>");
+	$("#group-Edit .group-Form .group-parent").append("<option value=0>无父分组</option>");
 	for (var ii =0; ii < account.group.groupInfo.length; ++ii) {
 		group = account.group.groupInfo[ii];
 		
@@ -332,6 +419,9 @@ account.editUser = function(editUrl) {
 		$("#user-Edit .user-Form .user-nickname").val(result.User.NickName);
 		$("#user-Edit .user-Form .user-email").val(result.User.Email);
 		
+		$("#user-Edit .user-Form .user-password").parent().hide();
+		$("#user-Edit .user-Form .user-repassword").parent().hide();
+		
 		$("#user-Edit .user-Form .user-group").empty();		
 		$("#user-Edit .user-Form .user-group").append("<option value=-1>请选择分组</option>");
 		for (var ii =0; ii < account.group.groupInfo.length; ++ii) {
@@ -399,9 +489,9 @@ account.editGroup = function(editUrl) {
 			}
 		}
 		$("#group-Edit .group-Form .group-parent").get(0).selectedIndex = index;				
-		
+				
 		$("#group-content .content-box-tabs li a").removeClass('current');
-		$("#group-content .content-box-tabs li a.user-Edit-tab").addClass('current');
+		$("#group-content .content-box-tabs li a.group-Edit-tab").addClass('current');
 		$("#group-Edit").siblings().hide();
 		$("#group-Edit").show();		
 	}, "json");

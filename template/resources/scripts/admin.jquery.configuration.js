@@ -22,6 +22,7 @@ $(document).ready(function() {
 			
 			var currentDiv = $(this).attr('href');			
 			$(currentDiv).siblings('.main-content-box').hide();
+			$(currentDiv).find(".content-box-content div.notification").hide();
 			$(currentDiv).show();
 			
 			return false;
@@ -35,6 +36,7 @@ $(document).ready(function() {
 			$(this).addClass("current"); // Add class "current" to clicked tab
 			
 			var currentDiv = $(this).attr('href');
+			$(currentDiv).siblings('.content-box').find("fieldset input.text-input").parent().show();
 			$(currentDiv).siblings('.content-box').find("fieldset input.text-input").val("");
 			$(currentDiv).siblings('.content-box').find("fieldset textarea.wysiwyg").wysiwyg("setContent", "");
 			var options = $(currentDiv).siblings('.content-box').find("fieldset select").get(0);
@@ -51,7 +53,9 @@ $(document).ready(function() {
 			
 			var tabContent = $(currentDiv).find(".content-box-header .content-box-tabs a.default-tab").attr("href");
 			$(tabContent).siblings(".tab-content").hide();
+			
 			$(tabContent).show();
+			$(currentDiv).find(".content-box-content div.notification").hide();
 			$(currentDiv).find(".content-box-content").show();			
 			
 			return false;
@@ -97,6 +101,7 @@ $(document).ready(function() {
 			var currentTab = $(this).attr('href'); // Set variable "currentTab" to the value of href of clicked tab
 			$(currentTab).siblings().find("div.notification").hide();
 			$(currentTab).siblings().hide(); // Hide all content divs
+			
 			$(currentTab).show(); // Show the content div with the id equal to the id of clicked tab
 			return false;
 		}

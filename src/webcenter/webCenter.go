@@ -5,6 +5,7 @@ import (
     "log"
     _"webcenter/session"
     _"webcenter/common"
+    _"webcenter/ui"
     _"webcenter/auth"
     _"webcenter/admin"
     _"webcenter/content"

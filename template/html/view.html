@@ -44,21 +44,16 @@
 	<div id="page-bgtop">
 		<div id="content">
 			{{if eq .ErrCode 0}} 
-			{{with .ArticleSummary}}
-				{{range .}}
 			<div class="post">
-				<p class="meta"><span class="date">{{.CreateDate}}</span> Posted by <a href="#">{{.Author}}</a></p>
-				<h2 class="title"><a href="/view/article/?id={{.Id}}">{{.Title}}</a></h2>
+				<p class="meta"><span class="date">{{.Article.CreateDate}}</span> Posted by <a href="#">{{.Article.Author}}</a></p>
+				<h2 class="title"><a href="#">{{.Article.Title}}</a></h2>
 				<div class="entry">
-				{{.Content}} 
+				{{.Article.Content}} 
 				</div>
-				<div><a href="/view/article/?id={{.Id}}">阅读全文...</a></div>
 			</div>
-				{{end}}
-			{{end}}
 			{{else}}
 			<div  class="post">{{.Reason}}</div>
-			{{end}}
+			{{end}}		
 		</div>
 		<!-- end #content -->
 		<div id="sidebar">

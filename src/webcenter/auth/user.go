@@ -79,6 +79,22 @@ func GetUserByGroup(id int, dao* dao.Dao) []User {
 	return userList
 }
 
+func QueryDefaultUser(dao *dao.Dao) (User, bool) {
+	user := NewUser()
+	sql := fmt.Sprintf("select id,account,password,nickname,email,`group` from user where `group` in (select id from `group` where catalog = 0) order by id limit 1")
+	if !dao.Query(sql) {
+		log.Printf("query user failed, sql:%s", sql)
+		return user, false
+	}
+	
+	for dao.Next() {
+		dao.GetField(&user.Id, &user.Account, &user.password, &user.NickName, &user.Email, &user.Group.Id)
+	}
+	
+	user.Group.query(dao)
+	return user, true
+}
+
 func (this *User)IsAdmin() bool {
 	return this.Group.IsAdminGroup()
 }

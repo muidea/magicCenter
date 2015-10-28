@@ -3,6 +3,7 @@ package content
 import (
 	"fmt"
 	"log"
+	"html"
 	"muidea.com/dao"
 	"webcenter/auth"
 )
@@ -60,7 +61,9 @@ func GetAllArticleInfo(dao * dao.Dao) []ArticleInfo {
 	
 	for i:=0; i < len(articleInfoList); i++ {
 		articleInfo := &articleInfoList[i]
-		articleInfo.Author.Query(dao)
+		if !articleInfo.Author.Query(dao) {
+			articleInfo.Author, _ = auth.QueryDefaultUser(dao)
+		}
 		articleInfo.Catalog.Query(dao)
 	}
 	
@@ -84,12 +87,68 @@ func GetArticleByCatalog(id int, dao* dao.Dao) []ArticleInfo {
 	
 	for i:=0; i < len(articleInfoList); i++ {
 		articleInfo := &articleInfoList[i]
-		articleInfo.Author.Query(dao)
+		if !articleInfo.Author.Query(dao) {
+			articleInfo.Author, _ = auth.QueryDefaultUser(dao)
+		}
 		articleInfo.Catalog.Query(dao)
 	}
 	
 	return articleInfoList	
 }
+
+func QueryArticleByRang(begin int,offset int, dao* dao.Dao) []Article {
+	articleList := []Article{}
+	sql := fmt.Sprintf("select * from (select id, title, content, author, createdate, catalog from article order by id) c where id > %d limit %d", begin, offset)
+	if !dao.Query(sql) {
+		log.Printf("query article failed, sql:%s", sql)
+		return articleList
+	}
+
+	for dao.Next() {
+		article := newArticle()
+		dao.GetField(&article.Id, &article.Title, &article.Content, &article.Author.Id, &article.CreateDate, &article.Catalog.Id)
+		
+		articleList = append(articleList, article)
+	}
+	
+	for i:=0; i < len(articleList); i++ {
+		article := &articleList[i]
+		if !article.Author.Query(dao) {
+			article.Author, _ = auth.QueryDefaultUser(dao)
+		}
+		article.Catalog.Query(dao)
+		
+		article.Content = html.UnescapeString(article.Content)
+	}
+	
+	return articleList	
+}
+
+
+func QueryArticleById(id int, dao* dao.Dao) (Article, bool) {
+	article := Article{}
+	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id = %d", id)
+	if !dao.Query(sql) {
+		log.Printf("query article failed, sql:%s", sql)
+		return article, false
+	}
+
+	result := false
+	for dao.Next() {
+		dao.GetField(&article.Id, &article.Title, &article.Content, &article.Author.Id, &article.CreateDate, &article.Catalog.Id)
+		result = true
+	}
+	
+	if !article.Author.Query(dao) {
+		article.Author, _ = auth.QueryDefaultUser(dao)
+	}
+	article.Catalog.Query(dao)
+	
+	article.Content = html.UnescapeString(article.Content)
+	
+	return article, result	
+}
+
 
 func (this *Article)Query(dao * dao.Dao) bool {
 	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id=%d", this.Id)
@@ -105,6 +164,10 @@ func (this *Article)Query(dao * dao.Dao) bool {
 
 	if result {
 		result = this.Author.Query(dao)
+		if !result {
+			this.Author, result = auth.QueryDefaultUser(dao)
+		}
+		this.Content = html.UnescapeString(this.Content)		
 	}
 	
 	if result {
@@ -140,10 +203,10 @@ func (this *Article)save(dao * dao.Dao) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into article (title,content,author,createdate,catalog) values ('%s','%s',%d,'%s',%d)", this.Title, this.Content, this.Author.Id, this.CreateDate, this.Catalog.Id)
+		sql = fmt.Sprintf("insert into article (title,content,author,createdate,catalog) values ('%s','%s',%d,'%s',%d)", this.Title, html.EscapeString(this.Content), this.Author.Id, this.CreateDate, this.Catalog.Id)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", this.Title, this.Content, this.Author.Id, this.CreateDate, this.Catalog.Id, this.Id)
+		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", this.Title, html.EscapeString(this.Content), this.Author.Id, this.CreateDate, this.Catalog.Id, this.Id)
 	}
 	
 	result = dao.Execute(sql)

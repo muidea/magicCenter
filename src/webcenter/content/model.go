@@ -90,7 +90,63 @@ func (this *Model)SaveCatalog(catalog Catalog) bool {
 	return catalog.save(this.dao)
 }
 
-func (this *Model)QueryArticleByCatalog(id int) []ArticleInfo {
+func (this *Model)GetAllLink() []Link {
+	return GetAllLink(this.dao)
+}
+
+func (this *Model)GetLink(id int) (Link, bool) {
+	link := newLink()
+	link.Id = id
+	
+	result := link.Query(this.dao)
+	return link, result
+}
+
+func (this *Model)DeleteLink(id int) {
+	link := newLink()
+	link.Id = id
+	
+	link.delete(this.dao)
+}
+
+func (this *Model)SaveLink(link Link) bool {
+	return link.save(this.dao)
+}
+
+func (this *Model)GetAllImage() []Image {
+	return GetAllImage(this.dao)
+}
+
+func (this *Model)GetImage(id int) (Image, bool) {
+	image := newImage()
+	image.Id = id
+	
+	result := image.Query(this.dao)
+	return image, result
+}
+
+func (this *Model)DeleteImage(id int) {
+	image := newImage()
+	image.Id = id
+	
+	image.delete(this.dao)
+}
+
+func (this *Model)SaveImage(image Image) bool {
+	return image.save(this.dao)
+}
+
+
+func (this *Model)GetArticleByCatalog(id int) []ArticleInfo {
 	return GetArticleByCatalog(id, this.dao)
 }
+
+func (this *Model)GetAvalibleParentCatalog(id int) []Catalog {
+	return GetAvalibleParentCatalog(id, this.dao)
+}
+
+func (this *Model)GetSubCatalog(id int) []Catalog {
+	return GetSubCatalog(id, this.dao)
+}
+
 
