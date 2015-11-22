@@ -2,8 +2,8 @@ package auth
 
 import (
 	"log"
-	"webcenter/common"
-    "webcenter/session"    
+    "webcenter/session"
+    "webcenter/common"
 )
 
 type VerifyParam struct {

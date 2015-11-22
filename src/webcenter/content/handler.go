@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strconv"
 	"muidea.com/util"
-	"webcenter/systemconfig"
+	"webcenter/application"
 	"webcenter/session"
 )
 
@@ -20,25 +20,25 @@ func init() {
 }
 
 func registerRouter() {
-	http.HandleFunc("/content/admin/queryAllContent/", queryAllContentHandler)
-	http.HandleFunc("/content/admin/queryAllArticle/", queryAllArticleHandler)
-	http.HandleFunc("/content/admin/queryArticle/", queryArticleHandler)
-	http.HandleFunc("/content/admin/editArticle/", editArticleHandler)
-	http.HandleFunc("/content/admin/deleteArticle/", deleteArticleHandler)
-	http.HandleFunc("/content/article/ajax/", ajaxArticleHandler)
-	http.HandleFunc("/content/admin/queryAllCatalog/", queryAllCatalogHandler)
-	http.HandleFunc("/content/admin/queryCatalog/", queryCatalogHandler)
-	http.HandleFunc("/content/admin/editCatalog/", editCatalogHandler)
-	http.HandleFunc("/content/admin/deleteCatalog/", deleteCatalogHandler)
-	http.HandleFunc("/content/catalog/ajax/", ajaxCatalogHandler)
-	http.HandleFunc("/content/admin/queryAllLink/", queryAllLinkHandler)
-	http.HandleFunc("/content/admin/queryLink/", queryLinkHandler)
-	http.HandleFunc("/content/admin/editLink/", editLinkHandler)
-	http.HandleFunc("/content/admin/deleteLink/", deleteLinkHandler)
-	http.HandleFunc("/content/link/ajax/", ajaxLinkHandler)
-	http.HandleFunc("/content/admin/queryAllImage/", queryAllImageHandler)
-	http.HandleFunc("/content/admin/deleteImage/", deleteImageHandler)
-	http.HandleFunc("/content/image/ajax/", ajaxImageHandler)
+	application.RegisterPostHandler("/content/admin/queryAllContent/", queryAllContentHandler)
+	application.RegisterPostHandler("/content/admin/queryAllArticle/", queryAllArticleHandler)
+	application.RegisterPostHandler("/content/admin/queryArticle/", queryArticleHandler)
+	application.RegisterPostHandler("/content/admin/editArticle/", editArticleHandler)
+	application.RegisterPostHandler("/content/admin/deleteArticle/", deleteArticleHandler)
+	application.RegisterPostHandler("/content/article/ajax/", ajaxArticleHandler)
+	application.RegisterPostHandler("/content/admin/queryAllCatalog/", queryAllCatalogHandler)
+	application.RegisterPostHandler("/content/admin/queryCatalog/", queryCatalogHandler)
+	application.RegisterPostHandler("/content/admin/editCatalog/", editCatalogHandler)
+	application.RegisterPostHandler("/content/admin/deleteCatalog/", deleteCatalogHandler)
+	application.RegisterPostHandler("/content/catalog/ajax/", ajaxCatalogHandler)
+	application.RegisterPostHandler("/content/admin/queryAllLink/", queryAllLinkHandler)
+	application.RegisterPostHandler("/content/admin/queryLink/", queryLinkHandler)
+	application.RegisterPostHandler("/content/admin/editLink/", editLinkHandler)
+	application.RegisterPostHandler("/content/admin/deleteLink/", deleteLinkHandler)
+	application.RegisterPostHandler("/content/link/ajax/", ajaxLinkHandler)
+	application.RegisterPostHandler("/content/admin/queryAllImage/", queryAllImageHandler)
+	application.RegisterPostHandler("/content/admin/deleteImage/", deleteImageHandler)
+	application.RegisterPostHandler("/content/image/ajax/", ajaxImageHandler)
 }
 
 func queryAllContentHandler(w http.ResponseWriter, r *http.Request) {
@@ -988,8 +988,9 @@ func ajaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		
-		fileName := fmt.Sprintf("%s/%s/%s_%s_%s", systemconfig.Resource_Path,systemconfig.Upload_Path, time.Now().Format("20060102150405"), util.RandomAlphabetic(16),head.Filename);
+		fileName := fmt.Sprintf("%s/%s/%s_%s_%s", application.StaticPath(), application.UploadPath(), time.Now().Format("20060102150405"), util.RandomAlphabetic(16), head.Filename);
 		
+		log.Print(fileName)
 		defer file.Close()
 		f,err:=os.Create(fileName)
 		if err != nil {
@@ -1004,7 +1005,8 @@ func ajaxImageHandler(w http.ResponseWriter, r *http.Request) {
 		desc := r.FormValue("image-desc")
 	    accessCode := r.FormValue("accesscode")
 
-		param.url = fileName[len(systemconfig.Resource_Path):]
+		staticPath := application.StaticPath()
+		param.url = fileName[len(staticPath):]
 		param.desc = desc
 		param.accessCode = accessCode
     	param.session = session

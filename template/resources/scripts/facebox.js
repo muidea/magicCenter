@@ -79,8 +79,8 @@
     settings: {
       opacity      : 0,
       overlay      : true,
-      loadingImage : 'resources/images/loading.gif',
-      closeImage   : 'resources/images/closelabel.gif',
+      loadingImage : '/resources/images/loading.gif',
+      closeImage   : '/resources/images/closelabel.png',
       imageTypes   : [ 'png', 'jpg', 'jpeg', 'gif' ],
       faceboxHtml  : '\
     <div id="facebox" style="display:none;"> \

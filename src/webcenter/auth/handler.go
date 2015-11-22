@@ -9,6 +9,7 @@ import (
 	"strings"
 	"strconv"	
 	"webcenter/session"
+	"webcenter/application"
 )
 
 func init() {
@@ -16,20 +17,20 @@ func init() {
 }
 
 func registerRouter() {
-	http.HandleFunc("/auth/login/",loginHandler)
-	http.HandleFunc("/auth/logout/",logoutHandler)
-    http.HandleFunc("/auth/verify/",verifyHandler)
+	application.RegisterGetHandler("/auth/login/", loginHandler)
+	application.RegisterGetHandler("/auth/logout/", logoutHandler)
+    application.RegisterPostHandler("/auth/verify/", verifyHandler)
     
-    http.HandleFunc("/account/admin/queryAllInfo/", queryAllAccountInfoHandler)
-	http.HandleFunc("/account/admin/queryAllUser/", queryAllUserHandler)
-	http.HandleFunc("/account/admin/queryUser/", queryUserHandler)
-	http.HandleFunc("/account/admin/deleteUser/", deleteUserHandler)
-    http.HandleFunc("/account/user/ajax/", ajaxUserHandler)
+    application.RegisterPostHandler("/account/admin/queryAllInfo/", queryAllAccountInfoHandler)
+	application.RegisterGetHandler("/account/admin/queryAllUser/", queryAllUserHandler)
+	application.RegisterGetHandler("/account/admin/queryUser/", queryUserHandler)
+	application.RegisterPostHandler("/account/admin/deleteUser/", deleteUserHandler)
+    application.RegisterPostHandler("/account/user/ajax/", ajaxUserHandler)
     
-	http.HandleFunc("/account/admin/queryAllGroup/", queryAllGroupHandler)
-	http.HandleFunc("/account/admin/queryGroup/", queryGroupHandler)
-	http.HandleFunc("/account/admin/deleteGroup/", deleteGroupHandler)    
-    http.HandleFunc("/account/group/ajax/",ajaxGroupHandler)
+	application.RegisterGetHandler("/account/admin/queryAllGroup/", queryAllGroupHandler)
+	application.RegisterGetHandler("/account/admin/queryGroup/", queryGroupHandler)
+	application.RegisterPostHandler("/account/admin/deleteGroup/", deleteGroupHandler)    
+    application.RegisterPostHandler("/account/group/ajax/", ajaxGroupHandler)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {

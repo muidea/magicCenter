@@ -1,8 +1,8 @@
 package main
  
 import (
-    "net/http"
     "log"
+    "webcenter/application"
     _"webcenter/session"
     _"webcenter/common"
     _"webcenter/ui"
@@ -12,9 +12,10 @@ import (
 )
  
 func main() {
-	log.Println("MagicID WebCenter V1.0");
-		
-    http.ListenAndServe(":8888", nil)
- 
+	log.Println("MagicID WebCenter V1.0")
+	
+	app := application.AppInstance()
+	
+	app.Run()
 }
 

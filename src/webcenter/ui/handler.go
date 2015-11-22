@@ -6,6 +6,7 @@ import (
 	"strings"
 	"strconv"
 	"log"
+	"webcenter/application"
 )
 
 func get404Content() string {
@@ -16,13 +17,15 @@ func get404Content() string {
 }
 
 func init() {
+	log.Print("ui.init")
+	
 	registerRouter()
 }
 
 func registerRouter() {
-    http.HandleFunc("/404/",notFoundHandler)
-    http.HandleFunc("/view/article/",viewArticleHandler)
-    http.HandleFunc("/",indexHandler)
+    application.RegisterGetHandler("/404/",notFoundHandler)
+    application.RegisterGetHandler("/view/article/",viewArticleHandler)
+    application.RegisterGetHandler("/",indexHandler)
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {

@@ -6,6 +6,7 @@ import (
 	"log"
 	"webcenter/session"
 	"webcenter/auth"
+	"webcenter/application"
 )
 
 func init() {
@@ -13,7 +14,7 @@ func init() {
 }
 
 func registerRouter() {
-	http.HandleFunc("/admin/", adminHandler)
+	application.RegisterGetHandler("/admin/", adminHandler)
 }
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
