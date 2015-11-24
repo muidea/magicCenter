@@ -1,6 +1,7 @@
 package application
 
 import (
+	"os"
 	"log"
 	"martini"
 )
@@ -16,64 +17,68 @@ type application struct {
 	martinInstance *martini.ClassicMartini
 }
 
-var g_staticPath string = "static"
-var g_resourcePath string = "template"
-var g_uploadPath string = "upload"
-var g_router martini.Router = martini.NewRouter()
-var g_martiniFrame *martini.Martini = martini.New()
-var g_app *application = nil
+var staticPath string = "static"
+var resourceFilePath string = "template"
+var uploadFilePath string = "upload"
+var serverPort string = "8888"
+
+var router martini.Router = martini.NewRouter()
+var martiniFrame *martini.Martini = martini.New()
+var app *application = nil
 
 func AppInstance() Application {
-	if (g_app == nil) {
-		g_app = &application{}
+	if (app == nil) {
+		app = &application{}
 		
-		g_app.construct()
+		app.construct()
 	}
 	
-	return g_app 
+	return app 
 }
 
 func UploadPath() string {
-	return g_uploadPath
+	return uploadFilePath
 }
 
 func ResourcePath() string {
-	return g_resourcePath
+	return resourceFilePath
 }
 
 func StaticPath() string {
-	return g_staticPath
+	return staticPath
 }
 
 func RegisterGetHandler(pattern string, h interface{}) {
-	g_router.Get(pattern, h)	
+	router.Get(pattern, h)	
 }
 
 func RegisterPostHandler(pattern string, h interface{}) {
-	g_router.Post(pattern, h)
+	router.Post(pattern, h)
 }
 
 func BindStatic(path string) {
-	g_martiniFrame.Use(martini.Static(path))
+	martiniFrame.Use(martini.Static(path))
 }
 
-func (app application) construct() {
+func (instance application) construct() {
 	log.Print("application construct")
 	
-	g_app.uploadPath = g_uploadPath
-	g_app.martiniRouter = g_router
-	g_app.martiniFrame = g_martiniFrame
+	app.uploadPath = uploadFilePath
+	app.martiniRouter = router
+	app.martiniFrame = martiniFrame
+	
+	os.Setenv("PORT", serverPort)
 }
 
-func (app application) Run() {
+func (instance application) Run() {
 	log.Print("application Run")
 	
-	app.martiniFrame.Use(martini.Logger())
-	app.martiniFrame.Use(martini.Recovery())
-	app.martiniFrame.MapTo(app.martiniRouter, (*martini.Routes)(nil))
-	app.martiniFrame.Action(app.martiniRouter.Handle)
-	app.martinInstance = &martini.ClassicMartini{app.martiniFrame, app.martiniRouter}
-	app.martinInstance.Run()
+	instance.martiniFrame.Use(martini.Logger())
+	instance.martiniFrame.Use(martini.Recovery())
+	instance.martiniFrame.MapTo(instance.martiniRouter, (*martini.Routes)(nil))
+	instance.martiniFrame.Action(instance.martiniRouter.Handle)
+	instance.martinInstance = &martini.ClassicMartini{instance.martiniFrame, instance.martiniRouter}
+	instance.martinInstance.Run()
 }
 
 

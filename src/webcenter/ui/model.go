@@ -3,13 +3,12 @@ package ui
 
 import (
 	"html/template"
-	"muidea.com/dao"
-	"webcenter/content"
+	"webcenter/modelhelper"
+	"webcenter/content/article"
+	"webcenter/content/catalog"
+	"webcenter/content/image"
+	"webcenter/content/link"
 )
-
-type Model struct {
-	dao *dao.Dao
-}
 
 type ArticleSummary struct {
 	Id int
@@ -19,7 +18,6 @@ type ArticleSummary struct {
 	Catalog string
 	Author string	
 }
-
 
 type ArticleContent struct {
 	Id int
@@ -42,27 +40,10 @@ type SiteLink struct {
 	Style int	
 } 
 
-func newModel()(Model, error) {
-	model := Model{}
-	
-	dao, err := dao.Fetch("root", "rootkit", "localhost:3306", "magicid_db")
-	if err != nil {
-		return model, err
-	}
-	
-	model.dao = dao
-	
-	return model, err
-}
-
-func (this *Model)Release() {
-	this.dao.Release()
-} 
-
-func (this *Model)GetArticleSummary(begin int,end int) []ArticleSummary {
+func GetArticleSummary(model modelhelper.Model, begin int, end int) []ArticleSummary {
 	articleSummaryList := []ArticleSummary{}
 	
-	articleLis := content.QueryArticleByRang(0, 4, this.dao)
+	articleLis := article.QueryArticleByRang(model,0, 4)
 	for ii := 0; ii < len(articleLis); ii++ {
 		article := articleLis[ii]
 		summary := ArticleSummary{}
@@ -71,7 +52,12 @@ func (this *Model)GetArticleSummary(begin int,end int) []ArticleSummary {
 		summary.Title = article.Title
 		summary.Content = template.HTML(article.Content)
 		summary.CreateDate = article.CreateDate
-		summary.Catalog = article.Catalog.Name
+		catalog, found := catalog.QueryCatalogById(model, article.Catalog)
+		if found {
+			summary.Catalog = catalog.Name
+		}
+		
+		
 		summary.Author = article.Author.NickName
 		
 		articleSummaryList = append(articleSummaryList,summary)
