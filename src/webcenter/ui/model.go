@@ -4,9 +4,9 @@ package ui
 import (
 	"html/template"
 	"webcenter/modelhelper"
+	"webcenter/auth/account"
 	"webcenter/content/article"
 	"webcenter/content/catalog"
-	"webcenter/content/image"
 	"webcenter/content/link"
 )
 
@@ -57,8 +57,12 @@ func GetArticleSummary(model modelhelper.Model, begin int, end int) []ArticleSum
 			summary.Catalog = catalog.Name
 		}
 		
-		
-		summary.Author = article.Author.NickName
+		user, found := account.QueryUserById(model, article.Author)
+		if found {
+			summary.Author = user.NickName			
+		} else {
+			summary.Author = "Unknown"
+		}
 		
 		articleSummaryList = append(articleSummaryList,summary)
 	}
@@ -66,10 +70,10 @@ func GetArticleSummary(model modelhelper.Model, begin int, end int) []ArticleSum
 	return articleSummaryList
 }
 
-func (this *Model)GetArticleCatalog() []ArticleCatalog {
+func GetArticleCatalog(model modelhelper.Model) []ArticleCatalog {
 	articleCatalogList := []ArticleCatalog{}
 	
-	catalogLis := content.GetAllCatalog(this.dao)
+	catalogLis := catalog.GetAllCatalog(model)
 	for ii := 0; ii < len(catalogLis); ii++ {
 		catalog := catalogLis[ii]
 		cnt := ArticleCatalog{}
@@ -83,10 +87,10 @@ func (this *Model)GetArticleCatalog() []ArticleCatalog {
 	return articleCatalogList
 }
 
-func (this *Model)GetSiteLink() []SiteLink {
+func GetSiteLink(model modelhelper.Model) []SiteLink {
 	siteLinkList := []SiteLink{}
 	
-	links := content.GetAllLink(this.dao)
+	links := link.QueryAllLink(model)
 	for ii := 0; ii < len(links); ii++ {
 		link := links[ii]
 		cnt := SiteLink{}
@@ -102,17 +106,28 @@ func (this *Model)GetSiteLink() []SiteLink {
 	return siteLinkList
 }
 
-func (this *Model)GetArticleView(id int) (ArticleContent, bool) {
+func GetArticleView(model modelhelper.Model, id int) (ArticleContent, bool) {
 	cnt := ArticleContent{}
 	
-	article, found := content.QueryArticleById(id, this.dao)
+	article, found := article.QueryArticleById(model, id)
 	if found {
 		cnt.Id = article.Id
 		cnt.Title = article.Title
 		cnt.Content = template.HTML(article.Content)
 		cnt.CreateDate = article.CreateDate
-		cnt.Catalog = article.Catalog.Name
-		cnt.Author = article.Author.NickName
+		catalog, found := catalog.QueryCatalogById(model, article.Catalog)
+		if found {
+			cnt.Catalog = catalog.Name			
+		} else {
+			cnt.Catalog = "Unknown"
+		}
+		
+		user, found := account.QueryUserById(model, article.Author)
+		if found {
+			cnt.Author = user.NickName			
+		} else {
+			cnt.Author = "Unknown"
+		}
 	}
 	
 	return cnt, found

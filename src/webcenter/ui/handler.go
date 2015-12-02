@@ -6,44 +6,7 @@ import (
 	"strings"
 	"strconv"
 	"log"
-	"webcenter/application"
 )
-
-func get404Content() string {
-	content := "<html><head><title>404</title></head><body>"
-	content += "<p>Author:muidea@gmail.com</p>"
-	content += "</body></html>"
-	return content
-}
-
-func init() {
-	log.Print("ui.init")
-	
-	registerRouter()
-}
-
-func registerRouter() {
-    application.RegisterGetHandler("/404/",notFoundHandler)
-    application.RegisterGetHandler("/view/article/",viewArticleHandler)
-    application.RegisterGetHandler("/",indexHandler)
-}
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/html")
-	w.Header().Set("charset", "utf-8")
-	
-    t, err := template.ParseFiles("template/html/404.html")
-    if (err != nil) {
-        log.Println(err)
-        //content := get404Content()
-        
-        //w.Write(content.to)
-        return
-    }
-    
-    t.Execute(w, nil)
-}
-
 
 func viewArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")

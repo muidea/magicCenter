@@ -5,60 +5,40 @@ import (
 	"html/template"
 	"log"
 	"webcenter/session"
-	"webcenter/auth"
-	"webcenter/application"
 )
 
-func init() {
-	registerRouter()
+type AdminView struct {
+	Accesscode string
+	NickName string
 }
 
-func registerRouter() {
-	application.RegisterGetHandler("/admin/", adminHandler)
-}
 
-func adminHandler(w http.ResponseWriter, r *http.Request) {
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("adminHandler");
 	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
+	param := &ManageParam{}	
 	session := session.GetSession(w,r)
-	account, found := session.GetAccount()
-	if !found {
-		log.Print("can't get account")
-		
-		http.Redirect(w, r, "/auth/login/", http.StatusFound)
-		return
-	}
-
-	userModel, err := auth.NewModel()
-	if err != nil {
-		http.Redirect(w, r, "/404/", http.StatusNotFound)
-		return
-	}
-	defer userModel.Release()
+	param.session = session
 	
-	user, found := userModel.FindUserByAccount(account)
-	if !found || !user.IsAdmin() {
-		http.Redirect(w, r, "/", http.StatusFound)
+	controller := &manageController{}
+	
+	result := controller.ManageAction(param)
+	if result.Fail() {
+		http.Redirect(w, r, "/auth/login/", http.StatusFound)
 		return		
 	}
-	
+		
     t, err := template.ParseFiles("template/html/admin/index.html")
-    if (err != nil) {
-        log.Fatal(err)
-        
-        http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    if (err != nil) {    	
+    	panic("parse file failed")
     }
     
-    log.Print(r.URL.RawQuery)
- 
-    controller := &adminController{}
-    view := controller.Action(session)
+    view := AdminView{}
     view.Accesscode = session.AccessToken()
-    view.NickName = user.NickName
+    view.NickName = result.user.NickName
     
     t.Execute(w, view)	
 }

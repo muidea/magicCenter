@@ -23,6 +23,9 @@ func newGroup() Group {
 	return group;
 }
 
+func (group Group)AdminGroup() bool {
+	return group.Catalog == ADMIN_GROUP
+}
 
 func GetAllGroup(model modelhelper.Model) []Group {
 	groupList := []Group{}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"webcenter/modelhelper"
+	"webcenter/auth/group"
 )
 
 type User struct {
@@ -25,6 +26,15 @@ func newUser() User {
 
 func (user User)VerifyPassword(password string) bool {
 	return user.password == password
+}
+
+func IsAdmin(model modelhelper.Model, user User) bool {
+	userGroup, found := group.GetGroupById(model, user.Group)
+	if !found {
+		return false;
+	}
+	
+	return userGroup.AdminGroup()
 }
 
 func GetAllUser(model modelhelper.Model) []User {
@@ -58,6 +68,7 @@ func QueryUserByAccount(model modelhelper.Model, account string) (User,bool) {
 	for model.Next() {
 		model.GetValue(&user.Id, &user.Account, &user.password, &user.NickName, &user.Email, &user.Group)
 		result = true
+		break
 	}
 	
 	return user, result

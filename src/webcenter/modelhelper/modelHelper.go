@@ -42,7 +42,7 @@ func (this *model)Next() bool {
 }
 
 func (this *model)GetValue(val ... interface{}) bool {
-	return this.dao.GetField(val)
+	return this.dao.GetField(val...)
 }
 
 func (this *model)Execute(sql string) bool {

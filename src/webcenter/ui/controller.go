@@ -3,6 +3,7 @@ package ui
 import (
 	"log"
 	"webcenter/common"
+	"webcenter/modelhelper"
 )
 
 type ArticleView struct {
@@ -28,16 +29,13 @@ func (this *uiController)ViewArticleAction(id int) ArticleView {
 	
 	view := ArticleView{}
 	
-	model, err := newModel()
+	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create uiModel failed")
-		view.ErrCode = 1
-		view.Reason = "创建Model失败"
-		return view
+		panic("new model failed")
 	}
 	defer model.Release()
 	
-	articleview, found := model.GetArticleView(id)
+	articleview, found := GetArticleView(model, id)
 	if !found {
 		log.Printf("can't find article,id:%d", id)
 		view.ErrCode = 1
@@ -46,8 +44,8 @@ func (this *uiController)ViewArticleAction(id int) ArticleView {
 	}
 	
 	view.Article = articleview;
-	view.ArticleCatalog = model.GetArticleCatalog()
-	view.SiteLink = model.GetSiteLink()
+	view.ArticleCatalog = GetArticleCatalog(model)
+	view.SiteLink = GetSiteLink(model)
 	view.ErrCode = 0;
 	
 	return view
@@ -58,18 +56,15 @@ func (this *uiController)IndexAction() IndexView {
 	
 	view := IndexView{}
 	
-	model, err := newModel()
+	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create uiModel failed")
-		view.ErrCode = 1
-		view.Reason = "创建Model失败"
-		return view
+		panic("new model failed")
 	}
-	defer model.Release()
+	defer model.Release()	
 	
-	view.ArticleSummary = model.GetArticleSummary(0,4)
-	view.ArticleCatalog = model.GetArticleCatalog()
-	view.SiteLink = model.GetSiteLink()
+	view.ArticleSummary = GetArticleSummary(model, 0,4)
+	view.ArticleCatalog = GetArticleCatalog(model)
+	view.SiteLink = GetSiteLink(model)
 	view.ErrCode = 0
 
 	return view
