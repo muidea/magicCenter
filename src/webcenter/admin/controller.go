@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"log"
 	"webcenter/auth/account"
 	"webcenter/common"
 	"webcenter/modelhelper"
@@ -37,6 +38,7 @@ func (this *manageController) ManageAction(param *ManageParam) ManageResult {
 
 		user, found := account.QueryUserById(model, accountId)
 		if !found || !account.IsAdmin(model, user) {
+			log.Printf("found:%d", found)
 			result.ErrCode = -1
 			result.Reason = "非法账号"
 			break

@@ -116,7 +116,7 @@ func QueryReferenceResource(model modelhelper.Model, id int, tid int, recurse bo
 }
 
 func SaveResource(model modelhelper.Model, res Resource) bool {
-	sql := fmt.Sprintf(`select id from resource where rid=%d and type=%d`, res.Id(), res.Type())
+	sql := fmt.Sprintf(`select id from resource where id=%d and type=%d`, res.Id(), res.Type())
 	if !model.Query(sql) {
 		panic("qery failed")
 	}

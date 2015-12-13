@@ -93,7 +93,7 @@ func GetLink(model modelhelper.Model) []LinkContent {
 func GetArticleContent(model modelhelper.Model, id int) (ArticleContent, bool) {
 	cnt := ArticleContent{}
 	
-	ar, found := article.QueryArticleById(model, id)
+	ar, found := article.QueryArticleDetailById(model, id)
 	if found {
 		cnt.Id = ar.Id
 		cnt.Title = ar.Title

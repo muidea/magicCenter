@@ -83,7 +83,7 @@ func NewCatalog() Catalog {
 }
 
 func QueryAllCatalogInfo(model modelhelper.Model) []CatalogInfo {
-	catalogList := []CatalogInfo{}
+	catalogInfoList := []CatalogInfo{}
 		
 	sql := fmt.Sprintf(`select c.id, c.name, u.nickname from catalog c, user u where c.creater = u.id`)
 	if !model.Query(sql) {
@@ -94,16 +94,16 @@ func QueryAllCatalogInfo(model modelhelper.Model) []CatalogInfo {
 		info := CatalogInfo{}
 		model.GetValue(&info.Id, &info.Name, &info.Creater)
 		
-		catalogList = append(catalogList, info)
+		catalogInfoList = append(catalogInfoList, info)
 	}
 	
-	for _, info := range catalogList {
+	for index, info := range catalogInfoList {
 		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.CATALOG)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Parent = append(info.Parent, name)
+					catalogInfoList[index].Parent = append(catalogInfoList[index].Parent, name)
 				}
 			}
 		} else {
@@ -111,7 +111,7 @@ func QueryAllCatalogInfo(model modelhelper.Model) []CatalogInfo {
 		}				
 	}
 	
-	return catalogList
+	return catalogInfoList
 }
 
 func QueryCatalogInfoById(model modelhelper.Model, id int) (CatalogInfo, bool) {
@@ -145,7 +145,7 @@ func QueryCatalogInfoById(model modelhelper.Model, id int) (CatalogInfo, bool) {
 }
 
 func QueryAvalibleParentCatalogInfo(model modelhelper.Model, id int) []CatalogInfo {
-	catalogList := []CatalogInfo{}
+	catalogInfoList := []CatalogInfo{}
 	sql := fmt.Sprintf(`select c.id, c.name, u.nickname from catalog c, user u where c.creater = u.id and c.id < %d`, id)
 	if !model.Query(sql) {
 		panic("query failed")
@@ -155,28 +155,28 @@ func QueryAvalibleParentCatalogInfo(model modelhelper.Model, id int) []CatalogIn
 		catalog := CatalogInfo{}
 		model.GetValue(&catalog.Id, &catalog.Name, &catalog.Creater)
 		
-		catalogList = append(catalogList, catalog)
+		catalogInfoList = append(catalogInfoList, catalog)
 	}
 	
-	for _, info := range catalogList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.CATALOG)
+	for index, info := range catalogInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.CATALOG)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Parent = append(info.Parent, name)
+					catalogInfoList[index].Parent = append(catalogInfoList[index].Parent, name)
 				}
 			}
 		} else {
 			panic("query failed")
-		}
+		}				
 	}
 		
-	return catalogList
+	return catalogInfoList
 }
 
 func QuerySubCatalogInfo(model modelhelper.Model, id int) []CatalogInfo {
-	catalogList := []CatalogInfo{}
+	catalogInfoList := []CatalogInfo{}
 	sql := fmt.Sprintf(`select distinct c.id id, c.name name, u.nickname from catalog c, user u ,resource_relative rr where c.creater = u.id and c.id in (
 	select src from resource_relative where dst = %d and dstType = %d and srcType = %d
 	)`, id, base.CATALOG, base.CATALOG)
@@ -188,24 +188,24 @@ func QuerySubCatalogInfo(model modelhelper.Model, id int) []CatalogInfo {
 		catalog := CatalogInfo{}
 		model.GetValue(&catalog.Id, &catalog.Name, &catalog.Creater)
 		
-		catalogList = append(catalogList, catalog)
+		catalogInfoList = append(catalogInfoList, catalog)
 	}
 	
-	for _, info := range catalogList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.CATALOG)
+	for index, info := range catalogInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.CATALOG)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Parent = append(info.Parent, name)
+					catalogInfoList[index].Parent = append(catalogInfoList[index].Parent, name)
 				}
 			}
 		} else {
 			panic("query failed")
-		}
+		}				
 	}
 		
-	return catalogList
+	return catalogInfoList
 }
 
 func QueryCatalogById(model modelhelper.Model, id int) (Catalog, bool) {

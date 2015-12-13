@@ -116,13 +116,13 @@ func QueryAllImage(model modelhelper.Model) []ImageInfo {
 		imageInfoList = append(imageInfoList, image)
 	}
 		
-	for _, info := range imageInfoList {
+	for index, info := range imageInfoList {
 		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.IMAGE)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					imageInfoList[index].Catalog = append(imageInfoList[index].Catalog, name)
 				}
 			}
 		} else {
@@ -148,13 +148,13 @@ func QueryImageByCatalog(model modelhelper.Model, id int) []ImageInfo {
 		imageInfoList = append(imageInfoList, image)
 	}
 	
-	for _, info := range imageInfoList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.IMAGE)
+	for index, info := range imageInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.IMAGE)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					imageInfoList[index].Catalog = append(imageInfoList[index].Catalog, name)
 				}
 			}
 		} else {
@@ -180,13 +180,13 @@ func QueryImageByRang(model modelhelper.Model, begin int,offset int) []ImageInfo
 		}		
 	}
 	
-	for _, info := range imageInfoList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.IMAGE)
+	for index, info := range imageInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.IMAGE)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					imageInfoList[index].Catalog = append(imageInfoList[index].Catalog, name)
 				}
 			}
 		} else {

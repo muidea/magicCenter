@@ -1,9 +1,16 @@
 
 
 var article = {
+	accesscode:'',
+	errCode:0,
+	reason:'',
+	articleInfo:{},
+	catalogInfo:{}
 };
 
 article.initialize = function() {
+	article.refreshCatalog();
+	
 	article.fillArticleView();
 		
     // 绑定表单提交事件处理器
@@ -72,8 +79,25 @@ article.initialize = function() {
     });
 };
 
+article.refreshCatalog = function() {
+	$.post("/admin/content/queryAllCatalogInfo/", {
+		accesscode: article.accessCode
+	}, function(result){
+		if (result.ErrCode == 0) {
+			article.catalogInfo = result.Catalog;
+
+			$("#article-Edit .article-Form .article-catalog").children().remove();
+			for (var ii =0; ii < article.catalogInfo.length; ++ii) {
+				catalog = article.catalogInfo[ii];
+				$("#article-Edit .article-Form .article-catalog").append("<input type='checkbox' name='article-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+			}
+		}
+		
+	}, "json");	
+};
+
 article.refreshArticle = function() {
-	$.post("/admin/content/queryAllArticleInfo/", {
+	$.post("/admin/content/queryAllArticle/", {
 		accesscode: article.accessCode
 	}, function(result){
 		article.errCode = result.ErrCode;
@@ -111,13 +135,6 @@ article.fillArticleView = function() {
 	$("#article-Edit .article-Form .article-id").val(-1);
 	$("#article-Edit .article-Form .article-title").val("");
 	$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
-	$("#article-Edit .article-Form .article-catalog").empty();	
-	$("#article-Edit .article-Form .article-catalog").append("<option value=-1>请选择分类</option>");
-	for (var ii =0; ii < article.catalog.length; ++ii) {
-		catalog = article.catalog[ii];
-		
-		$("#article-Edit .article-Form .article-catalog").append("<option value="+  catalog.Id + ">" + catalog.Name + "</option>");
-	}
 };
 
 article.constructArticleItem = function(articleInfo) {
@@ -135,13 +152,22 @@ article.constructArticleItem = function(articleInfo) {
 	var titleLink = document.createElement("a");
 	titleLink.setAttribute("class","edit");
 	titleLink.setAttribute("href","#queryArticle");
-	titleLink.setAttribute("onclick","article.editArticle('/admin/content/queryArticle/?id=" + articleInfo.Id + "'); return false;" );
+	titleLink.setAttribute("onclick","article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false;" );
 	titleLink.innerHTML = articleInfo.Title;
 	titleTd.appendChild(titleLink);
 	tr.appendChild(titleTd);
 
 	var cataLogTd = document.createElement("td");
-	cataLogTd.innerHTML = articleInfo.Catalog;
+	var catalogs = ""
+	for (var ii =0; ;) {
+		catalogs += articleInfo.Catalog[ii++]
+		if (ii < articleInfo.Catalog.length) {
+			catalogs += ","
+		} else {
+			break;
+		}
+	}
+	cataLogTd.innerHTML = catalogs;
 	tr.appendChild(cataLogTd);
 
 	var authorTd = document.createElement("td");
@@ -156,7 +182,7 @@ article.constructArticleItem = function(articleInfo) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#queryArticle");
-	editLink.setAttribute("onclick","article.editArticle('/admin/content/queryArticle/?id=" + articleInfo.Id + "'); return false" );
+	editLink.setAttribute("onclick","article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -190,19 +216,12 @@ article.editArticle = function(editUrl) {
 			return
 		}
 		
-		$("#article-Edit .article-Form .article-id").val(result.Article.Id);
-		$("#article-Edit .article-Form .article-title").val(result.Article.Title);
-		$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Article.Content);
-		$("#article-Edit .article-Form .article-catalog").empty();
+		$("#article-Edit .article-Form .article-id").val(result.Id);
+		$("#article-Edit .article-Form .article-title").val(result.Title);
+		$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Content);
+		$("#article-Edit .article-Form .article-catalog input").prop("checked", false);
+		$("#article-Edit .article-Form .article-catalog input").filter("[value="+ result.Id +"]").prop("checked", true);
 		
-		$("#article-Edit .article-Form .article-catalog").append("<option value=-1>请选择分类</option>");
-		for (var ii =0; ii < article.catalog.length; ++ii) {
-			catalog = article.catalog[ii];
-			$("#article-Edit .article-Form .article-catalog").append("<option value="+  catalog.Id + ">" + catalog.Name + "</option>");
-			if (catalog.Id == result.Article.Catalog) {
-				$("#article-Edit .article-Form .article-catalog").get(0).selectedIndex = ii +1;				
-			}
-		}
 		$("#article-content .content-box-tabs li a").removeClass('current');
 		$("#article-content .content-box-tabs li a.article-Edit-tab").addClass('current');
 		$("#article-Edit").siblings().hide();

@@ -18,7 +18,7 @@ func registerRouter() {
 	application.RegisterPostHandler("/admin/content/queryArticle/", article.QueryArticleHandler)
 	application.RegisterPostHandler("/admin/content/deleteArticle/", article.DeleteArticleHandler)
 	application.RegisterPostHandler("/admin/content/ajaxArticle/", article.AjaxArticleHandler)	
-	application.RegisterPostHandler("/content/admin/editArticle/", article.EditArticleHandler)
+	application.RegisterPostHandler("/admin/content/editArticle/", article.EditArticleHandler)
 	
 	application.RegisterGetHandler("/admin/content/manageCatalog/", catalog.ManageCatalogHandler)
 	application.RegisterPostHandler("/admin/content/queryAllCatalogInfo/", catalog.QueryAllCatalogInfoHandler)

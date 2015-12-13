@@ -9,11 +9,21 @@ import (
 	"time"
 	"strconv"
 	"webcenter/session"
+	"webcenter/common"
 )
 
 type ManageView struct {
 	Accesscode string
 	ArticleInfo []ArticleSummary
+}
+
+type EditView struct {
+	common.Result
+	Accesscode string
+	Id int
+	Title string
+	Content string
+	Catalog []int
 }
 
 func ManageArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -201,10 +211,10 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		title := r.FormValue("article-title")
 		content := r.FormValue("article-content")
 		catalog := r.FormValue("article-catalog")
-	    
+		
 		param.id, err = strconv.Atoi(id)
 	    if err != nil {
-	    	log.Print("parse id failed, id:%s", id)
+	    	log.Print("parse id failed, id:%d", id)
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
@@ -240,6 +250,65 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditArticleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("EditArticleHandler");
 	
+	result := EditView{}
+	
+	for true {
+		param := EditArticleParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
+		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+    	if err != nil {
+    		log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    
+		param.accessCode = accessCode
+		    	
+    	controller := &articleController{}
+    	ar := controller.editArticleAction(param)
+    	result.ErrCode = ar.ErrCode
+    	result.Reason = ar.Reason
+    	
+    	result.Id = ar.Article.Id()
+    	result.Title = ar.Article.Name()
+    	result.Content = ar.Article.Content()
+    	
+    	for _, c := range ar.Article.Relative() {
+    		result.Catalog = append(result.Catalog, c.Id())
+    	}
+    	
+    	break
+	}
+		
+    b, err := json.Marshal(result)
+    if err != nil {
+    	log.Fatal("json marshal failed, err:" + err.Error())
+    	http.Redirect(w, r, "/404/", http.StatusNotFound)
+        return
+    }
+    
+    w.Write(b)	
 }
 

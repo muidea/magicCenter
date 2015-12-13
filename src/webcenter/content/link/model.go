@@ -131,19 +131,19 @@ func QueryAllLink(model modelhelper.Model) []LinkInfo {
 		linkInfoList = append(linkInfoList, link)
 	}
 	
-	for _, info := range linkInfoList {
+	for index, info := range linkInfoList {
 		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.LINK)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					linkInfoList[index].Catalog = append(linkInfoList[index].Catalog, name)
 				}
 			}
 		} else {
 			panic("query failed")
 		}				
-	}	
+	}
 		
 	return linkInfoList
 }
@@ -164,19 +164,19 @@ func QueryLinkByCatalog(model modelhelper.Model, id int) []LinkInfo {
 		linkInfoList = append(linkInfoList, link)
 	}
 	
-	for _, info := range linkInfoList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.LINK)
+	for index, info := range linkInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.LINK)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					linkInfoList[index].Catalog = append(linkInfoList[index].Catalog, name)
 				}
 			}
 		} else {
 			panic("query failed")
 		}				
-	}	
+	}
 		
 	return linkInfoList
 }
@@ -196,19 +196,19 @@ func QueryLinkByRang(model modelhelper.Model, begin int,offset int) []LinkInfo {
 		linkInfoList = append(linkInfoList, link)
 	}
 	
-	for _, info := range linkInfoList {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.LINK)
+	for index, info := range linkInfoList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, info.Id, base.LINK)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
 				if model.GetValue(&name) {
-					info.Catalog = append(info.Catalog, name)
+					linkInfoList[index].Catalog = append(linkInfoList[index].Catalog, name)
 				}
 			}
 		} else {
 			panic("query failed")
 		}				
-	}	
+	}
 		
 	return linkInfoList
 }

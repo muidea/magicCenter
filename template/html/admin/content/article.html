@@ -13,9 +13,8 @@
 <script type="text/javascript" src="/resources/scripts/admin.jquery.content.article.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.content.article.js"></script>
 <script type="text/javascript">
-	article.accesscode = {{.Accesscode}};
-	article.articleInfo = {{.ArticleInfo}};
-	article.catalog = {{.Catalog}};
+article.accesscode = {{.Accesscode}};
+article.articleInfo = {{.ArticleInfo}};
 	
 	$(document).ready(function() {
 		article.initialize();
@@ -116,8 +115,7 @@
 							consectetur adipiscing elit. Proin vulputate, sapien quis
 							fermentum luctus, libero.</div>
 					</div>
-					<form class="article-Form" action="/admin/content/ajaxArticle/"
-						method="post">
+					<form class="article-Form" action="/admin/content/ajaxArticle/" method="post">
 						<fieldset>
 							<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
 							<p>
@@ -131,10 +129,11 @@
 									name="article-content" cols="79" rows="15"></textarea>
 							</p>
 							<p>
-								<label>分类</label> <select name="article-catalog"
-									class="small-input article-catalog">
-									<option value="option1">Option 1</option>
-								</select>
+								<label>分类</label>
+								<checkBox class = "article-catalog">
+										<input type="checkbox" name="checkbox1" /><span>AAA</span>
+										<input type="checkbox" name="checkbox1" /><span>BBB</span>
+								</checkBox>
 							</p>
 							<p>
 								<input type="hidden" name="article-id" class="article-id"

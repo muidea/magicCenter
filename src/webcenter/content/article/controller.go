@@ -59,7 +59,7 @@ type EditArticleParam struct {
 
 type EditArticleResult struct {
 	common.Result
-	Article ArticleDetail
+	Article Article
 }
 
 type articleController struct {
@@ -103,7 +103,7 @@ func (this *articleController)queryArticleAction(param QueryArticleParam) QueryA
 	}
 	defer model.Release()
 
-	article, found := QueryArticleById(model, param.id)
+	article, found := QueryArticleDetailById(model, param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"

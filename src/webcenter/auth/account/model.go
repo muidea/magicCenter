@@ -77,7 +77,7 @@ func QueryUserByAccount(model modelhelper.Model, account string) (User,bool) {
 func QueryUserById(model modelhelper.Model, id int) (User,bool) {
 	user := newUser()
 	
-	sql := fmt.Sprintf("select id,account,password,nickname,email,`group` from user where id='%s'", id)
+	sql := fmt.Sprintf("select id,account,password,nickname,email,`group` from user where id=%d", id)
 	if !model.Query(sql) {
 		log.Printf("query user failed, sql:%s", sql)
 		return user, false
