@@ -8,31 +8,44 @@ import (
 	"log"
 	"time"
 	"strconv"
+	"webcenter/session"
 )
 
+type ManageView struct {
+	Accesscode string
+	ArticleInfo []ArticleSummary
+}
+
 func ManageArticleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageArticleHandler");
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
+	session := session.GetSession(w,r)
     t, err := template.ParseFiles("template/html/admin/content/article.html")
     if (err != nil) {
-        log.Print(err)
-        
-        http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("parse files failed");
     }
-        
-    t.Execute(w, nil)
+    
+	controller := &articleController{}
+	info := controller.queryManageInfoAction()
+    
+    view := ManageView{}
+    view.Accesscode = session.AccessToken()
+    view.ArticleInfo = info.ArticleInfo
+    
+    t.Execute(w, view)
 }
 
 
-func QueryAllArticleInfoHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryAllArticleInfoHandler");
+func QueryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryAllArticleHandler");
 	
-	result := QueryAllArticleInfoResult{}
+	result := QueryAllArticleResult{}
 	
 	for true {
-		param := QueryAllArticleInfoParam{}
+		param := QueryAllArticleParam{}
 	    err := r.ParseForm()
     	if err != nil {
     		log.Print("paseform failed")
@@ -45,7 +58,7 @@ func QueryAllArticleInfoHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 
     	controller := &articleController{}
-    	result = controller.queryAllArticleInfoAction(param)
+    	result = controller.queryAllArticleAction(param)
     	
     	break
 	}
@@ -61,7 +74,7 @@ func QueryAllArticleInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryArticleHandler");
+	log.Print("QueryArticleHandler");
 	
 	result := QueryArticleResult{}
 	
@@ -114,7 +127,7 @@ func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteArticleHandler");
+	log.Print("DeleteArticleHandler");
 	
 	result := DeleteArticleResult{}
 	
@@ -167,9 +180,11 @@ func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ajaxArticleHandler");
+	log.Print("AjaxArticleHandler");
 	
 	result := SubmitArticleResult{}
+	
+	session := session.GetSession(w,r)
 	
 	for true {
 		param := SubmitArticleParam{}
@@ -194,17 +209,19 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 	    }	
-		param.catalog, err = strconv.Atoi(catalog)
+		cid, err := strconv.Atoi(catalog)
 	    if err != nil {
 	    	log.Print("parse catalog failed, catalog:%s", catalog)
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
 	    }
+	    param.catalog = append(param.catalog, cid)
 	    
 	    param.title = title
 	    param.content = content
-	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")	    
+	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")
+	    param.author, _ = session.GetAccountId()
 
     	controller := &articleController{}
     	result = controller.submitArticleAction(param)

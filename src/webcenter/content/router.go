@@ -14,14 +14,17 @@ func init() {
 
 func registerRouter() {
 	application.RegisterGetHandler("/admin/content/manageArticle/", article.ManageArticleHandler)
-	application.RegisterPostHandler("/admin/content/queryAllArticleInfo/", article.QueryAllArticleInfoHandler)
+	application.RegisterPostHandler("/admin/content/queryAllArticle/", article.QueryAllArticleHandler)
 	application.RegisterPostHandler("/admin/content/queryArticle/", article.QueryArticleHandler)
 	application.RegisterPostHandler("/admin/content/deleteArticle/", article.DeleteArticleHandler)
 	application.RegisterPostHandler("/admin/content/ajaxArticle/", article.AjaxArticleHandler)	
 	application.RegisterPostHandler("/content/admin/editArticle/", article.EditArticleHandler)
 	
 	application.RegisterGetHandler("/admin/content/manageCatalog/", catalog.ManageCatalogHandler)
-	application.RegisterPostHandler("/admin/content/queryAllCatalog/", catalog.QueryAllCatalogHandler)
+	application.RegisterPostHandler("/admin/content/queryAllCatalogInfo/", catalog.QueryAllCatalogInfoHandler)
+	application.RegisterPostHandler("/admin/content/queryCatalogInfo/", catalog.QueryCatalogInfoHandler)
+	application.RegisterPostHandler("/admin/content/queryAvalibleParentCatalogInfo/", catalog.QueryAvalibleParentCatalogInfoHandler)
+	application.RegisterPostHandler("/admin/content/querySubCatalogInfo/", catalog.QuerySubCatalogInfoHandler)
 	application.RegisterPostHandler("/admin/content/queryCatalog/", catalog.QueryCatalogHandler)
 	application.RegisterPostHandler("/admin/content/deleteCatalog/", catalog.DeleteCatalogHandler)
 	application.RegisterPostHandler("/admin/content/ajaxCatalog/", catalog.AjaxCatalogHandler)	

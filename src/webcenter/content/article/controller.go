@@ -1,10 +1,23 @@
 package article
 
 import (
-	"log"
 	"webcenter/common"
 	"webcenter/modelhelper"
 )
+
+
+type QueryManageInfo struct {
+	ArticleInfo []ArticleSummary
+}
+
+type QueryAllArticleParam struct {
+	accessCode string	
+}
+
+type QueryAllArticleResult struct {
+	common.Result
+	ArticleInfo []ArticleSummary
+}
 
 type QueryArticleParam struct {
 	accessCode string
@@ -13,7 +26,7 @@ type QueryArticleParam struct {
 
 type QueryArticleResult struct {
 	common.Result
-	Article Article
+	Article ArticleDetail
 }
 
 type DeleteArticleParam struct {
@@ -25,20 +38,11 @@ type DeleteArticleResult struct {
 	common.Result
 }
 
-type QueryAllArticleInfoParam struct {
-	accessCode string	
-}
-
-type QueryAllArticleInfoResult struct {
-	common.Result
-	ArticleInfo []ArticleInfo
-}
-
 type SubmitArticleParam struct {
 	id int
 	title string
 	content string
-	catalog int
+	catalog []int
 	submitDate string
 	author int	
 }
@@ -47,24 +51,44 @@ type SubmitArticleResult struct {
 	common.Result
 }
 
+
+type EditArticleParam struct {
+	accessCode string
+	id int
+}
+
+type EditArticleResult struct {
+	common.Result
+	Article ArticleDetail
+}
+
 type articleController struct {
 }
 
-
-func (this *articleController)queryAllArticleInfoAction(param QueryAllArticleInfoParam) QueryAllArticleInfoResult {
-	result := QueryAllArticleInfoResult{}
+func (this *articleController)queryManageInfoAction() QueryManageInfo {
+	info := QueryManageInfo{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 			
-	result.ArticleInfo = GetAllArticleInfo(model)
+	info.ArticleInfo = QueryAllArticle(model)
+
+	return info
+}
+
+func (this *articleController)queryAllArticleAction(param QueryAllArticleParam) QueryAllArticleResult {
+	result := QueryAllArticleResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+			
+	result.ArticleInfo = QueryAllArticle(model)
 	result.ErrCode = 0
 
 	return result
@@ -75,11 +99,7 @@ func (this *articleController)queryArticleAction(param QueryArticleParam) QueryA
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 
@@ -100,11 +120,7 @@ func (this *articleController)deleteArticleAction(param DeleteArticleParam) Dele
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 		
@@ -125,21 +141,17 @@ func (this *articleController)submitArticleAction(param SubmitArticleParam) Subm
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 	
-	article := newArticle()
-	article.Id = param.id
-	article.Title = param.title
-	article.Content = param.content
-	article.Author = param.author
-	article.Catalog = param.catalog
-	article.CreateDate = param.submitDate	
+	article := NewArticle()
+	article.SetId(param.id)
+	article.SetName(param.title)
+	article.SetContent(param.content)
+	article.SetCreateDate(param.submitDate)
+	article.SetCatalog(param.catalog)
+	article.SetAuthor(param.author)
 	
 	if !SaveArticle(model, article) {
 		result.ErrCode = 1
@@ -152,6 +164,27 @@ func (this *articleController)submitArticleAction(param SubmitArticleParam) Subm
 	return result
 }
 
+
+func (this *articleController)editArticleAction(param EditArticleParam) EditArticleResult {
+	result := EditArticleResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+
+	article, found := QueryArticleById(model, param.id)
+	if !found {
+		result.ErrCode = 1
+		result.Reason = "指定对象不存在"
+	} else {
+		result.ErrCode = 0
+		result.Article = article
+	}
+	
+	return result
+}
 
 
 

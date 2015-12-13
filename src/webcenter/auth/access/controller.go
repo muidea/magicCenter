@@ -52,7 +52,7 @@ func (this *accessController)VerifyAction(param *VerifyParam) VerifyResult {
 		result.Reason = "登陆成功"
 		result.RedirectUrl = "/admin/"
 		
-		session.SetAccount(user.Account)
+		session.SetAccountId(user.Id)
 		session.Save()
 	} else {
 		result.ErrCode = 1

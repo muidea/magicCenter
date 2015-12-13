@@ -2,208 +2,357 @@ package article
 
 import (
 	"fmt"
-	"log"
 	"html"
+	"log"
 	"webcenter/modelhelper"
+	"webcenter/common"
+	"webcenter/content/base"
 )
 
-type ArticleInfo struct {
+type ArticleSummary struct {
 	Id int
 	Title string
 	CreateDate string
-	Catalog int
-	Author int
+	Catalog []string
+	Author string
 }
 
-type Article struct {
+type ArticleDetail struct {
 	Id int
 	Title string
 	Content string
 	CreateDate string
-	Catalog int
-	Author int
+	Catalog []string
+	Author string
+}
+
+type Article interface {
+	common.Resource
+	Content() string
+	CreateDate() string
+	Author() int
+	SetId(id int)
+	SetName(name string)
+	SetContent(content string)
+	SetCreateDate(date string)
+	SetAuthor(author int)
+	SetCatalog(catalog []int)
+}
+
+type article struct {
+	id int
+	title string
+	content string
+	createDate string
+	catalog []int
+	author int
 }
 
 
-func newArticleInfo() ArticleInfo {
-	articleInfo := ArticleInfo{}
-	articleInfo.Id = -1
-	articleInfo.Catalog = -1
-	articleInfo.Author = -1
+func (this *article) Id() int {
+	return this.id
+}
+
+func (this *article) Name() string {
+	return this.title
+}
+
+func (this *article) Type() int {
+	return base.ARTICLE
+}
+
+func (this *article)Relative() []common.Resource {
+	ress := []common.Resource{}
 	
-	return articleInfo
-}
-
-func newArticle() Article {
-	article := Article{}
-	article.Id = -1
-	article.Catalog = -1
-	article.Author = -1
+	for _, pid := range this.catalog {
+		res := common.NewSimpleRes(pid,"", base.CATALOG)
+		ress = append(ress, res)
+	}
 	
-	return article
+	return ress
 }
 
-func GetAllArticleInfo(model modelhelper.Model) []ArticleInfo {
-	articleInfoList := []ArticleInfo{}
-	sql := fmt.Sprintf("select id, title, author, createdate, catalog from article")
+func (this *article)Content() string {
+	return this.content
+}
+
+func (this *article)CreateDate() string {
+	return this.createDate
+}
+
+func (this *article)Author() int {
+	return this.author
+}
+
+func (this *article)SetId(id int) {
+	this.id = id
+}
+
+func (this *article)SetName(name string) {
+	this.title = name
+}
+
+func (this *article)SetContent(content string) {
+	this.content = content
+}
+
+func (this *article)SetCreateDate(date string) {
+	this.createDate =date
+}
+
+func (this *article)SetAuthor(author int) {
+	this.author = author
+}
+
+func (this *article)SetCatalog(catalog []int) {
+	this.catalog = catalog
+}
+
+func NewArticle() Article {
+	a := &article{}
+	a.id = -1
+	
+	return a
+}
+
+func QueryAllArticle(model modelhelper.Model) []ArticleSummary {
+	articleSummaryList := []ArticleSummary{}
+	sql := fmt.Sprintf(`select a.id, a.title, u.nickname, a.createdate from article a, user u where a.author = u.id`)
 	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return articleInfoList
+		panic("query failed")
 	}
 
 	for model.Next() {
-		articleInfo := newArticleInfo()
-		model.GetValue(&articleInfo.Id, &articleInfo.Title, &articleInfo.Author, &articleInfo.CreateDate, &articleInfo.Catalog)
+		articleSummary := ArticleSummary{}
+		model.GetValue(&articleSummary.Id, &articleSummary.Title, &articleSummary.Author, &articleSummary.CreateDate)
 		
-		articleInfoList = append(articleInfoList, articleInfo)
+		articleSummaryList = append(articleSummaryList, articleSummary)
 	}
 	
-	return articleInfoList
+	for _, summary := range articleSummaryList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, summary.Id, base.ARTICLE)
+		name := "-"
+		if model.Query(sql) {
+			for model.Next() {
+				if model.GetValue(&name) {
+					summary.Catalog = append(summary.Catalog, name)
+				}
+			}
+		} else {
+			panic("query failed")
+		}				
+	}
+
+	return articleSummaryList
 }
 
-func GetArticleByCatalog(model modelhelper.Model, id int) []ArticleInfo {
-	articleInfoList := []ArticleInfo{}
-	sql := fmt.Sprintf("select id, title, author, createdate, catalog from article where catalog=%d", id)
+func QueryArticleByCatalog(model modelhelper.Model, id int) []ArticleSummary {
+	articleSummaryList := []ArticleSummary{}
+	sql := fmt.Sprintf(`select a.id, a.title, u.nickname, a.createdate from article a, user u where a.author = u.id and a.id in (
+		select src from resource_relative where dst = %d and dstType = %d and srcType = %d )`, id, base.CATALOG, base.ARTICLE)
 	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return articleInfoList
+		panic("query failed")
 	}
 
 	for model.Next() {
-		articleInfo := newArticleInfo()
-		model.GetValue(&articleInfo.Id, &articleInfo.Title, &articleInfo.Author, &articleInfo.CreateDate, &articleInfo.Catalog)
+		articleSummary := ArticleSummary{}
+		model.GetValue(&articleSummary.Id, &articleSummary.Title, &articleSummary.Author, &articleSummary.CreateDate)
 		
-		articleInfoList = append(articleInfoList, articleInfo)
+		articleSummaryList = append(articleSummaryList, articleSummary)
 	}
-		
-	return articleInfoList	
+	
+	for _, summary := range articleSummaryList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, summary.Id, base.ARTICLE)
+		name := "-"
+		if model.Query(sql) {
+			for model.Next() {
+				if model.GetValue(&name) {
+					summary.Catalog = append(summary.Catalog, name)
+				}
+			}
+		} else {
+			panic("query failed")
+		}
+				
+	}
+
+	return articleSummaryList
 }
 
-func QueryArticleByRang(model modelhelper.Model, begin int,offset int) []Article {
-	articleList := []Article{}
-	sql := fmt.Sprintf("select * from (select id, title, content, author, createdate, catalog from article order by id) c where id > %d limit %d", begin, offset)
+func QueryArticleByRang(model modelhelper.Model, begin int,offset int) []ArticleSummary {
+	articleSummaryList := []ArticleSummary{}
+	sql := fmt.Sprintf(`select a.id, a.title, u.nickname, a.createdate from article a, user u where a.author = u.id and a.id in (
+		select src from resource_relative where dstType = %d and srcType = %d ) and a.id >= %d limit %d`, base.CATALOG, base.ARTICLE, begin, offset)
 	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return articleList
+		panic("query failed")
 	}
 
 	for model.Next() {
-		article := newArticle()
-		model.GetValue(&article.Id, &article.Title, &article.Content, &article.Author, &article.CreateDate, &article.Catalog)
+		articleSummary := ArticleSummary{}
+		model.GetValue(&articleSummary.Id, &articleSummary.Title, &articleSummary.Author, &articleSummary.CreateDate)
 		
-		article.Content = html.UnescapeString(article.Content)
-		articleList = append(articleList, article)
+		articleSummaryList = append(articleSummaryList, articleSummary)
 	}
-		
-	return articleList	
+	
+	for _, summary := range articleSummaryList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, summary.Id, base.ARTICLE)
+		name := "-"
+		if model.Query(sql) {
+			for model.Next() {
+				if model.GetValue(&name) {
+					summary.Catalog = append(summary.Catalog, name)
+				}
+			}
+		} else {
+			panic("query failed")
+		}
+				
+	}
+
+	return articleSummaryList
 }
 
-
-func QueryArticleById(model modelhelper.Model, id int) (Article, bool) {
-	article := Article{}
-	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id = %d", id)
+func QueryArticleDetailByRang(model modelhelper.Model, begin int,offset int) []ArticleDetail {
+	articleDetailList := []ArticleDetail{}
+	sql := fmt.Sprintf(`select a.id, a.title, a.content, u.nickname, a.createdate from article a, user u where a.author = u.id and a.id in (
+		select src from resource_relative where dstType = %d and srcType = %d ) and a.id >= %d limit %d`, base.CATALOG, base.ARTICLE, begin, offset)
+	
+	log.Print(sql)
+		
 	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return article, false
+		panic("query failed")
+	}
+
+	for model.Next() {
+		articleDetail := ArticleDetail{}
+		model.GetValue(&articleDetail.Id, &articleDetail.Title, &articleDetail.Content, &articleDetail.Author, &articleDetail.CreateDate)
+		
+		articleDetailList = append(articleDetailList, articleDetail)
+	}
+	
+	for _, detail := range articleDetailList {
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, detail.Id, base.ARTICLE)
+		name := "-"
+		if model.Query(sql) {
+			for model.Next() {
+				if model.GetValue(&name) {
+					detail.Catalog = append(detail.Catalog, name)
+				}
+			}
+		} else {
+			panic("query failed")
+		}
+				
+	}
+
+	return articleDetailList
+}
+
+func QueryArticleById(model modelhelper.Model, id int) (ArticleDetail, bool) {
+	article := ArticleDetail{}
+	
+	sql := fmt.Sprintf(`select a.id, a.title, a.content, u.nickname, a.createdate from article a, user u where a.author = u.id and a.id = %d`, id)
+	if !model.Query(sql) {          
+		panic("query failed")
 	}
 
 	result := false
 	for model.Next() {
-		result = model.GetValue(&article.Id, &article.Title, &article.Content, &article.Author, &article.CreateDate, &article.Catalog)
+		result = model.GetValue(&article.Id, &article.Title, &article.Content, &article.Author, &article.CreateDate)
 		if result {
 			article.Content = html.UnescapeString(article.Content)
 		}
+		break
+	}
+	if !result {
+		return article, result
+	}
+
+	sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, article.Id, base.ARTICLE)
+	name := "-"
+	if model.Query(sql) {
+		for model.Next() {
+			if model.GetValue(&name) {
+				article.Catalog = append(article.Catalog, name)
+			}
+		}
+	} else {
+		panic("query failed")
 	}
 	
 	return article, result	
 }
 
 func DeleteArticleById(model modelhelper.Model, id int) bool {
-	sql := fmt.Sprintf("delete from article where id=%d", id)
+	if !model.BeginTransaction() {
+		return false
+	}
+	
+	sql := fmt.Sprintf(`delete from article where id=%d`, id)
 	
 	result := model.Execute(sql)
-	
+	if result {
+		ar := article{}
+		ar.id = id
+		result  = common.DeleteResource(model, &ar)
+	}
+		
+	if !result {
+		model.Rollback()
+	} else {
+		model.Commit()
+	}
+		
 	return result	
 }
 
 func SaveArticle(model modelhelper.Model, article Article) bool {
-	sql := fmt.Sprintf("select id from article where id=%d", article.Id)
+	sql := fmt.Sprintf(`select id from article where id=%d`, article.Id())
 	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return false
+		panic("query failed")
 	}
 
 	result := false;
 	for model.Next() {
 		var id = 0
 		result = model.GetValue(&id)
-		result = true
 	}
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf("insert into article (title,content,author,createdate,catalog) values ('%s','%s',%d,'%s',%d)", article.Title, html.EscapeString(article.Content), article.Author, article.CreateDate, article.Catalog)
-	} else {
-		// modify
-		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", article.Title, html.EscapeString(article.Content), article.Author, article.CreateDate, article.Catalog, article.Id)
-	}
-	
-	result = model.Execute(sql)
-	
-	return result
-}
-
-
-func (this *Article)Query(model modelhelper.Model) bool {
-	sql := fmt.Sprintf("select id, title, content, author, createdate, catalog from article where id=%d", this.Id)
-	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
+	if !model.BeginTransaction() {
 		return false
 	}
-
-	result := false;
-	for model.Next() {
-		result = model.GetValue(&this.Id, &this.Title, &this.Content, &this.Author, &this.CreateDate, &this.Catalog)
+	
+	if !result {
+		// insert
+		sql = fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, article.Name(), html.EscapeString(article.Content()), article.Author(), article.CreateDate())
+		result = model.Execute(sql)
+		sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, article.Name(), article.Author(), article.CreateDate())
 		
-		if result {		
-			this.Content = html.UnescapeString(this.Content)
-		}		
-	}
-	
-	return result		
-}
-
-func (this *Article)delete(model modelhelper.Model) bool {
-	sql := fmt.Sprintf("delete from article where id=%d", this.Id)
-	
-	result := model.Execute(sql)
-	
-	return result
-}
-
-func (this *Article)save(model modelhelper.Model) bool {
-	sql := fmt.Sprintf("select id from article where id=%d", this.Id)
-	if !model.Query(sql) {
-		log.Printf("query article failed, sql:%s", sql)
-		return false
-	}
-
-	result := false;
-	for model.Next() {
-		var id = 0
-		result = model.GetValue(&id)
-		result = true
-	}
-
-	if !result {
-		// insert
-		sql = fmt.Sprintf("insert into article (title,content,author,createdate,catalog) values ('%s','%s',%d,'%s',%d)", this.Title, html.EscapeString(this.Content), this.Author, this.CreateDate, this.Catalog)
+		id := -1
+		result = model.Query(sql)
+		if result {
+			result = false
+			for model.Next() {
+				result = model.GetValue(&id)
+			}
+			
+			article.SetId(id)
+		}
 	} else {
 		// modify
-		sql = fmt.Sprintf("update article set title ='%s', content ='%s', author =%d, createdate ='%s', catalog =%d where id=%d", this.Title, html.EscapeString(this.Content), this.Author, this.CreateDate, this.Catalog, this.Id)
+		sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Name(), html.EscapeString(article.Content()), article.Author(), article.CreateDate(), article.Id())
+		result = model.Execute(sql)
 	}
 	
-	result = model.Execute(sql)
+	if result {
+		result = common.SaveResource(model, article)
+	}
+	
+	if result {
+		model.BeginTransaction()
+	} else {
+		model.Rollback()
+	}
 	
 	return result
 }

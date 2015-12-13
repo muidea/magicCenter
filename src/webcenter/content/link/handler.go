@@ -13,7 +13,7 @@ func ManageLinkHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
-    t, err := template.ParseFiles("template/html/admin/content/Link.html")
+    t, err := template.ParseFiles("template/html/admin/content/link.html")
     if (err != nil) {
         log.Print(err)
         
@@ -227,6 +227,55 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditLinkHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("EditLinkHandler");
 	
+	result := EditLinkResult{}
+	
+	for true {
+		param := EditLinkParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
+		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+    	if err != nil {
+    		log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    
+		param.accessCode = accessCode
+		    	
+    	controller := &linkController{}
+    	result = controller.editLinkAction(param)
+    	
+    	break
+	}
+		
+    b, err := json.Marshal(result)
+    if err != nil {
+    	log.Fatal("json marshal failed, err:" + err.Error())
+    	http.Redirect(w, r, "/404/", http.StatusNotFound)
+        return
+    }
+    
+    w.Write(b)	
 }
 

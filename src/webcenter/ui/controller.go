@@ -9,16 +9,16 @@ import (
 type ArticleView struct {
 	common.Result
 	Article ArticleContent
-	ArticleCatalog []ArticleCatalog
-	SiteLink []SiteLink
+	ArticleCatalog []CatalogContent
+	SiteLink []LinkContent
 }
 
 
 type IndexView struct {
 	common.Result
-	ArticleSummary []ArticleSummary
-	ArticleCatalog []ArticleCatalog
-	SiteLink []SiteLink
+	ArticleSummary []ArticleContent
+	ArticleCatalog []CatalogContent
+	SiteLink []LinkContent
 }
 
 type uiController struct {
@@ -35,7 +35,7 @@ func (this *uiController)ViewArticleAction(id int) ArticleView {
 	}
 	defer model.Release()
 	
-	articleview, found := GetArticleView(model, id)
+	articleview, found := GetArticleContent(model, id)
 	if !found {
 		log.Printf("can't find article,id:%d", id)
 		view.ErrCode = 1
@@ -44,8 +44,8 @@ func (this *uiController)ViewArticleAction(id int) ArticleView {
 	}
 	
 	view.Article = articleview;
-	view.ArticleCatalog = GetArticleCatalog(model)
-	view.SiteLink = GetSiteLink(model)
+	view.ArticleCatalog = GetCatalog(model)
+	view.SiteLink = GetLink(model)
 	view.ErrCode = 0;
 	
 	return view
@@ -63,8 +63,8 @@ func (this *uiController)IndexAction() IndexView {
 	defer model.Release()	
 	
 	view.ArticleSummary = GetArticleSummary(model, 0,4)
-	view.ArticleCatalog = GetArticleCatalog(model)
-	view.SiteLink = GetSiteLink(model)
+	view.ArticleCatalog = GetCatalog(model)
+	view.SiteLink = GetLink(model)
 	view.ErrCode = 0
 
 	return view

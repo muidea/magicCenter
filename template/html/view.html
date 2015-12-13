@@ -65,7 +65,7 @@
 				<li>
 					<h2>文章分类</h2>
 					<ul>
-				{{with .ArticleCatalog}}
+				{{with .CatalogContent}}
 					{{range .}}
 					
 						<li><a href="#">{{.Name}}</a></li>
@@ -76,7 +76,7 @@
 				<li>
 					<h2>友情链接</h2>
 					<ul>
-				{{with .SiteLink}}
+				{{with .LinkContent}}
 					{{range .}}
 						{{if eq .Style 0}}
 						<li><a href="{{.Url}}">{{.Name}}</a></li>

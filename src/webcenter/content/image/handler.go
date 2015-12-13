@@ -16,6 +16,8 @@ import (
 )
 
 func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageImageHandler");
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
@@ -31,7 +33,7 @@ func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func QueryAllImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryAllImageHandler");
+	log.Print("QueryAllImageHandler");
 	
 	result := QueryAllImageResult{}
 	
@@ -65,7 +67,7 @@ func QueryAllImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteImageHandler");
+	log.Print("DeleteImageHandler");
 	
 	result := DeleteImageResult{}
 	
@@ -120,7 +122,7 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ajaxImageHandler");
+	log.Print("AjaxImageHandler");
 	
 	result := SubmitImageResult{}
 	
@@ -183,5 +185,54 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditImageHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("EditImageHandler");
 	
+	result := EditImageResult{}
+	
+	for true {
+		param := EditImageParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
+		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+    	if err != nil {
+    		log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    
+		param.accessCode = accessCode
+		    	
+    	controller := &imageController{}
+    	result = controller.editImageAction(param)
+    	
+    	break
+	}
+		
+    b, err := json.Marshal(result)
+    if err != nil {
+    	log.Fatal("json marshal failed, err:" + err.Error())
+    	http.Redirect(w, r, "/404/", http.StatusNotFound)
+        return
+    }
+    
+    w.Write(b)	
 }

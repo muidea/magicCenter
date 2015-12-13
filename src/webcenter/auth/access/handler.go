@@ -27,7 +27,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    _, found := session.GetAccount()
+    _, found := session.GetAccountId()
     if found {
         http.Redirect(w, r, "/admin/", http.StatusFound)
         return

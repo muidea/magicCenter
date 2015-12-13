@@ -2,58 +2,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Catalog Center</title>
+<title>Article Center</title>
 <!--                       CSS                       -->
 <!-- Main Stylesheet -->
-<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"
+	media="screen" />
 <!--                       Javascripts                       -->
 <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
-<script type="text/javascript" src="/resources/scripts/admin.jquery.content.catalog.js"></script>
-<script type="text/javascript" src="/resources/scripts/admin.ajax.content.catalog.js"></script>
-<script type="text/javascript">
-	catalog.accesscode = {{.Accesscode}};
-	
-	catalog.catalog = {{.Catalog}};
-
-	$(document).ready(function() {
-		catalog.initialize();
-	});	
-</script>
+<script type="text/javascript" src="/resources/scripts/jquery.wysiwyg.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.content.article.js"></script>
 </head>
 <body>
 	<div id="content">
-		<div class="content-box" id="catalog-content">
+		<div class="content-box" id="article-content">
 			<!-- Start Content Box -->
 			<div class="content-box-header">
-				<h3>分类管理</h3>
+				<h3>文章管理</h3>
 				<ul class="content-box-tabs">
-					<li><a href="#catalog-List"
-						class="default-tab catalog-List-tab">列表</a></li>
+					<li><a href="#article-List"
+						class="default-tab article-List-tab">列表</a></li>
 					<!-- href must be unique and match the id of target div -->
-					<li><a href="#catalog-Edit" class="catalog-Edit-tab">编辑</a></li>
+					<li><a href="#article-Edit" class="article-Edit-tab">编辑</a></li>
 				</ul>
 				<div class="clear"></div>
 			</div>
 			<!-- End .content-box-header -->
 			<div class="content-box-content">
-				<div class="tab-content default-tab" id="catalog-List">
-					<!-- This is the target div. id must match the href of this div's tab -->
+				<div class="tab-content default-tab" id="article-List">
 					<div class="notification error png_bg" style="display: none">
 						<a href="#" class="close"><img
 							src="/resources/images/icons/cross_grey_small.png"
 							title="Close this notification" alt="close" /></a>
-						<div>This is a Content Box. You can put whatever you want in
-							it. By the way, you can close this notification with the
+						<div>This is a Content Box. You can put whatever you want
+							in it. By the way, you can close this notification with the
 							top-right cross.</div>
 					</div>
 					<table>
 						<thead>
 							<tr>
 								<th><input class="check-all" type="checkbox" /></th>
-								<th>分类名</th>
-								<th>父类</th>
-								<th>创建者</th>
+								<th>标题</th>
+								<th>分类</th>
+								<th>作者</th>
+								<th>创建日期</th>
 								<th>操作</th>
 							</tr>
 						</thead>
@@ -81,27 +73,24 @@
 							</tr>
 						</tfoot>
 						<tbody>
-							<tr>
+							<tr class="article">
 								<td><input type="checkbox" /></td>
-								<td><a href="#" title="title">Sit amet</a></td>
-								<td><a href="#" title="title">Parent Catalog</a></td>
-								<td>Donec tortor diam</td>
-								<td>
-									<!-- Icons --> <a href="#" title="Edit"><img
-										src="/resources/images/icons/pencil.png" alt="Edit" /></a> <a
-									href="#" title="Delete"><img
-										src="/resources/images/icons/cross.png" alt="Delete" /></a> <a
-									href="#" title="Edit Meta"><img
-										src="/resources/images/icons/hammer_screwdriver.png"
-										alt="Edit Meta" /></a>
-								</td>
+								<td><a class="edit" href="/content/article/query"
+									title="title">Title</a></td>
+								<td>catalog</td>
+								<td>author</td>
+								<td>2015年8月25日</td>
+								<td><a class="edit" href="/content/article/query"
+									title="Edit"><img src="/resources/images/icons/pencil.png"
+										alt="Edit" /></a><a class="delete"
+									href="/content/article/delete" title="Delete"><img
+										src="/resources/images/icons/cross.png" alt="Delete" /></a></td>
 							</tr>
-
 						</tbody>
 					</table>
 				</div>
 				<!-- End #tab1 -->
-				<div class="tab-content" id="catalog-Edit">
+				<div class="tab-content" id="article-Edit">
 					<div class="notification success png_bg" style="display: none">
 						<a href="#" class="close"><img
 							src="/resources/images/icons/cross_grey_small.png"
@@ -118,23 +107,28 @@
 							consectetur adipiscing elit. Proin vulputate, sapien quis
 							fermentum luctus, libero.</div>
 					</div>
-					<form class="catalog-Form" action="/admin/content/ajaxCatalog/"
+					<form class="article-Form" action="/content/article/ajax/"
 						method="post">
 						<fieldset>
 							<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
 							<p>
-								<label>名称</label> <input
-									class="text-input small-input catalog-name" type="text"
-									name="catalog-name" />
+								<label>标题</label> <input
+									class="text-input small-input article-title" type="text"
+									name="article-title" />
 							</p>
 							<p>
-								<label>父类</label> <select name="catalog-parent"
-									class="small-input catalog-parent">
+								<label>正文</label>
+								<textarea class="text-input textarea wysiwyg article-content"
+									name="article-content" cols="79" rows="15"></textarea>
+							</p>
+							<p>
+								<label>分类</label> <select name="article-catalog"
+									class="small-input article-catalog">
 									<option value="option1">Option 1</option>
 								</select>
 							</p>
 							<p>
-								<input type="hidden" name="catalog-id" class="catalog-id"
+								<input type="hidden" name="article-id" class="article-id"
 									value="-1" /> <input class="button" type="submit" value="提交" />
 							</p>
 						</fieldset>

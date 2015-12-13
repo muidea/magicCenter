@@ -24,10 +24,12 @@
 	$(document).ready(function() {
 		// menu item's sub menu
 		$("#main-nav li a.nav-top-item").click(	// When a top menu item is clicked...
-			function() {
-			
+			function() {			
 				var currentDiv = $(this).attr('href');
-				alert(currentDiv);
+				
+				var item = $(this).find("ul li:eq(0) a");
+				
+				$(item).trigger("click");
 				
 				return false;
 			}
@@ -68,7 +70,7 @@
 					<!-- Accordion Menu -->
 					<li><a href="#content" class="nav-top-item current">内容管理 </a>
 						<ul>
-							<li><a id="articleItem" class="nav-sub-item current" href="/admin/content/manageArticle/">文章管理</a></li>
+							<li><a class="nav-sub-item current" href="/admin/content/manageArticle/">文章管理</a></li>
 							<li><a class="nav-sub-item" href="/admin/content/manageCatalog/">分类管理</a></li>
 							<li><a class="nav-sub-item" href="/admin/content/manageLink/">链接管理</a></li>
 							<li><a class="nav-sub-item" href="/admin/content/manageImage/">图片管理</a></li>

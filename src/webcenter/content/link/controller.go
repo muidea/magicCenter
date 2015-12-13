@@ -7,6 +7,14 @@ import (
 	"webcenter/modelhelper"
 )
 
+type QueryAllLinkParam struct {
+	accessCode string	
+}
+
+type QueryAllLinkResult struct {
+	common.Result
+	Link []LinkInfo
+}
 
 type QueryLinkParam struct {
 	accessCode string
@@ -15,18 +23,7 @@ type QueryLinkParam struct {
 
 type QueryLinkResult struct {
 	common.Result
-	Link Link
-}
-
-
-type EditLinkParam struct {
-	accessCode string
-	id int
-}
-
-type EditLinkResult struct {
-	common.Result
-	Link Link
+	Link LinkInfo
 }
 
 type DeleteLinkParam struct {
@@ -36,15 +33,6 @@ type DeleteLinkParam struct {
 
 type DeleteLinkResult struct {
 	common.Result
-}
-
-type QueryAllLinkParam struct {
-	accessCode string	
-}
-
-type QueryAllLinkResult struct {
-	common.Result
-	Link []Link
 }
 
 type SubmitLinkParam struct {
@@ -59,6 +47,16 @@ type SubmitLinkParam struct {
 
 type SubmitLinkResult struct {
 	common.Result
+}
+
+type EditLinkParam struct {
+	accessCode string
+	id int
+}
+
+type EditLinkResult struct {
+	common.Result
+	Link LinkInfo
 }
 
 type linkController struct {
@@ -97,32 +95,7 @@ func (this *linkController)queryLinkAction(param QueryLinkParam) QueryLinkResult
 	}
 	defer model.Release()
 	
-	link, found := QueryLink(model,param.id)
-	if !found {
-		result.ErrCode = 1
-		result.Reason = "指定对象不存在"
-	} else {
-		result.ErrCode = 0
-		result.Link = link
-	}
-
-	return result
-}
-
-func (this *linkController)editLinkAction(param EditLinkParam) EditLinkResult {
-	result := EditLinkResult{}
-	
-	model, err := modelhelper.NewModel()
-	if err != nil {
-		log.Print("create contentModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
-	}
-	defer model.Release()
-	
-	link, found := QueryLink(model,param.id)
+	link, found := QueryLinkById(model,param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"
@@ -168,14 +141,14 @@ func (this *linkController)submitLinkAction(param SubmitLinkParam) SubmitLinkRes
 	}
 	defer model.Release()
 
-	link := newLink()
-	link.Id = param.id
-	link.Name = param.name
-	link.Url = param.url
-	link.Logo = param.logo
-	link.Style = param.style
-	link.Creater = param.creater
-	
+	link := NewLink()
+	link.SetId(param.id)
+	link.SetName(param.name)
+	link.SetUrl(param.url)
+	link.SetLogo(param.logo)
+	link.SetStyle(param.style)
+	link.SetCreater(param.creater)
+		
 	if !SaveLink(model, link) {
 		result.ErrCode = 1
 		result.Reason = "保存链接失败"
@@ -186,4 +159,31 @@ func (this *linkController)submitLinkAction(param SubmitLinkParam) SubmitLinkRes
 	
 	return result
 }
+
+func (this *linkController)editLinkAction(param EditLinkParam) EditLinkResult {
+	result := EditLinkResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		log.Print("create contentModel failed")
+		
+		result.ErrCode = 1
+		result.Reason = "创建Model失败"
+		return result
+	}
+	defer model.Release()
+	
+	link, found := QueryLinkById(model,param.id)
+	if !found {
+		result.ErrCode = 1
+		result.Reason = "指定对象不存在"
+	} else {
+		result.ErrCode = 0
+		result.Link = link
+	}
+
+	return result
+}
+
+
 

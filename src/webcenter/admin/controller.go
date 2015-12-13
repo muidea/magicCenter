@@ -23,7 +23,7 @@ func (this *manageController) ManageAction(param *ManageParam) ManageResult {
 	result := ManageResult{}
 
 	for true {
-		accountId, found := param.session.GetAccount()
+		accountId, found := param.session.GetAccountId()
 		if !found {
 			result.ErrCode = -1
 			result.Reason = "当前未登陆"
@@ -35,7 +35,7 @@ func (this *manageController) ManageAction(param *ManageParam) ManageResult {
 			panic("new model failed")
 		}
 
-		user, found := account.QueryUserByAccount(model, accountId)
+		user, found := account.QueryUserById(model, accountId)
 		if !found || !account.IsAdmin(model, user) {
 			result.ErrCode = -1
 			result.Reason = "非法账号"

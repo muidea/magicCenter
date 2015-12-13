@@ -2,98 +2,82 @@ package ui
 
 
 import (
+	"log"
 	"html/template"
 	"webcenter/modelhelper"
-	"webcenter/auth/account"
 	"webcenter/content/article"
 	"webcenter/content/catalog"
 	"webcenter/content/link"
 )
-
-type ArticleSummary struct {
-	Id int
-	Title string
-	Content template.HTML
-	CreateDate string
-	Catalog string
-	Author string	
-}
 
 type ArticleContent struct {
 	Id int
 	Title string
 	Content template.HTML
 	CreateDate string
-	Catalog string
+	Catalog []string
 	Author string	
 }
 
-type ArticleCatalog struct {
+type CatalogContent struct {
 	Id int
 	Name string
 }
 
-type SiteLink struct {
+type LinkContent struct {
 	Name string
 	Url string
 	Logo string
 	Style int	
 } 
 
-func GetArticleSummary(model modelhelper.Model, begin int, end int) []ArticleSummary {
-	articleSummaryList := []ArticleSummary{}
+func GetArticleSummary(model modelhelper.Model, begin int, offSet int) []ArticleContent {
+	articleSummaryList := []ArticleContent{}
 	
-	articleLis := article.QueryArticleByRang(model,0, 4)
+	articleLis := article.QueryArticleDetailByRang(model, begin, offSet)
 	for ii := 0; ii < len(articleLis); ii++ {
 		article := articleLis[ii]
-		summary := ArticleSummary{}
+		summary := ArticleContent{}
 				
 		summary.Id = article.Id
 		summary.Title = article.Title
 		summary.Content = template.HTML(article.Content)
 		summary.CreateDate = article.CreateDate
-		catalog, found := catalog.QueryCatalogById(model, article.Catalog)
-		if found {
-			summary.Catalog = catalog.Name
-		}
-		
-		user, found := account.QueryUserById(model, article.Author)
-		if found {
-			summary.Author = user.NickName			
-		} else {
-			summary.Author = "Unknown"
-		}
+		summary.Catalog = article.Catalog
+		summary.Author = article.Author
 		
 		articleSummaryList = append(articleSummaryList,summary)
 	}
 	
+	log.Printf("QueryArticleDetailByRang, begin:%d, offSet:%d, result Size:%d", begin, offSet, len(articleSummaryList))
+		
 	return articleSummaryList
 }
 
-func GetArticleCatalog(model modelhelper.Model) []ArticleCatalog {
-	articleCatalogList := []ArticleCatalog{}
+func GetCatalog(model modelhelper.Model) []CatalogContent {
+	articleCatalogList := []CatalogContent{}
 	
-	catalogLis := catalog.GetAllCatalog(model)
+	catalogLis := catalog.QueryAllCatalogInfo(model)
 	for ii := 0; ii < len(catalogLis); ii++ {
 		catalog := catalogLis[ii]
-		cnt := ArticleCatalog{}
+		cnt := CatalogContent{}
 
 		cnt.Id = catalog.Id
 		cnt.Name = catalog.Name
-				
+		
 		articleCatalogList = append(articleCatalogList, cnt)
 	}
 	
 	return articleCatalogList
 }
 
-func GetSiteLink(model modelhelper.Model) []SiteLink {
-	siteLinkList := []SiteLink{}
+func GetLink(model modelhelper.Model) []LinkContent {
+	siteLinkList := []LinkContent{}
 	
 	links := link.QueryAllLink(model)
 	for ii := 0; ii < len(links); ii++ {
 		link := links[ii]
-		cnt := SiteLink{}
+		cnt := LinkContent{}
 
 		cnt.Name = link.Name
 		cnt.Url = link.Url
@@ -106,28 +90,17 @@ func GetSiteLink(model modelhelper.Model) []SiteLink {
 	return siteLinkList
 }
 
-func GetArticleView(model modelhelper.Model, id int) (ArticleContent, bool) {
+func GetArticleContent(model modelhelper.Model, id int) (ArticleContent, bool) {
 	cnt := ArticleContent{}
 	
-	article, found := article.QueryArticleById(model, id)
+	ar, found := article.QueryArticleById(model, id)
 	if found {
-		cnt.Id = article.Id
-		cnt.Title = article.Title
-		cnt.Content = template.HTML(article.Content)
-		cnt.CreateDate = article.CreateDate
-		catalog, found := catalog.QueryCatalogById(model, article.Catalog)
-		if found {
-			cnt.Catalog = catalog.Name			
-		} else {
-			cnt.Catalog = "Unknown"
-		}
-		
-		user, found := account.QueryUserById(model, article.Author)
-		if found {
-			cnt.Author = user.NickName			
-		} else {
-			cnt.Author = "Unknown"
-		}
+		cnt.Id = ar.Id
+		cnt.Title = ar.Title
+		cnt.Content = template.HTML(ar.Content)
+		cnt.CreateDate = ar.CreateDate		
+		cnt.Catalog = ar.Catalog
+		cnt.Author = ar.Author
 	}
 	
 	return cnt, found

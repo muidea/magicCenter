@@ -37,21 +37,21 @@ func (this *Session) timeOut() bool {
 	return elapse > MAX_TIME_OUT
 }
 
-func (this *Session) GetAccount() (string, bool) {
-	account, found := this.context["$$account"]
+func (this *Session) GetAccountId() (int, bool) {
+	account, found := this.context["$$account_Id"]
 	if found {
-		return account.(string), found
+		return account.(int), found
 	}
 
-	return "", found
+	return -1, found
 }
 
-func (this *Session) SetAccount(account string) {
-	this.context["$$account"] = account
+func (this *Session) SetAccountId(accountId int) {
+	this.context["$$account_Id"] = accountId
 }
 
 func (this *Session) ResetAccount() {
-	delete(this.context, "$$account")
+	delete(this.context, "$$account_Id")
 }
 
 func (this *Session) AccessToken() string {

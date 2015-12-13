@@ -5,13 +5,22 @@
 <title>Article Center</title>
 <!--                       CSS                       -->
 <!-- Main Stylesheet -->
-<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"
-	media="screen" />
+<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"	media="screen" />
 <!--                       Javascripts                       -->
 <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.wysiwyg.js"></script>
-<script type="text/javascript" src="/resources/scripts/admin.content.article.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.jquery.content.article.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.ajax.content.article.js"></script>
+<script type="text/javascript">
+	article.accesscode = {{.Accesscode}};
+	article.articleInfo = {{.ArticleInfo}};
+	article.catalog = {{.Catalog}};
+	
+	$(document).ready(function() {
+		article.initialize();
+	});	
+</script>
 </head>
 <body>
 	<div id="content">
@@ -107,7 +116,7 @@
 							consectetur adipiscing elit. Proin vulputate, sapien quis
 							fermentum luctus, libero.</div>
 					</div>
-					<form class="article-Form" action="/content/article/ajax/"
+					<form class="article-Form" action="/admin/content/ajaxArticle/"
 						method="post">
 						<fieldset>
 							<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->

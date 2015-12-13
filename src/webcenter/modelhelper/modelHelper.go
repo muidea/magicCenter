@@ -5,6 +5,11 @@ import (
 )
 
 type Model interface {
+	BeginTransaction() bool
+	
+	Commit() bool
+	
+	Rollback() bool
 	
 	Query(string) bool
 	
@@ -31,6 +36,18 @@ func NewModel()(Model, error) {
 	
 	m.dao = dao	
 	return m, err
+}
+
+func (this *model) BeginTransaction() bool {
+	return this.dao.BeginTransaction()
+}
+
+func (this *model) Commit() bool {
+	return this.dao.Commit()
+}
+
+func (this *model) Rollback() bool {
+	return this.dao.Rollback()
 }
 
 func (this *model)Query(sql string) bool {
