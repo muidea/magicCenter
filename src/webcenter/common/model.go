@@ -1,6 +1,7 @@
 package common
 
 import (
+	"log"
 	"fmt"
 	"webcenter/modelhelper"
 )
@@ -161,8 +162,11 @@ func DeleteResource(model modelhelper.Model, res Resource) bool {
 func saveResourceRelative(model modelhelper.Model, res Resource) bool {
 	result := false
 
+	deleteResourceRelative(model, res)
+
 	for _, rr := range res.Relative() {
-		sql := fmt.Sprintf(`select id from resource_relative where src=%d and srcType=%d and dst=%d and dstType=%d`, res.Id, res.Type(), rr.Id(), rr.Type())
+		result = false				
+		sql := fmt.Sprintf(`select id from resource_relative where src=%d and srcType=%d and dst=%d and dstType=%d`, res.Id(), res.Type(), rr.Id(), rr.Type())
 		if !model.Query(sql) {
 			panic("qery failed")
 			return false
@@ -173,6 +177,8 @@ func saveResourceRelative(model modelhelper.Model, res Resource) bool {
 			result = model.GetValue(&id)
 			result = true
 		}
+
+		log.Printf("result:%b, sql:%s", result, sql)
 
 		if !result {
 			// insert

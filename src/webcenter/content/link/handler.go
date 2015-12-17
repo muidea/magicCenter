@@ -7,21 +7,46 @@ import (
 	"strings"
 	"log"
 	"strconv"
+	"webcenter/session"
+	"webcenter/common"
 )
 
+type ManageView struct {
+	Accesscode string
+	LinkInfo []LinkInfo
+}
+
+type EditView struct {
+	common.Result
+	Accesscode string
+	Id int
+	Name string
+	Url string
+	Logo string
+	Style int
+	Catalog []int
+}
+
 func ManageLinkHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageLinkHandler");
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
+	session := session.GetSession(w,r)
     t, err := template.ParseFiles("template/html/admin/content/link.html")
     if (err != nil) {
-        log.Print(err)
-        
-        http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("parse files failed");
     }
-        
-    t.Execute(w, nil)
+    
+	controller := &linkController{}
+	info := controller.queryManageInfoAction()
+    
+    view := ManageView{}
+    view.Accesscode = session.AccessToken()
+    view.LinkInfo = info.LinkInfo
+    
+    t.Execute(w, view)    
 }
 
 
@@ -172,9 +197,11 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	
 	result := SubmitLinkResult{}
 	
+	session := session.GetSession(w,r)
+	
 	for true {
 		param := SubmitLinkParam{}
-	    err := r.ParseForm()
+	    err := r.ParseMultipartForm(0)
     	if err != nil {
     		log.Print("paseform failed")
     		
@@ -189,6 +216,9 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 		logo := r.FormValue("link-logo")
 		style := r.FormValue("link-style")
 	    accessCode := r.FormValue("accesscode")
+	    catalog := r.MultipartForm.Value["link-catalog"]
+	    
+	    log.Print(catalog)
 	    
 		param.id, err = strconv.Atoi(id)
 	    if err != nil {
@@ -197,6 +227,18 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 	    }
+	    for _, ca := range catalog {
+			cid, err := strconv.Atoi(ca)
+		    if err != nil {
+		    	log.Print("parse catalog failed, catalog:%s", ca)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    
+		    param.catalog = append(param.catalog, cid)
+	    }
+	    	    
 	    param.name = name
 	    param.url = url
 	    param.logo = logo
@@ -209,6 +251,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	    }
 
 		param.accessCode = accessCode
+		param.creater, _ = session.GetAccountId()
 
     	controller := &linkController{}
     	result = controller.submitLinkAction(param)
@@ -229,7 +272,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 func EditLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("EditLinkHandler");
 	
-	result := EditLinkResult{}
+	result := EditView{}
 	
 	for true {
 		param := EditLinkParam{}
@@ -264,7 +307,18 @@ func EditLinkHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 		    	
     	controller := &linkController{}
-    	result = controller.editLinkAction(param)
+    	lnk := controller.editLinkAction(param)
+    	
+    	result.ErrCode = lnk.ErrCode
+    	result.Reason = lnk.Reason
+    	result.Id = lnk.Link.Id()
+    	result.Name = lnk.Link.Name()
+    	result.Url = lnk.Link.Url()
+    	result.Logo = lnk.Link.Logo()
+    	result.Style = lnk.Link.Style()
+    	for _, c := range lnk.Link.Relative() {
+    		result.Catalog = append(result.Catalog, c.Id())
+    	}    	
     	
     	break
 	}

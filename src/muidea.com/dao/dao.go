@@ -2,9 +2,10 @@ package dao
 
 import (
 	"fmt"
-	"log"
+	"log"	
     "database/sql"
     _ "github.com/go-sql-driver/mysql"
+    "martini"
 )
 
 type Dao struct {
@@ -16,10 +17,14 @@ type Dao struct {
 func Fetch(user string, password string, address string, dbName string) (*Dao, error) {
 	connectStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", user,password,address,dbName)
 	
+	if martini.Env != martini.Prod {
+		log.Print(connectStr)
+	}
+	
 	dao := Dao{dbHandle:nil, dbTx:nil, rowsHandle:nil}
 	db, err := sql.Open("mysql", connectStr)
 	if err != nil {
-		log.Printf("open database failed, err:%s", err.Error())
+		panic("open database exception, err:" + err.Error())
 	} else {
 		dao.dbHandle = db		
 	}
@@ -43,8 +48,7 @@ func (this *Dao) Release() {
 func (this *Dao) BeginTransaction() bool {
 	tx, err := this.dbHandle.Begin()
 	if err != nil {
-		log.Print("begin transaction failed");
-		return false
+		panic("begin transaction exception, err:" + err.Error())
 	}
 	
 	this.dbTx = tx
@@ -58,7 +62,7 @@ func (this *Dao) Commit() bool {
 	
 	err := this.dbTx.Commit()
 	if err != nil {
-		log.Print("commit transaction failed")
+		panic("commit transaction exception, err:" + err.Error())
 		
 		this.dbTx = nil
 		return false;
@@ -74,8 +78,8 @@ func (this *Dao) Rollback() bool {
 	}
 	
 	err := this.dbTx.Rollback()
-	if err != nil {
-		log.Print("rollback transaction failed")
+	if err != nil {		
+		panic("rollback transaction exception, err:" + err.Error())
 		
 		this.dbTx = nil
 		return false;
@@ -86,13 +90,18 @@ func (this *Dao) Rollback() bool {
 }
 
 func (this *Dao) Query(sql string) bool {
+		
 	if this.dbHandle == nil {
 		return false
 	}
-	
+
+	if martini.Env != martini.Prod {
+		log.Print("query:" + sql)
+	}
+		
 	rows, err := this.dbHandle.Query(sql)
 	if err != nil {
-		log.Printf("query failed, err:%s", err.Error())
+		panic("query exception, err:" + err.Error())
 		return false
 	}
 	
@@ -120,8 +129,7 @@ func (this *Dao) GetField(value ... interface{}) bool {
 	
 	err := this.rowsHandle.Scan(value...)
 	if err != nil {
-		log.Printf("get field failed, err:%s", err.Error())
-		return false
+		panic("scan exception, err:" + err.Error())
 	}
 	
 	return true
@@ -132,16 +140,18 @@ func (this *Dao) Execute(sql string) bool {
 		return false
 	}
 	
+	if martini.Env != martini.Prod {
+		log.Print("exec:" + sql)
+	}
+		
 	result, err := this.dbHandle.Exec(sql)
 	if err != nil {
-		log.Printf("exec failed, err:%s", err.Error())
-		return false
+		panic("exec exception, err:" + err.Error())
 	}
 	
 	_, err = result.RowsAffected()
 	if err != nil {
-		log.Printf("exec failed, err:%s", err.Error())
-		return false
+		panic("rows affected exception, err:" + err.Error())
 	}
 	
 	return true	

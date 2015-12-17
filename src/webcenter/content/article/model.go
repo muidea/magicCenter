@@ -141,7 +141,7 @@ func QueryAllArticle(model modelhelper.Model) []ArticleSummary {
 			}
 		} else {
 			panic("query failed")
-		}				
+		}
 	}
 
 	return articleSummaryList
@@ -308,7 +308,7 @@ func QueryArticleById(model modelhelper.Model, id int) (Article, bool) {
 	pid := -1
 	if model.Query(sql) {
 		for model.Next() {
-			if model.GetValue(pid) {
+			if model.GetValue(&pid) {
 				article.catalog = append(article.catalog, pid)
 			}
 		}

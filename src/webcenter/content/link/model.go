@@ -213,35 +213,35 @@ func QueryLinkByRang(model modelhelper.Model, begin int,offset int) []LinkInfo {
 	return linkInfoList
 }
 
-func QueryLinkById(model modelhelper.Model, id int) (LinkInfo, bool) {
-	link := LinkInfo{}
-	sql := fmt.Sprintf(`select l.id,l.name, l.url,l.logo, l.style, u.nickname from link l, user u where l.creater = u.id and l.id=%d`, id)
+func QueryLinkById(model modelhelper.Model, id int) (Link, bool) {
+	link := &link{}
+	sql := fmt.Sprintf(`select id, name, url, logo,style, creater from link where id =%d`, id)
 	if !model.Query(sql) {
 		panic("query failed")
 	}
 
 	result := false
 	for model.Next() {
-		model.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Style, &link.Creater)
+		model.GetValue(&link.id, &link.name, &link.url, &link.logo, &link.style, &link.creater)
 		result = true
 	}
 	if !result {
 		return link, result
 	}
 	
-	sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, link.Id, base.LINK)
-	name := "-"
+	sql = fmt.Sprintf(`select dst from resource_relative where src = %d and srcType = %d and dstType =%d`, link.id, base.LINK, base.CATALOG)
+	pid := -1
 	if model.Query(sql) {
 		for model.Next() {
-			if model.GetValue(&name) {
-				link.Catalog = append(link.Catalog, name)
+			if model.GetValue(&pid) {
+				link.catalog = append(link.catalog, pid)
 			}
 		}
 	} else {
 		panic("query failed")
 	}
 	
-	return link, result	
+	return link, result
 }
 
 func DeleteLink(model modelhelper.Model, id int) bool {

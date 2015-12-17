@@ -2,34 +2,41 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Article Center</title>
+<title>Link Center</title>
 <!--                       CSS                       -->
 <!-- Main Stylesheet -->
-<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"
-	media="screen" />
+<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"	media="screen" />
 <!--                       Javascripts                       -->
 <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
-<script type="text/javascript" src="/resources/scripts/jquery.wysiwyg.js"></script>
-<script type="text/javascript" src="/resources/scripts/admin.content.article.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.jquery.content.link.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.ajax.content.link.js"></script>
+<script type="text/javascript">
+link.accesscode = {{.Accesscode}};
+link.linkInfo = {{.LinkInfo}};
+	
+	$(document).ready(function() {
+		link.initialize();
+	});	
+</script>
 </head>
 <body>
-	<div id="content">
-		<div class="content-box" id="article-content">
+<div id="content">
+		<div class="content-box" id="link-content">
 			<!-- Start Content Box -->
 			<div class="content-box-header">
-				<h3>文章管理</h3>
+				<h3>链接管理</h3>
 				<ul class="content-box-tabs">
-					<li><a href="#article-List"
-						class="default-tab article-List-tab">列表</a></li>
+					<li><a href="#link-List"
+						class="default-tab link-List-tab">列表</a></li>
 					<!-- href must be unique and match the id of target div -->
-					<li><a href="#article-Edit" class="article-Edit-tab">编辑</a></li>
+					<li><a href="#link-Edit" class="link-Edit-tab">编辑</a></li>
 				</ul>
 				<div class="clear"></div>
 			</div>
 			<!-- End .content-box-header -->
 			<div class="content-box-content">
-				<div class="tab-content default-tab" id="article-List">
+				<div class="tab-content default-tab" id="link-List">
 					<div class="notification error png_bg" style="display: none">
 						<a href="#" class="close"><img
 							src="/resources/images/icons/cross_grey_small.png"
@@ -42,10 +49,10 @@
 						<thead>
 							<tr>
 								<th><input class="check-all" type="checkbox" /></th>
-								<th>标题</th>
+								<th>站点名</th>
+								<th>网址</th>
+								<th>显示类型</th>
 								<th>分类</th>
-								<th>作者</th>
-								<th>创建日期</th>
 								<th>操作</th>
 							</tr>
 						</thead>
@@ -73,24 +80,24 @@
 							</tr>
 						</tfoot>
 						<tbody>
-							<tr class="article">
+							<tr class="link">
 								<td><input type="checkbox" /></td>
-								<td><a class="edit" href="/content/article/query"
-									title="title">Title</a></td>
-								<td>catalog</td>
-								<td>author</td>
-								<td>2015年8月25日</td>
-								<td><a class="edit" href="/content/article/query"
+								<td><a class="edit" href="/content/link/query"
+									title="title">StieName</a></td>
+								<td>Url</td>
+								<td>Style</td>
+								<td>Catalog</td>
+								<td><a class="edit" href="/content/link/query"
 									title="Edit"><img src="/resources/images/icons/pencil.png"
 										alt="Edit" /></a><a class="delete"
-									href="/content/article/delete" title="Delete"><img
+									href="/content/link/delete" title="Delete"><img
 										src="/resources/images/icons/cross.png" alt="Delete" /></a></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<!-- End #tab1 -->
-				<div class="tab-content" id="article-Edit">
+				<div class="tab-content" id="link-Edit">
 					<div class="notification success png_bg" style="display: none">
 						<a href="#" class="close"><img
 							src="/resources/images/icons/cross_grey_small.png"
@@ -107,28 +114,41 @@
 							consectetur adipiscing elit. Proin vulputate, sapien quis
 							fermentum luctus, libero.</div>
 					</div>
-					<form class="article-Form" action="/content/article/ajax/"
+					<form enctype="multipart/form-data" class="link-Form" action="/admin/content/ajaxLink/"
 						method="post">
 						<fieldset>
 							<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
 							<p>
-								<label>标题</label> <input
-									class="text-input small-input article-title" type="text"
-									name="article-title" />
+								<label>站点名</label> <input
+									class="text-input small-input link-name" type="text"
+									name="link-name" />
 							</p>
 							<p>
-								<label>正文</label>
-								<textarea class="text-input textarea wysiwyg article-content"
-									name="article-content" cols="79" rows="15"></textarea>
+								<label>网址</label> <input
+									class="text-input small-input link-url" type="text"
+									name="link-url" />
 							</p>
 							<p>
-								<label>分类</label> <select name="article-catalog"
-									class="small-input article-catalog">
-									<option value="option1">Option 1</option>
-								</select>
+								<label>Logo</label> <input
+									class="text-input small-input link-logo" type="text"
+									name="link-logo" />
 							</p>
 							<p>
-								<input type="hidden" name="article-id" class="article-id"
+								<label>显示类型</label> 
+								<radioBox class = "link-style">
+										<input type="radio" name="link-style" value="0" /><span>Logo</span>
+										<input type="radio" name="link-style" value="1" /><span>文字</span>
+								</radioBox>
+							</p>
+							<p>
+								<label>分类</label>
+								<checkBox class = "link-catalog">
+										<input type="checkbox" name="checkbox1" /><span>AAA</span>
+										<input type="checkbox" name="checkbox1" /><span>BBB</span>
+								</checkBox>
+							</p>
+							<p>
+								<input type="hidden" name="link-id" class="link-id"
 									value="-1" /> <input class="button" type="submit" value="提交" />
 							</p>
 						</fieldset>
@@ -140,6 +160,6 @@
 			</div>
 			<!-- End .content-box-content -->
 		</div>
-	</div>
+		</div>
 </body>
 </html>

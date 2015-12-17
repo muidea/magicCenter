@@ -28,18 +28,18 @@ func registerRouter() {
 	application.RegisterPostHandler("/admin/content/queryCatalog/", catalog.QueryCatalogHandler)
 	application.RegisterPostHandler("/admin/content/deleteCatalog/", catalog.DeleteCatalogHandler)
 	application.RegisterPostHandler("/admin/content/ajaxCatalog/", catalog.AjaxCatalogHandler)	
-	application.RegisterPostHandler("/content/admin/editCatalog/", catalog.EditCatalogHandler)
+	application.RegisterPostHandler("/admin/content/editCatalog/", catalog.EditCatalogHandler)
 
 	application.RegisterGetHandler("/admin/content/manageLink/", link.ManageLinkHandler)
 	application.RegisterPostHandler("/admin/content/queryAllLink/", link.QueryAllLinkHandler)
 	application.RegisterPostHandler("/admin/content/queryLink/", link.QueryLinkHandler)
 	application.RegisterPostHandler("/admin/content/deleteLink/", link.DeleteLinkHandler)
 	application.RegisterPostHandler("/admin/content/ajaxLink/", link.AjaxLinkHandler)	
-	application.RegisterPostHandler("/content/admin/editLink/", link.EditLinkHandler)
+	application.RegisterPostHandler("/admin/content/editLink/", link.EditLinkHandler)
 	
 	application.RegisterGetHandler("/admin/content/manageImage/", image.ManageImageHandler)
 	application.RegisterPostHandler("/admin/content/queryAllImage/", image.QueryAllImageHandler)
 	application.RegisterPostHandler("/admin/content/deleteImage/", image.DeleteImageHandler)
 	application.RegisterPostHandler("/admin/content/ajaxImage/", image.AjaxImageHandler)
-	
+	application.RegisterPostHandler("/admin/content/editImage/", image.EditImageHandler)
 }

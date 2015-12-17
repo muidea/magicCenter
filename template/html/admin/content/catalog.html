@@ -14,7 +14,7 @@
 <script type="text/javascript">
 	catalog.accesscode = {{.Accesscode}};
 	
-	catalog.catalog = {{.Catalog}};
+	catalog.catalogInfo = {{.Catalog}};
 
 	$(document).ready(function() {
 		catalog.initialize();
@@ -118,7 +118,7 @@
 							consectetur adipiscing elit. Proin vulputate, sapien quis
 							fermentum luctus, libero.</div>
 					</div>
-					<form class="catalog-Form" action="/admin/content/ajaxCatalog/"
+					<form enctype="multipart/form-data" class="catalog-Form" action="/admin/content/ajaxCatalog/"
 						method="post">
 						<fieldset>
 							<!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
@@ -128,10 +128,11 @@
 									name="catalog-name" />
 							</p>
 							<p>
-								<label>父类</label> <select name="catalog-parent"
-									class="small-input catalog-parent">
-									<option value="option1">Option 1</option>
-								</select>
+								<label>父类</label>
+								<checkBox class = "catalog-parent">
+										<input type="checkbox" name="checkbox1" /><span>AAA</span>
+										<input type="checkbox" name="checkbox1" /><span>BBB</span>
+								</checkBox>								
 							</p>
 							<p>
 								<input type="hidden" name="catalog-id" class="catalog-id"

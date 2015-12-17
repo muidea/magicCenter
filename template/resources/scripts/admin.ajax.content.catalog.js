@@ -1,7 +1,12 @@
 
 
 var catalog = {
+	accesscode:'',
+	errCode:0,
+	reason:'',
+	catalogInfo:{}
 };
+
 
 catalog.initialize = function() {
 	
@@ -31,7 +36,7 @@ catalog.initialize = function() {
         		$("#catalog-Edit div.success").show();
 
         		catalog.refreshCatalog();
-        	}        	
+        	}
         }
         
         function validate() {
@@ -67,7 +72,7 @@ catalog.refreshCatalog = function() {
 		catalog.errCode = result.ErrCode;
 		catalog.reason = result.Reason;
 		
-		catalog.catalog = result.Catalog;		
+		catalog.catalogInfo = result.Catalog;		
 		
 		catalog.fillCatalogView();		
 	}, "json");
@@ -87,9 +92,8 @@ catalog.fillCatalogView = function() {
 	}
 	
 	$("#catalog-List table tbody tr").remove();
-	var catalogList = catalog.catalog;
-	for (var ii =0; ii < catalogList.length; ++ii) {
-		var info = catalogList[ii];
+	for (var ii =0; ii < catalog.catalogInfo.length; ++ii) {
+		var info = catalog.catalogInfo[ii];
 		var trContent = catalog.constructCatalogItem(info);
 		$("#catalog-List table tbody").append(trContent);
 	}
@@ -99,17 +103,20 @@ catalog.fillCatalogView = function() {
 	$("#catalog-Edit div.notification").hide();		
 	$("#catalog-Edit .catalog-Form .catalog-id").val(-1);
 	$("#catalog-Edit .catalog-Form .catalog-name").val("");
-	$("#catalog-Edit .catalog-Form .catalog-parent").empty();
-	$("#catalog-Edit .catalog-Form .catalog-parent").append("<option value=-1>请选择父类</option>");
-	for (var ii =0; ii < catalog.catalog.length; ++ii) {
-		var c = catalog.catalog[ii];
-		
-		$("#catalog-Edit .catalog-Form .catalog-parent").append("<option value="+  c.Id + ">" + c.Name + "</option>");
-	}	
+	
+	
+	$("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
+	for (var ii =0; ii < catalog.catalogInfo.length; ++ii) {
+		var ca = catalog.catalogInfo[ii];
+		$("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' value=" +  ca.Id + "> </input> <span>" + ca.Name + "</span> ");
+	}
+	if (ii == 0) {
+		$("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input> <span>-</span> ");
+	}
 };
 
 
-catalog.constructCatalogItem = function(catalog) {
+catalog.constructCatalogItem = function(ca) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","catalog");
 
@@ -124,24 +131,37 @@ catalog.constructCatalogItem = function(catalog) {
 	var titleLink = document.createElement("a");
 	titleLink.setAttribute("class","edit");
 	titleLink.setAttribute("href","#editCatalog" );
-	titleLink.setAttribute("onclick","catalog.editCatalog('/admin/content/queryCatalog/?id=" + catalog.Id + "'); return false;" );
-	titleLink.innerHTML = catalog.Title;
+	titleLink.setAttribute("onclick","catalog.editCatalog('/admin/content/editCatalog/?id=" + ca.Id + "'); return false;" );
+	titleLink.innerHTML = ca.Name;
 	titleTd.appendChild(titleLink);
 	tr.appendChild(titleTd);
 
 	var parentTd = document.createElement("td");
-	parentTd.innerHTML = catalog.Pid;
+	var catalogs = "";
+	if (ca.Parent) {
+		for (var ii =0; ii < ca.Parent.length; ) {
+			catalogs += ca.Parent[ii++]
+			if (ii < ca.Parent.length) {
+				catalogs += ","
+			} else {
+				break;
+			}
+		}
+	}
+	
+	catalogs = catalogs.length == 0 ? '-' :catalogs;	
+	parentTd.innerHTML = catalogs;
 	tr.appendChild(parentTd);
 	
 	var createrTd = document.createElement("td");
-	createrTd.innerHTML = catalog.Creater;
+	createrTd.innerHTML = ca.Creater;
 	tr.appendChild(createrTd);
 	
 	var editTd = document.createElement("td");
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#editCatalog" );
-	editLink.setAttribute("onclick","catalog.editCatalog('/admin/content/queryCatalog/?id=" + catalog.Id + "'); return false;" );
+	editLink.setAttribute("onclick","catalog.editCatalog('/admin/content/editCatalog/?id=" + ca.Id + "'); return false;" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
 	editImage.setAttribute("alt","Edit");
@@ -151,7 +171,7 @@ catalog.constructCatalogItem = function(catalog) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteCatalog" );
-	deleteLink.setAttribute("onclick","catalog.deleteCatalog('/admin/content/deleteCatalog/?id=" + catalog.Id + "'); return false;" );
+	deleteLink.setAttribute("onclick","catalog.deleteCatalog('/admin/content/deleteCatalog/?id=" + ca.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -176,22 +196,17 @@ catalog.editCatalog = function(editUrl) {
 		}
 		
 		$("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
-		$("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Title);
-		$("#catalog-Edit .catalog-Form .catalog-parent").empty();
-		
-		$("#catalog-Edit .catalog-Form .catalog-parent").append("<option value=-1>请选择父类</option>");
-		for (var ii =0, jj =0; ii < catalog.catalog.length; ++ii) {
-			c = catalog.catalog[ii];
-			if (result.Catalog.Id > c.Id) {
-				$("#catalog-Edit .catalog-Form .catalog-parent").append("<option value="+  c.Id + ">" + c.Name + "</option>");
-				if (c.Id == result.Catalog.Pid) {
-					$("#catalog-Edit .catalog-Form .catalog-parent").get(0).selectedIndex = jj +1;				
-				}
-				
-				jj++;
-			}
+		$("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
+		$("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
+		for (var ii =0; ii < result.AvalibleParent.length; ++ii) {
+			var ca = result.AvalibleParent[ii];
+			$("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' value=" +  ca.Id + "> </input> <span>" + ca.Name + "</span> ");
+			$("#catalog-Edit .catalog-Form .catalog-parent input").filter("[value="+ ca.Id +"]").prop("checked", true);			
 		}
-		
+		if (ii == 0) {
+			$("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input> <span>-</span> ");
+		}
+				
 		$("#catalog-content .content-box-tabs li a").removeClass('current');
 		$("#catalog-content .content-box-tabs li a.catalog-Edit-tab").addClass('current');
 		$("#catalog-Edit").siblings().hide();

@@ -345,7 +345,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	session := session.GetSession(w,r)
 	for true {
 		param := SubmitCatalogParam{}
-	    err := r.ParseForm()
+	    err := r.ParseMultipartForm(0)
     	if err != nil {
     		log.Print("paseform failed")
     		
@@ -356,24 +356,28 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
     	
 		cId := r.FormValue("catalog-id")
 		cName := r.FormValue("catalog-name")
-	    cParent := r.FormValue("catalog-parent")
+		cParent := r.MultipartForm.Value["catalog-parent"]
 	    
 		param.id, err = strconv.Atoi(cId)
 	    if err != nil {
-	    	log.Print("parse id failed, id:%s", cId)
+	    	log.Print("parse id failed, id:%d", cId)
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
 	    }
 	    param.name = cName
-		pid, err := strconv.Atoi(cParent)
-	    if err != nil {
-	    	log.Print("parse id failed, id:%s", cParent)
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
+	    
+	    for _, p := range cParent {
+			pid, err := strconv.Atoi(p)
+		    if err != nil {
+		    	log.Print("parse id failed, pid:%d", cParent)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    param.pid = append(param.pid, pid)
 	    }
-	    param.pid = append(param.pid, pid)
+	    	    
 	    param.creater, _ = session.GetAccountId()
 
     	controller := &catalogController{}

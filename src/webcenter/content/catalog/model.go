@@ -92,6 +92,7 @@ func QueryAllCatalogInfo(model modelhelper.Model) []CatalogInfo {
 
 	for model.Next() {
 		info := CatalogInfo{}
+		info.Parent = []string{}
 		model.GetValue(&info.Id, &info.Name, &info.Creater)
 		
 		catalogInfoList = append(catalogInfoList, info)
@@ -108,7 +109,7 @@ func QueryAllCatalogInfo(model modelhelper.Model) []CatalogInfo {
 			}
 		} else {
 			panic("query failed")
-		}				
+		}
 	}
 	
 	return catalogInfoList
@@ -127,7 +128,7 @@ func QueryCatalogInfoById(model modelhelper.Model, id int) (CatalogInfo, bool) {
 		result = true
 	}
 	if result {
-		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, id, base.CATALOG)
+		sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src = %d and rr.srcType=%d`, id, base.CATALOG)
 		name := "-"
 		if model.Query(sql) {
 			for model.Next() {
@@ -169,7 +170,7 @@ func QueryAvalibleParentCatalogInfo(model modelhelper.Model, id int) []CatalogIn
 			}
 		} else {
 			panic("query failed")
-		}				
+		}
 	}
 		
 	return catalogInfoList
@@ -202,7 +203,7 @@ func QuerySubCatalogInfo(model modelhelper.Model, id int) []CatalogInfo {
 			}
 		} else {
 			panic("query failed")
-		}				
+		}
 	}
 		
 	return catalogInfoList
@@ -290,11 +291,11 @@ func SaveCatalog(model modelhelper.Model, catalog Catalog) bool {
 	
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into catalog (name,creater) values ('%s',%d)", catalog.Name(), catalog.Creater())
+		sql = fmt.Sprintf(`insert into catalog (name,creater) values ('%s',%d)`, catalog.Name(), catalog.Creater())
 		result = model.Execute(sql)
 		
 		id := -1
-		sql = fmt.Sprintf("select id from catalog where name='%s' and creater=%d", catalog.Name(), catalog.Creater())
+		sql = fmt.Sprintf(`select id from catalog where name='%s' and creater=%d`, catalog.Name(), catalog.Creater())
 		result = model.Query(sql)
 		if result {
 			result = false
@@ -306,7 +307,7 @@ func SaveCatalog(model modelhelper.Model, catalog Catalog) bool {
 		}
 	} else {
 		// modify
-		sql = fmt.Sprintf("update catalog set name ='%s', creater =%d where id=%d", catalog.Name(), catalog.Creater(), catalog.Id())
+		sql = fmt.Sprintf(`update catalog set name ='%s', creater =%d where id=%d`, catalog.Name(), catalog.Creater(), catalog.Id())
 		result = model.Execute(sql)
 	}
 	

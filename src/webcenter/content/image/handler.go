@@ -12,8 +12,25 @@ import (
 	"io"
 	"strconv"
 	"muidea.com/util"
-	"webcenter/application"	
+	"webcenter/application"
+	"webcenter/session"
+	"webcenter/common"		
 )
+
+type ManageView struct {
+	Accesscode string
+	ImageInfo []ImageInfo
+}
+
+type EditView struct {
+	common.Result
+	Accesscode string
+	Id int
+	Name string
+	Url string
+	Desc string
+	Catalog []int
+}
 
 func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageImageHandler");
@@ -21,15 +38,20 @@ func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
+	session := session.GetSession(w,r)
     t, err := template.ParseFiles("template/html/admin/content/image.html")
     if (err != nil) {
-        log.Print(err)
-        
-        http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("parse files failed");
     }
-        
-    t.Execute(w, nil)
+    
+	controller := &imageController{}
+	info := controller.queryManageInfoAction()
+    
+    view := ManageView{}
+    view.Accesscode = session.AccessToken()
+    view.ImageInfo = info.ImageInfo
+    
+    t.Execute(w, view)    
 }
 
 func QueryAllImageHandler(w http.ResponseWriter, r *http.Request) {
@@ -126,9 +148,10 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 	
 	result := SubmitImageResult{}
 	
+	session := session.GetSession(w,r)
 	for true {
 		param := SubmitImageParam{}
-	    err := r.ParseForm()
+	    err := r.ParseMultipartForm(0)
     	if err != nil {
     		log.Print("paseform failed")
     		
@@ -137,7 +160,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
     	}
     	
-		file, head, err := r.FormFile("image-name")
+		file, head, err := r.FormFile("image-url")
 		if err != nil {
     		log.Print("paseform failed")
     		
@@ -160,14 +183,29 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 		defer f.Close()
 		io.Copy(f,file)		
 		
+		name := r.FormValue("image-name")
 		desc := r.FormValue("image-desc")
 	    accessCode := r.FormValue("accesscode")
+	    catalog := r.MultipartForm.Value["image-catalog"]
 
 		staticPath := application.StaticPath()
+		param.name = name
 		param.url = fileName[len(staticPath):]
 		param.desc = desc
 		param.accessCode = accessCode
-
+	    for _, ca := range catalog {
+			cid, err := strconv.Atoi(ca)
+		    if err != nil {
+		    	log.Print("parse catalog failed, catalog:%s", ca)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    
+		    param.catalog = append(param.catalog, cid)
+	    }
+	    param.creater, _ = session.GetAccountId()
+	    
     	controller := &imageController{}
     	result = controller.submitImageAction(param)
     	
@@ -187,7 +225,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 func EditImageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("EditImageHandler");
 	
-	result := EditImageResult{}
+	result := EditView{}
 	
 	for true {
 		param := EditImageParam{}
@@ -222,7 +260,16 @@ func EditImageHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 		    	
     	controller := &imageController{}
-    	result = controller.editImageAction(param)
+    	img := controller.editImageAction(param)
+    	
+    	result.ErrCode = img.ErrCode
+    	result.Reason = img.Reason
+    	result.Id = img.Image.Id()
+    	result.Url = img.Image.Url()
+    	result.Desc = img.Image.Desc()
+    	for _, c := range img.Image.Relative() {
+    		result.Catalog = append(result.Catalog, c.Id())
+    	}
     	
     	break
 	}

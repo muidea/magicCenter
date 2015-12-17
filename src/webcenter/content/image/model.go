@@ -3,7 +3,6 @@ package image
 
 import (
 	"fmt"
-	"path"
 	"webcenter/modelhelper"
 	"webcenter/common"
 	"webcenter/content/base"
@@ -12,6 +11,7 @@ import (
 
 type ImageInfo struct {
 	Id int
+	Name string
 	Url string
 	Desc string
 	Creater string
@@ -25,6 +25,7 @@ type Image interface {
 	Desc() string
 	Creater() int
 	SetId(id int)
+	SetName(name string)
 	SetUrl(url string)
 	SetDesc(desc string)
 	SetCreater(user int)
@@ -33,6 +34,7 @@ type Image interface {
 
 type image struct {
 	id int
+	name string
 	url string
 	desc string
 	creater int
@@ -44,9 +46,7 @@ func (this *image) Id() int {
 }
 
 func (this *image) Name() string {
-	_, name := path.Split(this.url)
-	
-	return name
+	return this.name
 }
 
 func (this *image) Type() int {
@@ -80,6 +80,10 @@ func (this *image)SetId(id int) {
 	this.id = id
 }
 
+func (this *image)SetName(name string) {
+	this.name = name
+}
+
 func (this *image)SetUrl(url string) {
 	this.url = url
 }
@@ -104,14 +108,14 @@ func NewImage() Image {
 
 func QueryAllImage(model modelhelper.Model) []ImageInfo {
 	imageInfoList := []ImageInfo{}
-	sql := fmt.Sprintf(`select i.id, i.url, i.description, u.nickname from image i, user u where i.creater = u.id`)
+	sql := fmt.Sprintf(`select i.id, i.name, i.url, i.description, u.nickname from image i, user u where i.creater = u.id`)
 	if !model.Query(sql) {
 		panic("query failed")
 	}
 
 	for model.Next() {
 		image := ImageInfo{}
-		model.GetValue(&image.Id, &image.Url, &image.Desc, &image.Creater)
+		model.GetValue(&image.Id, &image.Name, &image.Url, &image.Desc, &image.Creater)
 		
 		imageInfoList = append(imageInfoList, image)
 	}
@@ -135,7 +139,7 @@ func QueryAllImage(model modelhelper.Model) []ImageInfo {
 
 func QueryImageByCatalog(model modelhelper.Model, id int) []ImageInfo {
 	imageInfoList := []ImageInfo{}
-	sql := fmt.Sprintf(`select i.id, i.url, i.description, u.nickname from image i, user u where i.creater = u.id and i.id in (
+	sql := fmt.Sprintf(`select i.id, id.name, i.url, i.description, u.nickname from image i, user u where i.creater = u.id and i.id in (
 		select src from resource_relative where dst = %d and dstType = %d and srcType = %d )`, id, base.CATALOG, base.IMAGE)
 	if !model.Query(sql) {
 		panic("query failed")
@@ -143,7 +147,7 @@ func QueryImageByCatalog(model modelhelper.Model, id int) []ImageInfo {
 
 	for model.Next() {
 		image := ImageInfo{}
-		model.GetValue(&image.Id, &image.Url, &image.Desc, &image.Creater)
+		model.GetValue(&image.Id, &image.Name, &image.Url, &image.Desc, &image.Creater)
 		
 		imageInfoList = append(imageInfoList, image)
 	}
@@ -167,7 +171,7 @@ func QueryImageByCatalog(model modelhelper.Model, id int) []ImageInfo {
 
 func QueryImageByRang(model modelhelper.Model, begin int,offset int) []ImageInfo {
 	imageInfoList := []ImageInfo{}
-	sql := fmt.Sprintf(`select i.id, i.url, i.description, u.nickname from image i, user u where i.creater = u.id and i.id in (
+	sql := fmt.Sprintf(`select i.id, id.name, i.url, i.description, u.nickname from image i, user u where i.creater = u.id and i.id in (
 		select src from resource_relative where dstType = %d and srcType = %d ) and i.id >= %d limit %d`, base.CATALOG, base.IMAGE, begin, offset)
 	if !model.Query(sql) {
 		panic("query failed")
@@ -197,29 +201,29 @@ func QueryImageByRang(model modelhelper.Model, begin int,offset int) []ImageInfo
 	return imageInfoList
 }
 
-func QueryImageById(model modelhelper.Model, id int) (ImageInfo, bool) {
-	image := ImageInfo{}
+func QueryImageById(model modelhelper.Model, id int) (Image, bool) {
+	image := &image{}
 	
-	sql := fmt.Sprintf(`select i.id, i.url, i.description, u.nickname from image i, user u where i.creater = u.id and i.id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, url, description, creater from image where id = %d`, id)
 	if !model.Query(sql) {
 		panic("query failed")
 	}
 
 	result := false
 	for model.Next() {
-		result = model.GetValue(&image.Id, &image.Url, &image.Desc, &image.Creater)
+		result = model.GetValue(&image.id, &image.name, &image.url, &image.desc, &image.creater)
 		break
 	}
 	if !result {
 		return image, result
 	}
 
-	sql = fmt.Sprintf(`select r.name from resource r, resource_relative rr where r.id = rr.dst and r.type == rr.dstType and rr.src = %d and rr.srcType=%d`, image.Id, base.IMAGE)
-	name := "-"
+	sql = fmt.Sprintf(`select dst from resource_relative where src = %d and srcType = %d and dstType =%d`, image.id, base.IMAGE, base.CATALOG)
+	pid := -1
 	if model.Query(sql) {
 		for model.Next() {
-			if model.GetValue(&name) {
-				image.Catalog = append(image.Catalog, name)
+			if model.GetValue(&pid) {
+				image.catalog = append(image.catalog, pid)
 			}
 		}
 	} else {
@@ -270,7 +274,7 @@ func SaveImage(model modelhelper.Model, image Image) bool {
 	
 	if !result {
 		// insert
-		sql = fmt.Sprintf(`insert into image (url,description,creater) values ('%s','%s',%d)`, image.Url(), image.Desc(), image.Creater())
+		sql = fmt.Sprintf(`insert into image (name,url,description,creater) values ('%s','%s','%s',%d)`, image.Name(), image.Url(), image.Desc(), image.Creater())
 		result = model.Execute(sql)
 		sql = fmt.Sprintf(`select id from image where url='%s' and description ='%s' and creater=%d`, image.Url(), image.Desc(), image.Creater())
 		
@@ -286,7 +290,7 @@ func SaveImage(model modelhelper.Model, image Image) bool {
 		}
 	} else {
 		// modify
-		sql = fmt.Sprintf(`update image set url ='%s', description='%s', creater=%d where id=%d`, image.Url(), image.Desc(), image.Creater(), image.Id())
+		sql = fmt.Sprintf(`update image set name='%s', url ='%s', description='%s', creater=%d where id=%d`, image.Name(), image.Url(), image.Desc(), image.Creater(), image.Id())
 		result = model.Execute(sql)
 	}
 	

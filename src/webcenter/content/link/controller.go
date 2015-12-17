@@ -7,6 +7,11 @@ import (
 	"webcenter/modelhelper"
 )
 
+
+type QueryManageInfo struct {
+	LinkInfo []LinkInfo
+}
+
 type QueryAllLinkParam struct {
 	accessCode string	
 }
@@ -23,7 +28,7 @@ type QueryLinkParam struct {
 
 type QueryLinkResult struct {
 	common.Result
-	Link LinkInfo
+	Link Link
 }
 
 type DeleteLinkParam struct {
@@ -42,6 +47,7 @@ type SubmitLinkParam struct {
 	url string
 	logo string
 	style int
+	catalog []int
 	creater int
 }
 
@@ -56,12 +62,25 @@ type EditLinkParam struct {
 
 type EditLinkResult struct {
 	common.Result
-	Link LinkInfo
+	Link Link
 }
 
 type linkController struct {
 }
 
+func (this *linkController)queryManageInfoAction() QueryManageInfo {
+	info := QueryManageInfo{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+			
+	info.LinkInfo = QueryAllLink(model)
+
+	return info
+}
 
 func (this *linkController)queryAllLinkAction(param QueryAllLinkParam) QueryAllLinkResult {
 	result := QueryAllLinkResult{}
@@ -147,8 +166,9 @@ func (this *linkController)submitLinkAction(param SubmitLinkParam) SubmitLinkRes
 	link.SetUrl(param.url)
 	link.SetLogo(param.logo)
 	link.SetStyle(param.style)
+	link.SetCatalog(param.catalog)
 	link.SetCreater(param.creater)
-		
+	
 	if !SaveLink(model, link) {
 		result.ErrCode = 1
 		result.Reason = "保存链接失败"

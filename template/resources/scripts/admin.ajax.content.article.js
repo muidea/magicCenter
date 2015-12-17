@@ -55,13 +55,6 @@ article.initialize = function() {
         		$("#article-content .article-Form .article-content").parent().append("<span class=\"input-notification error\">请输入内容</span>");
         		result = false;
         	}
-
-    		$("#article-content .article-Form .article-catalog").parent().find("span").remove();        			
-    		var catalog = $("#article-content .article-Form .article-catalog").val();
-        	if (catalog == -1) {
-        		$("#article-content .article-Form .article-catalog").parent().append("<span class=\"input-notification error\">请选择分类</span>");
-        		result = false;
-        	}
         	
         	return result;
         }
@@ -88,7 +81,7 @@ article.refreshCatalog = function() {
 
 			$("#article-Edit .article-Form .article-catalog").children().remove();
 			for (var ii =0; ii < article.catalogInfo.length; ++ii) {
-				catalog = article.catalogInfo[ii];
+				var catalog = article.catalogInfo[ii];
 				$("#article-Edit .article-Form .article-catalog").append("<input type='checkbox' name='article-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
 			}
 		}
@@ -158,15 +151,18 @@ article.constructArticleItem = function(articleInfo) {
 	tr.appendChild(titleTd);
 
 	var cataLogTd = document.createElement("td");
-	var catalogs = ""
-	for (var ii =0; ;) {
-		catalogs += articleInfo.Catalog[ii++]
-		if (ii < articleInfo.Catalog.length) {
-			catalogs += ","
-		} else {
-			break;
-		}
+	var catalogs = "";
+	if (articleInfo.Catalog) {
+		for (var ii =0; ii < articleInfo.Catalog.length;) {
+			catalogs += articleInfo.Catalog[ii++]
+			if (ii < articleInfo.Catalog.length) {
+				catalogs += ","
+			} else {
+				break;
+			}
+		}		
 	}
+	catalogs = catalogs.length == 0 ? '-' :catalogs;	
 	cataLogTd.innerHTML = catalogs;
 	tr.appendChild(cataLogTd);
 
@@ -220,7 +216,11 @@ article.editArticle = function(editUrl) {
 		$("#article-Edit .article-Form .article-title").val(result.Title);
 		$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Content);
 		$("#article-Edit .article-Form .article-catalog input").prop("checked", false);
-		$("#article-Edit .article-Form .article-catalog input").filter("[value="+ result.Id +"]").prop("checked", true);
+		
+		for (var ii =0; ii < result.Catalog.length; ++ii) {
+			var ca = result.Catalog[ii];
+			$("#article-Edit .article-Form .article-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
+		}
 		
 		$("#article-content .content-box-tabs li a").removeClass('current');
 		$("#article-content .content-box-tabs li a.article-Edit-tab").addClass('current');

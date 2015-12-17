@@ -7,13 +7,17 @@ import (
 	"webcenter/modelhelper"
 )
 
+type QueryManageInfo struct {
+	ImageInfo []ImageInfo
+}
+
 type QueryAllImageParam struct {
 	accessCode string	
 }
 
 type QueryAllImageResult struct {
 	common.Result
-	Image []ImageInfo
+	ImageInfo []ImageInfo
 }
 
 type DeleteImageParam struct {
@@ -28,8 +32,10 @@ type DeleteImageResult struct {
 type SubmitImageParam struct {
 	accessCode string
 	id int
+	name string
 	url string
 	desc string
+	catalog []int
 	creater int
 }
 
@@ -44,14 +50,26 @@ type EditImageParam struct {
 
 type EditImageResult struct {
 	common.Result
-	Image ImageInfo
+	Image Image
 }
-
-
 
 type imageController struct {
 }
 
+
+func (this *imageController)queryManageInfoAction() QueryManageInfo {
+	info := QueryManageInfo{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+			
+	info.ImageInfo = QueryAllImage(model)
+
+	return info
+}
 
 func (this *imageController)queryAllImageAction(param QueryAllImageParam) QueryAllImageResult {
 	result := QueryAllImageResult{}
@@ -66,7 +84,7 @@ func (this *imageController)queryAllImageAction(param QueryAllImageParam) QueryA
 	}
 	defer model.Release()
 	
-	result.Image = QueryAllImage(model)
+	result.ImageInfo = QueryAllImage(model)
 	result.ErrCode = 0
 	
 	return result
@@ -107,8 +125,10 @@ func (this *imageController)submitImageAction(param SubmitImageParam) SubmitImag
 
 	image := NewImage()
 	image.SetId(param.id)
+	image.SetName(param.name)
 	image.SetUrl(param.url)
 	image.SetDesc(param.desc)
+	image.SetCatalog(param.catalog)
 	image.SetCreater(param.creater)
 	
 	if !SaveImage(model, image) {
@@ -132,13 +152,13 @@ func (this *imageController)editImageAction(param EditImageParam) EditImageResul
 	}
 	defer model.Release()
 
-	imageInfo, found := QueryImageById(model, param.id)
+	image, found := QueryImageById(model, param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"
 	} else {
 		result.ErrCode = 0
-		result.Image = imageInfo
+		result.Image = image
 	}
 	
 	return result

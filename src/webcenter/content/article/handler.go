@@ -198,7 +198,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	
 	for true {
 		param := SubmitArticleParam{}
-	    err := r.ParseForm()
+		err := r.ParseMultipartForm(0)
     	if err != nil {
     		log.Print("paseform failed")
     		
@@ -210,7 +210,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("article-id")
 		title := r.FormValue("article-title")
 		content := r.FormValue("article-content")
-		catalog := r.FormValue("article-catalog")
+		catalog := r.MultipartForm.Value["article-catalog"]
 		
 		param.id, err = strconv.Atoi(id)
 	    if err != nil {
@@ -218,15 +218,18 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
-	    }	
-		cid, err := strconv.Atoi(catalog)
-	    if err != nil {
-	    	log.Print("parse catalog failed, catalog:%s", catalog)
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
 	    }
-	    param.catalog = append(param.catalog, cid)
+	    for _, ca := range catalog {
+			cid, err := strconv.Atoi(ca)
+		    if err != nil {
+		    	log.Print("parse catalog failed, catalog:%s", ca)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    
+		    param.catalog = append(param.catalog, cid)
+	    }
 	    
 	    param.title = title
 	    param.content = content
