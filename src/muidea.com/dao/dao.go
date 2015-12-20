@@ -33,6 +33,10 @@ func Fetch(user string, password string, address string, dbName string) (*Dao, e
 }
 
 func (this *Dao) Release() {
+	if martini.Env != martini.Prod {
+		log.Print("close database connection")
+	}
+		
 	if this.rowsHandle != nil {
 		this.rowsHandle.Close()
 	}

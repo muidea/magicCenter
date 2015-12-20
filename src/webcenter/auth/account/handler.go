@@ -3,19 +3,82 @@ package account
 import (
 	"net/http"
 	"encoding/json"
+	"html/template"
 	"log"
 	"time"
 	"strings"
-	"strconv"	
+	"strconv"
+	"webcenter/session"
+	"webcenter/auth/group"
 )
+
+type ManageView struct {
+	Accesscode string
+	UserInfo []UserInfo
+	GroupInfo []group.GroupInfo
+}
+
+func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageUserHandler");
+	
+	w.Header().Set("content-type", "text/html")
+	w.Header().Set("charset", "utf-8")
+	
+	session := session.GetSession(w,r)
+    t, err := template.ParseFiles("template/html/admin/account/user.html")
+    if (err != nil) {
+    	panic("parse files failed");
+    }
+    
+	controller := &accountController{}
+	info := controller.queryManageInfoAction()
+    
+    view := ManageView{}
+    view.Accesscode = session.AccessToken()
+    view.UserInfo = info.UserInfo
+    view.GroupInfo = info.GroupInfo
+    
+    t.Execute(w, view)
+}
+
+func VerifyAccountHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("VerifyAccountHandler");
+	
+	result := VerifyAccountResult{}
+	for true {
+		param := VerifyAccountParam{}
+	    err := r.ParseForm()
+    	if err != nil {    		
+    		panic("paseform failed, err:" + err.Error())
+    	}
+    	
+		account := r.FormValue("user-account")
+		accessCode := r.FormValue("accesscode")
+				
+	    param.account = account
+	    param.accessCode = accessCode
+	    
+	    controller := &accountController{}
+	    result = controller.verifyAccountAction(param)
+	    
+	    break
+	}
+    
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("json.Marshal, err:" + err.Error())
+    }
+    
+    w.Write(b)	
+}
 
 func QueryAllUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllUserHandler");
 	
-	result := GetAllUserResult{}
+	result := QueryAllUserResult{}
 	
 	for true {
-		param := GetAllUserParam{}
+		param := QueryAllUserParam{}
 	    err := r.ParseForm()
     	if err != nil {
     		log.Print("paseform failed")
@@ -29,7 +92,7 @@ func QueryAllUserHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 
     	controller := &accountController{}
-    	result = controller.getAllUserAction(param)
+    	result = controller.queryAllUserAction(param)
     	
     	break
 	}
@@ -46,7 +109,7 @@ func QueryAllUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ajaxUserHandler");
+	log.Print("AjaxUserHandler");
 	
 	result := SubmitUserResult{}
 	for true {
@@ -109,10 +172,10 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 func QueryUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryUserHandler");
 		
-	result := GetUserResult{}
+	result := QueryUserResult{}
 	
 	for true {
-		param := GetUserParam{}
+		param := QueryUserParam{}
 	    err := r.ParseForm()
     	if err != nil {
     		log.Print("paseform failed")
@@ -144,7 +207,7 @@ func QueryUserHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 		
 	    controller := &accountController{}
-	    result = controller.getUserAction(param)
+	    result = controller.queryUserAction(param)
     	
     	break
 	}
@@ -214,3 +277,60 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
     
     w.Write(b)
 }
+
+
+func EditUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("EditUserHandler");
+		
+	result := QueryUserResult{}
+	
+	for true {
+		param := QueryUserParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+
+		var id = ""
+		idInfo := r.URL.RawQuery
+		if len(idInfo) > 0 {
+			parts := strings.Split(idInfo,"=")
+			if len(parts) == 2 {
+				id = parts[1]
+			}
+		}
+		
+		accessCode := r.FormValue("accesscode")
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Printf("convert id failed, id:%s,accessCode:%s", id, accessCode)
+	    	
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    
+		param.accessCode = accessCode
+		
+	    controller := &accountController{}
+	    result = controller.queryUserAction(param)
+    	
+    	break
+	}
+	
+    b, err := json.Marshal(result)
+    if err != nil {
+    	log.Fatal("json marshal failed, err:" + err.Error())
+    	
+    	http.Redirect(w, r, "/404/", http.StatusNotFound)
+        return
+    }
+    
+    w.Write(b)
+}
+
+

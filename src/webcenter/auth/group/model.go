@@ -2,13 +2,18 @@ package group
 
 import (
 	"fmt"
-	"log"
 	"webcenter/modelhelper"
 )
 
 var ADMIN_GROUP = 0
 var COMMON_GROUP = 1
 
+type GroupInfo struct {
+	Id int
+	Name string
+	UserCount int
+	Catalog int	
+}
 
 type Group struct {
 	Id int
@@ -27,49 +32,28 @@ func (group Group)AdminGroup() bool {
 	return group.Catalog == ADMIN_GROUP
 }
 
-func GetAllGroup(model modelhelper.Model) []Group {
-	groupList := []Group{}
-	sql := fmt.Sprintf("select id,name,catalog from `group`")
+func QueryAllGroup(model modelhelper.Model) []GroupInfo {
+	groupInfoList := []GroupInfo{}
+	sql := fmt.Sprintf("select g.id, g.`name`, count(u.id) count, g.catalog from `group` g, `user` u where g.id = u.`group` union select g.id, g.`name`, 0 count, g.catalog from `group` g where g.id not in ( select  `group` from `user` )")
 	if !model.Query(sql) {
-		log.Printf("query group failed, sql:%s", sql)
-		return groupList
+		panic("query failed")
 	}
 
 	for model.Next() {
-		group := newGroup()
-		model.GetValue(&group.Id, &group.Name, &group.Catalog)
+		group := GroupInfo{}
+		model.GetValue(&group.Id, &group.Name, &group.UserCount, &group.Catalog)
 		
-		groupList = append(groupList, group)
+		groupInfoList = append(groupInfoList, group)
 	}
 
-	return groupList
+	return groupInfoList
 }
 
-func GetAllSubGroup(model modelhelper.Model, id int) []Group {
-	groupList := []Group{}
-	sql := fmt.Sprintf("select id,name,catalog from `group` where catalog=%d",id)
-	if !model.Query(sql) {
-		log.Printf("query group failed, sql:%s", sql)
-		return groupList
-	}
-
-	for model.Next() {
-		group := newGroup()
-		model.GetValue(&group.Id, &group.Name, &group.Catalog)
-		
-		groupList = append(groupList, group)
-	}
-
-	return groupList
-}
-
-
-func GetGroupById(model modelhelper.Model, id int) (Group, bool) {
+func QueryGroupById(model modelhelper.Model, id int) (Group, bool) {
 	group := newGroup()
 	sql := fmt.Sprintf("select id,name,catalog from `group` where id=%d",id)
 	if !model.Query(sql) {
-		log.Printf("query group failed, sql:%s", sql)
-		return group, false
+		panic("query failed")
 	}
 
 	result := false;
@@ -85,7 +69,7 @@ func DeleteGroup(model modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf("delete from `group` where id =%d", id)
 	result := model.Execute(sql)
 	if !result {
-		log.Printf("delete group failed, sql:%s", sql)
+		panic("query failed")
 	}
 	
 	return result	
@@ -94,8 +78,7 @@ func DeleteGroup(model modelhelper.Model, id int) bool {
 func SaveGroup(model modelhelper.Model, group Group) bool {
 	sql := fmt.Sprintf("select id from `group` where id=%d", group.Id)
 	if !model.Query(sql) {
-		log.Printf("query group failed, sql:%s", sql)
-		return false
+		panic("query failed")
 	}
 
 	result := false;
@@ -107,15 +90,13 @@ func SaveGroup(model modelhelper.Model, group Group) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into `group` (name,catalog) values ('%s',%d)", group.Name, group.Catalog)
+		sql = fmt.Sprintf("insert into `group` (name,catalog) values ('%s',1)", group.Name)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update `group` set name ='%s', catalog =%d where id=%d", group.Name, group.Catalog, group.Id)
+		sql = fmt.Sprintf("update `group` set name ='%s' where id=%d", group.Name, group.Id)
 	}
 	
-	result = model.Execute(sql)
-	
-	return result
+	return model.Execute(sql)
 }
 
 

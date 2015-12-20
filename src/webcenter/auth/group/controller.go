@@ -6,25 +6,27 @@ import (
 	"webcenter/modelhelper"
 )
 
+type QueryManageInfo struct {
+	GroupInfo []GroupInfo
+}
 
-type GetGroupParam struct {
+type QueryAllGroupParam struct {
+	accessCode string	
+}
+
+type QueryAllGroupResult struct {
+	common.Result
+	Group []GroupInfo
+}
+
+type QueryGroupParam struct {
 	accessCode string
 	id int
 }
 
-type GetGroupResult struct {
+type QueryGroupResult struct {
 	common.Result
 	Group Group
-}
-
-type GetAllSubGroupParam struct {
-	accessCode string
-	id int
-}
-
-type GetAllSubGroupResult struct {
-	common.Result
-	Group []Group
 }
 
 type DeleteGroupParam struct {
@@ -36,22 +38,10 @@ type DeleteGroupResult struct {
 	common.Result
 }
 
-type GetAllGroupParam struct {
-	accessCode string	
-}
-
-type GetAllGroupResult struct {
-	common.Result
-	Group []Group
-}
-
-
 type SubmitGroupParam struct {
 	accessCode string
 	id int
 	name string
-	parent int
-	submitDate string	
 }
 
 type SubmitGroupResult struct {
@@ -61,60 +51,45 @@ type SubmitGroupResult struct {
 type accountController struct {
 }
 
+func (this *accountController)queryManageInfoAction() QueryManageInfo {
+	info := QueryManageInfo{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+			
+	info.GroupInfo = QueryAllGroup(model)
+
+	return info
+}
  
-func (this *accountController)getAllGroupAction(param GetAllGroupParam) GetAllGroupResult {
-	result := GetAllGroupResult{}
+func (this *accountController)queryAllGroupAction(param QueryAllGroupParam) QueryAllGroupResult {
+	result := QueryAllGroupResult{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 		
-	result.Group = GetAllGroup(model)
+	result.Group = QueryAllGroup(model)
 	result.ErrCode = 0
 	
 	return result
 }
 
-func (this *accountController)getAllSubGroupAction(param GetAllSubGroupParam) GetAllSubGroupResult {
-	result := GetAllSubGroupResult{}
+func (this *accountController)queryGroupAction(param QueryGroupParam) QueryGroupResult {
+	result := QueryGroupResult{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 		
-	subGroups := GetAllSubGroup(model, param.id)
-	result.ErrCode = 0
-	result.Group = subGroups
-
-	return result
-}
-
-func (this *accountController)getGroupAction(param GetGroupParam) GetGroupResult {
-	result := GetGroupResult{}
-	
-	model, err := modelhelper.NewModel()
-	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
-	}
-	defer model.Release()
-		
-	catalog, found := GetGroupById(model, param.id)
+	catalog, found := QueryGroupById(model, param.id)
 	if !found {
 		result.ErrCode = 1
 		result.Reason = "指定对象不存在"
@@ -163,7 +138,6 @@ func (this *accountController)submitGroupAction(param SubmitGroupParam) SubmitGr
 	group := newGroup()
 	group.Id = param.id
 	group.Name = param.name
-	group.Catalog = param.parent
 
 	SaveGroup(model, group)
 		

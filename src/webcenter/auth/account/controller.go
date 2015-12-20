@@ -4,23 +4,38 @@ import (
 	"log"
 	"webcenter/common"
 	"webcenter/modelhelper"
+	"webcenter/auth/group"
 )
 
-type GetAllUserParam struct {
+type QueryManageInfo struct {
+	UserInfo []UserInfo
+	GroupInfo []group.GroupInfo
+}
+
+type VerifyAccountParam struct {
+	accessCode string
+	account string	
+}
+
+type VerifyAccountResult struct {
+	common.Result
+}
+
+type QueryAllUserParam struct {
 	accessCode string	
 }
 
-type GetAllUserResult struct {
+type QueryAllUserResult struct {
 	common.Result
-	User []User
+	User []UserInfo
 }
 
-type GetUserParam struct {
+type QueryUserParam struct {
 	accessCode string
 	id int
 }
 
-type GetUserResult struct {
+type QueryUserResult struct {
 	common.Result
 	User User
 }
@@ -52,9 +67,48 @@ type SubmitUserResult struct {
 type accountController struct {
 }
 
+func (this *accountController)queryManageInfoAction() QueryManageInfo {
+	info := QueryManageInfo{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+			
+	info.UserInfo = QueryAllUser(model)
+	info.GroupInfo = group.QueryAllGroup(model)
 
-func (this *accountController)getAllUserAction(param GetAllUserParam) GetAllUserResult {
-	result := GetAllUserResult{}
+	return info
+}
+
+func (this *accountController)verifyAccountAction(param VerifyAccountParam) VerifyAccountResult {
+	result := VerifyAccountResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		log.Print("create userModel failed")
+		
+		result.ErrCode = 1
+		result.Reason = "创建Model失败"
+		return result
+	}
+	defer model.Release()
+
+	_ ,found := QueryUserByAccount(model, param.account)
+	if !found {
+		result.ErrCode = 0
+		result.Reason ="该账号可用"
+	} else {
+		result.ErrCode = 1
+		result.Reason ="该账号已经存在"
+	}
+
+	return result
+}
+
+func (this *accountController)queryAllUserAction(param QueryAllUserParam) QueryAllUserResult {
+	result := QueryAllUserResult{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
@@ -66,14 +120,14 @@ func (this *accountController)getAllUserAction(param GetAllUserParam) GetAllUser
 	}
 	defer model.Release()
 	
-	result.User = GetAllUser(model)
+	result.User = QueryAllUser(model)
 	result.ErrCode = 0
 
 	return result
 }
 
-func (this *accountController)getUserAction(param GetUserParam) GetUserResult {
-	result := GetUserResult{}
+func (this *accountController)queryUserAction(param QueryUserParam) QueryUserResult {
+	result := QueryUserResult{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
