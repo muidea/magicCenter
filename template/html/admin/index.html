@@ -24,12 +24,9 @@
 	$(document).ready(function() {
 		// menu item's sub menu
 		$("#main-nav li a.nav-top-item").click(	// When a top menu item is clicked...
-			function() {			
-				var currentDiv = $(this).attr('href');
-				
-				var item = $(this).find("ul li:eq(0) a");
-				
-				$(item).trigger("click");
+			function() {
+				var hrefUrl = $(this).parent().find("ul li a.current").attr("href");
+				$("#body-content .body-content-box").load(hrefUrl);
 				
 				return false;
 			}

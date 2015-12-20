@@ -125,7 +125,6 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
     	
 		id := r.FormValue("user-id")
 		name := r.FormValue("user-account")
-		password := r.FormValue("user-password")
 		nickname := r.FormValue("user-nickname")
 		email := r.FormValue("user-email")
 		group := r.FormValue("user-group")
@@ -146,7 +145,6 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 			break
 	    }
 	    param.account = name
-	    param.password = password
 	    param.nickname = nickname
 	    param.email = email    
 	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")

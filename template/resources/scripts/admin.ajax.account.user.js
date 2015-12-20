@@ -56,24 +56,21 @@ user.initialize = function() {
         function validate() {
         	var result = true
         	
-        	$("#user-content .user-Form .user-name").parent().find("span").remove();
-        	var name = $("#user-content .user-Form .user-name").val();
+        	$("#user-content .user-Form .user-account").parent().find("span").remove();
+        	var name = $("#user-content .user-Form .user-account").val();
         	if (name.length == 0) {
-        		$("#user-content .user-Form .user-name").parent().append("<span class=\"input-notification error png_bg\">请输入站点名</span>");
+        		$("#user-content .user-Form .user-account").parent().append("<span class=\"input-notification error png_bg\">请输入账号</span>");
         		result = false;
         	}
         	
-        	var url = $("#user-content .user-Form .user-url").val();
-        	if (url.length == 0) {
-        		$("#user-content .user-Form .user-url").parent().append("<span class=\"input-notification error png_bg\">请输入网址</span>");
+        	var email = $("#user-content .user-Form .user-email").val();
+        	if (email.length == 0) {
+        		$("#user-content .user-Form .user-email").parent().append("<span class=\"input-notification error png_bg\">请输入合法的邮箱</span>");
         		result = false;
-        	}
-        	
-        	var logo = $("#user-content .user-Form .user-logo").val();
-        	if (logo.length == 0) {
-        		$("#user-content .user-Form .user-name").parent().append("<span class=\"input-notification error png_bg\">请输入Log地址</span>");
-        		result = false;
-        	}
+        	} else if (email.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) == -1) {
+        		$("#user-content .user-Form .user-email").parent().append("<span class=\"input-notification error png_bg\">请输入合法的邮箱</span>");
+        		result = false;        		
+        	}        	
         	
         	return result;
         }
