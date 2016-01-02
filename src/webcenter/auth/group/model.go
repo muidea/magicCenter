@@ -8,13 +8,6 @@ import (
 var ADMIN_GROUP = 0
 var COMMON_GROUP = 1
 
-type GroupInfo struct {
-	Id int
-	Name string
-	UserCount int
-	Catalog int	
-}
-
 type Group struct {
 	Id int
 	Name string
@@ -30,23 +23,6 @@ func newGroup() Group {
 
 func (group Group)AdminGroup() bool {
 	return group.Catalog == ADMIN_GROUP
-}
-
-func QueryAllGroup(model modelhelper.Model) []GroupInfo {
-	groupInfoList := []GroupInfo{}
-	sql := fmt.Sprintf("select g.id, g.`name`, count(u.id) count, g.catalog from `group` g, `user` u where g.id = u.`group` union select g.id, g.`name`, 0 count, g.catalog from `group` g where g.id not in ( select  `group` from `user` )")
-	if !model.Query(sql) {
-		panic("query failed")
-	}
-
-	for model.Next() {
-		group := GroupInfo{}
-		model.GetValue(&group.Id, &group.Name, &group.UserCount, &group.Catalog)
-		
-		groupInfoList = append(groupInfoList, group)
-	}
-
-	return groupInfoList
 }
 
 func QueryGroupById(model modelhelper.Model, id int) (Group, bool) {

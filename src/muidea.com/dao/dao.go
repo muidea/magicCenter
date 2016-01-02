@@ -50,6 +50,10 @@ func (this *Dao) Release() {
 }
 
 func (this *Dao) BeginTransaction() bool {
+	if martini.Env != martini.Prod {
+		log.Print("Begin Transaction")
+	}
+	
 	tx, err := this.dbHandle.Begin()
 	if err != nil {
 		panic("begin transaction exception, err:" + err.Error())
@@ -60,6 +64,10 @@ func (this *Dao) BeginTransaction() bool {
 }
 
 func (this *Dao) Commit() bool {
+	if martini.Env != martini.Prod {
+		log.Print("Commit Transaction")
+	}	
+	
 	if this.dbTx == nil {
 		panic("dbTx is nil")
 	}
@@ -77,6 +85,10 @@ func (this *Dao) Commit() bool {
 }
 
 func (this *Dao) Rollback() bool {
+	if martini.Env != martini.Prod {
+		log.Print("Rollback Transaction")
+	}
+		
 	if this.dbTx == nil {
 		panic("dbTx is nil")
 	}

@@ -14,7 +14,7 @@ user.initialize = function() {
 		
 	$('#user-content .user-Form .user-account').keyup(function() {
 		var account = $("#user-content .user-Form .user-account").val();
-		$.post("/admin/account/verifyAccount/", {
+		$.post("/admin/account/checkAccount/", {
 			"accesscode": user.accesscode,
 			"user-account": account,
 		}, function(result) {
@@ -49,7 +49,8 @@ user.initialize = function() {
         		$("#user-Edit div.success div").html(result.Reason);
         		$("#user-Edit div.success").show();
 
-        		user.refreshLink();
+        		$("#user-Edit .user-Form .button").val("创建");
+        		user.refreshUser();
         	}
         }
         
@@ -89,7 +90,7 @@ user.initialize = function() {
 };
 
 user.refreshUser = function() {
-	$.post("/admin/content/queryAllUser/", {
+	$.post("/admin/account/queryAllUser/", {
 		accesscode: user.accessCode
 	}, function(result){
 		article.errCode = result.ErrCode;
@@ -221,17 +222,20 @@ user.editUser = function(editUrl) {
 			return
 		}
 		
-		$("#user-Edit .user-Form .user-id").val(result.Id);
-		$("#user-Edit .user-Form .user-name").val(result.Name);
-		$("#user-Edit .user-Form .user-url").val(result.Url);
-		$("#user-Edit .user-Form .user-logo").val(result.Logo);
-		$("#user-Edit .user-Form .user-style input").filter("[value="+ result.Style +"]").prop("checked", true);
+		console.log(result)
 		
-		$("#user-Edit .user-Form .user-catalog input").prop("checked", false);
-		if (result.Catalog) {
-			for (var ii =0; ii < result.Catalog.length; ++ii) {
-				var ca = result.Catalog[ii];
-				$("#user-Edit .user-Form .user-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
+		
+		$("#user-Edit .user-Form .button").val("保存");
+		$("#user-Edit .user-Form .user-id").val(result.Id);
+		$("#user-Edit .user-Form .user-account").val(result.Account);
+		$("#user-Edit .user-Form .user-account").prop("readonly", true);
+		$("#user-Edit .user-Form .user-email").val(result.Email);
+		
+		$("#user-Edit .user-Form .user-group input").prop("checked", false);
+		if (result.Group) {
+			for (var ii =0; ii < result.Group.length; ++ii) {
+				var ca = result.Group[ii];
+				$("#user-Edit .user-Form .user-group input").filter("[value="+ ca +"]").prop("checked", true);			
 			}			
 		}
 						
@@ -257,7 +261,7 @@ user.deleteUser = function(deleteUrl) {
 		$("#user-List div.success div").html(result.Reason);
 		$("#user-List div.success").show();
 		
-		user.refreshLink();
+		user.refreshUser();
 	}, "json");
 };
 

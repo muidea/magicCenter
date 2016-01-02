@@ -1,7 +1,7 @@
 body {
-	margin: 0px;
-	padding: 0;
-	background: #F3F2ED url(../images/index/img04.jpg) repeat-x left top;
+	margin: 0px auto;
+	width: 1000px;	
+	background:#f9f9f9;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
 	color: #464646;
@@ -100,11 +100,14 @@ hr { display: none; }
 /* Header */
 
 #header-wrapper {
-	height: 60px;
+	margin: 0px auto;
+	width: 1000px;
+	height: 60px;	
 	background: #131313;
 }
 
 #header {
+	margin: 0px auto;
 	width: 920px;
 	margin: 0 auto;
 }
@@ -207,9 +210,9 @@ hr { display: none; }
 }
 
 #page-bgtop {
-	width: 920px;
+	width: 960px;
 	margin: 0px auto;
-	padding: 40px 40px 0px 40px;
+	padding: 0px 20px 0px 20px;
 	background: url(../images/index/img05.jpg) no-repeat left top;
 }
 
@@ -218,9 +221,9 @@ hr { display: none; }
 
 #logo {
 	width: 960px;
-	height: 107px;
-	margin: 0 auto;
-	padding: 10px 20px 0px 20px;
+	height: 80px;
+	margin: 0px auto;
+	padding: 5px 20px 5px 20px;
 	background: url(../images/index/img08.jpg) no-repeat left bottom;
 }
 
@@ -233,7 +236,7 @@ hr { display: none; }
 }
 
 #logo p {
-	margin-top: -4px;
+	margin-top: 0px;
 	text-transform: lowercase;
 	font-family: Georgia, "Times New Roman", Times, serif;
 	font-size: 13px;
@@ -393,68 +396,11 @@ hr { display: none; }
 	color: #64BC31;
 }
 
-/* Calendar */
-
-#calendar {
-}
-
-#calendar caption {
-	padding-bottom: 5px;
-	font-weight: bold;
-}
-
-#calendar table {
-	width: 100%;
-	border-collapse: collapse;
-	border-bottom: 1px solid #24130F;
-	border-left: 1px solid #24130F;
-	border-right: 1px solid #24130F;
-}
-
-#calendar thead th {
-	padding: 5px 0;
-	text-align: center;
-	border-top: 1px solid #24130F;
-	border-left: 1px solid #24130F;
-	background: #24130F;
-}
-
-#calendar tbody td {
-	padding: 5px 0;
-	text-align: center;
-	border-top: 1px solid #24130F;
-	border-left: 1px solid #24130F;
-	border-bottom: 1px solid #24130F;
-}
-
-#calendar tfoot td {
-	padding: 5px;
-	border-left: 1px solid #24130F;
-	border-bottom: 1px solid #24130F;
-}
-
-#calendar tfoot #next {
-	border-top: 1px solid #24130F;
-	text-align: right;
-}
-
-#calendar tfoot #prev {
-	border-top: 1px solid #24130F;
-}
-
-#calendar .pad {
-	border-bottom: 1px solid #24130F;
-}
-
-#calendar #today {
-	background: #24130F;
-}
-
 /* Footer */
 
 #footer {
-	width: 920px;
-	height: 100px;
+	width: 960px;
+	height: 50px;
 	margin: 0 auto;
 	padding: 0;
 	border-top: 1px solid #E0E0E0;
@@ -465,7 +411,7 @@ hr { display: none; }
 
 #footer p {
 	margin: 0;
-	padding: 30px 0px 0px 0px;
+	padding: 10px 0px 20px 0px;
 	text-align: center;
 	line-height: normal;
 	font-size: 12px;

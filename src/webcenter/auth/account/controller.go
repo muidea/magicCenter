@@ -12,12 +12,12 @@ type QueryManageInfo struct {
 	GroupInfo []group.GroupInfo
 }
 
-type VerifyAccountParam struct {
+type CheckAccountParam struct {
 	accessCode string
 	account string	
 }
 
-type VerifyAccountResult struct {
+type CheckAccountResult struct {
 	common.Result
 }
 
@@ -53,11 +53,8 @@ type SubmitUserParam struct {
 	accessCode string
 	id int
 	account string
-	password string
-	nickname string
 	email string
-	group int
-	submitDate string	
+	group string
 }
 
 type SubmitUserResult struct {
@@ -82,8 +79,8 @@ func (this *accountController)queryManageInfoAction() QueryManageInfo {
 	return info
 }
 
-func (this *accountController)verifyAccountAction(param VerifyAccountParam) VerifyAccountResult {
-	result := VerifyAccountResult{}
+func (this *accountController)checkAccountAction(param CheckAccountParam) CheckAccountResult {
+	result := CheckAccountResult{}
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
@@ -112,11 +109,7 @@ func (this *accountController)queryAllUserAction(param QueryAllUserParam) QueryA
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 	
@@ -131,11 +124,7 @@ func (this *accountController)queryUserAction(param QueryUserParam) QueryUserRes
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 		
@@ -156,11 +145,7 @@ func (this *accountController)deleteUserAction(param DeleteUserParam) DeleteUser
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
 	
@@ -178,28 +163,45 @@ func (this *accountController)submitUserAction(param SubmitUserParam) SubmitUser
 	
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		log.Print("create userModel failed")
-		
-		result.ErrCode = 1
-		result.Reason = "创建Model失败"
-		return result
+		panic("construct model failed")
 	}
 	defer model.Release()
-	
-	user := newUser()
-	user.Id = param.id
-	user.Account = param.account
-	user.password = param.password
-	user.NickName = param.nickname
-	user.Email = param.email
-	user.Group = param.group
-	
-	if !SaveUser(model, user) {
-		result.ErrCode = 1
-		result.Reason = "保存用户信息失败"
+
+	if param.id == -1 {
+		if createNewUser(model, param.account, param.email, param.group) {
+			result.ErrCode = 0
+			result.Reason = "新建用户成功，请到用户邮箱确认创建信息"
+		} else {
+			result.ErrCode = 1
+			result.Reason = "新建用户失败，请稍后重试！"			
+		}
 	} else {
-		result.ErrCode = 0
-		result.Reason = "保存用户信息成功"
+		usr, found := QueryUserById(model,param.id)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "修改用户失败，指定用户不存在"
+		} else {
+			modMail := true
+			modGroup := true
+			
+			model.BeginTransaction()
+			
+			if usr.Email != param.email {
+				modMail = modifyUserMail(model, param.id, param.email)
+			}
+			
+			modGroup = modifyUserGroup(model, param.id, param.group)
+			
+			if modMail && modGroup {
+				result.ErrCode = 0
+				result.Reason = "更新用户信息成功"
+				model.Commit()
+			} else {
+				result.ErrCode = 1
+				result.Reason = "更新用户信息失败"
+				model.Rollback()
+			}
+		}
 	}
 
 	return result

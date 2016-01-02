@@ -2,6 +2,8 @@ package account
 
 import (
 	"fmt"
+	"strings"
+	"strconv"
 	"webcenter/modelhelper"
 	"webcenter/auth/group"
 )
@@ -11,7 +13,7 @@ type UserInfo struct {
 	Account string
 	NickName string
 	Email string
-	Group string
+	Group []string
 	Status int
 }
 
@@ -21,14 +23,19 @@ type User struct {
 	password string
 	NickName string
 	Email string
-	Group int
+	Group string
 	Status int
 }
 
 func newUser() User {
 	user := User{}
 	user.Id = -1
-	user.Group = -1
+	user.Account = ""
+	user.password = ""
+	user.NickName = ""
+	user.Email = ""
+	user.Group = ""
+	user.Status = 1
 	
 	return user
 }
@@ -38,26 +45,54 @@ func (user User)VerifyPassword(password string) bool {
 }
 
 func IsAdmin(model modelhelper.Model, user User) bool {
-	userGroup, found := group.QueryGroupById(model, user.Group)
-	if !found {
-		return false;
+	parts := strings.Split(user.Group,",")
+	for _, g := range parts {
+		gid, _ := strconv.Atoi(g)
+		userGroup, found := group.QueryGroupById(model, gid)
+		if !found {
+			return false;
+		}
+		
+		if userGroup.AdminGroup() {
+			return true
+		}
 	}
 	
-	return userGroup.AdminGroup()
+	return false
 }
 
 func QueryAllUser(model modelhelper.Model) []UserInfo {
 	userInfoList := []UserInfo{}
-	sql := fmt.Sprintf("select u.id, u.account, u.nickname, u.email, g.name, u.status from user u, `group` g where u.group = g.id")
+	sql := fmt.Sprintf("select id, account, nickname, email, `group`, `status` from user")
 	if !model.Query(sql) {
 		panic("query failed")
 	}
 
+	userList := []User{}
 	for model.Next() {
-		user := UserInfo{}
+		user := User{}
 		model.GetValue(&user.Id, &user.Account, &user.NickName, &user.Email, &user.Group, &user.Status)
+		userList = append(userList, user)
+	}
 		
-		userInfoList = append(userInfoList, user)
+	for _, usr := range userList {
+		info := UserInfo{}
+		
+		info.Id = usr.Id
+		info.Account = usr.Account
+		info.NickName = usr.NickName
+		info.Email = usr.Email
+		info.Status = usr.Status
+		parts := strings.Split(usr.Group,",")
+		for _, g := range parts {
+			gid, _ := strconv.Atoi(g)
+			userGroup, found := group.QueryGroupById(model, gid)
+			if found {
+				info.Group = append(info.Group, userGroup.Name)
+			}
+		}
+		
+		userInfoList = append(userInfoList, info)
 	}
 
 	return userInfoList
@@ -107,6 +142,16 @@ func DeleteUser(model modelhelper.Model, id int) bool {
 	return true
 }
 
+func deleteUserByAccount(model modelhelper.Model, account string) bool {
+	sql := fmt.Sprintf("delete from user where account ='%s'", account)
+	if !model.Execute(sql) {
+		panic("execute failed")
+	}
+	
+	return true
+}
+
+
 func SaveUser(model modelhelper.Model, user User) bool {
 	sql := fmt.Sprintf("select id from user where id=%d", user.Id)
 	if !model.Query(sql) {
@@ -121,10 +166,10 @@ func SaveUser(model modelhelper.Model, user User) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', %d, %d)", user.Account, user.password, user.NickName, user.Email, user.Group, user.Status)
+		sql = fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, user.password, user.NickName, user.Email, user.Group, user.Status)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update user set account ='%s', password='%s', nickname='%s', email='%s', `group`=%d, status=%d where id =%d", user.Account, user.password, user.NickName, user.Email, user.Group, user.Status, user.Id)
+		sql = fmt.Sprintf("update user set account ='%s', password='%s', nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Account, user.password, user.NickName, user.Email, user.Group, user.Status, user.Id)
 	}
 	
 	result = model.Execute(sql)
@@ -133,20 +178,40 @@ func SaveUser(model modelhelper.Model, user User) bool {
 }
 
 func QueryUserByGroup(model modelhelper.Model, id int) []UserInfo {
-	userList := []UserInfo{}
+	userInfoList := []UserInfo{}
 	sql := fmt.Sprintf("select u.id, u.account, u.nickname, u.email, g.name, u.status from user u, `group` g where u.group = g.id and u.group=%d", id)
 	if !model.Query(sql) {
 		panic("query failed")
 	}
 
+	userList := []User{}
 	for model.Next() {
-		user := UserInfo{}
+		user := User{}
 		model.GetValue(&user.Id, &user.Account, &user.NickName, &user.Email, &user.Group, &user.Status)
-		
 		userList = append(userList, user)
 	}
+	
+	for _, usr := range userList {
+		info := UserInfo{}
 		
-	return userList
+		info.Id = usr.Id
+		info.Account = usr.Account
+		info.NickName = usr.NickName
+		info.Email = usr.Email
+		info.Status = usr.Status
+		parts := strings.Split(usr.Group,",")
+		for _, g := range parts {
+			gid, _ := strconv.Atoi(g)
+			userGroup, found := group.QueryGroupById(model, gid)
+			if found {
+				info.Group = append(info.Group, userGroup.Name)
+			}
+		}
+		
+		userInfoList = append(userInfoList, info)
+	}
+
+	return userInfoList
 }
 
 

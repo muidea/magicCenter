@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
-	"time"
+	"fmt"
 	"strings"
 	"strconv"
 	"webcenter/session"
+	"webcenter/common"
 	"webcenter/auth/group"
 )
 
@@ -16,6 +17,15 @@ type ManageView struct {
 	Accesscode string
 	UserInfo []UserInfo
 	GroupInfo []group.GroupInfo
+}
+
+type EditView struct {
+	common.Result
+	Accesscode string
+	Id int
+	Account string
+	Email string
+	Group []int
 }
 
 func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,14 +51,14 @@ func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, view)
 }
 
-func VerifyAccountHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("VerifyAccountHandler");
+func CheckAccountHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("CheckAccountHandler");
 	
-	result := VerifyAccountResult{}
+	result := CheckAccountResult{}
 	for true {
-		param := VerifyAccountParam{}
+		param := CheckAccountParam{}
 	    err := r.ParseForm()
-    	if err != nil {    		
+    	if err != nil {
     		panic("paseform failed, err:" + err.Error())
     	}
     	
@@ -59,7 +69,7 @@ func VerifyAccountHandler(w http.ResponseWriter, r *http.Request) {
 	    param.accessCode = accessCode
 	    
 	    controller := &accountController{}
-	    result = controller.verifyAccountAction(param)
+	    result = controller.checkAccountAction(param)
 	    
 	    break
 	}
@@ -99,10 +109,7 @@ func QueryAllUserHandler(w http.ResponseWriter, r *http.Request) {
 	
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("json.Marshal, err:" + err.Error())
     }
     
     w.Write(b)
@@ -114,7 +121,7 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	result := SubmitUserResult{}
 	for true {
 		param := SubmitUserParam{}
-	    err := r.ParseForm()
+	    err := r.ParseMultipartForm(0)
     	if err != nil {
     		log.Print("paseform failed")
     		
@@ -125,9 +132,8 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
     	
 		id := r.FormValue("user-id")
 		name := r.FormValue("user-account")
-		nickname := r.FormValue("user-nickname")
 		email := r.FormValue("user-email")
-		group := r.FormValue("user-group")
+		groups := r.MultipartForm.Value["user-group"]
 		accessCode := r.FormValue("accesscode")
 		
 		param.id, err = strconv.Atoi(id)
@@ -136,18 +142,26 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
-	    }	
-		param.group, err = strconv.Atoi(group)
-	    if err != nil {
-	    	log.Print("parse group failed, group:%s", group)
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
+	    }
+	    
+	    param.group = ""
+	    for _, g := range groups {
+			gid, err := strconv.Atoi(g)
+		    if err != nil {
+		    	log.Print("parse group failed, group:%s", g)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    
+		    if len(param.group) == 0 {
+		    	param.group = fmt.Sprintf("%d", gid)
+		    } else {
+		    	param.group = fmt.Sprintf("%s,%d", param.group, gid)
+		    }
 	    }
 	    param.account = name
-	    param.nickname = nickname
 	    param.email = email    
-	    param.submitDate = time.Now().Format("2006-01-02 15:04:05")
 	    param.accessCode = accessCode
 	    
 	    controller := &accountController{}
@@ -158,10 +172,7 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
     
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("json.Marshal, err:" + err.Error())
     }
     
     w.Write(b)	
@@ -212,10 +223,7 @@ func QueryUserHandler(w http.ResponseWriter, r *http.Request) {
 	
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("json.Marshal, err:" + err.Error())
     }
     
     w.Write(b)
@@ -267,10 +275,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("json.Marshal, err:" + err.Error())
     }
     
     w.Write(b)
@@ -280,7 +285,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 func EditUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("EditUserHandler");
 		
-	result := QueryUserResult{}
+	result := EditView{}
 	
 	for true {
 		param := QueryUserParam{}
@@ -315,17 +320,26 @@ func EditUserHandler(w http.ResponseWriter, r *http.Request) {
 		param.accessCode = accessCode
 		
 	    controller := &accountController{}
-	    result = controller.queryUserAction(param)
+	    re := controller.queryUserAction(param)
+    	
+    	result.ErrCode = re.ErrCode
+    	result.Reason = re.Reason
+    	result.Id = re.User.Id
+    	result.Account = re.User.Account
+    	result.Email = re.User.Email
+    	
+    	parts := strings.Split(re.User.Group,",")
+    	for _, g := range parts {
+    		gid, _ := strconv.Atoi(g)
+    		result.Group = append(result.Group, gid)
+    	}
     	
     	break
 	}
 	
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("json.Marshal, err:" + err.Error())
     }
     
     w.Write(b)
