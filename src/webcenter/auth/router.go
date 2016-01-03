@@ -23,6 +23,8 @@ func registerRouter() {
 	application.RegisterPostHandler("/admin/account/deleteUser/", account.DeleteUserHandler)
     application.RegisterPostHandler("/admin/account/ajaxUser/", account.AjaxUserHandler)
     application.RegisterPostHandler("/admin/account/editUser/", account.EditUserHandler)
+    application.RegisterGetHandler("/user/verify/", account.VerifyAccountHandler)
+    application.RegisterPostHandler("/admin/account/ajaxVerifyUser/", account.AjaxVerifyUserHandler)
     
     application.RegisterGetHandler("/admin/account/manageGroup/", group.ManageGroupHandler)
 	application.RegisterPostHandler("/admin/account/queryAllGroup/", group.QueryAllGroupHandler)

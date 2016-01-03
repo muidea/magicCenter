@@ -90,3 +90,19 @@ func modifyUserGroup(model modelhelper.Model, id int, group string) bool {
 	return true
 }
 
+func updateUserInfo(model modelhelper.Model, id int, nickName, password string) bool {
+	usr, found := QueryUserById(model, id)
+	if !found {
+		return false
+	}
+	
+	usr.NickName = nickName
+	usr.password = password
+	usr.Status = 0
+	if !SaveUser(model,usr) {
+		return false
+	}
+	
+	return true	
+}
+

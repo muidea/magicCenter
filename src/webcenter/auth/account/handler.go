@@ -28,6 +28,13 @@ type EditView struct {
 	Group []int
 }
 
+type VerifyView struct {
+	Id int
+	Accesscode string
+	Account string
+	Action string
+}
+
 func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageUserHandler");
 	
@@ -80,6 +87,51 @@ func CheckAccountHandler(w http.ResponseWriter, r *http.Request) {
     }
     
     w.Write(b)	
+}
+
+func VerifyAccountHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("VerifyAccountHandler");
+	
+	w.Header().Set("content-type", "text/html")
+	w.Header().Set("charset", "utf-8")
+
+	account := ""
+	action := ""
+	rawInfo := r.URL.RawQuery
+	if len(rawInfo) > 0 {
+		parts := strings.Split(rawInfo,"&")
+		if len(parts) >= 2 {
+			accounts := strings.Split(parts[0],"=")
+			account = accounts[1]
+			actions := strings.Split(parts[1],"=")
+			action = actions[1]
+		}
+	}
+	
+	if len(account) == 0 || len(action) == 0 {
+		panic("非法请求");
+	}
+			
+    t, err := template.ParseFiles("template/html/user/verify.html")
+    if (err != nil) {
+    	panic("parse files failed");
+    }
+    
+    session := session.GetSession(w,r)
+    param := QueryUserByAccountParam{}
+    param.account = account
+	controller := &accountController{}
+	info := controller.queryUserByAccountAction(param)
+    if info.ErrCode != 0 {
+    	panic("illegal param")
+    }
+    
+    view := VerifyView{}
+    view.Accesscode = session.AccessToken()
+    view.Id = info.User.Id
+    view.Account = account
+        
+    t.Execute(w, view)
 }
 
 func QueryAllUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -166,6 +218,54 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	    
 	    controller := &accountController{}
 	    result = controller.submitUserAction(param)
+	    
+	    break
+	}
+    
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("json.Marshal, err:" + err.Error())
+    }
+    
+    w.Write(b)	
+}
+
+func AjaxVerifyUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("AjaxVerifyUserHandler");
+	
+	result := SubmitVerifyInfoResult{}
+	for true {
+		param := SubmitVerifyInfoParam{}
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+		id := r.FormValue("user-id")
+		account := r.FormValue("user-account")
+		nickName := r.FormValue("user-nickname")
+		password := r.FormValue("user-password")
+		accessCode := r.FormValue("accesscode")
+		
+		param.id, err = strconv.Atoi(id)
+	    if err != nil {
+	    	log.Print("parse id failed, id:%s", id)
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+	    }
+	    
+	    param.account = account
+	    param.nickname = nickName
+	    param.password = password
+	    param.accessCode = accessCode
+	    
+	    controller := &accountController{}
+	    result = controller.submitVerifyInfoAction(param)
 	    
 	    break
 	}

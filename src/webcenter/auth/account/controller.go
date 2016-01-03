@@ -40,6 +40,15 @@ type QueryUserResult struct {
 	User User
 }
 
+type QueryUserByAccountParam struct {
+	account string
+}
+
+type QueryUserByAccountResult struct {
+	common.Result
+	User User
+}
+
 type DeleteUserParam struct {
 	accessCode string
 	id int
@@ -58,6 +67,18 @@ type SubmitUserParam struct {
 }
 
 type SubmitUserResult struct {
+	common.Result
+}
+
+type SubmitVerifyInfoParam struct {
+	accessCode string
+	id int
+	account string
+	nickname string
+	password string
+}
+
+type SubmitVerifyInfoResult struct {
 	common.Result
 }
 
@@ -140,6 +161,27 @@ func (this *accountController)queryUserAction(param QueryUserParam) QueryUserRes
 	return result
 }
 
+func (this *accountController)queryUserByAccountAction(param QueryUserByAccountParam) QueryUserByAccountResult {
+	result := QueryUserByAccountResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+		
+	user, found := QueryUserByAccount(model, param.account)
+	if !found {
+		result.ErrCode = 1
+		result.Reason = "指定对象不存在"
+	} else {
+		result.ErrCode = 0
+		result.User = user
+	}
+	
+	return result
+}
+
 func (this *accountController)deleteUserAction(param DeleteUserParam) DeleteUserResult {
 	result := DeleteUserResult{}
 	
@@ -202,6 +244,26 @@ func (this *accountController)submitUserAction(param SubmitUserParam) SubmitUser
 				model.Rollback()
 			}
 		}
+	}
+
+	return result
+}
+
+func (this *accountController)submitVerifyInfoAction(param SubmitVerifyInfoParam) SubmitVerifyInfoResult {
+	result := SubmitVerifyInfoResult{}
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+
+	if updateUserInfo(model, param.id, param.nickname,param.password) {
+		result.ErrCode = 0
+		result.Reason = "校验用户成功"		
+	} else {
+		result.ErrCode = 1
+		result.Reason = "校验用户失败"
 	}
 
 	return result
