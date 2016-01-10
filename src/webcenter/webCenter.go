@@ -4,11 +4,11 @@ import (
     "log"
     "webcenter/application"
     _"webcenter/session"
-    _"webcenter/common"
-    _"webcenter/ui"
-    _"webcenter/auth"
     _"webcenter/admin"
-    _"webcenter/content"
+    _"webcenter/admin/common"
+    _"webcenter/admin/auth"
+    _"webcenter/admin/content"
+    _"webcenter/ui"
 )
  
 func main() {

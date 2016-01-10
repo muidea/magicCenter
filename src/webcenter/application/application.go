@@ -21,10 +21,13 @@ var staticPath string = "static"
 var resourceFilePath string = "template"
 var uploadFilePath string = "upload"
 var serverPort string = "8888"
-var webDomain string = "127.0.0.1:8888"
-var webMailServer string = "smtp.126.com:25"
-var webMailAccount string = "rangh@126.com"
-var webMailPassword string = "hRangh@13924"
+
+var systemName string
+var systemLogo string
+var systemDomain string
+var systemMailServer string
+var systemMailAccount string
+var systemMailPassword string
 
 var router martini.Router = martini.NewRouter()
 var martiniFrame *martini.Martini = martini.New()
@@ -40,20 +43,52 @@ func AppInstance() Application {
 	return app 
 }
 
+func Name() string {
+	return systemName
+}
+
+func UpdateName(name string) {
+	systemName = name
+}
+
+func Logo() string {
+	return systemLogo
+}
+
+func UpdateLogo(logo string) {
+	systemLogo = logo
+}
+
 func Domain() string {
-	return webDomain
+	return systemDomain
+}
+
+func UpdateDomain(domain string) {
+	systemDomain = domain
 }
 
 func MailServer() string {
-	return webMailServer
+	return systemMailServer
+}
+
+func UpdateMailServer(server string) {
+	systemMailServer = server
 }
 
 func MailAccount() string {
-	return webMailAccount
+	return systemMailAccount
+}
+
+func UpdateMailAccount(account string) {
+	systemMailAccount = account
 }
 
 func MailPassword() string {
-	return webMailPassword
+	return systemMailPassword
+}
+
+func UpdateMailPassword(password string) {
+	systemMailPassword = password
 }
 
 func UploadPath() string {

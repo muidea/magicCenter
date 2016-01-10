@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>System Settingr</title>
+<!--                       CSS                       -->
+<!-- Main Stylesheet -->
+<link rel="stylesheet" href="/resources/css/content-style.css" type="text/css"	media="screen" />
+<!--                       Javascripts                       -->
+<script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.ajax.system.setting.js"></script>
+<script type="text/javascript">
+setting.name={{.Name}};
+setting.logo={{.Logo}};
+setting.domain={{.Domain}};
+setting.emailServer={{.EMailServer}};
+setting.emailAccount={{.EMailAccount}};
+setting.emailPassword={{.EMailPassword}};
+$(document).ready(function() {
+	setting.initialize();
+});	
+</script>
+</head>
+<body>
+<div id="system">
+		<div class="content-box" id="system-content">
+			<!-- Start Content Box -->
+			<div class="content-box-header">
+				<h3>站点设置</h3>
+				<div class="clear"></div>
+			</div>
+			<!-- End .content-box-header -->
+			<div class="content-box-content">
+				<div class="system-edit">
+					<div class="notification success png_bg" style="display: none">
+						<a href="#" class="close"><img
+							src="/resources/images/icons/cross_grey_small.png"
+							title="Close this notification" alt="close" /></a>
+						<div>Success notification. Lorem ipsum dolor sit amet,
+							consectetur adipiscing elit. Proin vulputate, sapien quis
+							fermentum luctus, libero.</div>
+					</div>
+					<div class="notification error png_bg" style="display: none">
+						<a href="#" class="close"><img
+							src="/resources/images/icons/cross_grey_small.png"
+							title="Close this notification" alt="close" /></a>
+						<div>Error notification. Lorem ipsum dolor sit amet,
+							consectetur adipiscing elit. Proin vulputate, sapien quis
+							fermentum luctus, libero.</div>
+					</div>				
+					<form class="system-Form" action="/admin/system/updateSystem/" method="post">
+						<fieldset>
+							<p>
+								<label>系统名称</label> <input
+									class="text-input small-input system-name" type="text"
+									name="system-name" />
+							</p>
+							<p>
+								<label>系统Logo</label> <input
+									class="text-input small-input system-logo" type="text"
+									name="system-logo" />
+							</p>
+							<p>
+								<label>系统域名</label> <input
+									class="text-input small-input system-domain" type="text"
+									name="system-domain" /> <span class="png_bg">*访问系统的互联网域名，由域名服务商提供</span>
+							</p>
+							<p>
+								<label>邮箱服务器</label> <input
+									class="text-input small-input system-emailserver" type="text"
+									name="system-emailserver" /> <span class="png_bg">*发送邮件通知的邮箱服务器，由邮箱服务商提供</span>
+							</p>							
+							<p>
+								<label>邮箱账号</label> <input
+									class="text-input small-input system-emailaccount" type="text"
+									name="system-emailaccount" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
+							</p>
+							<p>
+								<label>邮箱密码</label> <input
+									class="text-input small-input system-emailpassword" type="password"
+									name="system-emailpassword" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
+							</p>
+							<p>
+								<input class="button" type="submit" value="保存" />
+							</p>
+						</fieldset>
+						<div class="clear"></div>
+						<!-- End .clear -->
+					</form>
+				</div>
+			</div>
+			<!-- End .content-box-content -->
+		</div>
+		</div>
+</body>
+</html>

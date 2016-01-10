@@ -2,7 +2,7 @@ package ui
 
 import (
 	"log"
-	"webcenter/common"
+	"webcenter/admin/common"
 	"webcenter/modelhelper"
 )
 

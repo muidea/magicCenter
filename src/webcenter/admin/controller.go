@@ -2,8 +2,8 @@ package admin
 
 import (
 	"log"
-	"webcenter/auth/account"
-	"webcenter/common"
+	"webcenter/admin/auth/account"
+	"webcenter/admin/common"
 	"webcenter/modelhelper"
 	"webcenter/session"
 )

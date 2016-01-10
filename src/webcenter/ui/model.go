@@ -5,9 +5,9 @@ import (
 	"log"
 	"html/template"
 	"webcenter/modelhelper"
-	"webcenter/content/article"
-	"webcenter/content/catalog"
-	"webcenter/content/link"
+	"webcenter/admin/content/article"
+	"webcenter/admin/content/catalog"
+	"webcenter/admin/content/link"
 )
 
 type ArticleContent struct {

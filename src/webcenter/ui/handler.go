@@ -12,7 +12,7 @@ func viewArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
-    t, err := template.ParseFiles("template/html/view.html")
+    t, err := template.ParseFiles("template/html/blog/view.html")
     if (err != nil) {
         log.Print(err)
         
@@ -42,7 +42,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
-    t, err := template.ParseFiles("template/html/index.html")
+    t, err := template.ParseFiles("template/html/blog/index.html")
     if (err != nil) {
         log.Print(err)
         
