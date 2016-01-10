@@ -9,16 +9,12 @@
 <!--                       Javascripts                       -->
 <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
-<script type="text/javascript" src="/resources/scripts/admin.ajax.system.setting.js"></script>
+<script type="text/javascript" src="/resources/scripts/admin.ajax.system.module.js"></script>
 <script type="text/javascript">
-setting.name={{.Name}};
-setting.logo={{.Logo}};
-setting.domain={{.Domain}};
-setting.emailServer={{.EMailServer}};
-setting.emailAccount={{.EMailAccount}};
-setting.emailPassword={{.EMailPassword}};
+module.accesscode={{.AccessCode}};
+module.moduleList={{.ModuleList}};
 $(document).ready(function() {
-	//setting.initialize();
+	module.initialize();
 });	
 </script>
 </head>
@@ -94,6 +90,9 @@ $(document).ready(function() {
 							</tr>							
 						</tbody>
 					</table>
+					<div>
+					<input class="button" type="button" value="应用设置"/>
+					</div>
 				</div>			
 			</div>
 			<!-- End .content-box-content -->

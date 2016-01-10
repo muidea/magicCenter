@@ -26,7 +26,6 @@ type systemController struct {
 	
 }
 
-
 func (this *systemController)UpdateAction(param *UpdateParam) UpdateResult {
 	result := UpdateResult{}
 	
@@ -71,4 +70,7 @@ func (this *systemController)UpdateAction(param *UpdateParam) UpdateResult {
 	
 	return result
 }
+
+
+
 

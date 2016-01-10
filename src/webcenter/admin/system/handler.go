@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
     "webcenter/application"
+    "webcenter/module"
 )
 
 type SystemView struct {
@@ -15,6 +16,21 @@ type SystemView struct {
 	EMailServer string
 	EMailAccount string
 	EMailPassword string
+}
+
+type ModuleItem struct {
+	Id int
+	Name string
+	Description string
+	Uri string
+	Enable bool
+	Default bool
+	Internal bool
+}
+
+type ModuleView struct {
+	AccessCode string
+	ModuleList []ModuleItem
 }
 
 const passwordMark = "******"
@@ -117,19 +133,31 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     	panic("parse files failed");
     }
     
-    view := SystemView{}
-    view.Name = application.Name()
-    view.Logo = application.Logo()
-    view.Domain = application.Domain()
-    view.EMailServer = application.MailServer()
-    view.EMailAccount = application.MailAccount()
-    view.EMailPassword = passwordMark
+    
+    view := ModuleView{}
+    modulesList := module.QueryAllModules()
+    for index, _ := range modulesList {
+    	m := modulesList[index]
+    	
+    	log.Println(m)
+    	
+    	item := ModuleItem{}
+    	item.Id = m.ID()
+    	item.Name = m.Name()
+    	item.Description = m.Description()
+    	item.Uri = m.Uri()
+    	item.Enable = m.EnableState()
+    	item.Default = m.DefaultState()
+    	item.Internal = m.Internal()
+    	
+    	view.ModuleList = append(view.ModuleList,item)
+    }
     
     t.Execute(w, view)
 }
 
-func UpdateModuleHandler(w http.ResponseWriter, r *http.Request) {	
-	log.Print("UpdateModuleHandler");
+func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {	
+	log.Print("ApplyModuleHandler");
 	
 	result := UpdateResult{}
 	

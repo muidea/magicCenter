@@ -226,8 +226,11 @@ func QueryArticleDetailByRang(model modelhelper.Model, begin int,offset int) []A
 
 	for model.Next() {
 		articleDetail := ArticleDetail{}
-		model.GetValue(&articleDetail.Id, &articleDetail.Title, &articleDetail.Content, &articleDetail.Author, &articleDetail.CreateDate)
-		
+		result := model.GetValue(&articleDetail.Id, &articleDetail.Title, &articleDetail.Content, &articleDetail.Author, &articleDetail.CreateDate)
+		if result {
+			articleDetail.Content = html.UnescapeString(articleDetail.Content)
+		}
+				
 		articleDetailList = append(articleDetailList, articleDetail)
 	}
 	

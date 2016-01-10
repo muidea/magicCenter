@@ -65,7 +65,6 @@ setting.fillSettingView = function() {
 		return;
 	}
 	
-	console.log(setting.name);
 	$("#system-content .content-box-content .system-edit div.notification").hide();
 	$("#system-content .content-box-content .system-edit .system-Form .system-name").val(setting.name);
 	$("#system-content .content-box-content .system-edit .system-Form .system-logo").val(setting.logo);

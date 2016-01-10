@@ -16,6 +16,6 @@ func registerRouter() {
 	application.RegisterPostHandler("/admin/system/updateSystem/", system.UpdateSystemHandler)
 	
 	application.RegisterGetHandler("/admin/system/manageModule/", system.ManageModuleHandler)
-	application.RegisterPostHandler("/admin/system/updateModule/", system.UpdateModuleHandler)	
+	application.RegisterPostHandler("/admin/system/applyModule/", system.ApplyModuleHandler)	
 }
 
