@@ -1,10 +1,79 @@
 package module
 
 import (
+	"log"
     "webcenter/modelhelper"
 )
 
-func QueryAllModules() []Module {
+var entityIDMap = map[string]Entity{}
+var moduleIDMap = map[string]Module{}
+
+func init() {
+	entityIDMap = make(map[string]Entity)
+	moduleIDMap = make(map[string]Module)
+	
+	modules := QueryAllModules()
+	for _, m := range modules {
+		if m.EnableState() {
+			entityIDMap[m.ID()] = m
+		}
+	}
+}
+
+func RegisterModule(m Module) bool {
+	_, ok := entityIDMap[m.ID()]
+	if !ok {
+		return false
+	}
+	
+	_, ok = moduleIDMap[m.ID()]
+	if ok {
+		panic("duplicate register module, id:" + m.ID())
+	}
+	
+	moduleIDMap[m.ID()] = m
+	
+	return true
+}
+
+func UnregisterModule(id string) {	
+	_, ok := moduleIDMap[id]
+	if ok {
+		delete(moduleIDMap, id)
+	} else {
+		log.Println("illegal module id, id:" + id)
+	}
+}
+
+func StarupAllModules() {
+	for i, m := range moduleIDMap {
+		e,ok := entityIDMap[i]
+		if !ok {
+			log.Println("illegal module id")
+			continue
+		}
+		
+		if e.EnableState() {
+			m.Startup(e)
+		}
+	}
+}
+
+func CleanupAllModules() {
+	for i, m := range moduleIDMap {
+		e,ok := entityIDMap[i]
+		if !ok {
+			log.Println("illegal module id")
+			continue
+		}
+		
+		if e.EnableState() {
+			m.Cleanup()
+		}
+	}	
+}
+
+func QueryAllModules() []Entity {
 	model, err := modelhelper.NewModel()
 	if err != nil {
 		panic("construct model failed")
@@ -18,83 +87,103 @@ func InstallModules(modulePath string) bool {
 	return true
 }
 
-func UninstallModules(id int) {
+func UninstallModules(id string) {
 	model, err := modelhelper.NewModel()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer model.Release()
 
-	destroy(model,id)		
+	destroy(model,id)
+	
+	delete(entityIDMap, id)
 }
 
-func EnableModule(id int) bool {
-	model, err := modelhelper.NewModel()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer model.Release()
-	
-	m,found := query(model,id)
-	if !found {
+func EnableModule(id string) bool {	
+	e, ok := entityIDMap[id]
+	if !ok {
+		log.Println("illegal module id")
 		return false
 	}
 	
-	m.Enable()
+	m, ok := moduleIDMap[id]
+	if !ok {
+		panic("illegal module id")
+	}
 	
-	return save(model,m)
+	m.Startup(e)
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+		
+	e.Enable()
+	
+	return save(model,e)
 }
 
-func DisableModule(id int) bool {
+func DisableModule(id string) bool {
+	e, ok := entityIDMap[id]
+	if !ok {
+		log.Println("illegal module id")
+		return false
+	}
+	
+	m, ok := moduleIDMap[id]
+	if !ok {
+		panic("illegal module id")
+	}
+	
+	m.Cleanup()
+	
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+		
+	e.Disable()
+	
+	return save(model,e)
+
+}
+
+func DefaultModule(id string) bool {
+	e, ok := entityIDMap[id]
+	if !ok {
+		log.Println("illegal module id")
+		return false
+	}
+		
 	model, err := modelhelper.NewModel()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer model.Release()
 	
-	m,found := query(model,id)
-	if !found {
-		return false
-	}
+	e.Default()
 	
-	m.Disable()
-	
-	return save(model,m)
-
+	return save(model,e)
 }
 
-func DefaultModule(id int) bool {
+func UndefaultModule(id string) bool {
+	e, ok := entityIDMap[id]
+	if !ok {
+		log.Println("illegal module id")
+		return false
+	}
+		
 	model, err := modelhelper.NewModel()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer model.Release()
 	
-	m,found := query(model,id)
-	if !found {
-		return false
-	}
+	e.Undefault()
 	
-	m.Default()
-	
-	return save(model,m)
-}
-
-func UndefaultModule(id int) bool {
-	model, err := modelhelper.NewModel()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer model.Release()
-	
-	m,found := query(model,id)
-	if !found {
-		return false
-	}
-	
-	m.Undefault()
-	
-	return save(model,m)
+	return save(model,e)
 }
 
 

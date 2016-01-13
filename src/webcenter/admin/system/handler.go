@@ -19,10 +19,10 @@ type SystemView struct {
 }
 
 type ModuleItem struct {
-	Id int
+	Id string
+	Uri string
 	Name string
 	Description string
-	Uri string
 	Enable bool
 	Default bool
 	Internal bool
@@ -145,7 +145,6 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     	item.Id = m.ID()
     	item.Name = m.Name()
     	item.Description = m.Description()
-    	item.Uri = m.Uri()
     	item.Enable = m.EnableState()
     	item.Default = m.DefaultState()
     	item.Internal = m.Internal()
