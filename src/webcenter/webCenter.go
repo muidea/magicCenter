@@ -3,8 +3,8 @@ package main
 import (
     "log"
     "webcenter/application"
-    _"webcenter/session"
     _"webcenter/module"
+    _"webcenter/session"
     _"webcenter/admin"
     _"webcenter/admin/common"
     _"webcenter/admin/auth"
@@ -12,7 +12,6 @@ import (
     _"webcenter/blog"
     _"webcenter/ui"
     
-    "webcenter/module"
 )
  
 func main() {
@@ -20,10 +19,6 @@ func main() {
 	
 	app := application.AppInstance()
 	
-	module.StarupAllModules()
-	
-	app.Run()
-	
-	module.CleanupAllModules()
+	app.Run()	
 }
 

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"encoding/json"
 	"log"
+	"strings"
     "webcenter/application"
     "webcenter/module"
 )
@@ -155,10 +156,10 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, view)
 }
 
-func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {	
+func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ApplyModuleHandler");
 	
-	result := UpdateResult{}
+	result := ApplyResult{}
 	
 	for true {
 	    err := r.ParseForm()
@@ -168,43 +169,35 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     		break;
     	}
 		
-		param := UpdateParam{}
-		name := r.FormValue("system-name")
-		if len(name) > 0 {
-			param.name = name
+		param := ApplyParam{}
+		enableList := r.FormValue("enableList")
+		parts := strings.Split(enableList,",")
+		for _, v := range parts {
+			if len(v) > 0 {
+				param.enableList = append(param.enableList, v)
+			}
+		}
+				
+		disableList := r.FormValue("disableList")
+		parts = strings.Split(disableList,",")
+		for _, v := range parts {
+			if len(v) > 0 {
+				param.disableList = append(param.disableList, v)
+			}
 		}
 		
-		logo := r.FormValue("system-logo")
-		if len(logo) > 0 {
-			param.logo = logo
+		defaultModule := r.FormValue("defaultModule")
+		parts = strings.Split(defaultModule,",")
+		for _, v := range parts {
+			if len(v) > 0 {
+				param.defaultModule = append(param.defaultModule, v)
+			}
 		}
 		
-		domain := r.FormValue("system-domain")
-		if len(domain) > 0 {
-			param.domain = domain
-		}
+		log.Println(param)
 		
-		emailServer := r.FormValue("system-emailserver")
-		if len(emailServer) > 0 {
-			param.emailServer = emailServer
-		}
-		
-		emailAccount := r.FormValue("system-emailaccount")
-		if len(emailAccount) > 0 {
-			param.emailAccount = emailAccount
-		}
-		
-		emailPassword := r.FormValue("system-emailpassword")
-		if len(emailPassword) > 0 && emailPassword != passwordMark {
-			param.emailPassword = emailPassword
-		}
-		
-		param.accesscode = r.FormValue("accesscode")
-	
-		log.Printf("Name:%s,Logo:%s,Domain:%s,server:%s,account:%s,password:%s", param.name, param.logo, param.domain, param.emailServer, param.emailAccount, param.emailPassword)
-	
-    	controller := &systemController{}
-    	result = controller.UpdateAction(&param)
+		controller := &systemController{}
+    	result = controller.ApplyAction(&param)
     	break
 	}
 

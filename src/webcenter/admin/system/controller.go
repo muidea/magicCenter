@@ -2,10 +2,10 @@ package system
 
 import (
     "webcenter/application"
+    "webcenter/module"
     "webcenter/modelhelper"
     "webcenter/admin/common"
 )
-
 
 type UpdateParam struct {
 	name string
@@ -21,6 +21,15 @@ type UpdateResult struct {
 	common.Result
 }
 
+type ApplyParam struct {
+	enableList []string
+	disableList []string
+	defaultModule []string
+}
+
+type ApplyResult struct {
+	common.Result
+}
 
 type systemController struct {
 	
@@ -71,6 +80,26 @@ func (this *systemController)UpdateAction(param *UpdateParam) UpdateResult {
 	return result
 }
 
-
+func (this *systemController)ApplyAction(param *ApplyParam) ApplyResult {
+	result := ApplyResult{}
+	
+	for _, v := range param.enableList {
+		module.EnableModule(v)
+	}
+	
+	for _, v := range param.disableList {
+		module.DisableModule(v)
+	}
+	
+	module.UndefaultAllModule()
+	for _, v := range param.defaultModule {
+		module.DefaultModule(v)
+	}
+	
+	result.ErrCode = 0;
+	result.Reason = "操作成功"
+	
+	return result
+}
 
 

@@ -1,9 +1,57 @@
 
-
 var module = {
 	accesscode:'',
 	moduleList:{}
 };
+
+$(document).ready(function() {
+	$("#module-content .module-list .button").click(
+		function() {
+			var enableList = "";
+			var disableList = "";
+			var defaultModule = "";
+			var radioArray = $("#module-content .module-list table tbody tr td :radio:checked");
+			for (var ii =0; ii < radioArray.length; ++ii) {
+				var radio = radioArray[ii];
+				if ($(radio).val() == 1) {
+					enableList += $(radio).attr("name");
+					enableList += ",";
+				} else {
+					disableList += $(radio).attr("name");
+					disableList += ",";
+				}
+				
+			}
+			
+			var checkboxArray = $("#module-content .module-list table tbody tr td :checkbox:checked");
+			for (var ii =0; ii < checkboxArray.length;) {
+				var checkbox = checkboxArray[ii++];
+				defaultModule += $(checkbox).attr("name");
+				if (ii < checkboxArray.length) {
+					defaultModule += ",";
+				}
+			}
+			
+			$.post("/admin/system/applyModule/", {
+				enableList:enableList,
+				disableList:disableList,
+				defaultModule:defaultModule
+			}, function(result) {
+
+				$("#module-content .module-list div.notification").hide();
+	        	if (result.ErrCode > 0) {
+	        		$("#module-content .module-list div.error div").html(result.Reason);
+	        		$("#module-content .module-list div.error").show();
+	        	} else {
+	        		$("#module-content .module-list div.success div").html(result.Reason);
+	        		$("#module-content .module-list div.success").show();
+	        	}				
+				
+			}, "json");			
+		}
+	);
+	
+});
 
 module.initialize = function() {
 	module.fillModuleView();
@@ -11,14 +59,15 @@ module.initialize = function() {
 
 module.fillModuleView = function() {
 	
-	$("#module-content .content-list table tbody tr").remove();
+	$("#module-content .module-list div.notification").hide();
+	$("#module-content .module-list table tbody tr").remove();
 	for (var ii =0; ii < module.moduleList.length; ++ii) {
 		var info = module.moduleList[ii];
 		var trContent = module.constructModuleItem(info);		
-		$("#module-content .content-list table tbody").append(trContent);
+		$("#module-content .module-list table tbody").append(trContent);
 	}
 	
-	$("#module-content .content-list table tbody tr:even").addClass("alt-row");	
+	$("#module-content .module-list table tbody tr:even").addClass("alt-row");	
 };
 
 module.constructModuleItem = function(module) {
@@ -41,7 +90,7 @@ module.constructModuleItem = function(module) {
 	var radioGroup = document.createElement("radiobox");
 	var enable_radio = document.createElement("input");
 	enable_radio.setAttribute("type","radio");
-	enable_radio.setAttribute("name","enable-" + module.Id);
+	enable_radio.setAttribute("name",module.Id);
 	enable_radio.setAttribute("value","1");
 	radioGroup.appendChild(enable_radio);	
 	var enable_span = document.createElement("span");
@@ -50,7 +99,7 @@ module.constructModuleItem = function(module) {
 	
 	var disable_radio = document.createElement("input");
 	disable_radio.setAttribute("type","radio");
-	disable_radio.setAttribute("name","enable-" + module.Id);
+	disable_radio.setAttribute("name",module.Id);
 	disable_radio.setAttribute("value","0");
 	radioGroup.appendChild(disable_radio);
 	if (module.Enable) {
@@ -70,7 +119,7 @@ module.constructModuleItem = function(module) {
 	var checkGroup = document.createElement("checkbox");
 	var default_check = document.createElement("input");
 	default_check.setAttribute("type","checkbox");
-	default_check.setAttribute("name","default-" + module.Id);
+	default_check.setAttribute("name",module.Id);
 	checkGroup.appendChild(default_check);
 	if (module.Default) {
 		default_check.checked = true;

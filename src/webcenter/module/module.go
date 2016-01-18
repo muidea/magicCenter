@@ -9,15 +9,16 @@ var entityIDMap = map[string]Entity{}
 var moduleIDMap = map[string]Module{}
 
 func init() {
+	log.Println("module init")
 	entityIDMap = make(map[string]Entity)
 	moduleIDMap = make(map[string]Module)
 	
 	modules := QueryAllModules()
 	for _, m := range modules {
-		if m.EnableState() {
-			entityIDMap[m.ID()] = m
-		}
+		entityIDMap[m.ID()] = m
 	}
+	
+	log.Println(entityIDMap)
 }
 
 func RegisterModule(m Module) bool {
@@ -36,7 +37,7 @@ func RegisterModule(m Module) bool {
 	return true
 }
 
-func UnregisterModule(id string) {	
+func UnregisterModule(id string) {
 	_, ok := moduleIDMap[id]
 	if ok {
 		delete(moduleIDMap, id)
@@ -90,7 +91,7 @@ func InstallModules(modulePath string) bool {
 func UninstallModules(id string) {
 	model, err := modelhelper.NewModel()
 	if err != nil {
-		panic("construct model failed")
+		panic("illegal module id,id:" + id)
 	}
 	defer model.Release()
 
@@ -108,7 +109,7 @@ func EnableModule(id string) bool {
 	
 	m, ok := moduleIDMap[id]
 	if !ok {
-		panic("illegal module id")
+		panic("illegal module id,id:" + id)
 	}
 	
 	m.Startup(e)
@@ -133,7 +134,7 @@ func DisableModule(id string) bool {
 	
 	m, ok := moduleIDMap[id]
 	if !ok {
-		panic("illegal module id")
+		panic("illegal module id,id:" + id)
 	}
 	
 	m.Cleanup()
@@ -148,6 +149,20 @@ func DisableModule(id string) bool {
 	
 	return save(model,e)
 
+}
+
+func UndefaultAllModule() {
+	model, err := modelhelper.NewModel()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer model.Release()
+	
+	for _, e := range entityIDMap {
+		e.Undefault()
+		
+		save(model,e)
+	}
 }
 
 func DefaultModule(id string) bool {

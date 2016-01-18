@@ -4,6 +4,7 @@ import (
 	"os"
 	"log"
 	"martini"
+	"webcenter/module"
 )
 
 type Application interface {
@@ -107,8 +108,14 @@ func RegisterGetHandler(pattern string, h interface{}) {
 	router.Get(pattern, h)	
 }
 
+func UnRegisterGetHandler(pattern string, h interface{}) {
+}
+
 func RegisterPostHandler(pattern string, h interface{}) {
 	router.Post(pattern, h)
+}
+
+func UnRegisterPostHandler(pattern string, h interface{}) {
 }
 
 func BindStatic(path string) {
@@ -128,12 +135,16 @@ func (instance application) construct() {
 func (instance application) Run() {
 	log.Print("application Run")
 	
+	module.StarupAllModules()
+	
 	instance.martiniFrame.Use(martini.Logger())
 	instance.martiniFrame.Use(martini.Recovery())
 	instance.martiniFrame.MapTo(instance.martiniRouter, (*martini.Routes)(nil))
 	instance.martiniFrame.Action(instance.martiniRouter.Handle)
 	instance.martinInstance = &martini.ClassicMartini{instance.martiniFrame, instance.martiniRouter}
 	instance.martinInstance.Run()
+	
+	module.CleanupAllModules()	
 }
 
 

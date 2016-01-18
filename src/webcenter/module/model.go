@@ -144,7 +144,18 @@ func save(model modelhelper.Model, m Entity) bool {
 		return false
 	}
 	
-	sql := fmt.Sprintf("update module set name ='%s', description ='%s', enableflag =%d, defaultflag =%d, styleflag =%d where id=%d", m.Name(), m.Description(), m.EnableState(), m.DefaultState(), m.Internal(), m.ID())
+	name := m.Name()
+	desc := m.Description()
+	enableStatus := 0
+	if m.EnableState() {
+		enableStatus = 1
+	}
+	
+	defaultStatus := 0
+	if m.DefaultState() {
+		defaultStatus = 1
+	}
+	sql := fmt.Sprintf("update module set name ='%s', description ='%s', enableflag =%d, defaultflag =%d where id='%s'", name, desc, enableStatus, defaultStatus, m.ID())
 	if !model.Execute(sql) {
 		panic("execute sql failed")
 	}
