@@ -83,7 +83,7 @@ func init() {
 		entityIDMap = make(map[string]Entity)
 		moduleIDMap = make(map[string]Module)
 		
-		modules := QueryAllModules()
+		modules := QueryAllEntities()
 		for _, m := range modules {
 			entityIDMap[m.ID()] = m
 		}
@@ -169,7 +169,7 @@ func CleanupAllModules() {
 	}	
 }
 
-func QueryAllModules() []Entity {
+func QueryAllEntities() []Entity {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
@@ -183,6 +183,12 @@ func QueryAllModules() []Entity {
 	}
 	
 	return allEntity
+}
+
+func QueryModule(id string) (Module,bool) {
+	m, found := moduleIDMap[id]
+	
+	return m,found
 }
 
 func InstallModules(modulePath string) bool {

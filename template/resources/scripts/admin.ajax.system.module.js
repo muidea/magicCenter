@@ -59,25 +59,27 @@ module.initialize = function() {
 
 module.fillModuleView = function() {
 	
-	$("#module-content .module-list div.notification").hide();
-	$("#module-content .module-list table tbody tr").remove();
+	$("#module-list div.notification").hide();
+	$("#module-list table tbody tr").remove();
 	for (var ii =0; ii < module.moduleList.length; ++ii) {
 		var info = module.moduleList[ii];
 		var trContent = module.constructModuleItem(info);		
-		$("#module-content .module-list table tbody").append(trContent);
+		$("#module-list table tbody").append(trContent);
 	}
 	
-	$("#module-content .module-list table tbody tr:even").addClass("alt-row");	
+	$("#module-list table tbody tr:even").addClass("alt-row");	
 };
 
 module.constructModuleItem = function(module) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","module");
 	
+	console.log(module);
+	
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
-	nameLink.setAttribute("href", module.Uri );
+	nameLink.setAttribute("href", "/admin/system/maintainModule/?id=" +module.Id );
 	nameLink.innerHTML = module.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);

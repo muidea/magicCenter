@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"reflect"
     "webcenter/module"
     "webcenter/kernel"
 )
@@ -21,7 +22,6 @@ type SystemView struct {
 
 type ModuleItem struct {
 	Id string
-	Uri string
 	Name string
 	Description string
 	Enable bool
@@ -113,10 +113,7 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
 
     b, err := json.Marshal(result)
     if err != nil {
-    	log.Fatal("json marshal failed, err:" + err.Error())
-    	
-    	http.Redirect(w, r, "/404/", http.StatusNotFound)
-        return
+    	panic("marshal failed, err:" + err.Error())
     }
     
     w.Write(b)
@@ -136,7 +133,7 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     
     
     view := ModuleView{}
-    modulesList := module.QueryAllModules()
+    modulesList := module.QueryAllEntities()
     for index, _ := range modulesList {
     	m := modulesList[index]
     	
@@ -209,4 +206,34 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     
     w.Write(b)
 }
+
+func MaintainModuleHandler(w http.ResponseWriter, r *http.Request) {
+	var id = ""
+	idInfo := r.URL.RawQuery
+	if len(idInfo) > 0 {
+		parts := strings.Split(idInfo,"=")
+		if len(parts) == 2 {
+			id = parts[1]
+		}
+	}
+	
+	m, found := module.QueryModule(id)
+	if found {
+		rts := m.Routes()
+		for _, rt := range rts {
+			if rt.Pattern() == "/maintain/" {
+				fv := reflect.ValueOf(rt.Handler())
+				params := make([]reflect.Value, 2)
+				params[0] = reflect.ValueOf(w)
+				params[1] = reflect.ValueOf(r)
+				fv.Call(params)
+				//handler := rt.Handler().type( func(http.ResponseWriter, *http.Request) )				
+			}
+		}
+	}
+	
+}
+
+
+
 

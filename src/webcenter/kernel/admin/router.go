@@ -23,5 +23,6 @@ func registerRouter() {
 	
 	kernel.RegisterGetHandler("/admin/system/manageModule/", system.ManageModuleHandler)
 	kernel.RegisterPostHandler("/admin/system/applyModule/", system.ApplyModuleHandler)	
+	kernel.RegisterGetHandler("/admin/system/maintainModule/", system.MaintainModuleHandler)
 }
 
