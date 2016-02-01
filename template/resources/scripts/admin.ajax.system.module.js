@@ -5,12 +5,12 @@ var module = {
 };
 
 $(document).ready(function() {
-	$("#module-content .module-list .button").click(
+	$("#module-list .button").click(
 		function() {
 			var enableList = "";
 			var disableList = "";
 			var defaultModule = "";
-			var radioArray = $("#module-content .module-list table tbody tr td :radio:checked");
+			var radioArray = $("#module-list table tbody tr td :radio:checked");
 			for (var ii =0; ii < radioArray.length; ++ii) {
 				var radio = radioArray[ii];
 				if ($(radio).val() == 1) {
@@ -23,7 +23,7 @@ $(document).ready(function() {
 				
 			}
 			
-			var checkboxArray = $("#module-content .module-list table tbody tr td :checkbox:checked");
+			var checkboxArray = $("#module-list table tbody tr td :checkbox:checked");
 			for (var ii =0; ii < checkboxArray.length;) {
 				var checkbox = checkboxArray[ii++];
 				defaultModule += $(checkbox).attr("name");
@@ -38,16 +38,16 @@ $(document).ready(function() {
 				defaultModule:defaultModule
 			}, function(result) {
 
-				$("#module-content .module-list div.notification").hide();
+				$("#module-list div.notification").hide();
 	        	if (result.ErrCode > 0) {
-	        		$("#module-content .module-list div.error div").html(result.Reason);
-	        		$("#module-content .module-list div.error").show();
+	        		$("#module-list div.error div").html(result.Reason);
+	        		$("#module-list div.error").show();
 	        	} else {
-	        		$("#module-content .module-list div.success div").html(result.Reason);
-	        		$("#module-content .module-list div.success").show();
+	        		$("#module-list div.success div").html(result.Reason);
+	        		$("#module-list div.success").show();
 	        	}				
 				
-			}, "json");			
+			}, "json");
 		}
 	);
 	
@@ -79,7 +79,8 @@ module.constructModuleItem = function(module) {
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
-	nameLink.setAttribute("href", "/admin/system/maintainModule/?id=" +module.Id );
+	nameLink.setAttribute("href","#");
+	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/maintainModule/?id=" + module.Id + "'); return false;" );
 	nameLink.innerHTML = module.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
@@ -146,6 +147,14 @@ module.constructModuleItem = function(module) {
 	
 	tr.appendChild(editTd);	
 	return tr;
+};
+
+module.maintainModule = function(maintainUrl) {
+	$("#module-content .content-box-tabs li a").removeClass('current');
+	$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
+	$("#module-maintain").siblings().hide();
+	$("#module-maintain").load(maintainUrl);
+	$("#module-maintain").show();	
 };
 
 

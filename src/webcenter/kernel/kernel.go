@@ -4,20 +4,20 @@ import (
 	"log"
 	"martini"
 	"webcenter/module"
+	"webcenter/router"
 )
 
-var instanceRouter = NewRouter()
 var instanceFrame = martini.New()
 
 func RegisterGetHandler(pattern string, h interface{}) {
-	instanceRouter.AddGetRoute(pattern, h)	
+	router.AddGetRoute(pattern, h)	
 }
 
 func UnRegisterGetHandler(pattern string, h interface{}) {
 }
 
 func RegisterPostHandler(pattern string, h interface{}) {
-	instanceRouter.AddPostRoute(pattern, h)
+	router.AddPostRoute(pattern, h)
 }
 
 func UnRegisterPostHandler(pattern string, h interface{}) {
@@ -32,7 +32,7 @@ func Initialize() {
 	
 	BindStatic(staticPath)
 	BindStatic(resourceFilePath)	
-	module.StartupAllModules(instanceRouter)
+	module.StartupAllModules()
 }
 
 
@@ -41,7 +41,7 @@ func Uninitialize() {
 }
 
 func Run() {
-	martiniRouter := instanceRouter.Router()
+	martiniRouter := router.Router()
 	
 	instanceFrame.Use(martini.Logger())
 	instanceFrame.Use(martini.Recovery())

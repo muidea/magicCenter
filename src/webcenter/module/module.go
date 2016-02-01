@@ -3,24 +3,11 @@ package module
 import (
 	"log"
     "webcenter/util/modelhelper"
-    "webcenter/module/model"
+    "webcenter/router"
 )
 
 const GET = "get"
 const POST = "post"
-
-type Entity interface {
-	ID() string
-	Name() string
-	Description() string
-	EnableState() bool
-	Enable()
-	Disable()
-	DefaultState() bool
-	Default()
-	Undefault()
-	Internal() bool
-}
 
 type Route interface {
 	Type() string
@@ -35,14 +22,6 @@ type Module interface {
 	ID() string	
 	Uri() string
 	Routes() []Route
-}
-
-type Router interface {
-	AddGetRoute(pattern string, handler interface{})
-	RemoveGetRoute(pattern string)
-	
-	AddPostRoute(pattern string, handler interface{})
-	RemovePostRoute(pattern string)	
 }
 
 type route struct {
@@ -82,16 +61,20 @@ func init() {
 	if !initializeFlag {
 		entityIDMap = make(map[string]Entity)
 		moduleIDMap = make(map[string]Module)
+
+		helper, err := modelhelper.NewHelper()
+		if err != nil {
+			panic("construct model failed")
+		}
+		defer helper.Release()
 		
-		modules := QueryAllEntities()
+		modules := queryAllEntity(helper)
 		for _, m := range modules {
 			entityIDMap[m.ID()] = m
 		}
 		
 		initializeFlag = true
 	}
-	
-	log.Println(entityIDMap)
 }
 
 func RegisterModule(m Module) bool {
@@ -119,7 +102,7 @@ func UnregisterModule(id string) {
 	}
 }
 
-func StartupAllModules(r Router) {
+func StartupAllModules() {
 	log.Println("StartupAllModules all modules")
 	
 	for i, m := range moduleIDMap {
@@ -129,23 +112,29 @@ func StartupAllModules(r Router) {
 			continue
 		}
 		
-		if !e.EnableState() {
-			continue			
+		if e.EnableStatus() != 1 {
+			continue
 		}
 		
 		routes := m.Routes()
 		for i, _ := range routes {
 			rt := routes[i]
 			
-			pattern := rt.Pattern()
-			if !e.DefaultState() {
-				pattern = m.Uri() + rt.Pattern()
-			}
-			
 			if rt.Type() == GET {
-				r.AddGetRoute(pattern, rt.Handler())
+				if e.DefaultStatus() == 1 {
+					router.AddGetRoute(rt.Pattern(), rt.Handler())
+				}
+				
+				pattern := m.Uri() + rt.Pattern()
+				router.AddGetRoute(pattern, rt.Handler())
+
 			} else if rt.Type() == POST {
-				r.AddPostRoute(pattern, rt.Handler())
+				if e.DefaultStatus() == 1 {
+					router.AddPostRoute(rt.Pattern(), rt.Handler())
+				}
+				
+				pattern := m.Uri() + rt.Pattern()
+				router.AddPostRoute(pattern, rt.Handler())
 			} else {
 				panic("illegal route type, type:" + rt.Type() )
 			}
@@ -163,7 +152,7 @@ func CleanupAllModules() {
 			continue
 		}
 		
-		if e.EnableState() {
+		if e.EnableStatus() == 1 {
 			m.Cleanup()
 		}
 	}	
@@ -176,13 +165,13 @@ func QueryAllEntities() []Entity {
 	}
 	defer helper.Release()
 	
-	entities := model.QueryAll(helper)
-	allEntity := []Entity{}
-	for _, e := range entities {
-		allEntity = append(allEntity, e)
-	}
+	return queryAllEntity(helper)
+}
+
+func QueryModuleEntity(id string) (Entity,bool) {
+	e, found := entityIDMap[id]
 	
-	return allEntity
+	return e,found
 }
 
 func QueryModule(id string) (Module,bool) {
@@ -202,7 +191,7 @@ func UninstallModules(id string) {
 	}
 	defer helper.Release()
 
-	model.Destroy(helper,id)
+	deleteEntity(helper,id)
 	
 	delete(entityIDMap, id)
 }
@@ -229,7 +218,7 @@ func EnableModule(id string) bool {
 		
 	e.Enable()
 	
-	return model.Save(helper,e)
+	return saveEntity(helper,e)
 }
 
 func DisableModule(id string) bool {
@@ -254,7 +243,7 @@ func DisableModule(id string) bool {
 		
 	e.Disable()
 	
-	return model.Save(helper,e)
+	return saveEntity(helper,e)
 }
 
 func UndefaultAllModule() {
@@ -267,7 +256,7 @@ func UndefaultAllModule() {
 	for _, e := range entityIDMap {
 		e.Undefault()
 		
-		model.Save(helper,e)
+		saveEntity(helper,e)
 	}
 }
 
@@ -277,7 +266,7 @@ func DefaultModule(id string) bool {
 		log.Println("illegal module id")
 		return false
 	}
-		
+	
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
@@ -285,8 +274,8 @@ func DefaultModule(id string) bool {
 	defer helper.Release()
 	
 	e.Default()
-	
-	return model.Save(helper,e)
+		
+	return saveEntity(helper,e)
 }
 
 func UndefaultModule(id string) bool {
@@ -295,7 +284,7 @@ func UndefaultModule(id string) bool {
 		log.Println("illegal module id")
 		return false
 	}
-		
+	
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
@@ -304,7 +293,7 @@ func UndefaultModule(id string) bool {
 	
 	e.Undefault()
 	
-	return model.Save(helper,e)
+	return saveEntity(helper, e)
 }
 
 

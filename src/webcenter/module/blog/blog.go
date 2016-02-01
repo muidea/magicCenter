@@ -2,7 +2,7 @@ package blog
 
 import (
 	"log"
-	"webcenter/module"	
+	"webcenter/module"
 )
 
 const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe3e"
@@ -38,7 +38,7 @@ func (this *blog) Uri() string {
 }
 
 func (this *blog) Routes() []module.Route {
-	routes := []module.Route{module.NewRoute(module.GET,"/",indexHandler), module.NewRoute(module.GET,"/viewblog/",viewArticleHandler), module.NewRoute(module.GET,"/guestbook/",indexHandler), module.NewRoute(module.GET,"/aboutsite/",indexHandler), module.NewRoute(module.GET,"/aboutme/",indexHandler), module.NewRoute(module.GET,"/maintain/",maintainHandler)}
+	routes := []module.Route{module.NewRoute(module.GET,"/",indexHandler), module.NewRoute(module.GET,"/view/",viewArticleHandler), module.NewRoute(module.GET,"/guestbook/",indexHandler), module.NewRoute(module.GET,"/aboutsite/",indexHandler), module.NewRoute(module.GET,"/aboutme/",indexHandler)}
 	
 	return routes
 }

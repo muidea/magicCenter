@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
-	"reflect"
     "webcenter/module"
     "webcenter/kernel"
 )
@@ -137,14 +136,12 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     for index, _ := range modulesList {
     	m := modulesList[index]
     	
-    	log.Println(m)
-    	
     	item := ModuleItem{}
     	item.Id = m.ID()
     	item.Name = m.Name()
     	item.Description = m.Description()
-    	item.Enable = m.EnableState()
-    	item.Default = m.DefaultState()
+    	item.Enable = m.EnableStatus() == 1
+    	item.Default = m.DefaultStatus() == 1
     	item.Internal = m.Internal()
     	
     	view.ModuleList = append(view.ModuleList,item)
@@ -207,7 +204,17 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-func MaintainModuleHandler(w http.ResponseWriter, r *http.Request) {
+func MaintainBlockHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "text/html")
+	w.Header().Set("charset", "utf-8")
+	
+    t, err := template.ParseFiles("template/html/admin/system/system.html")
+    if (err != nil) {
+    	panic("parse files failed");
+    }
+    
+    view := ModuleItem{}
+    	
 	var id = ""
 	idInfo := r.URL.RawQuery
 	if len(idInfo) > 0 {
@@ -217,21 +224,18 @@ func MaintainModuleHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	
-	m, found := module.QueryModule(id)
+	m, found := module.QueryModuleEntity(id)
 	if found {
-		rts := m.Routes()
-		for _, rt := range rts {
-			if rt.Pattern() == "/maintain/" {
-				fv := reflect.ValueOf(rt.Handler())
-				params := make([]reflect.Value, 2)
-				params[0] = reflect.ValueOf(w)
-				params[1] = reflect.ValueOf(r)
-				fv.Call(params)
-				//handler := rt.Handler().type( func(http.ResponseWriter, *http.Request) )				
-			}
-		}
+		view.Id = m.ID()
+		view.Name = m.Name()
+		view.Description = m.Description()
+		view.Enable = m.EnableStatus() == 1
+		view.Default = m.DefaultStatus() == 1
+		view.Internal = m.Internal()
+		t.Execute(w, view)
+	} else {
+		log.Println("illegall module id, id:" + id)
 	}
-	
 }
 
 
