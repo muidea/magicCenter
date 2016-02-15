@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<system_router>
-    <router url="/content/admin/queryAllContent/" function_id="9A4438C9-7D5C-4241-8ECB-3D6D7D245C4D" description="后台管理主页面"/>
-    <router url="/content/admin/queryAllArticle/" function_id="D1C3548C-FEEF-419D-9D98-1EC763BEFF73" description="后台管理主页面"/>
-    <router url="/content/admin/queryAllContent/" function_id="75DD8BD3-7231-41E4-A08A-C4FFFCA846A7" description="后台管理主页面"/>
-</system_router>
