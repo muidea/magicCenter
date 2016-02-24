@@ -49,7 +49,7 @@ func (this *Dao) Release() {
 		
 }
 
-func (this *Dao) BeginTransaction() bool {
+func (this *Dao) BeginTransaction() {
 	if martini.Env != martini.Prod {
 		log.Print("Begin Transaction")
 	}
@@ -60,10 +60,9 @@ func (this *Dao) BeginTransaction() bool {
 	}
 	
 	this.dbTx = tx
-	return true
 }
 
-func (this *Dao) Commit() bool {
+func (this *Dao) Commit() {
 	if martini.Env != martini.Prod {
 		log.Print("Commit Transaction")
 	}	
@@ -73,18 +72,16 @@ func (this *Dao) Commit() bool {
 	}
 	
 	err := this.dbTx.Commit()
-	if err != nil {
-		panic("commit transaction exception, err:" + err.Error())
-		
+	if err != nil {		
 		this.dbTx = nil
-		return false;
+		
+		panic("commit transaction exception, err:" + err.Error())
 	}
 	
 	this.dbTx = nil
-	return true
 }
 
-func (this *Dao) Rollback() bool {
+func (this *Dao) Rollback() {
 	if martini.Env != martini.Prod {
 		log.Print("Rollback Transaction")
 	}
@@ -95,20 +92,18 @@ func (this *Dao) Rollback() bool {
 	
 	err := this.dbTx.Rollback()
 	if err != nil {		
-		panic("rollback transaction exception, err:" + err.Error())
-		
 		this.dbTx = nil
-		return false;
+		
+		panic("rollback transaction exception, err:" + err.Error())
 	}
 	
 	this.dbTx = nil
-	return true
 }
 
-func (this *Dao) Query(sql string) bool {
+func (this *Dao) Query(sql string) {
 		
 	if this.dbHandle == nil {
-		return false
+		panic("dbHanlde is nil")
 	}
 
 	if martini.Env != martini.Prod {
@@ -118,18 +113,16 @@ func (this *Dao) Query(sql string) bool {
 	rows, err := this.dbHandle.Query(sql)
 	if err != nil {
 		panic("query exception, err:" + err.Error())
-		return false
 	}
 	
 	this.rowsHandle = rows
-	
-	return true		
 }
 
 func (this *Dao) Next() bool {
 	if this.rowsHandle == nil {
-		return false
+		panic("rowsHandle is nil");
 	}
+	
 	ret := this.rowsHandle.Next()
 	if !ret {
 		this.rowsHandle = nil
@@ -138,7 +131,7 @@ func (this *Dao) Next() bool {
 	return ret
 }
 
-func (this *Dao) GetField(value ... interface{}) bool {
+func (this *Dao) GetField(value ... interface{}){
 	if this.rowsHandle == nil {
 		panic("rowsHandle is nil");
 	}
@@ -147,13 +140,11 @@ func (this *Dao) GetField(value ... interface{}) bool {
 	if err != nil {
 		panic("scan exception, err:" + err.Error())
 	}
-	
-	return true
 }
 
 func (this *Dao) Execute(sql string) bool {
 	if this.dbHandle == nil {
-		return false
+		panic("dbHandle is nil");
 	}
 	
 	if martini.Env != martini.Prod {
@@ -170,7 +161,7 @@ func (this *Dao) Execute(sql string) bool {
 		panic("rows affected exception, err:" + err.Error())
 	}
 	
-	return true	
+	return true
 }
 
 

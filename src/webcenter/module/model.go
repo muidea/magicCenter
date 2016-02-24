@@ -5,134 +5,112 @@ import (
 	"webcenter/util/modelhelper"
 )
 
-type Block interface {
-	ID() int
-	Name() string
-	Owner() string
+func addPageBlock(helper modelhelper.Model, url string, block int) bool {
+	sql := fmt.Sprintf("insert into page_block (url,block) values('%s',%d)", url, block)	
+	return helper.Execute(sql)
 }
 
-type block struct {
-	id int
-	name string
-	owner string
-}
-
-func (this *block)ID() int {
-	return this.id
-}
-
-func (this *block)Name() string {
-	return this.name
-}
-
-func (this *block)Owner() string {
-	return this.owner
-}
-
-type Entity interface {
-	ID() string
-	Name() string
-	Description() string
-	Enable()
-	Disable()
-	EnableStatus() int
-	Default()
-	Undefault()
-	DefaultStatus() int
-	Internal() bool
-	StyleFlag() int
-}
-
-type entity struct {
-	id string
-	name string
-	description string
-	enableFlag int
-	defaultFlag int
-	styleFlag int
-}
-
-func (this *entity)ID() string {
-	return this.id
-}
-
-func (this *entity)Name() string {
-	return this.name
-}
-
-func (this *entity)Description() string {
-	return this.description
-}
-
-func (this *entity)Enable() {
-	this.enableFlag = 1
-}
-
-func (this *entity)Disable() {
-	this.enableFlag = 0
-}
-
-func (this *entity)EnableStatus() int {
-	return this.enableFlag
-}
-
-func (this *entity)Default() {
-	this.defaultFlag = 1
-}
-
-func (this *entity)Undefault() {
-	this.defaultFlag = 0
-}
-
-func (this *entity)DefaultStatus() int {
-	return this.defaultFlag
-}
-
-func (this *entity)Internal() bool {
-	return this.styleFlag == 0
-}
-
-func (this *entity)StyleFlag() int {
-	return this.styleFlag
-}
-
-func newEntity(id,name,description string) Entity {
-	e := &entity{}
-	e.id = id
-	e.name = name
-	e.description = description
-	
-	return e
-}
-
-func insertBlock(helper modelhelper.Model, name,owner string) {
-	sql := fmt.Sprintf("insert into module_block (name,owner) values('%s','%s')", name, owner)
+func removePageBlock(helper modelhelper.Model, url string, block int) {
+	sql := fmt.Sprintf("delete page_block where url='%s' and block=%d", url, block)	
 	helper.Execute(sql)
 }
 
-func deleteBlock(helper modelhelper.Model, name string) {
-	sql := fmt.Sprintf("delete from module_block where name='%s'", name)
-	helper.Execute(sql)
-}
-
-func queryEntityBlocks(helper modelhelper.Model, owner string) []Block {	
+func queryPageBlock(helper modelhelper.Model, url string) []Block {
 	blockList := []Block{}
-	sql := fmt.Sprintf("select id,name,owner from module_block where owner='%s'", owner)
-	if helper.Query(sql) {
-		for helper.Next() {
-			b := &block{}
-			helper.GetValue(&b.id, &b.name, &b.owner)
-			
-			blockList = append(blockList, b)
-		}
-	} else {
-		panic("execute sql failed")
+	sql := fmt.Sprintf("select id,name,owner from module_block where id in (select id from page_block where url='%s')", url)
+	helper.Query(sql)
+	
+	bList := []*block{}
+	for helper.Next() {
+		b := &block{}
+		helper.GetValue(&b.id, &b.name, &b.owner)
+		
+		bList = append(bList, b)
+	}
+	
+	for i, _ := range bList {
+		b := bList[i]
+		b.items = queryBlockItems(helper, b.id)
+		
+		blockList = append(blockList, b)
 	}
 	
 	return blockList
 }
 
-func deleteEntity(helper modelhelper.Model, id string) {
+func addBlockItem(helper modelhelper.Model, name,url string, owner int) bool {
+	sql := fmt.Sprintf("insert into block_item (name,url,owner) values('%s','%s',%d)", name, url,owner)
+	return helper.Execute(sql)
+}
+
+func removeBlockItem(helper modelhelper.Model, id int) {
+	sql := fmt.Sprintf("delete block_item where id=%d", id)
+	helper.Execute(sql)
+}
+
+func queryBlockItems(helper modelhelper.Model, owner int) []Item {
+	itemList := []Item{}
+	
+	sql := fmt.Sprintf("select id,name,url,owner from block_item where owner=%d", owner)
+	helper.Query(sql)
+	for helper.Next() {
+		i := &item{}
+		helper.GetValue(&i.id, &i.name, &i.url, &i.owner)
+		
+		itemList = append(itemList, i)
+	}
+	
+	return itemList
+}
+
+func insertModuleBlock(helper modelhelper.Model, name,owner string) (Block, bool) {
+	b := &block{}
+	
+	result := false
+	sql := fmt.Sprintf("insert into module_block (name,owner) values('%s','%s')", name, owner)
+	if helper.Execute(sql) {
+		sql = fmt.Sprintf("select id from module_block where name='%s' and owner='%s'", name, owner)
+		helper.Query(sql)
+		if helper.Next() {
+			helper.GetValue(&b.id)
+			b.name = name
+			b.owner = owner
+			result = true
+		}
+	}
+	
+	return b,result
+}
+
+func deleteModuleBlock(helper modelhelper.Model, name string) {
+	sql := fmt.Sprintf("delete from module_block where name='%s'", name)
+	helper.Execute(sql)
+}
+
+func queryModuleBlocks(helper modelhelper.Model, owner string) []Block {	
+	blockList := []Block{}
+	sql := fmt.Sprintf("select id,name,owner from module_block where owner='%s'", owner)
+	helper.Query(sql)
+	
+	bList := []*block{}
+	for helper.Next() {
+		b := &block{}
+		helper.GetValue(&b.id, &b.name, &b.owner)
+		
+		bList = append(bList, b)
+	}
+	
+	for i, _ := range bList {
+		b := bList[i]
+		b.items = queryBlockItems(helper, b.id)
+		
+		blockList = append(blockList, b)
+	}
+	
+	return blockList
+}
+
+func deleteModule(helper modelhelper.Model, id string) {
 	helper.BeginTransaction()
 	
 	sql := fmt.Sprintf("delete from module_block where owner='%s'", id)
@@ -149,33 +127,41 @@ func deleteEntity(helper modelhelper.Model, id string) {
 	
 }
 
-func queryEntity(helper modelhelper.Model, id string) (Entity, bool) {
-	m := &entity{}
+func queryModule(helper modelhelper.Model, id string) (Module, bool) {
+	m := &module{}
 	sql := fmt.Sprintf("select id, name, description, enableflag, defaultflag, styleflag from module where id='%s'", id)	
-	if !helper.Query(sql) {
-		panic("execute sql failed")
-	}
+	helper.Query(sql)
 	
 	result := false
 	if helper.Next() {
 		helper.GetValue(&m.id, &m.name, &m.description, &m.enableFlag, &m.defaultFlag, &m.styleFlag)
 		result = true
 	}
+	
+	if result {
+		m.blocks = queryModuleBlocks(helper, m.id)
+	}
 		
 	return m, result	
 }
 
-func queryAllEntity(helper modelhelper.Model) []Entity {
-	moduleList := []Entity{}
+func queryAllModule(helper modelhelper.Model) []Module {
+	moduleList := []Module{}
 	
 	sql := fmt.Sprintf("select id, name, description, enableflag, defaultflag, styleflag from module order by styleflag")	
-	if !helper.Query(sql) {
-		panic("execute sql failed")
+	helper.Query(sql)
+	
+	mList := []*module{}
+	for helper.Next() {
+		m := &module{}
+		helper.GetValue(&m.id, &m.name, &m.description, &m.enableFlag, &m.defaultFlag, &m.styleFlag)
+		
+		mList = append(mList, m)
 	}
 	
-	for helper.Next() {
-		m := &entity{}
-		helper.GetValue(&m.id, &m.name, &m.description, &m.enableFlag, &m.defaultFlag, &m.styleFlag)
+	for i, _ := range mList {
+		m := mList[i]
+		m.blocks = queryModuleBlocks(helper, m.id)
 		
 		moduleList = append(moduleList, m)
 	}
@@ -183,21 +169,18 @@ func queryAllEntity(helper modelhelper.Model) []Entity {
 	return moduleList
 }
 
-func saveEntity(helper modelhelper.Model, m Entity) bool {
-	_, found := queryEntity(helper, m.ID())
+func saveModule(helper modelhelper.Model, m Module) bool {
+	result := false
+	_, found := queryModule(helper, m.ID())
 	if found {
 		sql := fmt.Sprintf("update module set Name ='%s', Description ='%s', enableflag =%d, defaultflag =%d where Id='%s'", m.Name(), m.Description(), m.EnableStatus(), m.DefaultStatus(), m.ID())
-		if !helper.Execute(sql) {
-			panic("execute sql failed")
-		}
+		result = helper.Execute(sql)
 	} else {
 		sql := fmt.Sprintf("insert into module(id, name, description, enableflag, defaultflag, styleflag) values ('%s','%s','%s',%d,%d,%d)", m.ID(), m.Name(), m.Description(), m.EnableStatus(), m.DefaultStatus(), m.StyleFlag())
-		if !helper.Execute(sql) {
-			panic("execute sql failed")
-		}
+		result = helper.Execute(sql)
 	}
-		
-	return true
+	
+	return result
 }
 
 

@@ -5,17 +5,17 @@ import (
 )
 
 type Model interface {
-	BeginTransaction() bool
+	BeginTransaction()
 	
-	Commit() bool
+	Commit()
 	
-	Rollback() bool
+	Rollback()
 	
-	Query(string) bool
+	Query(string)
 	
 	Next() bool
 	
-	GetValue(... interface{}) bool
+	GetValue(... interface{})
 	
 	Execute(string) bool
 	
@@ -38,28 +38,28 @@ func NewHelper()(Model, error) {
 	return m, err
 }
 
-func (this *model) BeginTransaction() bool {
-	return this.dao.BeginTransaction()
+func (this *model) BeginTransaction() {
+	this.dao.BeginTransaction()
 }
 
-func (this *model) Commit() bool {
-	return this.dao.Commit()
+func (this *model) Commit() {
+	this.dao.Commit()
 }
 
-func (this *model) Rollback() bool {
-	return this.dao.Rollback()
+func (this *model) Rollback() {
+	this.dao.Rollback()
 }
 
-func (this *model)Query(sql string) bool {
-	return this.dao.Query(sql)
+func (this *model)Query(sql string) {
+	this.dao.Query(sql)
 }
 
 func (this *model)Next() bool {
 	return this.dao.Next()
 }
 
-func (this *model)GetValue(val ... interface{}) bool {
-	return this.dao.GetField(val...)
+func (this *model)GetValue(val ... interface{}) {
+	this.dao.GetField(val...)
 }
 
 func (this *model)Execute(sql string) bool {

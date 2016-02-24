@@ -80,7 +80,7 @@ module.constructModuleItem = function(module) {
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
 	nameLink.setAttribute("href","#");
-	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/maintainModule/?id=" + module.Id + "'); return false;" );
+	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryBlock/?id=" + module.Id + "'); return false;" );
 	nameLink.innerHTML = module.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
@@ -150,11 +150,58 @@ module.constructModuleItem = function(module) {
 };
 
 module.maintainModule = function(maintainUrl) {
-	$("#module-content .content-box-tabs li a").removeClass('current');
-	$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
-	$("#module-maintain").siblings().hide();
-	$("#module-maintain").load(maintainUrl);
-	$("#module-maintain").show();	
+	$.get(maintainUrl, {
+	}, function(result) {
+		$("#module-List div.notification").hide();
+		
+		if (result.ErrCode > 0) {
+			$("#module-List div.error div").html(result.Reason);
+			$("#module-List div.error").show();
+			return
+		}
+		
+		console.log(result);
+		
+		$("#module-content .content-box-tabs li a").removeClass('current');
+		$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
+		$("#module-maintain").siblings().hide();
+		$("#module-maintain table tbody tr").remove();
+		if (result.Blocks) {
+			for (var ii =0; ii < result.Blocks.length; ++ii) {
+				var info = result.Blocks[ii];
+				var trContent = module.constructBlockItem(info);
+				$("#module-maintain table tbody").append(trContent);
+			}			
+		}
+		$("#module-maintain table tbody tr:even").addClass("alt-row");
+		$("#module-maintain .block-Form .module-id").val(result.Module.Id);
+		
+		$("#module-maintain").show();	
+	}, "json");	
+};
+
+module.constructBlockItem = function(block) {
+	var tr = document.createElement("tr");
+	tr.setAttribute("class","block");
+	
+	console.log(module);
+	
+	var nameTd = document.createElement("td");
+	nameTd.innerHTML = block.Name
+	tr.appendChild(nameTd);
+	
+	var editTd = document.createElement("td");
+	var deleteLink = document.createElement("a");
+	deleteLink.setAttribute("class","delete");
+	deleteLink.setAttribute("href","#deleteImage" );
+	deleteLink.setAttribute("onclick","module.deleteBlock('/#?id=" + block.Id + "'); return false;" );
+	var deleteImage = document.createElement("img");
+	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
+	deleteImage.setAttribute("alt","Delete");
+	deleteLink.appendChild(deleteImage);	
+	editTd.appendChild(deleteLink);
+	tr.appendChild(editTd);	
+	return tr;
 };
 
 

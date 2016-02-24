@@ -38,16 +38,12 @@ func (this *simpleRes) Relative() []Resource {
 
 func (this *simpleRes) queryRelative(model modelhelper.Model, recurse bool) {
 	sql := fmt.Sprintf(`select rr.dst id, rr.dstType type, r.name name from resource_relative rr, resource r where rr.dst = r.id and rr.dstType = r.type and rr.src =%d and rr.srcType =%d`,this.rid, this.tid)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 	
 	presList := []simpleRes{}
 	for model.Next() {
 		pres := simpleRes{}
-		if !model.GetValue(&pres.rid, &pres.tid, &pres.rname) {
-			panic("get value failed")
-		}
+		model.GetValue(&pres.rid, &pres.tid, &pres.rname)
 		
 		if recurse {
 			presList = append(presList, pres)
@@ -77,14 +73,13 @@ func NewSimpleRes(id int, name string, tid int) Resource {
 
 func QueryResource(model modelhelper.Model, id int, tid int, recurse bool) (Resource, bool) {
 	sql := fmt.Sprintf(`select id, type, name from resource where id =%d and type =%d`, id, tid)
-	if !model.Query(sql) {
-		panic("qery failed")
-	}
+	model.Query(sql)
 	
 	res := simpleRes{}
 	result := false
-	for model.Next() {
-		result = model.GetValue(&res.rid, &res.tid, &res.rname)
+	if model.Next() {
+		model.GetValue(&res.rid, &res.tid, &res.rname)
+		result = true
 	}
 	
 	res.queryRelative(model, recurse)
@@ -93,18 +88,14 @@ func QueryResource(model modelhelper.Model, id int, tid int, recurse bool) (Reso
 
 func QueryReferenceResource(model modelhelper.Model, id int, tid int, recurse bool) []Resource {
 	sql := fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = %d`, id, tid)
-	if !model.Query(sql) {
-		panic("qery failed")
-	}
+	model.Query(sql)
 	
 	resultList := []Resource{}
 	resList := []simpleRes{}
 	for model.Next() {
 		res := simpleRes{}
-		result := model.GetValue(&res.rid, &res.tid, &res.rname)
-		if result {
-			resList = append(resList, res)
-		}
+		model.GetValue(&res.rid, &res.tid, &res.rname)
+		resList = append(resList, res)
 	}
 	
 	for _, r := range resList {
@@ -118,14 +109,12 @@ func QueryReferenceResource(model modelhelper.Model, id int, tid int, recurse bo
 
 func SaveResource(model modelhelper.Model, res Resource) bool {
 	sql := fmt.Sprintf(`select id from resource where id=%d and type=%d`, res.Id(), res.Type())
-	if !model.Query(sql) {
-		panic("qery failed")
-	}
+	model.Query(sql)
 
 	result := false
 	for model.Next() {
 		var id = 0
-		result = model.GetValue(&id)
+		model.GetValue(&id)
 		result = true
 	}
 
@@ -140,8 +129,6 @@ func SaveResource(model modelhelper.Model, res Resource) bool {
 	result = model.Execute(sql)
 	if result {
 		saveResourceRelative(model, res)
-	} else {
-		panic("execute failed")
 	}
 
 	return result
@@ -167,14 +154,11 @@ func saveResourceRelative(model modelhelper.Model, res Resource) bool {
 	for _, rr := range res.Relative() {
 		result = false				
 		sql := fmt.Sprintf(`select id from resource_relative where src=%d and srcType=%d and dst=%d and dstType=%d`, res.Id(), res.Type(), rr.Id(), rr.Type())
-		if !model.Query(sql) {
-			panic("qery failed")
-			return false
-		}
+		model.Query(sql)
 
 		for model.Next() {
 			var id = 0
-			result = model.GetValue(&id)
+			model.GetValue(&id)
 			result = true
 		}
 

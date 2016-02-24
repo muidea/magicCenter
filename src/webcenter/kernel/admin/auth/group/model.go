@@ -28,9 +28,7 @@ func (group Group)AdminGroup() bool {
 func QueryGroupById(model modelhelper.Model, id int) (Group, bool) {
 	group := newGroup()
 	sql := fmt.Sprintf("select id,name,catalog from `group` where id=%d",id)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	result := false;
 	for model.Next() {
@@ -53,14 +51,12 @@ func DeleteGroup(model modelhelper.Model, id int) bool {
 
 func SaveGroup(model modelhelper.Model, group Group) bool {
 	sql := fmt.Sprintf("select id from `group` where id=%d", group.Id)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	result := false;
 	for model.Next() {
 		var id = 0
-		result = model.GetValue(&id)
+		model.GetValue(&id)
 		result = true
 	}
 

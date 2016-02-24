@@ -1,299 +1,96 @@
 package module
 
 import (
-	"log"
-    "webcenter/util/modelhelper"
-    "webcenter/router"
+	"webcenter/util/modelhelper"
 )
 
-const GET = "get"
-const POST = "post"
-
-type Route interface {
-	Type() string
-	Pattern() string
-	Handler() interface{}
-}
 
 type Module interface {
-	Startup()
-	Cleanup()
-
-	ID() string	
-	Uri() string
-	Routes() []Route
+	ID() string
+	Name() string
+	Description() string
+	Enable()
+	Disable()
+	EnableStatus() int
+	Default()
+	Undefault()
+	DefaultStatus() int
+	Internal() bool
+	StyleFlag() int
 }
 
-type route struct {
-	rType string
-	rPattern string
-	rHandler interface{}
+type module struct {
+	id string
+	name string
+	description string
+	enableFlag int
+	defaultFlag int
+	styleFlag int
+	blocks []Block
 }
 
-func (this *route) Type() string {
-	return this.rType
+func (this *module)ID() string {
+	return this.id
 }
 
-func (this *route) Pattern() string {
-	return this.rPattern
+func (this *module)Name() string {
+	return this.name
 }
 
-func (this *route) Handler() interface{} {
-	return this.rHandler
+func (this *module)Description() string {
+	return this.description
 }
 
-func NewRoute(rType, rPattern string, rHandler interface{}) Route {
-	r := route{}
-	r.rType = rType
-	r.rPattern = rPattern
-	r.rHandler = rHandler
+func (this *module)Enable() {
+	this.enableFlag = 1
+}
+
+func (this *module)Disable() {
+	this.enableFlag = 0
+}
+
+func (this *module)EnableStatus() int {
+	return this.enableFlag
+}
+
+func (this *module)Default() {
+	this.defaultFlag = 1
+}
+
+func (this *module)Undefault() {
+	this.defaultFlag = 0
+}
+
+func (this *module)DefaultStatus() int {
+	return this.defaultFlag
+}
+
+func (this *module)Internal() bool {
+	return this.styleFlag == 0
+}
+
+func (this *module)StyleFlag() int {
+	return this.styleFlag
+}
+
+func newModule(id,name,description string) Module {
+	e := &module{}
+	e.id = id
+	e.name = name
+	e.description = description
 	
-	return &r	
+	return e
 }
 
-var initializeFlag = false
-var entityIDMap = map[string]Entity{}
-var moduleIDMap = map[string]Module{}
 
-func init() {
-	log.Println("module init")
-	
-	if !initializeFlag {
-		entityIDMap = make(map[string]Entity)
-		moduleIDMap = make(map[string]Module)
-
-		helper, err := modelhelper.NewHelper()
-		if err != nil {
-			panic("construct model failed")
-		}
-		defer helper.Release()
-		
-		modules := queryAllEntity(helper)
-		for _, m := range modules {
-			entityIDMap[m.ID()] = m
-		}
-		
-		initializeFlag = true
-	}
-}
-
-func RegisterModule(m Module) bool {
-	_, ok := entityIDMap[m.ID()]
-	if !ok {
-		return false
-	}
-	
-	_, ok = moduleIDMap[m.ID()]
-	if ok {
-		panic("duplicate register module, id:" + m.ID())
-	}
-	
-	moduleIDMap[m.ID()] = m
-	
-	return true
-}
-
-func UnregisterModule(id string) {
-	_, ok := moduleIDMap[id]
-	if ok {
-		delete(moduleIDMap, id)
-	} else {
-		log.Println("illegal module id, id:" + id)
-	}
-}
-
-func StartupAllModules() {
-	log.Println("StartupAllModules all modules")
-	
-	for i, m := range moduleIDMap {
-		e,ok := entityIDMap[i]
-		if !ok {
-			log.Println("illegal module id")
-			continue
-		}
-		
-		if e.EnableStatus() != 1 {
-			continue
-		}
-		
-		routes := m.Routes()
-		for i, _ := range routes {
-			rt := routes[i]
-			
-			if rt.Type() == GET {
-				if e.DefaultStatus() == 1 {
-					router.AddGetRoute(rt.Pattern(), rt.Handler())
-				}
-				
-				pattern := m.Uri() + rt.Pattern()
-				router.AddGetRoute(pattern, rt.Handler())
-
-			} else if rt.Type() == POST {
-				if e.DefaultStatus() == 1 {
-					router.AddPostRoute(rt.Pattern(), rt.Handler())
-				}
-				
-				pattern := m.Uri() + rt.Pattern()
-				router.AddPostRoute(pattern, rt.Handler())
-			} else {
-				panic("illegal route type, type:" + rt.Type() )
-			}
-		}
-		
-		m.Startup()
-	}
-}
-
-func CleanupAllModules() {
-	for i, m := range moduleIDMap {
-		e,ok := entityIDMap[i]
-		if !ok {
-			log.Println("illegal module id")
-			continue
-		}
-		
-		if e.EnableStatus() == 1 {
-			m.Cleanup()
-		}
-	}	
-}
-
-func QueryAllEntities() []Entity {
+func QueryAllModule() []Module {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer helper.Release()
 	
-	return queryAllEntity(helper)
-}
-
-func QueryModuleEntity(id string) (Entity,bool) {
-	e, found := entityIDMap[id]
-	
-	return e,found
-}
-
-func QueryModule(id string) (Module,bool) {
-	m, found := moduleIDMap[id]
-	
-	return m,found
-}
-
-func InstallModules(modulePath string) bool {
-	return true
-}
-
-func UninstallModules(id string) {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("illegal module id,id:" + id)
-	}
-	defer helper.Release()
-
-	deleteEntity(helper,id)
-	
-	delete(entityIDMap, id)
-}
-
-func EnableModule(id string) bool {
-	e, ok := entityIDMap[id]
-	if !ok {
-		log.Println("illegal module id")
-		return false
-	}
-	
-	m, ok := moduleIDMap[id]
-	if !ok {
-		panic("illegal module id,id:" + id)
-	}
-	
-	m.Startup()
-	
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
-		
-	e.Enable()
-	
-	return saveEntity(helper,e)
-}
-
-func DisableModule(id string) bool {
-	e, ok := entityIDMap[id]
-	if !ok {
-		log.Println("illegal module id")
-		return false
-	}
-	
-	m, ok := moduleIDMap[id]
-	if !ok {
-		panic("illegal module id,id:" + id)
-	}
-	
-	m.Cleanup()
-	
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
-		
-	e.Disable()
-	
-	return saveEntity(helper,e)
-}
-
-func UndefaultAllModule() {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
-	
-	for _, e := range entityIDMap {
-		e.Undefault()
-		
-		saveEntity(helper,e)
-	}
-}
-
-func DefaultModule(id string) bool {
-	e, ok := entityIDMap[id]
-	if !ok {
-		log.Println("illegal module id")
-		return false
-	}
-	
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
-	
-	e.Default()
-		
-	return saveEntity(helper,e)
-}
-
-func UndefaultModule(id string) bool {
-	e, ok := entityIDMap[id]
-	if !ok {
-		log.Println("illegal module id")
-		return false
-	}
-	
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
-	
-	e.Undefault()
-	
-	return saveEntity(helper, e)
+	return queryAllModule(helper)
 }
 
 

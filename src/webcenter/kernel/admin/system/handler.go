@@ -60,7 +60,7 @@ func ManageSystemHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {	
 	log.Print("UpdateSystemHandler");
 	
-	result := UpdateResult{}
+	result := UpdateSystemInfoResult{}
 	
 	for true {
 	    err := r.ParseForm()
@@ -70,7 +70,7 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
     		break;
     	}
 		
-		param := UpdateParam{}
+		param := UpdateSystemInfoParam{}
 		name := r.FormValue("system-name")
 		if len(name) > 0 {
 			param.name = name
@@ -106,7 +106,7 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Name:%s,Logo:%s,Domain:%s,server:%s,account:%s,password:%s", param.name, param.logo, param.domain, param.emailServer, param.emailAccount, param.emailPassword)
 	
     	controller := &systemController{}
-    	result = controller.UpdateAction(&param)
+    	result = controller.UpdateSystemInfoAction(param)
     	break
 	}
 
@@ -132,7 +132,7 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     
     
     view := ModuleView{}
-    modulesList := module.QueryAllEntities()
+    modulesList := module.QueryAllModule()
     for index, _ := range modulesList {
     	m := modulesList[index]
     	
@@ -153,7 +153,7 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
 func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ApplyModuleHandler");
 	
-	result := ApplyResult{}
+	result := ApplyModuleResult{}
 	
 	for true {
 	    err := r.ParseForm()
@@ -163,7 +163,7 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     		break;
     	}
 		
-		param := ApplyParam{}
+		param := ApplyModuleParam{}
 		enableList := r.FormValue("enableList")
 		parts := strings.Split(enableList,",")
 		for _, v := range parts {
@@ -189,7 +189,7 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		
 		controller := &systemController{}
-    	result = controller.ApplyAction(&param)
+    	result = controller.ApplyModuleAction(param)
     	break
 	}
 
@@ -204,17 +204,9 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-func MaintainBlockHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/html")
-	w.Header().Set("charset", "utf-8")
+func QueryBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryBlockHandler");
 	
-    t, err := template.ParseFiles("template/html/admin/system/system.html")
-    if (err != nil) {
-    	panic("parse files failed");
-    }
-    
-    view := ModuleItem{}
-    	
 	var id = ""
 	idInfo := r.URL.RawQuery
 	if len(idInfo) > 0 {
@@ -224,20 +216,49 @@ func MaintainBlockHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	
-	m, found := module.QueryModuleEntity(id)
-	if found {
-		view.Id = m.ID()
-		view.Name = m.Name()
-		view.Description = m.Description()
-		view.Enable = m.EnableStatus() == 1
-		view.Default = m.DefaultStatus() == 1
-		view.Internal = m.Internal()
-		t.Execute(w, view)
-	} else {
-		log.Println("illegall module id, id:" + id)
-	}
+	param := QueryModuleBlockParam{}
+	param.id = id
+	
+	controller := &systemController{}
+	result := controller.QueryModuleBlockAction(param)
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("marshal failed, err:" + err.Error())
+    }
+    
+    w.Write(b)
 }
 
+func SaveBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("SaveBlockHandler");
 
+	result := SaveModuleBlockResult{}
+	for true {
+	    err := r.ParseForm()
+    	if err != nil {
+    		result.ErrCode = 1
+    		result.Reason = "无效请求数据"
+    		break;
+    	}
+		
+		param := SaveModuleBlockParam{}
+		param.module = r.FormValue("module-id")
+		param.block = r.FormValue("module-block")
+	
+		controller := &systemController{}
+    	result = controller.SaveModuleBlockAction(param)
+    	break
+	}
+	
+    b, err := json.Marshal(result)
+    if err != nil {
+    	log.Fatal("json marshal failed, err:" + err.Error())
+    	
+    	http.Redirect(w, r, "/404/", http.StatusNotFound)
+        return
+    }
+    
+    w.Write(b)		
+}
 
 

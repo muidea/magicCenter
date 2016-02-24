@@ -7,7 +7,7 @@ import (
     "webcenter/kernel/admin/common"
 )
 
-type UpdateParam struct {
+type UpdateSystemInfoParam struct {
 	name string
 	logo string
 	domain string
@@ -17,17 +17,46 @@ type UpdateParam struct {
 	accesscode string
 }
 
-type UpdateResult struct {
+type UpdateSystemInfoResult struct {
 	common.Result
 }
 
-type ApplyParam struct {
+type ApplyModuleParam struct {
 	enableList []string
 	disableList []string
 	defaultModule []string
 }
 
-type ApplyResult struct {
+type ApplyModuleResult struct {
+	common.Result
+}
+
+type Module struct {
+	Id string
+	Name string
+}
+
+type Block struct {
+	Id int
+	Name string
+}
+
+type QueryModuleBlockParam struct {
+	id string
+}
+
+type QueryModuleBlockResult struct {
+	common.Result
+	Module Module
+	Blocks []Block	
+}
+
+type SaveModuleBlockParam struct {
+	module string
+	block string
+}
+
+type SaveModuleBlockResult struct {
 	common.Result
 }
 
@@ -35,8 +64,8 @@ type systemController struct {
 	
 }
 
-func (this *systemController)UpdateAction(param *UpdateParam) UpdateResult {
-	result := UpdateResult{}
+func (this *systemController)UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult {
+	result := UpdateSystemInfoResult{}
 	
 	model, err := modelhelper.NewHelper()
 	if err != nil {
@@ -80,8 +109,8 @@ func (this *systemController)UpdateAction(param *UpdateParam) UpdateResult {
 	return result
 }
 
-func (this *systemController)ApplyAction(param *ApplyParam) ApplyResult {
-	result := ApplyResult{}
+func (this *systemController)ApplyModuleAction(param ApplyModuleParam) ApplyModuleResult {
+	result := ApplyModuleResult{}
 	
 	for _, v := range param.enableList {
 		module.EnableModule(v)
@@ -102,4 +131,44 @@ func (this *systemController)ApplyAction(param *ApplyParam) ApplyResult {
 	return result
 }
 
+func (this *systemController)QueryModuleBlockAction(param QueryModuleBlockParam) QueryModuleBlockResult {
+	result := QueryModuleBlockResult{}
+	
+	m,found := module.QueryModule(param.id)
+	if found {
+		result.Module.Name = m.Name()
+		result.Module.Id = m.ID()
+		blocks := module.QueryModuleBlocks(param.id)
+		for _, b := range blocks {
+			item := Block{}
+			item.Id = b.ID()
+			item.Name = b.Name()
+			
+			result.Blocks = append(result.Blocks, item)
+		}
+		
+		result.ErrCode = 0
+		result.Reason = "查询成功"
+	} else {
+		result.ErrCode = 1
+		result.Reason = "指定Module不存在"
+	}
+	
+	return result
+}
+
+func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
+	result := SaveModuleBlockResult{}
+
+	_, ok := module.InsertModuleBlock(param.block,param.module)
+	if ok {
+		result.ErrCode = 0
+		result.Reason = "保存数据成功"
+	} else {
+		result.ErrCode = 1
+		result.Reason = "保存数据失败"
+	}
+	
+	return result
+}
 

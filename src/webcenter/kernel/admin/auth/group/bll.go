@@ -16,9 +16,7 @@ type GroupInfo struct {
 func QueryAllGroup(model modelhelper.Model) []GroupInfo {
 	groupInfoList := []GroupInfo{}
 	sql := fmt.Sprintf("select id, name, 0 count, catalog from `group`")
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	for model.Next() {
 		group := GroupInfo{}
@@ -31,10 +29,9 @@ func QueryAllGroup(model modelhelper.Model) []GroupInfo {
 		info := &groupInfoList[index]
 		
 		sql = fmt.Sprintf("select count(id) from `user` where `group` like '%d%%,%%' or `group` like '%%,%d%%' or `group` like '%d'", info.Id, info.Id, info.Id)
-		if model.Query(sql) {
-			for model.Next() {
-				model.GetValue(&info.UserCount)
-			}
+		model.Query(sql)
+		for model.Next() {
+			model.GetValue(&info.UserCount)
 		}
 	}
 

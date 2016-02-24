@@ -21,9 +21,7 @@ func createNewUser(model modelhelper.Model, account, email, groups string) bool 
 	usr.Email = email
 	usr.Group = groups
 	
-	if !model.BeginTransaction() {
-		return false
-	}
+	model.BeginTransaction()
 	
 	if !SaveUser(model,usr) {
 		model.Rollback()

@@ -7,9 +7,7 @@ import (
 
 func SetOption(model modelhelper.Model, key, value string) bool {
 	sql := fmt.Sprintf("select id from system_config where `key`='%s'", key)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	id := -1
 	found := false
@@ -34,9 +32,7 @@ func SetOption(model modelhelper.Model, key, value string) bool {
 
 func GetOption(model modelhelper.Model, key string) (string, bool) {
 	sql := fmt.Sprintf("select value from system_config where `key`='%s'", key)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	value := ""
 	found := false

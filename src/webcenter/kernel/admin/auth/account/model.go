@@ -64,9 +64,7 @@ func IsAdmin(model modelhelper.Model, user User) bool {
 func QueryAllUser(model modelhelper.Model) []UserInfo {
 	userInfoList := []UserInfo{}
 	sql := fmt.Sprintf("select id, account, nickname, email, `group`, `status` from user")
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	userList := []User{}
 	for model.Next() {
@@ -102,9 +100,7 @@ func QueryUserByAccount(model modelhelper.Model, account string) (User,bool) {
 	user := newUser()
 	
 	sql := fmt.Sprintf("select id,account,password,nickname,email, `group`, status from user where account='%s'", account)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 	
 	result := false
 	for model.Next() {
@@ -120,9 +116,7 @@ func QueryUserById(model modelhelper.Model, id int) (User,bool) {
 	user := newUser()
 	
 	sql := fmt.Sprintf("select id,account,password,nickname,email,`group`, status from user where id=%d", id)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 	
 	result := false
 	for model.Next() {
@@ -154,14 +148,13 @@ func deleteUserByAccount(model modelhelper.Model, account string) bool {
 
 func SaveUser(model modelhelper.Model, user User) bool {
 	sql := fmt.Sprintf("select id from user where id=%d", user.Id)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	result := false;
-	for model.Next() {
+	if model.Next() {
 		var id = 0
-		result = model.GetValue(&id)
+		model.GetValue(&id)
+		result = true
 	}
 
 	if !result {
@@ -180,9 +173,7 @@ func SaveUser(model modelhelper.Model, user User) bool {
 func QueryUserByGroup(model modelhelper.Model, id int) []UserInfo {
 	userInfoList := []UserInfo{}
 	sql := fmt.Sprintf("select u.id, u.account, u.nickname, u.email, g.name, u.status from user u, `group` g where u.group = g.id and u.group=%d", id)
-	if !model.Query(sql) {
-		panic("query failed")
-	}
+	model.Query(sql)
 
 	userList := []User{}
 	for model.Next() {

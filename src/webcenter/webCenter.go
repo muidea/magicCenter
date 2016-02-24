@@ -6,7 +6,7 @@ import (
 )
  
 func main() {
-	log.Println("MagicID WebCenter V1.0")
+	log.Println("Magic Center V1.0")
 	
 	app := application.AppInstance()
 	
