@@ -5,6 +5,7 @@ var module = {
 };
 
 $(document).ready(function() {
+	
 	$("#module-list .button").click(
 		function() {
 			var enableList = "";
@@ -51,6 +52,61 @@ $(document).ready(function() {
 		}
 	);
 	
+    // 绑定表单提交事件处理器
+    $('#module-maintain .block .block-Form').submit(function() {
+        var options = { 
+                beforeSubmit:  showRequest,  // pre-submit callback
+                success:       showResponse,  // post-submit callback
+                dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+            };
+        
+        // pre-submit callback
+        function showRequest() {
+            //return false;
+        } 
+        // post-submit callback
+        function showResponse(result) {
+        	$("#module-maintain div.notification").hide();
+        	
+        	if (result.ErrCode > 0) {
+        		$("#module-maintain div.error div").html(result.Reason);
+        		$("#module-maintain div.error").show();        		
+        	} else {
+        		
+        		$("#module-maintain .block .block-Form .module-block").val("");
+        		$("#module-maintain div.success div").html(result.Reason);
+        		$("#module-maintain div.success").show();
+        		
+				var trContent = module.constructBlockItem(result.Owner, result.Block);
+				$("#module-maintain .block table tbody").append(trContent);
+				$("#module-maintain .block table tbody tr:even").addClass("alt-row");
+        	}
+        }
+        
+        function validate() {
+        	var result = true
+        	
+        	$("#module-maintain .block .block-Form .module-block").parent().find("span").remove();
+        	var name = $("#module-maintain .block .block-Form .module-block").val();
+        	if (name.length == 0) {
+        		$("#module-maintain .block .block-Form .module-block").parent().append("<span class=\"input-notification error png_bg\">请输入功能块名</span>");
+        		result = false;
+        	}
+        	        	
+        	return result;
+        }
+        
+        if (!validate()) {
+        	return false;
+        }
+        
+        //提交表单
+        $(this).ajaxSubmit(options);	
+    	
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });	
 });
 
 module.initialize = function() {
@@ -74,13 +130,11 @@ module.constructModuleItem = function(module) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","module");
 	
-	console.log(module);
-	
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
 	nameLink.setAttribute("href","#");
-	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryBlock/?id=" + module.Id + "'); return false;" );
+	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleInfo/?id=" + module.Id + "'); return false;" );
 	nameLink.innerHTML = module.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
@@ -160,31 +214,38 @@ module.maintainModule = function(maintainUrl) {
 			return
 		}
 		
-		console.log(result);
-		
 		$("#module-content .content-box-tabs li a").removeClass('current');
 		$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
 		$("#module-maintain").siblings().hide();
-		$("#module-maintain table tbody tr").remove();
+		$("#module-maintain .block table tbody tr").remove();
 		if (result.Blocks) {
 			for (var ii =0; ii < result.Blocks.length; ++ii) {
-				var info = result.Blocks[ii];
-				var trContent = module.constructBlockItem(info);
-				$("#module-maintain table tbody").append(trContent);
+				var block = result.Blocks[ii];
+				var trContent = module.constructBlockItem(result.Module.Id, block);
+				$("#module-maintain .block table tbody").append(trContent);
 			}			
 		}
-		$("#module-maintain table tbody tr:even").addClass("alt-row");
-		$("#module-maintain .block-Form .module-id").val(result.Module.Id);
+		$("#module-maintain .block table tbody tr:even").addClass("alt-row");
+		$("#module-maintain .block .block-Form .module-id").val(result.Module.Id);
+
+		console.log(result);
+		$("#module-maintain .page table tbody tr").remove();
+		if (result.Pages) {
+			for (var ii =0; ii < result.Pages.length; ++ii) {
+				var page = result.Pages[ii];
+				var trContent = module.constructPageItem(result.Module.Id, page);
+				$("#module-maintain .page table tbody").append(trContent);
+			}			
+		}
+		$("#module-maintain .page table tbody tr:even").addClass("alt-row");
 		
 		$("#module-maintain").show();	
 	}, "json");	
 };
 
-module.constructBlockItem = function(block) {
+module.constructBlockItem = function(owner, block) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","block");
-	
-	console.log(module);
 	
 	var nameTd = document.createElement("td");
 	nameTd.innerHTML = block.Name
@@ -193,8 +254,8 @@ module.constructBlockItem = function(block) {
 	var editTd = document.createElement("td");
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
-	deleteLink.setAttribute("href","#deleteImage" );
-	deleteLink.setAttribute("onclick","module.deleteBlock('/#?id=" + block.Id + "'); return false;" );
+	deleteLink.setAttribute("href","#deleteBlock" );
+	deleteLink.setAttribute("onclick","module.deleteBlock('/admin/system/deleteBlock/?id=" + block.Id + "&owner="+ owner +"'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -204,4 +265,51 @@ module.constructBlockItem = function(block) {
 	return tr;
 };
 
+module.constructPageItem = function(owner, page) {
+	var tr = document.createElement("tr");
+	tr.setAttribute("class","block");
+	
+	var nameTd = document.createElement("td");
+	nameTd.innerHTML = page.Url
+	tr.appendChild(nameTd);
+	
+	var blocks = "";
+	var blocksTd = document.createElement("td");
+	if (page.Blocks) {
+		for (var ii =0; ii < page.Blocks.length; ++ii) {
+			blocks += page.Blocks[ii];
+			blocks += ","
+		}		
+	}
+	blocksTd.innerHTML = blocks
+	tr.appendChild(blocksTd);	
+	return tr;
+};
+
+module.deleteBlock =function(deleteUrl) {
+	$.get(deleteUrl, {
+	}, function(result) {
+		
+		$("#module-maintain div.notification").hide();
+		
+		if (result.ErrCode > 0) {
+			$("#module-maintain div.error div").html(result.Reason);
+			$("#module-maintain div.error").show();
+			return
+		} else {
+			$("#module-maintain div.success div").html(result.Reason);
+			$("#module-maintain div.success").show();
+			
+			$("#module-maintain .block table tbody tr").remove();
+			if (result.Blocks) {
+				for (var ii =0; ii < result.Blocks.length; ++ii) {
+					var info = result.Blocks[ii];
+					var trContent = module.constructBlockItem(result.Owner, info);
+					$("#module-maintain .block table tbody").append(trContent);
+				}			
+			}
+			$("#module-maintain .block table tbody tr:even").addClass("alt-row");			
+		}
+	}, "json");	
+};
 

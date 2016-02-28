@@ -82,8 +82,8 @@ func insertModuleBlock(helper modelhelper.Model, name,owner string) (Block, bool
 	return b,result
 }
 
-func deleteModuleBlock(helper modelhelper.Model, name string) {
-	sql := fmt.Sprintf("delete from module_block where name='%s'", name)
+func deleteModuleBlock(helper modelhelper.Model, id int) {
+	sql := fmt.Sprintf("delete from module_block where id=%d", id)
 	helper.Execute(sql)
 }
 

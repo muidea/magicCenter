@@ -41,14 +41,31 @@ type Block struct {
 	Name string
 }
 
-type QueryModuleBlockParam struct {
+type Page struct {
+	Url string
+	Blocks []int
+}
+
+type QueryModuleInfoParam struct {
 	id string
 }
 
-type QueryModuleBlockResult struct {
+type QueryModuleInfoResult struct {
 	common.Result
 	Module Module
-	Blocks []Block	
+	Blocks []Block
+	Pages []Page
+}
+
+type DeleteModuleBlockParam struct {
+	id int
+	owner string
+}
+
+type DeleteModuleBlockResult struct {
+	common.Result
+	Owner string
+	Blocks []Block
 }
 
 type SaveModuleBlockParam struct {
@@ -58,6 +75,8 @@ type SaveModuleBlockParam struct {
 
 type SaveModuleBlockResult struct {
 	common.Result
+	Owner string
+	Block Block
 }
 
 type systemController struct {
@@ -131,8 +150,8 @@ func (this *systemController)ApplyModuleAction(param ApplyModuleParam) ApplyModu
 	return result
 }
 
-func (this *systemController)QueryModuleBlockAction(param QueryModuleBlockParam) QueryModuleBlockResult {
-	result := QueryModuleBlockResult{}
+func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) QueryModuleInfoResult {
+	result := QueryModuleInfoResult{}
 	
 	m,found := module.QueryModule(param.id)
 	if found {
@@ -147,6 +166,21 @@ func (this *systemController)QueryModuleBlockAction(param QueryModuleBlockParam)
 			result.Blocks = append(result.Blocks, item)
 		}
 		
+		urls := m.Urls()
+		for _, u := range urls {
+			p := module.QueryPage(u)
+			
+			page := Page{}
+			page.Url = u
+			
+			blocks := p.Blocks()
+			for _, b := range blocks {
+				page.Blocks = append(page.Blocks, b.ID())
+			}
+			
+			result.Pages = append(result.Pages, page)
+		}
+				
 		result.ErrCode = 0
 		result.Reason = "查询成功"
 	} else {
@@ -157,13 +191,37 @@ func (this *systemController)QueryModuleBlockAction(param QueryModuleBlockParam)
 	return result
 }
 
+
+func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockParam) DeleteModuleBlockResult {
+	result := DeleteModuleBlockResult{}
+	
+	module.DeleteModuleBlock(param.id)
+	
+	blocks := module.QueryModuleBlocks(param.owner)
+	for _, b := range blocks {
+		item := Block{}
+		item.Id = b.ID()
+		item.Name = b.Name()		
+		result.Blocks = append(result.Blocks, item)
+	}	
+	
+	result.Owner = param.owner
+	result.ErrCode = 0
+	result.Reason = "删除成功"
+	
+	return result
+}
+
 func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
 	result := SaveModuleBlockResult{}
 
-	_, ok := module.InsertModuleBlock(param.block,param.module)
+	b, ok := module.InsertModuleBlock(param.block,param.module)
 	if ok {
 		result.ErrCode = 0
 		result.Reason = "保存数据成功"
+		result.Owner = param.module
+		result.Block.Id = b.ID()
+		result.Block.Name = b.Name()
 	} else {
 		result.ErrCode = 1
 		result.Reason = "保存数据失败"

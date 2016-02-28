@@ -9,14 +9,20 @@ type Module interface {
 	ID() string
 	Name() string
 	Description() string
+	
 	Enable()
 	Disable()
 	EnableStatus() int
+	
 	Default()
 	Undefault()
 	DefaultStatus() int
+	
 	Internal() bool
 	StyleFlag() int
+	
+	AssignUrls(urls []string)
+	Urls() []string
 }
 
 type module struct {
@@ -27,6 +33,7 @@ type module struct {
 	defaultFlag int
 	styleFlag int
 	blocks []Block
+	urls []string
 }
 
 func (this *module)ID() string {
@@ -71,6 +78,14 @@ func (this *module)Internal() bool {
 
 func (this *module)StyleFlag() int {
 	return this.styleFlag
+}
+
+func (this *module)AssignUrls(urls []string) {
+	this.urls = urls
+}
+
+func (this *module)Urls() []string {
+	return this.urls
 }
 
 func newModule(id,name,description string) Module {

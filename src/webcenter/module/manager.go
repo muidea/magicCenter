@@ -160,7 +160,19 @@ func CleanupAllModules() {
 
 func QueryModule(id string) (Module, bool) {
 	e, found := moduleIDMap[id]
-	
+	if found {
+		i, m := instanceIDMap[id]
+		if m {
+			urls := []string{}
+			routes := i.Routes()
+			for _, r := range routes {
+				urls = append(urls, r.Pattern())
+			}
+			
+			e.AssignUrls(urls)
+		}
+	}
+		
 	return e,found
 }
 

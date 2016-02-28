@@ -44,14 +44,14 @@ func InsertModuleBlock(name, owner string) (Block,bool) {
 	return insertModuleBlock(helper,name,owner)	
 }
 
-func DeleteModuleBlock(name string) {
+func DeleteModuleBlock(id int) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer helper.Release()
 	
-	deleteModuleBlock(helper, name)	
+	deleteModuleBlock(helper, id)	
 }
 
 func QueryModuleBlocks(owner string) []Block {

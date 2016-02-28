@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"strconv"
+	"muidea.com/util"
     "webcenter/module"
     "webcenter/kernel"
 )
@@ -204,8 +206,8 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-func QueryBlockHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("QueryBlockHandler");
+func QueryModuleInfoHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryModuleInfoHandler");
 	
 	var id = ""
 	idInfo := r.URL.RawQuery
@@ -216,11 +218,56 @@ func QueryBlockHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	
-	param := QueryModuleBlockParam{}
+	param := QueryModuleInfoParam{}
 	param.id = id
 	
 	controller := &systemController{}
-	result := controller.QueryModuleBlockAction(param)
+	result := controller.QueryModuleInfoAction(param)
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("marshal failed, err:" + err.Error())
+    }
+    
+    w.Write(b)
+}
+
+
+func DeleteBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("DeleteBlockHandler");
+	
+	result := DeleteModuleBlockResult{}
+	
+	for true {
+		rawParams := util.SplitParam(r.URL.RawQuery)
+		
+		id, found := rawParams["id"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"    	
+			break
+		}
+		owner, found := rawParams["owner"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"    	
+			break
+		}
+		 
+		param := DeleteModuleBlockParam{}
+		idValue, err := strconv.Atoi(id)
+	    if err == nil {
+	    	param.id = idValue
+	    	param.owner = owner
+			controller := &systemController{}
+			result = controller.DeleteModuleBlockAction(param)
+	    } else {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"    	
+	    }
+	    
+	    break
+	}
+    
     b, err := json.Marshal(result)
     if err != nil {
     	panic("marshal failed, err:" + err.Error())
