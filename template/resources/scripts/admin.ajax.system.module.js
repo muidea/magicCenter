@@ -286,7 +286,11 @@ module.constructPageItem = function(owner, page) {
 	return tr;
 };
 
-module.deleteBlock =function(deleteUrl) {
+module.editPageBlock = function(editUrl) {
+	
+};
+
+module.deleteBlock = function(deleteUrl) {
 	$.get(deleteUrl, {
 	}, function(result) {
 		

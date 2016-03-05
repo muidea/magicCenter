@@ -276,8 +276,8 @@ func DeleteBlockHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-func SaveBlockHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("SaveBlockHandler");
+func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("SaveModuleBlockHandler");
 
 	result := SaveModuleBlockResult{}
 	for true {
@@ -308,4 +308,35 @@ func SaveBlockHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)		
 }
 
+
+func SavePageBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("SavePageBlockHandler");
+
+	result := SavePageBlockResult{}
+	for true {
+	    err := r.ParseMultipartForm(0)
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    			
+		param := SavePageBlockParam{}
+		param.url = r.FormValue("page-url")
+		param.block = r.FormValue("page-block")
+	
+		controller := &systemController{}
+    	result = controller.SavePageBlockAction(param)
+    	break
+	}
+	
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("Marshal failed, err:"  + err.Error())
+    }
+    
+    w.Write(b)
+}
 

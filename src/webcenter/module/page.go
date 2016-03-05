@@ -22,14 +22,36 @@ func (this *page)Blocks() []Block {
 	return this.blocks
 }
 
-func AddPageBlock(url string, block int) bool {
+func AddPageBlock(url string, block int) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
 	}
 	defer helper.Release()
 
-	return addPageBlock(helper, url, block)	
+	addPageBlock(helper, url, block)	
+}
+
+func AddPageBlocks(url string, blocks []int) []int {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct model failed")
+	}
+	defer helper.Release()
+
+	helper.BeginTransaction()
+	for _, b := range blocks {
+		addPageBlock(helper, url, b)
+	}
+	
+	helper.Commit()
+	
+	totalBlocks := []int{}
+	blocks := queryPageBlock(helper, url)
+	for _ b := range blocks {
+		totalBlocks = append(totalBlocks, b.ID())
+	}
+	return totalBlocks
 }
 
 func RemovePageBlock(url string, block int) {

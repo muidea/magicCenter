@@ -79,6 +79,17 @@ type SaveModuleBlockResult struct {
 	Block Block
 }
 
+type SavePageBlockParam struct {
+	url string
+	blocks []int
+}
+
+type SavePageBlockResult struct {
+	common.Result
+	Url string
+	Blocks []int
+}
+
 type systemController struct {
 	
 }
@@ -230,3 +241,19 @@ func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) S
 	return result
 }
 
+func (this *systemController)SavePageBlockAction(param SavePageBlockParam) SavePageBlockResult {
+	result := SavePageBlockResult{}
+
+	blocks := module.AddPageBlocks(param.url,param.blocks)
+	if ok {
+		result.ErrCode = 0
+		result.Reason = "保存数据成功"
+		result.Url = param.url
+		result.Blocks = blocks
+	} else {
+		result.ErrCode = 1
+		result.Reason = "保存数据失败"
+	}
+	
+	return result
+}
