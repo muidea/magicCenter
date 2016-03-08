@@ -186,3 +186,4 @@ func deleteResourceRelative(model modelhelper.Model, res Resource) bool {
 
 	return result
 }
+

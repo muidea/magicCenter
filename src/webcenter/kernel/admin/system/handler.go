@@ -232,8 +232,8 @@ func QueryModuleInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func DeleteBlockHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("DeleteBlockHandler");
+func DeleteModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("DeleteModuleBlockHandler");
 	
 	result := DeleteModuleBlockResult{}
 	
@@ -289,7 +289,7 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
     	}
 		
 		param := SaveModuleBlockParam{}
-		param.module = r.FormValue("module-id")
+		param.owner = r.FormValue("module-id")
 		param.block = r.FormValue("module-block")
 	
 		controller := &systemController{}
@@ -308,7 +308,6 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)		
 }
 
-
 func SavePageBlockHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("SavePageBlockHandler");
 
@@ -325,7 +324,18 @@ func SavePageBlockHandler(w http.ResponseWriter, r *http.Request) {
     			
 		param := SavePageBlockParam{}
 		param.url = r.FormValue("page-url")
-		param.block = r.FormValue("page-block")
+		blocks := r.MultipartForm.Value["page-block"]
+	    for _, b := range blocks {
+			id, err := strconv.Atoi(b)
+		    if err != nil {
+		    	log.Print("parse page block failed, b:%s", b)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+		    }
+		    
+		    param.blocks = append(param.blocks, id)
+	    }		
 	
 		controller := &systemController{}
     	result = controller.SavePageBlockAction(param)

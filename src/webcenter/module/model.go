@@ -15,9 +15,14 @@ func removePageBlock(helper modelhelper.Model, url string, block int) {
 	helper.Execute(sql)
 }
 
+func removeAllPageBlock(helper modelhelper.Model, url string) {
+	sql := fmt.Sprintf("delete from page_block where url='%s'", url)	
+	helper.Execute(sql)
+}
+
 func queryPageBlock(helper modelhelper.Model, url string) []Block {
 	blockList := []Block{}
-	sql := fmt.Sprintf("select id,name,owner from module_block where id in (select id from page_block where url='%s')", url)
+	sql := fmt.Sprintf("select id,name,owner from module_block where id in (select block from page_block where url='%s')", url)
 	helper.Query(sql)
 	
 	bList := []*block{}

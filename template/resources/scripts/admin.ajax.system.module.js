@@ -1,7 +1,11 @@
 
 var module = {
 	accesscode:'',
-	moduleList:{}
+	moduleList:{},
+	blockList:{},
+	pageList:{},
+	currentModule:'',
+	currentPage:''
 };
 
 $(document).ready(function() {
@@ -20,8 +24,7 @@ $(document).ready(function() {
 				} else {
 					disableList += $(radio).attr("name");
 					disableList += ",";
-				}
-				
+				}				
 			}
 			
 			var checkboxArray = $("#module-list table tbody tr td :checkbox:checked");
@@ -72,14 +75,12 @@ $(document).ready(function() {
         		$("#module-maintain div.error div").html(result.Reason);
         		$("#module-maintain div.error").show();        		
         	} else {
-        		
         		$("#module-maintain .block .block-Form .module-block").val("");
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
         		
-				var trContent = module.constructBlockItem(result.Owner, result.Block);
-				$("#module-maintain .block table tbody").append(trContent);
-				$("#module-maintain .block table tbody tr:even").addClass("alt-row");
+        		module.blockList = result.Blocks;
+        		module.refreshBlockView();
         	}
         }
         
@@ -107,9 +108,74 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });	
+    
+    // 绑定表单提交事件处理器
+    $('#module-maintain .page .page-Form').submit(function() {
+        var options = { 
+                beforeSubmit:  showRequest,  // pre-submit callback
+                success:       showResponse,  // post-submit callback
+                dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+            };
+        
+        // pre-submit callback
+        function showRequest() {
+            //return false;
+        } 
+        // post-submit callback
+        function showResponse(result) {
+        	$("#module-maintain div.notification").hide();
+        	
+        	if (result.ErrCode > 0) {
+        		$("#module-maintain div.error div").html(result.Reason);
+        		$("#module-maintain div.error").show();        		
+        	} else {
+        		$("#module-maintain div.success div").html(result.Reason);
+        		$("#module-maintain div.success").show();
+
+        		if (module.pageList) {
+        			for (var ii =0; ii < module.pageList.length; ++ii) {
+        				var page = module.pageList[ii];
+        				if (page.Url == result.Page.Url) {
+        					module.pageList[ii] = result.Page;
+        					break;
+        				}
+        			}
+        		}
+        		
+        		module.refreshBlockView();
+        		module.refreshPageView();
+        	}
+        }
+        
+        function validate() {
+        	var result = true
+        	
+        	$("#module-maintain .page .page-Form .page-url").parent().find("span").remove();
+        	var url = $("#module-maintain .page .page-Form .page-url").val();
+        	if (url.length == 0) {
+        		$("#module-maintain .page .page-Form .page-url").parent().append("<span class=\"input-notification error png_bg\">路由不能为空</span>");
+        		result = false;
+        	}
+        	        	
+        	return result;
+        }
+        
+        if (!validate()) {
+        	return false;
+        }
+        
+        //提交表单
+        $(this).ajaxSubmit(options);	
+    	
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });	    
 });
 
 module.initialize = function() {
+	module.resetStatus();
+	
 	module.fillModuleView();
 };
 
@@ -213,37 +279,27 @@ module.maintainModule = function(maintainUrl) {
 			$("#module-List div.error").show();
 			return
 		}
+
+		module.resetStatus();
+		
+		module.currentModule = result.Module.Id;
+		
+		module.blockList = result.Blocks;
+		module.pageList = result.Pages;
 		
 		$("#module-content .content-box-tabs li a").removeClass('current');
 		$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
 		$("#module-maintain").siblings().hide();
-		$("#module-maintain .block table tbody tr").remove();
-		if (result.Blocks) {
-			for (var ii =0; ii < result.Blocks.length; ++ii) {
-				var block = result.Blocks[ii];
-				var trContent = module.constructBlockItem(result.Module.Id, block);
-				$("#module-maintain .block table tbody").append(trContent);
-			}			
-		}
-		$("#module-maintain .block table tbody tr:even").addClass("alt-row");
-		$("#module-maintain .block .block-Form .module-id").val(result.Module.Id);
-
-		console.log(result);
-		$("#module-maintain .page table tbody tr").remove();
-		if (result.Pages) {
-			for (var ii =0; ii < result.Pages.length; ++ii) {
-				var page = result.Pages[ii];
-				var trContent = module.constructPageItem(result.Module.Id, page);
-				$("#module-maintain .page table tbody").append(trContent);
-			}			
-		}
-		$("#module-maintain .page table tbody tr:even").addClass("alt-row");
+		module.refreshBlockView();
+		
+		module.refreshPageView();
 		
 		$("#module-maintain").show();	
 	}, "json");	
 };
 
 module.constructBlockItem = function(owner, block) {
+	
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","block");
 	
@@ -255,7 +311,7 @@ module.constructBlockItem = function(owner, block) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteBlock" );
-	deleteLink.setAttribute("onclick","module.deleteBlock('/admin/system/deleteBlock/?id=" + block.Id + "&owner="+ owner +"'); return false;" );
+	deleteLink.setAttribute("onclick","module.deleteBlock('/admin/system/deleteModuleBlock/?id=" + block.Id + "&owner="+ owner +"'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -265,7 +321,7 @@ module.constructBlockItem = function(owner, block) {
 	return tr;
 };
 
-module.constructPageItem = function(owner, page) {
+module.constructPageItem = function(page) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","block");
 	
@@ -276,18 +332,34 @@ module.constructPageItem = function(owner, page) {
 	var blocks = "";
 	var blocksTd = document.createElement("td");
 	if (page.Blocks) {
-		for (var ii =0; ii < page.Blocks.length; ++ii) {
-			blocks += page.Blocks[ii];
-			blocks += ","
-		}		
+		for (var ii =0; ii < page.Blocks.length;) {
+			var bid = page.Blocks[ii++];
+			for (var jj =0; jj < module.blockList.length; ) {
+				var block = module.blockList[jj++];
+				if (bid == block.Id) {
+					blocks += block.Name;
+					
+					if (jj < module.blockList.length && ii < page.Blocks.length) {
+						blocks += ",";
+					}
+					break;
+				}
+			}
+		}
 	}
 	blocksTd.innerHTML = blocks
-	tr.appendChild(blocksTd);	
+	tr.appendChild(blocksTd);
+	tr.setAttribute("onclick","module.editPageBlock('" + page.Url + "'); return false;" );
+		
 	return tr;
 };
 
-module.editPageBlock = function(editUrl) {
+module.editPageBlock = function(pageUrl) {
+	$("#module-maintain .page .page-Form .page-url").val(pageUrl);
+	$("#module-maintain .page .page-Form .page-block input").prop("checked", false);
+	module.currentPage = pageUrl;
 	
+	module.refreshPageView();
 };
 
 module.deleteBlock = function(deleteUrl) {
@@ -304,16 +376,68 @@ module.deleteBlock = function(deleteUrl) {
 			$("#module-maintain div.success div").html(result.Reason);
 			$("#module-maintain div.success").show();
 			
-			$("#module-maintain .block table tbody tr").remove();
-			if (result.Blocks) {
-				for (var ii =0; ii < result.Blocks.length; ++ii) {
-					var info = result.Blocks[ii];
-					var trContent = module.constructBlockItem(result.Owner, info);
-					$("#module-maintain .block table tbody").append(trContent);
-				}			
-			}
-			$("#module-maintain .block table tbody tr:even").addClass("alt-row");			
+			module.blockList = result.Blocks;
+			module.resetStatus();
+			module.refreshBlockView();
+			module.refreshPageView();
 		}
 	}, "json");	
 };
+
+module.refreshBlockView = function() {
+	$("#module-maintain .block table tbody tr").remove();
+	$("#module-maintain .page .page-Form .page-block").children().remove();
+	
+	if (module.blockList) {
+		for (var ii =0; ii < module.blockList.length; ++ii) {
+			var block = module.blockList[ii];
+			var trContent = module.constructBlockItem(module.currentModule, block);
+			$("#module-maintain .block table tbody").append(trContent);
+			
+			$("#module-maintain .page .page-Form .page-block").append("<input type='checkbox' name='page-block' value=" +  block.Id + "> </input> <span>" + block.Name + "</span> ");
+		}			
+	}
+	$("#module-maintain .block table tbody tr:even").addClass("alt-row");
+	
+	$("#module-maintain .block .block-Form .module-id").val(module.currentModule);
+};
+
+module.refreshPageView = function() {
+	$("#module-maintain .page table tbody tr").remove();
+	if (module.pageList) {
+		for (var ii =0; ii < module.pageList.length; ++ii) {
+			var page = module.pageList[ii];
+			var trContent = module.constructPageItem(page);
+			$("#module-maintain .page table tbody").append(trContent);
+		}			
+	}
+	$("#module-maintain .page table tbody tr:even").addClass("alt-row");
+	
+	if (module.pageList && module.currentPage) {
+		for (var ii =0; ii < module.pageList.length; ++ii) {
+			var page = module.pageList[ii];
+			if (page.Url == module.currentPage) {
+				if (page.Blocks) {
+					for (var jj =0; jj < page.Blocks.length; ++jj) {
+						var block = page.Blocks[jj];
+						$("#module-maintain .page .page-Form .page-block input").filter("[value="+ block +"]").prop("checked", true);
+					}
+				}
+				
+				break;
+			}
+		}
+	}	
+};
+
+module.resetStatus = function() {
+	module.currentModule = '';
+	module.currentPage = '';
+	
+	$("#module-maintain .page .page-Form .page-url").val('');
+	$("#module-maintain .page .page-Form .page-block input").prop("checked", false);	
+};
+
+
+
 

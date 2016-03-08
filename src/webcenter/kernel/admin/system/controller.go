@@ -64,19 +64,18 @@ type DeleteModuleBlockParam struct {
 
 type DeleteModuleBlockResult struct {
 	common.Result
-	Owner string
 	Blocks []Block
 }
 
 type SaveModuleBlockParam struct {
-	module string
+	owner string
 	block string
 }
 
 type SaveModuleBlockResult struct {
 	common.Result
 	Owner string
-	Block Block
+	Blocks []Block
 }
 
 type SavePageBlockParam struct {
@@ -86,8 +85,7 @@ type SavePageBlockParam struct {
 
 type SavePageBlockResult struct {
 	common.Result
-	Url string
-	Blocks []int
+	Page Page
 }
 
 type systemController struct {
@@ -216,7 +214,6 @@ func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockPara
 		result.Blocks = append(result.Blocks, item)
 	}	
 	
-	result.Owner = param.owner
 	result.ErrCode = 0
 	result.Reason = "删除成功"
 	
@@ -226,13 +223,19 @@ func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockPara
 func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
 	result := SaveModuleBlockResult{}
 
-	b, ok := module.InsertModuleBlock(param.block,param.module)
+	_, ok := module.InsertModuleBlock(param.block,param.owner)
 	if ok {
 		result.ErrCode = 0
 		result.Reason = "保存数据成功"
-		result.Owner = param.module
-		result.Block.Id = b.ID()
-		result.Block.Name = b.Name()
+		result.Owner = param.owner
+		blocks := module.QueryModuleBlocks(param.owner)
+		for _, b := range blocks {
+			block := Block{}
+			block.Id = b.ID()
+			block.Name = b.Name()
+			
+			result.Blocks = append(result.Blocks, block)
+		}
 	} else {
 		result.ErrCode = 1
 		result.Reason = "保存数据失败"
@@ -244,16 +247,11 @@ func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) S
 func (this *systemController)SavePageBlockAction(param SavePageBlockParam) SavePageBlockResult {
 	result := SavePageBlockResult{}
 
-	blocks := module.AddPageBlocks(param.url,param.blocks)
-	if ok {
-		result.ErrCode = 0
-		result.Reason = "保存数据成功"
-		result.Url = param.url
-		result.Blocks = blocks
-	} else {
-		result.ErrCode = 1
-		result.Reason = "保存数据失败"
-	}
+	blocks := module.SavePageBlocks(param.url,param.blocks)
+	result.ErrCode = 0
+	result.Reason = "保存数据成功"
+	result.Page.Url = param.url
+	result.Page.Blocks = blocks
 	
 	return result
 }

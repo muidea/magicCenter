@@ -24,7 +24,7 @@ func registerRouter() {
 	kernel.RegisterGetHandler("/admin/system/manageModule/", system.ManageModuleHandler)
 	kernel.RegisterPostHandler("/admin/system/applyModule/", system.ApplyModuleHandler)	
 	kernel.RegisterGetHandler("/admin/system/queryModuleInfo/", system.QueryModuleInfoHandler)
-	kernel.RegisterGetHandler("/admin/system/deleteBlock/", system.DeleteBlockHandler)
+	kernel.RegisterGetHandler("/admin/system/deleteModuleBlock/", system.DeleteModuleBlockHandler)
 	kernel.RegisterPostHandler("/admin/system/ajaxModuleBlock/", system.SaveModuleBlockHandler)
 	kernel.RegisterPostHandler("/admin/system/ajaxPageBlock/", system.SavePageBlockHandler)
 }

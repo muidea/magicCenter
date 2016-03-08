@@ -142,7 +142,7 @@ $(document).ready(function() {
 								</tr>							
 							</tbody>
 						</table>
-						<form class="block-Form" action="/admin/system/ajaxBlock/" method="post">
+						<form class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
 							<fieldset>
 									<span>名称</span> <input
 										class="text-input small-input module-block" type="text"
@@ -176,16 +176,22 @@ $(document).ready(function() {
 								</tr>
 							</tbody>
 						</table>
-						<form class="block-Form" action="/admin/system/ajaxBlock/" method="post">
+						<form class="page-Form" action="/admin/system/ajaxPageBlock/"  enctype="multipart/form-data" method="post">
 							<fieldset>
 								<p>
-									<label>功能块名称</label> <input
-										class="text-input small-input module-block" type="text"
-										name="module-block" />
+									<label>路由</label> <input
+										class="text-input small-input page-url" type="text" readonly="true"
+										name="page-url" />
 								</p>
 								<p>
-									<input type="hidden" name="module-id" class="module-id"
-										value="-1" /> <input class="button" type="submit" value="新增" />
+									<label>功能块</label>
+									<checkBox class = "page-block">
+											<input type="checkbox" name="checkbox1" /><span>AAA</span>
+											<input type="checkbox" name="checkbox1" /><span>BBB</span>
+									</checkBox>
+								</p>
+								<p>
+									<input class="button" type="submit" value="新增" />
 								</p>
 							</fieldset>
 							<div class="clear"></div>

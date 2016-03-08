@@ -32,7 +32,7 @@ func AddPageBlock(url string, block int) {
 	addPageBlock(helper, url, block)	
 }
 
-func AddPageBlocks(url string, blocks []int) []int {
+func SavePageBlocks(url string, blocks []int) []int {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct model failed")
@@ -40,18 +40,14 @@ func AddPageBlocks(url string, blocks []int) []int {
 	defer helper.Release()
 
 	helper.BeginTransaction()
+	removeAllPageBlock(helper, url)
+	
 	for _, b := range blocks {
 		addPageBlock(helper, url, b)
 	}
 	
-	helper.Commit()
-	
-	totalBlocks := []int{}
-	blocks := queryPageBlock(helper, url)
-	for _ b := range blocks {
-		totalBlocks = append(totalBlocks, b.ID())
-	}
-	return totalBlocks
+	helper.Commit()	
+	return blocks
 }
 
 func RemovePageBlock(url string, block int) {
