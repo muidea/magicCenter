@@ -140,19 +140,20 @@ func (this *systemController)UpdateSystemInfoAction(param UpdateSystemInfoParam)
 func (this *systemController)ApplyModuleAction(param ApplyModuleParam) ApplyModuleResult {
 	result := ApplyModuleResult{}
 	
+	/*
 	for _, v := range param.enableList {
-		module.EnableModule(v)
+		//module.EnableModule(v)
 	}
 	
 	for _, v := range param.disableList {
-		module.DisableModule(v)
+		//module.DisableModule(v)
 	}
 	
 	module.UndefaultAllModule()
 	for _, v := range param.defaultModule {
-		module.DefaultModule(v)
+		//module.DefaultModule(v)
 	}
-	
+	*/
 	result.ErrCode = 0;
 	result.Reason = "操作成功"
 	
@@ -162,11 +163,11 @@ func (this *systemController)ApplyModuleAction(param ApplyModuleParam) ApplyModu
 func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) QueryModuleInfoResult {
 	result := QueryModuleInfoResult{}
 	
-	m,found := module.QueryModule(param.id)
+	m,found := dao.QueryModule(param.id)
 	if found {
 		result.Module.Name = m.Name()
 		result.Module.Id = m.ID()
-		blocks := module.QueryModuleBlocks(param.id)
+		blocks := frame.QueryModuleBlocks(param.id)
 		for _, b := range blocks {
 			item := Block{}
 			item.Id = b.ID()
@@ -177,7 +178,7 @@ func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) Q
 		
 		urls := m.Urls()
 		for _, u := range urls {
-			p := module.QueryPage(u)
+			p := frame.QueryPage(u)
 			
 			page := Page{}
 			page.Url = u
@@ -204,9 +205,9 @@ func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) Q
 func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockParam) DeleteModuleBlockResult {
 	result := DeleteModuleBlockResult{}
 	
-	module.DeleteModuleBlock(param.id)
+	frame.DeleteModuleBlock(param.id)
 	
-	blocks := module.QueryModuleBlocks(param.owner)
+	blocks := frame.QueryModuleBlocks(param.owner)
 	for _, b := range blocks {
 		item := Block{}
 		item.Id = b.ID()
@@ -223,7 +224,7 @@ func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockPara
 func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
 	result := SaveModuleBlockResult{}
 
-	_, ok := module.InsertModuleBlock(param.block,param.owner)
+	_, ok := frame.InsertModuleBlock(param.block,param.owner)
 	if ok {
 		result.ErrCode = 0
 		result.Reason = "保存数据成功"

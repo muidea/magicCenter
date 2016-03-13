@@ -224,7 +224,7 @@ func DeleteLink(model modelhelper.Model, id int) bool {
 	model.BeginTransaction()
 	
 	sql := fmt.Sprintf(`delete from link where id =%d`, id)	
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if result {
 		link := link{}
 		link.id = id
@@ -256,7 +256,7 @@ func SaveLink(model modelhelper.Model, link Link) bool {
 	if !result {
 		// insert
 		sql = fmt.Sprintf(`insert into link (name,url,logo,style, creater) values ('%s','%s','%s',%d, %d)`, link.Name(), link.Url(), link.Logo(), link.Style(), link.Creater())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 		if result {
 			sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, link.Name(), link.Url(), link.Creater())
 			
@@ -271,7 +271,7 @@ func SaveLink(model modelhelper.Model, link Link) bool {
 	} else {
 		// modify
 		sql = fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', style=%d, creater=%d where id=%d`, link.Name(), link.Url(), link.Logo(), link.Style(), link.Creater(), link.Id())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 	}
 	
 	if result {

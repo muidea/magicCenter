@@ -41,7 +41,7 @@ func QueryGroupById(model modelhelper.Model, id int) (Group, bool) {
 
 func DeleteGroup(model modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf("delete from `group` where id =%d", id)
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if !result {
 		panic("query failed")
 	}
@@ -68,7 +68,8 @@ func SaveGroup(model modelhelper.Model, group Group) bool {
 		sql = fmt.Sprintf("update `group` set name ='%s' where id=%d", group.Name, group.Id)
 	}
 	
-	return model.Execute(sql)
+	_, ret := model.Execute(sql)
+	return ret
 }
 
 

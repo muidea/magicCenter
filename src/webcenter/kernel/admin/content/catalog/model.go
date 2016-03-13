@@ -224,7 +224,7 @@ func DeleteCatalogById(model modelhelper.Model, id int) bool {
 	model.BeginTransaction()
 			
 	sql := fmt.Sprintf(`delete from catalog where id=%d`, id)
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if result {
 		ca := catalog{}
 		ca.id = id
@@ -256,7 +256,7 @@ func SaveCatalog(model modelhelper.Model, catalog Catalog) bool {
 	if !result {
 		// insert
 		sql = fmt.Sprintf(`insert into catalog (name,creater) values ('%s',%d)`, catalog.Name(), catalog.Creater())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 		
 		if result {
 			id := -1
@@ -271,7 +271,7 @@ func SaveCatalog(model modelhelper.Model, catalog Catalog) bool {
 	} else {
 		// modify
 		sql = fmt.Sprintf(`update catalog set name ='%s', creater =%d where id=%d`, catalog.Name(), catalog.Creater(), catalog.Id())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 	}
 	
 	if result {

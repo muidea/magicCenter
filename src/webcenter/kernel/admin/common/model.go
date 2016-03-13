@@ -126,7 +126,7 @@ func SaveResource(model modelhelper.Model, res Resource) bool {
 		sql = fmt.Sprintf(`update resource set name ='%s' where type=%d and id=%d`, res.Name(), res.Type(), res.Id())
 	}
 
-	result = model.Execute(sql)
+	_, result = model.Execute(sql)
 	if result {
 		saveResourceRelative(model, res)
 	}
@@ -136,7 +136,7 @@ func SaveResource(model modelhelper.Model, res Resource) bool {
 
 func DeleteResource(model modelhelper.Model, res Resource) bool {
 	sql := fmt.Sprintf(`delete from resource where type=%d and id=%d`, res.Type(), res.Id())
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if result {
 		deleteResourceRelative(model, res)
 	} else {
@@ -167,7 +167,7 @@ func saveResourceRelative(model modelhelper.Model, res Resource) bool {
 		if !result {
 			// insert
 			sql = fmt.Sprintf(`insert into resource_relative (src,srcType,dst,dstType) values (%d, %d, %d, %d)`, res.Id(), res.Type(), rr.Id(), rr.Type())
-			result = model.Execute(sql)
+			_, result = model.Execute(sql)
 			if !result {
 				panic("execute failed")
 			}
@@ -179,7 +179,7 @@ func saveResourceRelative(model modelhelper.Model, res Resource) bool {
 
 func deleteResourceRelative(model modelhelper.Model, res Resource) bool {
 	sql := fmt.Sprintf(`delete from resource_relative where src=%d and srcType=%d`, res.Id(), res.Type())
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if !result {
 		panic("execute failed")
 	}

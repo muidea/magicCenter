@@ -6,6 +6,8 @@ import (
 )
 
 const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe4e"
+const Name = "Blog2"
+const Description = "blog2 module"
 const URI = "/blog2"
 
 type blog2 struct {
@@ -31,6 +33,14 @@ func (this *blog2) Cleanup() {
 
 func (this *blog2) ID() string {
 	return ID
+}
+
+func (this *blog2) Name() string {
+	return Name
+}
+
+func (this *blog2) Description() string {
+	return Description
 }
 
 func (this *blog2) Uri() string {

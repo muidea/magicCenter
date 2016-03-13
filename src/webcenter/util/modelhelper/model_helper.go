@@ -17,7 +17,7 @@ type Model interface {
 	
 	GetValue(... interface{})
 	
-	Execute(string) bool
+	Execute(string) (int64,bool)
 	
 	Release()
 }
@@ -62,7 +62,7 @@ func (this *model)GetValue(val ... interface{}) {
 	this.dao.GetField(val...)
 }
 
-func (this *model)Execute(sql string) bool {
+func (this *model)Execute(sql string) (int64, bool) {
 	return this.dao.Execute(sql)
 }
 

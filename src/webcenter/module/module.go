@@ -1,111 +1,115 @@
 package module
 
 import (
-	"webcenter/util/modelhelper"
+	"log"
+	"webcenter/router"
 )
 
+const (
+	GET = "get"
+	POST = "post"
+)
 
-type Module interface {
+type Route interface {
+	Type() string
+	Pattern() string
+	Handler() interface{}
+}
+
+type Module interface {	
 	ID() string
 	Name() string
 	Description() string
 	
-	Enable()
-	Disable()
-	EnableStatus() int
+	Uri() string
+	Routes() []Route	
+
+	Startup()
+	Cleanup()
+}
+
+type route struct {
+	rType string
+	rPattern string
+	rHandler interface{}
+}
+
+func (this *route) Type() string {
+	return this.rType
+}
+
+func (this *route) Pattern() string {
+	return this.rPattern
+}
+
+func (this *route) Handler() interface{} {
+	return this.rHandler
+}
+
+func NewRoute(rType, rPattern string, rHandler interface{}) Route {
+	r := route{}
+	r.rType = rType
+	r.rPattern = rPattern
+	r.rHandler = rHandler
 	
-	Default()
-	Undefault()
-	DefaultStatus() int
-	
-	Internal() bool
-	StyleFlag() int
-	
-	AssignUrls(urls []string)
-	Urls() []string
+	return &r	
 }
 
-type module struct {
-	id string
-	name string
-	description string
-	enableFlag int
-	defaultFlag int
-	styleFlag int
-	blocks []Block
-	urls []string
-}
-
-func (this *module)ID() string {
-	return this.id
-}
-
-func (this *module)Name() string {
-	return this.name
-}
-
-func (this *module)Description() string {
-	return this.description
-}
-
-func (this *module)Enable() {
-	this.enableFlag = 1
-}
-
-func (this *module)Disable() {
-	this.enableFlag = 0
-}
-
-func (this *module)EnableStatus() int {
-	return this.enableFlag
-}
-
-func (this *module)Default() {
-	this.defaultFlag = 1
-}
-
-func (this *module)Undefault() {
-	this.defaultFlag = 0
-}
-
-func (this *module)DefaultStatus() int {
-	return this.defaultFlag
-}
-
-func (this *module)Internal() bool {
-	return this.styleFlag == 0
-}
-
-func (this *module)StyleFlag() int {
-	return this.styleFlag
-}
-
-func (this *module)AssignUrls(urls []string) {
-	this.urls = urls
-}
-
-func (this *module)Urls() []string {
-	return this.urls
-}
-
-func newModule(id,name,description string) Module {
-	e := &module{}
-	e.id = id
-	e.name = name
-	e.description = description
-	
-	return e
-}
-
+var moduleIDMap = map[string]Module{}
 
 func QueryAllModule() []Module {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer helper.Release()
+	modules := []Module{}
 	
-	return queryAllModule(helper)
+	for _, m := range moduleIDMap {
+		modules = append(modules, m)
+	}
+	
+	return modules
 }
 
+func FindModule(id string) (Module, bool) {
+	m,found := moduleIDMap[id]
+	
+	return m,found
+}
+
+func RegisterModule(m Module) {
+	moduleIDMap[m.ID()] = m	
+}
+
+func UnregisterModule(id string) {
+	delete(moduleIDMap, id)
+}
+
+func StartupAllModules() {
+	log.Println("StartupAllModules all modules")
+	
+	for _, m := range moduleIDMap {
+		
+		routes := m.Routes()
+		for i, _ := range routes {
+			rt := routes[i]
+			
+			if rt.Type() == GET {				
+				pattern := m.Uri() + rt.Pattern()
+				router.AddGetRoute(pattern, rt.Handler())
+
+			} else if rt.Type() == POST {
+				pattern := m.Uri() + rt.Pattern()
+				router.AddPostRoute(pattern, rt.Handler())
+				
+			} else {
+				panic("illegal route type, type:" + rt.Type() )
+			}
+		}
+		
+		m.Startup()
+	}
+}
+
+func CleanupAllModules() {
+	for _, m := range moduleIDMap {
+		m.Cleanup()
+	}	
+}
 

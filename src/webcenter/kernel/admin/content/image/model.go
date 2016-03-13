@@ -210,7 +210,7 @@ func DeleteImage(model modelhelper.Model, id int) bool {
 	model.BeginTransaction()
 	
 	sql := fmt.Sprintf(`delete from image where id =%d`, id)	
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if result {
 		img := image{}
 		img.id = id
@@ -243,7 +243,7 @@ func SaveImage(model modelhelper.Model, image Image) bool {
 	if !result {
 		// insert
 		sql = fmt.Sprintf(`insert into image (name,url,description,creater) values ('%s','%s','%s',%d)`, image.Name(), image.Url(), image.Desc(), image.Creater())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 		sql = fmt.Sprintf(`select id from image where url='%s' and description ='%s' and creater=%d`, image.Url(), image.Desc(), image.Creater())
 		
 		id := -1
@@ -257,7 +257,7 @@ func SaveImage(model modelhelper.Model, image Image) bool {
 	} else {
 		// modify
 		sql = fmt.Sprintf(`update image set name='%s', url ='%s', description='%s', creater=%d where id=%d`, image.Name(), image.Url(), image.Desc(), image.Creater(), image.Id())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 	}
 	
 	if result {

@@ -278,7 +278,7 @@ func DeleteArticleById(model modelhelper.Model, id int) bool {
 	
 	sql := fmt.Sprintf(`delete from article where id=%d`, id)
 	
-	result := model.Execute(sql)
+	_, result := model.Execute(sql)
 	if result {
 		ar := article{}
 		ar.id = id
@@ -309,7 +309,7 @@ func SaveArticle(model modelhelper.Model, article Article) bool {
 	if !result {
 		// insert
 		sql = fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, article.Name(), html.EscapeString(article.Content()), article.Author(), article.CreateDate())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 		sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, article.Name(), article.Author(), article.CreateDate())
 		
 		id := -1
@@ -323,7 +323,7 @@ func SaveArticle(model modelhelper.Model, article Article) bool {
 	} else {
 		// modify
 		sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Name(), html.EscapeString(article.Content()), article.Author(), article.CreateDate(), article.Id())
-		result = model.Execute(sql)
+		_, result = model.Execute(sql)
 	}
 	
 	if result {

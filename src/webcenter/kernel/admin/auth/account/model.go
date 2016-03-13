@@ -129,20 +129,14 @@ func QueryUserById(model modelhelper.Model, id int) (User,bool) {
 
 func DeleteUser(model modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf("delete from user where id =%d", id)
-	if !model.Execute(sql) {
-		panic("execute failed")
-	}
-	
-	return true
+	_ ,ret := model.Execute(sql)
+	return ret
 }
 
 func deleteUserByAccount(model modelhelper.Model, account string) bool {
 	sql := fmt.Sprintf("delete from user where account ='%s'", account)
-	if !model.Execute(sql) {
-		panic("execute failed")
-	}
-	
-	return true
+	_, ret := model.Execute(sql) 
+	return ret
 }
 
 
@@ -165,7 +159,7 @@ func SaveUser(model modelhelper.Model, user User) bool {
 		sql = fmt.Sprintf("update user set account ='%s', password='%s', nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Account, user.password, user.NickName, user.Email, user.Group, user.Status, user.Id)
 	}
 	
-	result = model.Execute(sql)
+	_, result = model.Execute(sql)
 	
 	return result	
 }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50624
 File Encoding         : 65001
 
-Date: 2016-03-08 23:19:45
+Date: 2016-03-09 23:17:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -65,6 +65,24 @@ CREATE TABLE `catalog` (
 -- ----------------------------
 INSERT INTO `catalog` VALUES ('1', '测试分类', '7');
 INSERT INTO `catalog` VALUES ('2', '测试子分类', '7');
+
+-- ----------------------------
+-- Table structure for `entity`
+-- ----------------------------
+DROP TABLE IF EXISTS `entity`;
+CREATE TABLE `entity` (
+  `id` varchar(36) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL,
+  `enableflag` tinyint(4) NOT NULL,
+  `defaultflag` tinyint(4) NOT NULL,
+  `module` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of entity
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `group`
@@ -156,7 +174,6 @@ CREATE TABLE `module_block` (
 INSERT INTO `module_block` VALUES ('3', '导航栏', 'f17133ec-63e9-4b46-8757-e6ca1af6fe3e');
 INSERT INTO `module_block` VALUES ('4', ' 文章分类', 'f17133ec-63e9-4b46-8757-e6ca1af6fe3e');
 INSERT INTO `module_block` VALUES ('5', '标签云', 'f17133ec-63e9-4b46-8757-e6ca1af6fe3e');
-INSERT INTO `module_block` VALUES ('10', '123', 'f17133ec-63e9-4b46-8757-e6ca1af6fe3e');
 
 -- ----------------------------
 -- Table structure for `page_block`
@@ -167,7 +184,7 @@ CREATE TABLE `page_block` (
   `url` text,
   `block` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of page_block
@@ -175,15 +192,13 @@ CREATE TABLE `page_block` (
 INSERT INTO `page_block` VALUES ('26', '/guestbook/', '5');
 INSERT INTO `page_block` VALUES ('27', '/guestbook/', '7');
 INSERT INTO `page_block` VALUES ('33', '/aboutsite/', '5');
-INSERT INTO `page_block` VALUES ('36', '/', '3');
-INSERT INTO `page_block` VALUES ('37', '/', '4');
-INSERT INTO `page_block` VALUES ('38', '/', '5');
 INSERT INTO `page_block` VALUES ('39', '/view/', '3');
 INSERT INTO `page_block` VALUES ('40', '/view/', '4');
 INSERT INTO `page_block` VALUES ('41', '/view/', '5');
 INSERT INTO `page_block` VALUES ('42', '/aboutme/', '3');
 INSERT INTO `page_block` VALUES ('43', '/aboutme/', '4');
 INSERT INTO `page_block` VALUES ('44', '/aboutme/', '5');
+INSERT INTO `page_block` VALUES ('45', '/', '3');
 
 -- ----------------------------
 -- Table structure for `resource`
