@@ -6,35 +6,35 @@ import (
 )
 
 
-func SetOption(model modelhelper.Model, key, value string) bool {
-	sql := fmt.Sprintf("select id from option where `key`='%s'", key)
-	model.Query(sql)
+func SetOption(helper modelhelper.Model, key, value string) bool {
+	sql := fmt.Sprintf("select id from `option` where `key`='%s'", key)
+	helper.Query(sql)
 
 	id := -1
 	found := false
-	if model.Next() {
-		model.GetValue(&id)
+	if helper.Next() {
+		helper.GetValue(&id)
 		found = true
 	}
 	
 	if found {
-		sql = fmt.Sprintf("update option set value='%s' where id=%d", value, id)		
+		sql = fmt.Sprintf("update `option` set value='%s' where id=%d", value, id)		
 	} else {
-		sql = fmt.Sprintf("insert into option(`key`,value) values ('%s','%s')", key, value)
+		sql = fmt.Sprintf("insert into `option`(`key`,value) values ('%s','%s')", key, value)
 	}
 	
-	num, ret := model.Execute(sql)
+	num, ret := helper.Execute(sql)
 	return num == 1 && ret
 }
 
-func GetOption(model modelhelper.Model, key string) (string, bool) {
-	sql := fmt.Sprintf("select value from option where `key`='%s'", key)
-	model.Query(sql)
+func GetOption(helper modelhelper.Model, key string) (string, bool) {
+	sql := fmt.Sprintf("select value from `option` where `key`='%s'", key)
+	helper.Query(sql)
 
 	value := ""
 	found := false
-	if model.Next() {
-		model.GetValue(&value)
+	if helper.Next() {
+		helper.GetValue(&value)
 		found = true
 	}
 	

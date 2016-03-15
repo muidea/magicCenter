@@ -8,34 +8,7 @@ import (
 	"strings"
 	"strconv"
 	"muidea.com/util"
-    "webcenter/module"
-    "webcenter/kernel"
 )
-
-type SystemView struct {
-	Name string
-	Logo string
-	Domain string
-	EMailServer string
-	EMailAccount string
-	EMailPassword string
-}
-
-type ModuleItem struct {
-	Id string
-	Name string
-	Description string
-	Enable bool
-	Default bool
-	Internal bool
-}
-
-type ModuleView struct {
-	AccessCode string
-	ModuleList []ModuleItem
-}
-
-const passwordMark = "******"
 
 func ManageSystemHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageSystemHandler");
@@ -48,14 +21,8 @@ func ManageSystemHandler(w http.ResponseWriter, r *http.Request) {
     	panic("parse files failed");
     }
     
-    view := SystemView{}
-    view.Name = kernel.Name()
-    view.Logo = kernel.Logo()
-    view.Domain = kernel.Domain()
-    view.EMailServer = kernel.MailServer()
-    view.EMailAccount = kernel.MailAccount()
-    view.EMailPassword = passwordMark
-    
+    view := GetSystemInfoViewAction()
+        
     t.Execute(w, view)
 }
 
@@ -105,10 +72,7 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
 		
 		param.accesscode = r.FormValue("accesscode")
 	
-		log.Printf("Name:%s,Logo:%s,Domain:%s,server:%s,account:%s,password:%s", param.name, param.logo, param.domain, param.emailServer, param.emailAccount, param.emailPassword)
-	
-    	controller := &systemController{}
-    	result = controller.UpdateSystemInfoAction(param)
+    	result = UpdateSystemInfoAction(param)
     	break
 	}
 
@@ -133,22 +97,7 @@ func ManageModuleHandler(w http.ResponseWriter, r *http.Request) {
     }
     
     
-    view := ModuleView{}
-    modulesList := module.QueryAllModule()
-    for index, _ := range modulesList {
-    	m := modulesList[index]
-    	
-    	item := ModuleItem{}
-    	item.Id = m.ID()
-    	item.Name = m.Name()
-    	item.Description = m.Description()
-    	item.Enable = m.EnableStatus() == 1
-    	item.Default = m.DefaultStatus() == 1
-    	item.Internal = m.Internal()
-    	
-    	view.ModuleList = append(view.ModuleList,item)
-    }
-    
+    view := GetModuleInfoViewAction()    
     t.Execute(w, view)
 }
 
@@ -173,25 +122,8 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
 				param.enableList = append(param.enableList, v)
 			}
 		}
-				
-		disableList := r.FormValue("disableList")
-		parts = strings.Split(disableList,",")
-		for _, v := range parts {
-			if len(v) > 0 {
-				param.disableList = append(param.disableList, v)
-			}
-		}
-		
-		defaultModule := r.FormValue("defaultModule")
-		parts = strings.Split(defaultModule,",")
-		for _, v := range parts {
-			if len(v) > 0 {
-				param.defaultModule = append(param.defaultModule, v)
-			}
-		}
-		
-		controller := &systemController{}
-    	result = controller.ApplyModuleAction(param)
+
+    	result = ApplyModuleAction(param)
     	break
 	}
 
@@ -206,8 +138,8 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-func QueryModuleInfoHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("QueryModuleInfoHandler");
+func QueryModuleDetailHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryModuleDetailHandler");
 	
 	var id = ""
 	idInfo := r.URL.RawQuery
@@ -218,11 +150,10 @@ func QueryModuleInfoHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	
-	param := QueryModuleInfoParam{}
+	param := QueryModuleDetailParam{}
 	param.id = id
 	
-	controller := &systemController{}
-	result := controller.QueryModuleInfoAction(param)
+	result := QueryModuleDetailAction(param)
     b, err := json.Marshal(result)
     if err != nil {
     	panic("marshal failed, err:" + err.Error())
@@ -258,8 +189,7 @@ func DeleteModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
 	    if err == nil {
 	    	param.id = idValue
 	    	param.owner = owner
-			controller := &systemController{}
-			result = controller.DeleteModuleBlockAction(param)
+			result = DeleteModuleBlockAction(param)
 	    } else {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"    	
@@ -292,8 +222,7 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
 		param.owner = r.FormValue("module-id")
 		param.block = r.FormValue("module-block")
 	
-		controller := &systemController{}
-    	result = controller.SaveModuleBlockAction(param)
+    	result = SaveModuleBlockAction(param)
     	break
 	}
 	
@@ -323,6 +252,7 @@ func SavePageBlockHandler(w http.ResponseWriter, r *http.Request) {
     	}
     			
 		param := SavePageBlockParam{}
+		param.owner = r.FormValue("page-owner")
 		param.url = r.FormValue("page-url")
 		blocks := r.MultipartForm.Value["page-block"]
 	    for _, b := range blocks {
@@ -337,8 +267,7 @@ func SavePageBlockHandler(w http.ResponseWriter, r *http.Request) {
 		    param.blocks = append(param.blocks, id)
 	    }		
 	
-		controller := &systemController{}
-    	result = controller.SavePageBlockAction(param)
+    	result = SavePageBlockAction(param)
     	break
 	}
 	

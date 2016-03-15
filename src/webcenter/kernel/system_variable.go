@@ -7,60 +7,47 @@ var staticPath string = "static"
 var resourceFilePath string = "template"
 var uploadFilePath string = "upload"
 
-var systemName string
-var systemLogo string
-var systemDomain string
-var systemMailServer string
-var systemMailAccount string
-var systemMailPassword string
-
-
-func Name() string {
-	return systemName
+type SystemInfo struct {
+	Name string
+	Logo string
+	Domain string
+	MailServer string
+	MailAccount string
+	MailPassword string
 }
 
-func UpdateName(name string) {
-	systemName = name
+var systemInfo SystemInfo
+
+func UpdateSystemInfo(info SystemInfo) {
+	systemInfo = info
+}
+
+func GetSystemInfo() SystemInfo {
+	return systemInfo
+}
+
+func Name() string {
+	return systemInfo.Name
 }
 
 func Logo() string {
-	return systemLogo
-}
-
-func UpdateLogo(logo string) {
-	systemLogo = logo
+	return systemInfo.Logo
 }
 
 func Domain() string {
-	return systemDomain
-}
-
-func UpdateDomain(domain string) {
-	systemDomain = domain
+	return systemInfo.Domain
 }
 
 func MailServer() string {
-	return systemMailServer
-}
-
-func UpdateMailServer(server string) {
-	systemMailServer = server
+	return systemInfo.MailServer
 }
 
 func MailAccount() string {
-	return systemMailAccount
-}
-
-func UpdateMailAccount(account string) {
-	systemMailAccount = account
+	return systemInfo.MailAccount
 }
 
 func MailPassword() string {
-	return systemMailPassword
-}
-
-func UpdateMailPassword(password string) {
-	systemMailPassword = password
+	return systemInfo.MailPassword
 }
 
 func UploadPath() string {

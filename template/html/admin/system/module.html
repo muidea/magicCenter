@@ -12,8 +12,7 @@
 <script type="text/javascript" src="/resources/scripts/admin.jquery.system.module.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.system.module.js"></script>
 <script type="text/javascript">
-module.accesscode={{.AccessCode}};
-module.moduleList={{.ModuleList}};
+module.moduleList={{.Modules}};
 $(document).ready(function() {
 	module.initialize();
 });	
@@ -190,7 +189,8 @@ $(document).ready(function() {
 											<input type="checkbox" name="checkbox1" /><span>BBB</span>
 									</checkBox>
 								</p>
-								<p>
+								<p><input type="hidden" name="page-owner" class="page-owner"
+										value="-1" />
 									<input class="button" type="submit" value="新增" />
 								</p>
 							</fieldset>

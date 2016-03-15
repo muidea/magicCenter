@@ -39,7 +39,7 @@ func QueryPage(helper modelhelper.Model, owner, url string) (Page, bool) {
 
 func QueryPages(helper modelhelper.Model, owner string) []Page {
 	
-	sql := fmt.Sprintf("select distinct url from page where owner='%s'", owner)
+	sql := fmt.Sprintf("select distinct url from page where owner='%s' order by url", owner)
 	helper.Query(sql)
 	
 	urlList := []string{}
@@ -59,16 +59,26 @@ func QueryPages(helper modelhelper.Model, owner string) []Page {
 	return pageList
 }
 
-func SavePage(helper modelhelper.Model, page Page) (Page, bool) {
+func SavePage(helper modelhelper.Model, owner,url string, blocks []int) (Page, bool) {
 	ret := false
-	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", page.Owner, page.Url)
+	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
 	_, ret = helper.Execute(sql)
 	if ret {
-		for _, block := range page.Blocks {
-			sql = fmt.Sprintf("insert into page(owner,url,block) values('%s','%s',%d)", page.Owner, page.Url, block.Id)
-			helper.Execute(sql)
+		ret = true
+		for _, b := range blocks {
+			sql = fmt.Sprintf("insert into page(owner,url,block) values('%s','%s',%d)", owner, url, b)
+			num, ok := helper.Execute(sql)
+			if num != 1 || !ok {
+				ret = false
+				break
+			}
 		}
 	}
 	
-	return page,ret
+	if !ret {
+		page := Page{}
+		return page, ret
+	}
+	
+	return QueryPage(helper, owner, url)
 }

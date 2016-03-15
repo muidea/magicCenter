@@ -38,7 +38,7 @@ func QueryModule(helper modelhelper.Model, id string) (Module, bool) {
 func QueryAllModule(helper modelhelper.Model) []Module {
 	moduleList := []Module{}
 	
-	sql := fmt.Sprintf("select id, name, description, enableflag from module order by styleflag")	
+	sql := fmt.Sprintf("select id, name, description, enableflag from module")	
 	helper.Query(sql)
 	
 	for helper.Next() {

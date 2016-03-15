@@ -1,11 +1,8 @@
 
 var module = {
-	accesscode:'',
 	moduleList:{},
-	blockList:{},
-	pageList:{},
-	currentModule:'',
-	currentPage:''
+	currentModule:{},
+	currentPage:{}
 };
 
 $(document).ready(function() {
@@ -13,33 +10,17 @@ $(document).ready(function() {
 	$("#module-list .button").click(
 		function() {
 			var enableList = "";
-			var disableList = "";
-			var defaultModule = "";
 			var radioArray = $("#module-list table tbody tr td :radio:checked");
 			for (var ii =0; ii < radioArray.length; ++ii) {
 				var radio = radioArray[ii];
 				if ($(radio).val() == 1) {
 					enableList += $(radio).attr("name");
 					enableList += ",";
-				} else {
-					disableList += $(radio).attr("name");
-					disableList += ",";
 				}				
 			}
-			
-			var checkboxArray = $("#module-list table tbody tr td :checkbox:checked");
-			for (var ii =0; ii < checkboxArray.length;) {
-				var checkbox = checkboxArray[ii++];
-				defaultModule += $(checkbox).attr("name");
-				if (ii < checkboxArray.length) {
-					defaultModule += ",";
-				}
-			}
-			
+						
 			$.post("/admin/system/applyModule/", {
 				enableList:enableList,
-				disableList:disableList,
-				defaultModule:defaultModule
 			}, function(result) {
 
 				$("#module-list div.notification").hide();
@@ -79,8 +60,8 @@ $(document).ready(function() {
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
         		
-        		module.blockList = result.Blocks;
-        		module.refreshBlockView();
+        		module.currentModule = result.Module;
+        		module.refreshModuleView();
         	}
         }
         
@@ -132,18 +113,18 @@ $(document).ready(function() {
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
 
-        		if (module.pageList) {
-        			for (var ii =0; ii < module.pageList.length; ++ii) {
-        				var page = module.pageList[ii];
-        				if (page.Url == result.Page.Url) {
-        					module.pageList[ii] = result.Page;
+        		module.currentModule = result.Module;
+        		if (module.currentPage) {
+        			for (var ii=0; ii < module.currentModule.Pages.length; ++ii) {
+        				page = module.currentModule.Pages[ii];
+        				if (page.Url == module.currentPage.Url) {
+        					module.currentPage = page;
         					break;
         				}
         			}
         		}
         		
-        		module.refreshBlockView();
-        		module.refreshPageView();
+        		module.refreshModuleView();
         	}
         }
         
@@ -180,7 +161,7 @@ module.initialize = function() {
 };
 
 module.fillModuleView = function() {
-	
+		
 	$("#module-list div.notification").hide();
 	$("#module-list table tbody tr").remove();
 	for (var ii =0; ii < module.moduleList.length; ++ii) {
@@ -200,7 +181,7 @@ module.constructModuleItem = function(module) {
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
 	nameLink.setAttribute("href","#");
-	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleInfo/?id=" + module.Id + "'); return false;" );
+	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleDetail/?id=" + module.Id + "'); return false;" );
 	nameLink.innerHTML = module.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
@@ -238,25 +219,7 @@ module.constructModuleItem = function(module) {
 	radioGroup.appendChild(disable_span);
 	
 	editTd.appendChild(radioGroup);
-	
-	var checkGroup = document.createElement("checkbox");
-	var default_check = document.createElement("input");
-	default_check.setAttribute("type","checkbox");
-	default_check.setAttribute("name",module.Id);
-	checkGroup.appendChild(default_check);
-	if (module.Default) {
-		default_check.checked = true;
-	} else {
-		default_check.checked = false;
-	}
-	
-	
-	var default_span = document.createElement("span");
-	default_span.innerHTML ="设为默认 ";
-	checkGroup.appendChild(default_span);
-	
-	editTd.appendChild(checkGroup);	
-	
+		
 	if(module.Internal == 0) {
 		var uninstall = document.createElement("input");
 		uninstall.setAttribute("type","button");
@@ -282,23 +245,19 @@ module.maintainModule = function(maintainUrl) {
 
 		module.resetStatus();
 		
-		module.currentModule = result.Module.Id;
-		
-		module.blockList = result.Blocks;
-		module.pageList = result.Pages;
+		module.currentModule = result.Module;
 		
 		$("#module-content .content-box-tabs li a").removeClass('current');
 		$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
 		$("#module-maintain").siblings().hide();
-		module.refreshBlockView();
 		
-		module.refreshPageView();
+		module.refreshModuleView();
 		
 		$("#module-maintain").show();	
 	}, "json");	
 };
 
-module.constructBlockItem = function(owner, block) {
+module.constructBlockItem = function(block) {
 	
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","block");
@@ -311,7 +270,7 @@ module.constructBlockItem = function(owner, block) {
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteBlock" );
-	deleteLink.setAttribute("onclick","module.deleteBlock('/admin/system/deleteModuleBlock/?id=" + block.Id + "&owner="+ owner +"'); return false;" );
+	deleteLink.setAttribute("onclick","module.deleteBlock('/admin/system/deleteModuleBlock/?id=" + block.Id + "&owner="+ module.currentModule.Id +"'); return false;" );
 	var deleteImage = document.createElement("img");
 	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
@@ -333,17 +292,10 @@ module.constructPageItem = function(page) {
 	var blocksTd = document.createElement("td");
 	if (page.Blocks) {
 		for (var ii =0; ii < page.Blocks.length;) {
-			var bid = page.Blocks[ii++];
-			for (var jj =0; jj < module.blockList.length; ) {
-				var block = module.blockList[jj++];
-				if (bid == block.Id) {
-					blocks += block.Name;
-					
-					if (jj < module.blockList.length && ii < page.Blocks.length) {
-						blocks += ",";
-					}
-					break;
-				}
+			var block = page.Blocks[ii++];
+			blocks += block.Name;
+			if (ii < page.Blocks.length) {
+				blocks += ",";
 			}
 		}
 	}
@@ -355,11 +307,26 @@ module.constructPageItem = function(page) {
 };
 
 module.editPageBlock = function(pageUrl) {
+	if (module.currentModule.Pages) {
+		for (var ii =0; ii < module.currentModule.Pages.length; ++ii) {
+			var page = module.currentModule.Pages[ii];
+			if (page.Url == pageUrl) {
+				module.currentPage = page;
+				break;
+			}
+		}
+	}
+	
 	$("#module-maintain .page .page-Form .page-url").val(pageUrl);
 	$("#module-maintain .page .page-Form .page-block input").prop("checked", false);
-	module.currentPage = pageUrl;
-	
-	module.refreshPageView();
+	if (module.currentPage) {
+		if (module.currentPage.Blocks) {
+			for (var jj =0; jj < module.currentPage.Blocks.length; ++jj) {
+				var block = module.currentPage.Blocks[jj];
+				$("#module-maintain .page .page-Form .page-block input").filter("[value="+ block.Id +"]").prop("checked", true);
+			}
+		}
+	}
 };
 
 module.deleteBlock = function(deleteUrl) {
@@ -376,22 +343,21 @@ module.deleteBlock = function(deleteUrl) {
 			$("#module-maintain div.success div").html(result.Reason);
 			$("#module-maintain div.success").show();
 			
-			module.blockList = result.Blocks;
 			module.resetStatus();
-			module.refreshBlockView();
-			module.refreshPageView();
+    		module.currentModule = result.Module;
+    		module.refreshModuleView();			
 		}
 	}, "json");	
 };
 
-module.refreshBlockView = function() {
+module.refreshModuleView = function() {
 	$("#module-maintain .block table tbody tr").remove();
 	$("#module-maintain .page .page-Form .page-block").children().remove();
 	
-	if (module.blockList) {
-		for (var ii =0; ii < module.blockList.length; ++ii) {
-			var block = module.blockList[ii];
-			var trContent = module.constructBlockItem(module.currentModule, block);
+	if (module.currentModule.Blocks) {
+		for (var ii =0; ii < module.currentModule.Blocks.length; ++ii) {
+			var block = module.currentModule.Blocks[ii];
+			var trContent = module.constructBlockItem(block);
 			$("#module-maintain .block table tbody").append(trContent);
 			
 			$("#module-maintain .page .page-Form .page-block").append("<input type='checkbox' name='page-block' value=" +  block.Id + "> </input> <span>" + block.Name + "</span> ");
@@ -399,20 +365,31 @@ module.refreshBlockView = function() {
 	}
 	$("#module-maintain .block table tbody tr:even").addClass("alt-row");
 	
-	$("#module-maintain .block .block-Form .module-id").val(module.currentModule);
-};
-
-module.refreshPageView = function() {
+	$("#module-maintain .block .block-Form .module-id").val(module.currentModule.Id);
+	
 	$("#module-maintain .page table tbody tr").remove();
-	if (module.pageList) {
-		for (var ii =0; ii < module.pageList.length; ++ii) {
-			var page = module.pageList[ii];
+	if (module.currentModule.Pages) {
+		for (var ii =0; ii < module.currentModule.Pages.length; ++ii) {
+			var page = module.currentModule.Pages[ii];
 			var trContent = module.constructPageItem(page);
 			$("#module-maintain .page table tbody").append(trContent);
 		}			
 	}
 	$("#module-maintain .page table tbody tr:even").addClass("alt-row");
 	
+	$("#module-maintain .page .page-Form .page-owner").val(module.currentModule.Id);
+	if (module.currentPage) {
+		if (module.currentPage.Blocks) {
+			for (var jj =0; jj < module.currentPage.Blocks.length; ++jj) {
+				var block = module.currentPage.Blocks[jj];
+				$("#module-maintain .page .page-Form .page-block input").filter("[value="+ block.Id +"]").prop("checked", true);
+			}
+		}
+	}
+	
+};
+
+module.refreshPageView = function() {	
 	if (module.pageList && module.currentPage) {
 		for (var ii =0; ii < module.pageList.length; ++ii) {
 			var page = module.pageList[ii];
@@ -431,8 +408,8 @@ module.refreshPageView = function() {
 };
 
 module.resetStatus = function() {
-	module.currentModule = '';
-	module.currentPage = '';
+	module.currentModule = null;
+	module.currentPage = null;
 	
 	$("#module-maintain .page .page-Form .page-url").val('');
 	$("#module-maintain .page .page-Form .page-block input").prop("checked", false);	

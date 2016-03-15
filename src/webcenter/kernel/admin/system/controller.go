@@ -1,11 +1,41 @@
 package system
 
 import (
-    "webcenter/util/modelhelper"
-    "webcenter/module"
     "webcenter/kernel"
+    "webcenter/kernel/bll"
     "webcenter/kernel/admin/common"
 )
+
+type Module struct {
+	Id string
+	Name string
+	Description string
+	Enable bool
+}
+
+type Block struct {
+	Id int
+	Name string
+}
+
+type Page struct {
+	Url string
+	Blocks []Block
+}
+
+type ModuleDetail struct {
+	Module
+	Blocks []Block
+	Pages []Page	
+}
+
+type SystemInfoView struct {
+	kernel.SystemInfo
+}
+
+type ModuleInfoView struct {
+	Modules []Module
+}
 
 type UpdateSystemInfoParam struct {
 	name string
@@ -23,38 +53,20 @@ type UpdateSystemInfoResult struct {
 
 type ApplyModuleParam struct {
 	enableList []string
-	disableList []string
-	defaultModule []string
 }
 
 type ApplyModuleResult struct {
 	common.Result
+	Modules []Module
 }
 
-type Module struct {
-	Id string
-	Name string
-}
-
-type Block struct {
-	Id int
-	Name string
-}
-
-type Page struct {
-	Url string
-	Blocks []int
-}
-
-type QueryModuleInfoParam struct {
+type QueryModuleDetailParam struct {
 	id string
 }
 
-type QueryModuleInfoResult struct {
+type QueryModuleDetailResult struct {
 	common.Result
-	Module Module
-	Blocks []Block
-	Pages []Page
+	Module ModuleDetail
 }
 
 type DeleteModuleBlockParam struct {
@@ -64,7 +76,7 @@ type DeleteModuleBlockParam struct {
 
 type DeleteModuleBlockResult struct {
 	common.Result
-	Blocks []Block
+	Module ModuleDetail
 }
 
 type SaveModuleBlockParam struct {
@@ -74,121 +86,128 @@ type SaveModuleBlockParam struct {
 
 type SaveModuleBlockResult struct {
 	common.Result
-	Owner string
-	Blocks []Block
+	Module ModuleDetail
 }
 
 type SavePageBlockParam struct {
+	owner string
 	url string
 	blocks []int
 }
 
 type SavePageBlockResult struct {
 	common.Result
-	Page Page
+	Module ModuleDetail
 }
 
-type systemController struct {
+const passwordMark = "********"
+
+func GetSystemInfoViewAction() SystemInfoView {
+	view := SystemInfoView{}
+	info := kernel.GetSystemInfo()
+	view.Name = info.Name
+	view.Logo = info.Logo
+	view.Domain = info.Domain
+	view.MailServer = info.MailServer
+	view.MailAccount = info.MailAccount
+	view.MailPassword = passwordMark
 	
+	return view
 }
 
-func (this *systemController)UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult {
+func UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult {
 	result := UpdateSystemInfoResult{}
 	
-	model, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct model failed")
-	}
-	defer model.Release()
-	
-	if param.name != "" && param.name != kernel.Name() {
-		kernel.UpdateName(param.name)
-		UpdateSystemName(model, param.name)
-	}
-	
-	if param.logo != "" && param.logo != kernel.Logo() {
-		kernel.UpdateLogo(param.logo)
-		UpdateSystemLogo(model, param.logo)
-	}
-	
-	if param.domain != "" && param.domain != kernel.Domain() {
-		kernel.UpdateDomain(param.domain)
-		UpdateSystemDomain(model, param.domain)
+	info := kernel.SystemInfo{}
+	info.Name = param.name
+	info.Logo = param.logo
+	info.Domain = param.domain
+	info.MailServer = param.emailServer
+	info.MailAccount = param.emailAccount
+	info.MailPassword = param.emailPassword
+
+	if bll.UpdateSystemInfo(info) {
+		result.ErrCode = 0
+		result.Reason = "保存站点信息成功"		
+	} else {
+		result.ErrCode = 1
+		result.Reason = "保存站点信息失败"
 	}
 		
-	if param.emailServer != "" && param.emailServer != kernel.MailServer() {
-		kernel.UpdateMailServer(param.emailServer)
-		UpdateSystemEMailServer(model, param.emailServer)
-	}
-
-	if param.emailAccount != "" && param.emailAccount != kernel.MailAccount() {
-		kernel.UpdateMailAccount(param.emailAccount)
-		UpdateSystemEMailAccount(model, param.emailAccount)
-	}
-
-	if param.emailPassword != "" && param.emailPassword != kernel.MailPassword() {
-		kernel.UpdateMailPassword(param.emailPassword)
-		UpdateSystemEMailPassword(model, param.emailPassword)
-	}
-	
-	result.ErrCode = 0
-	result.Reason = "保存站点信息成功"
-	
 	return result
 }
 
-func (this *systemController)ApplyModuleAction(param ApplyModuleParam) ApplyModuleResult {
+func GetModuleInfoViewAction() ModuleInfoView {
+	view := ModuleInfoView{}
+	
+	modules := bll.QueryAllModules()
+	for _, m := range modules {
+		module := Module{}
+		module.Id = m.Id
+		module.Name = m.Name
+		module.Description = m.Description
+		module.Enable = m.Enable
+		
+		view.Modules = append(view.Modules, module)
+	}
+	
+	return view
+}
+
+func ApplyModuleAction(param ApplyModuleParam) ApplyModuleResult {
 	result := ApplyModuleResult{}
 	
-	/*
-	for _, v := range param.enableList {
-		//module.EnableModule(v)
+	modules, ok := bll.EnableModules(param.enableList)
+	if ok {
+		result.ErrCode = 0;
+		result.Reason = "操作成功"
+		
+		for i, _ := range modules {
+			m := &modules[i]
+			
+			module := Module{}
+			module.Id = m.Id
+			module.Name = m.Name
+			module.Description = m.Description
+			module.Enable = m.Enable
+			
+			result.Modules = append(result.Modules, module)
+		}
+	} else {
+		result.ErrCode = 1;
+		result.Reason = "操作失败"		
 	}
-	
-	for _, v := range param.disableList {
-		//module.DisableModule(v)
-	}
-	
-	module.UndefaultAllModule()
-	for _, v := range param.defaultModule {
-		//module.DefaultModule(v)
-	}
-	*/
-	result.ErrCode = 0;
-	result.Reason = "操作成功"
 	
 	return result
 }
 
-func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) QueryModuleInfoResult {
-	result := QueryModuleInfoResult{}
-	
-	m,found := dao.QueryModule(param.id)
+func QueryModuleDetailAction(param QueryModuleDetailParam) QueryModuleDetailResult {
+	result := QueryModuleDetailResult{}
+		
+	m,found := bll.QueryModuleDetail(param.id)
 	if found {
-		result.Module.Name = m.Name()
-		result.Module.Id = m.ID()
-		blocks := frame.QueryModuleBlocks(param.id)
-		for _, b := range blocks {
-			item := Block{}
-			item.Id = b.ID()
-			item.Name = b.Name()
-			
-			result.Blocks = append(result.Blocks, item)
+		result.Module.Id = m.Id
+		result.Module.Name = m.Name
+		result.Module.Description = m.Description
+		result.Module.Enable = m.Enable
+		for _, b := range m.Blocks {
+			block := Block{}
+			block.Id = b.Id
+			block.Name = b.Name
+			result.Module.Blocks = append(result.Module.Blocks, block)
 		}
 		
-		urls := m.Urls()
-		for _, u := range urls {
-			p := frame.QueryPage(u)
-			
+		for _, p := range m.Pages {
 			page := Page{}
-			page.Url = u
-			
-			blocks := p.Blocks()
-			for _, b := range blocks {
-				page.Blocks = append(page.Blocks, b.ID())
+			page.Url = p.Url
+			for _, b := range p.Blocks {
+				block := Block{}
+				block.Id = b.Id
+				block.Name = b.Name
+				page.Blocks = append(page.Blocks, block)
 			}
 			
-			result.Pages = append(result.Pages, page)
+			result.Module.Pages = append(result.Module.Pages, page)
 		}
 				
 		result.ErrCode = 0
@@ -202,57 +221,119 @@ func (this *systemController)QueryModuleInfoAction(param QueryModuleInfoParam) Q
 }
 
 
-func (this *systemController)DeleteModuleBlockAction(param DeleteModuleBlockParam) DeleteModuleBlockResult {
+func DeleteModuleBlockAction(param DeleteModuleBlockParam) DeleteModuleBlockResult {
 	result := DeleteModuleBlockResult{}
 	
-	frame.DeleteModuleBlock(param.id)
-	
-	blocks := frame.QueryModuleBlocks(param.owner)
-	for _, b := range blocks {
-		item := Block{}
-		item.Id = b.ID()
-		item.Name = b.Name()		
-		result.Blocks = append(result.Blocks, item)
-	}	
-	
-	result.ErrCode = 0
-	result.Reason = "删除成功"
-	
-	return result
-}
-
-func (this *systemController)SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
-	result := SaveModuleBlockResult{}
-
-	_, ok := frame.InsertModuleBlock(param.block,param.owner)
-	if ok {
-		result.ErrCode = 0
-		result.Reason = "保存数据成功"
-		result.Owner = param.owner
-		blocks := module.QueryModuleBlocks(param.owner)
-		for _, b := range blocks {
+	m,ret := bll.RemoveModuleBlock(param.id, param.owner)
+	if ret {
+		result.Module.Id = m.Id
+		result.Module.Name = m.Name
+		result.Module.Description = m.Description
+		result.Module.Enable = m.Enable
+		for _, b := range m.Blocks {
 			block := Block{}
-			block.Id = b.ID()
-			block.Name = b.Name()
-			
-			result.Blocks = append(result.Blocks, block)
+			block.Id = b.Id
+			block.Name = b.Name
+			result.Module.Blocks = append(result.Module.Blocks, block)
 		}
+		
+		for _, p := range m.Pages {
+			page := Page{}
+			page.Url = p.Url
+			for _, b := range p.Blocks {
+				block := Block{}
+				block.Id = b.Id
+				block.Name = b.Name
+				page.Blocks = append(page.Blocks, block)
+			}
+			
+			result.Module.Pages = append(result.Module.Pages, page)
+		}
+				
+		result.ErrCode = 0
+		result.Reason = "查询成功"
 	} else {
 		result.ErrCode = 1
-		result.Reason = "保存数据失败"
+		result.Reason = "指定Module不存在"
 	}
 	
 	return result
 }
 
-func (this *systemController)SavePageBlockAction(param SavePageBlockParam) SavePageBlockResult {
-	result := SavePageBlockResult{}
+func SaveModuleBlockAction(param SaveModuleBlockParam) SaveModuleBlockResult {
+	result := SaveModuleBlockResult{}
 
-	blocks := module.SavePageBlocks(param.url,param.blocks)
-	result.ErrCode = 0
-	result.Reason = "保存数据成功"
-	result.Page.Url = param.url
-	result.Page.Blocks = blocks
+	m,ret := bll.AddModuleBlock(param.block, param.owner)
+	if ret {
+		result.Module.Id = m.Id
+		result.Module.Name = m.Name
+		result.Module.Description = m.Description
+		result.Module.Enable = m.Enable
+		for _, b := range m.Blocks {
+			block := Block{}
+			block.Id = b.Id
+			block.Name = b.Name
+			result.Module.Blocks = append(result.Module.Blocks, block)
+		}
+		
+		for _, p := range m.Pages {
+			page := Page{}
+			page.Url = p.Url
+			for _, b := range p.Blocks {
+				block := Block{}
+				block.Id = b.Id
+				block.Name = b.Name
+				page.Blocks = append(page.Blocks, block)
+			}
+			
+			result.Module.Pages = append(result.Module.Pages, page)
+		}
+				
+		result.ErrCode = 0
+		result.Reason = "查询成功"
+	} else {
+		result.ErrCode = 1
+		result.Reason = "指定Module不存在"
+	}
 	
 	return result
+}
+
+func SavePageBlockAction(param SavePageBlockParam) SavePageBlockResult {
+	result := SavePageBlockResult{}
+
+	m,ret := bll.SavePageBlock(param.owner, param.url, param.blocks)
+	if ret {
+		result.Module.Id = m.Id
+		result.Module.Name = m.Name
+		result.Module.Description = m.Description
+		result.Module.Enable = m.Enable
+		for _, b := range m.Blocks {
+			block := Block{}
+			block.Id = b.Id
+			block.Name = b.Name
+			result.Module.Blocks = append(result.Module.Blocks, block)
+		}
+		
+		for _, p := range m.Pages {
+			page := Page{}
+			page.Url = p.Url
+			for _, b := range p.Blocks {
+				block := Block{}
+				block.Id = b.Id
+				block.Name = b.Name
+				page.Blocks = append(page.Blocks, block)
+			}
+			
+			result.Module.Pages = append(result.Module.Pages, page)
+		}
+				
+		result.ErrCode = 0
+		result.Reason = "查询成功"
+	} else {
+		result.ErrCode = 1
+		result.Reason = "指定Module不存在"
+	}
+	
+	return result	
 }
