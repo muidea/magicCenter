@@ -1,9 +1,9 @@
 package system
 
 import (
-    "webcenter/kernel"
     "webcenter/kernel/bll"
     "webcenter/kernel/admin/common"
+    "webcenter/configuration"
 )
 
 type Module struct {
@@ -11,6 +11,7 @@ type Module struct {
 	Name string
 	Description string
 	Enable bool
+	Default bool
 }
 
 type Block struct {
@@ -30,7 +31,7 @@ type ModuleDetail struct {
 }
 
 type SystemInfoView struct {
-	kernel.SystemInfo
+	configuration.SystemInfo
 }
 
 type ModuleInfoView struct {
@@ -53,6 +54,7 @@ type UpdateSystemInfoResult struct {
 
 type ApplyModuleParam struct {
 	enableList []string
+	defaultModule string
 }
 
 type ApplyModuleResult struct {
@@ -104,7 +106,7 @@ const passwordMark = "********"
 
 func GetSystemInfoViewAction() SystemInfoView {
 	view := SystemInfoView{}
-	info := kernel.GetSystemInfo()
+	info := configuration.GetSystemInfo()
 	view.Name = info.Name
 	view.Logo = info.Logo
 	view.Domain = info.Domain
@@ -118,7 +120,7 @@ func GetSystemInfoViewAction() SystemInfoView {
 func UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult {
 	result := UpdateSystemInfoResult{}
 	
-	info := kernel.SystemInfo{}
+	info := configuration.GetSystemInfo()
 	info.Name = param.name
 	info.Logo = param.logo
 	info.Domain = param.domain
@@ -126,7 +128,8 @@ func UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult 
 	info.MailAccount = param.emailAccount
 	info.MailPassword = param.emailPassword
 
-	if bll.UpdateSystemInfo(info) {
+	if configuration.UpdateSystemInfo(info) {
+		
 		result.ErrCode = 0
 		result.Reason = "保存站点信息成功"		
 	} else {
@@ -140,6 +143,7 @@ func UpdateSystemInfoAction(param UpdateSystemInfoParam) UpdateSystemInfoResult 
 func GetModuleInfoViewAction() ModuleInfoView {
 	view := ModuleInfoView{}
 	
+	defaultModule, found := configuration.GetOption(configuration.SYS_DEFULTMODULE)
 	modules := bll.QueryAllModules()
 	for _, m := range modules {
 		module := Module{}
@@ -147,6 +151,11 @@ func GetModuleInfoViewAction() ModuleInfoView {
 		module.Name = m.Name
 		module.Description = m.Description
 		module.Enable = m.Enable
+		if found && defaultModule == m.Id {
+			module.Default = true
+		} else {
+			module.Default = false
+		}
 		
 		view.Modules = append(view.Modules, module)
 	}
@@ -156,6 +165,8 @@ func GetModuleInfoViewAction() ModuleInfoView {
 
 func ApplyModuleAction(param ApplyModuleParam) ApplyModuleResult {
 	result := ApplyModuleResult{}
+	
+	configuration.SetOption(configuration.SYS_DEFULTMODULE, param.defaultModule)
 	
 	modules, ok := bll.EnableModules(param.enableList)
 	if ok {

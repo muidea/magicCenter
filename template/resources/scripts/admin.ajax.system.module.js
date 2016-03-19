@@ -10,6 +10,7 @@ $(document).ready(function() {
 	$("#module-list .button").click(
 		function() {
 			var enableList = "";
+			var defaultModule = "";
 			var radioArray = $("#module-list table tbody tr td :radio:checked");
 			for (var ii =0; ii < radioArray.length; ++ii) {
 				var radio = radioArray[ii];
@@ -18,9 +19,15 @@ $(document).ready(function() {
 					enableList += ",";
 				}				
 			}
-						
+			var defaultArray = $("#module-list .module input:checkbox:checked");
+			if (defaultArray.length > 0) {
+				var checkBox = defaultArray[0];
+				defaultModule = $(checkBox).attr("name");
+			}
+			
 			$.post("/admin/system/applyModule/", {
 				enableList:enableList,
+				defaultModule:defaultModule
 			}, function(result) {
 
 				$("#module-list div.notification").hide();
@@ -177,6 +184,8 @@ module.constructModuleItem = function(module) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","module");
 	
+	console.log(module);
+	
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
@@ -220,16 +229,32 @@ module.constructModuleItem = function(module) {
 	
 	editTd.appendChild(radioGroup);
 		
-	if(module.Internal == 0) {
-		var uninstall = document.createElement("input");
-		uninstall.setAttribute("type","button");
-		uninstall.setAttribute("class","button");
-		uninstall.setAttribute("value","卸载模块");
-		editTd.appendChild(uninstall);
+	var checkGroup = document.createElement("checkbox");
+	var default_check = document.createElement("input");
+	default_check.setAttribute("type","checkbox");
+	default_check.setAttribute("name",module.Id);
+	default_check.setAttribute("onclick","module.selectDefaultModule('"+ module.Id +"');");	
+	checkGroup.appendChild(default_check);
+	if (module.Default) {
+		default_check.checked = true;
+	} else {
+		default_check.checked = false;
 	}
+	
+	
+	var default_span = document.createElement("span");
+	default_span.innerHTML ="设为默认 ";
+	checkGroup.appendChild(default_span);
+	
+	editTd.appendChild(checkGroup);
 	
 	tr.appendChild(editTd);	
 	return tr;
+};
+
+module.selectDefaultModule = function(defaultModule) {
+	$("#module-list .module input:checkbox").prop("checked", false);
+	$("#module-list .module input:checkbox[name='"+ defaultModule +"']").prop("checked", true);
 };
 
 module.maintainModule = function(maintainUrl) {

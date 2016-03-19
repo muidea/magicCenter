@@ -3,6 +3,7 @@ package module
 import (
 	"log"
 	"webcenter/router"
+	"webcenter/configuration"
 )
 
 const (
@@ -84,18 +85,24 @@ func UnregisterModule(id string) {
 func StartupAllModules() {
 	log.Println("StartupAllModules all modules")
 	
+	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
+	
 	for _, m := range moduleIDMap {
 		
 		routes := m.Routes()
 		for i, _ := range routes {
 			rt := routes[i]
 			
-			if rt.Type() == GET {				
-				pattern := m.Uri() + rt.Pattern()
+			pattern := m.Uri() + rt.Pattern()
+			if m.ID() == defaultModule {
+				pattern = rt.Pattern()
+			}
+				
+			
+			if rt.Type() == GET {
 				router.AddGetRoute(pattern, rt.Handler())
 
 			} else if rt.Type() == POST {
-				pattern := m.Uri() + rt.Pattern()
 				router.AddPostRoute(pattern, rt.Handler())
 				
 			} else {

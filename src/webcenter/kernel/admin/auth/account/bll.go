@@ -5,12 +5,14 @@ import (
 	"log"
 	"muidea.com/util"
 	"webcenter/util/modelhelper"
-	"webcenter/kernel"
+	"webcenter/configuration"
 )
 
 func constructVerifyContent(account, action string) string {
 	
-	content := fmt.Sprintf("<p>Dear %s:</p> <p>http://%s/user/verify/?account=%s&action=%s</p><p>Best wishes</p><p>admin</p>", account, kernel.Domain(), account, action)
+	domain, _ := configuration.GetOption(configuration.APP_DOMAIN)
+	
+	content := fmt.Sprintf("<p>Dear %s:</p> <p>http://%s/user/verify/?account=%s&action=%s</p><p>Best wishes</p><p>admin</p>", account, domain, account, action)
 	
 	return content
 }
@@ -29,9 +31,11 @@ func createNewUser(model modelhelper.Model, account, email, groups string) bool 
 		return false
 	}
 	
-	user := kernel.MailAccount()
-	password := kernel.MailPassword()
-	mailSvr := kernel.MailServer()
+	sysInfo := configuration.GetSystemInfo()
+	
+	user := sysInfo.MailAccount
+	password := sysInfo.MailPassword
+	mailSvr := sysInfo.MailServer
 	subject := "verify email notify"
 	content := constructVerifyContent(account, "new")
 	
@@ -59,9 +63,11 @@ func modifyUserMail(model modelhelper.Model, id int, email string) bool {
 		return false
 	}	
 	
-	user := kernel.MailAccount()
-	password := kernel.MailPassword()
-	mailSvr := kernel.MailServer()
+	sysInfo := configuration.GetSystemInfo()
+	
+	user := sysInfo.MailAccount
+	password := sysInfo.MailPassword
+	mailSvr := sysInfo.MailServer	
 	subject := "modify email notify"
 	content := constructVerifyContent(usr.Account, "modify")
 	

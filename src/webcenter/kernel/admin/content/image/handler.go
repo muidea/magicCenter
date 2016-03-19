@@ -12,7 +12,7 @@ import (
 	"io"
 	"strconv"
 	"muidea.com/util"
-	"webcenter/kernel"
+	"webcenter/configuration"
 	"webcenter/util/session"
 	"webcenter/kernel/admin/common"		
 )
@@ -169,7 +169,10 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		
-		fileName := fmt.Sprintf("%s/%s/%s_%s_%s", kernel.StaticPath(), kernel.UploadPath(), time.Now().Format("20060102150405"), util.RandomAlphabetic(16), head.Filename);
+		staticPath, _ := configuration.GetOption(configuration.STATIC_PATH)
+		uploadPath, _ := configuration.GetOption(configuration.UPLOAD_PATH)
+		
+		fileName := fmt.Sprintf("%s/%s/%s_%s_%s", staticPath, uploadPath, time.Now().Format("20060102150405"), util.RandomAlphabetic(16), head.Filename);
 		
 		log.Print(fileName)
 		defer file.Close()
@@ -188,7 +191,6 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 	    accessCode := r.FormValue("accesscode")
 	    catalog := r.MultipartForm.Value["image-catalog"]
 
-		staticPath := kernel.StaticPath()
 		param.name = name
 		param.url = fileName[len(staticPath):]
 		param.desc = desc

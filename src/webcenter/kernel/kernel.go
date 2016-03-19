@@ -5,6 +5,7 @@ import (
 	"martini"
 	"webcenter/module"
 	"webcenter/router"
+	"webcenter/configuration"
 )
 
 var instanceFrame = martini.New()
@@ -30,8 +31,16 @@ func BindStatic(path string) {
 func Initialize() {
 	log.Println("initialize kernel...")
 	
-	BindStatic(staticPath)
-	BindStatic(resourceFilePath)	
+	staticPath, found := configuration.GetOption(configuration.STATIC_PATH)
+	if found {
+		BindStatic(staticPath)
+	}
+	
+	resourceFilePath, found := configuration.GetOption(configuration.RESOURCE_PATH)
+	if found {
+		BindStatic(resourceFilePath)
+	}
+	
 	module.StartupAllModules()
 }
 

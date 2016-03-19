@@ -7,14 +7,19 @@ import (
 
 
 func SetOption(helper modelhelper.Model, key, value string) bool {
-	sql := fmt.Sprintf("select id from `option` where `key`='%s'", key)
+	sql := fmt.Sprintf("select id, value from `option` where `key`='%s'", key)
 	helper.Query(sql)
 
 	id := -1
+	oldValue := ""
 	found := false
 	if helper.Next() {
-		helper.GetValue(&id)
+		helper.GetValue(&id, &oldValue)
 		found = true
+	}
+	
+	if value == oldValue {
+		return true
 	}
 	
 	if found {

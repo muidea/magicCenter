@@ -122,6 +122,7 @@ func ApplyModuleHandler(w http.ResponseWriter, r *http.Request) {
 				param.enableList = append(param.enableList, v)
 			}
 		}
+		param.defaultModule = r.FormValue("defaultModule")
 
     	result = ApplyModuleAction(param)
     	break
