@@ -1,7 +1,6 @@
 
 
 var image = {
-	accesscode:'',
 	errCode:0,
 	reason:'',
 	imageInfo:{},
@@ -82,26 +81,16 @@ image.assignDefaltName = function() {
 }
 
 image.refreshCatalog = function() {
-	$.post("/admin/content/queryAllCatalogInfo/", {
-		accesscode: image.accessCode
-	}, function(result){
-		image.errCode = result.ErrCode;
-		image.reason = result.Reason;
-				
-		image.catalogInfo = result.Catalog;
-		
-		$("#image-Edit .image-Form .image-catalog").children().remove();
-		for (var ii =0; ii < image.catalogInfo.length; ++ii) {
-			var catalog = image.catalogInfo[ii];
-			$("#image-Edit .image-Form .image-catalog").append("<input type='checkbox' name='image-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
-		}		
-	}, "json");
+	$("#image-Edit .image-Form .image-catalog").children().remove();
+	for (var ii =0; ii < image.catalogInfo.length; ++ii) {
+		var catalog = image.catalogInfo[ii];
+		$("#image-Edit .image-Form .image-catalog").append("<input type='checkbox' name='image-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+	}		
 };
 
 
 image.refreshImage = function() {
-	$.post("/admin/content/queryAllImage/", {
-		accesscode: image.accessCode
+	$.get("/admin/content/queryAllImage/", {
 	}, function(result){
 		image.errCode = result.ErrCode;
 		image.reason = result.Reason;
@@ -125,10 +114,12 @@ image.fillImageView = function() {
 	}
 	
 	$("#image-List table tbody tr").remove();
-	for (var ii =0; ii < image.imageInfo.length; ++ii) {
-		var info = image.imageInfo[ii];
-		var trContent = image.constructImageItem(info);
-		$("#image-List table tbody").append(trContent);
+	if (image.imageInfo) {
+		for (var ii =0; ii < image.imageInfo.length; ++ii) {
+			var info = image.imageInfo[ii];
+			var trContent = image.constructImageItem(info);
+			$("#image-List table tbody").append(trContent);
+		}		
 	}
 	$("#image-List table tbody tr:even").addClass("alt-row");
 	$("#image-List table").show();
@@ -172,7 +163,7 @@ image.constructImageItem = function(img) {
 	var catalogTd = document.createElement("td");
 	var catalogs = ""
 	for (var ii =0; ii < img.Catalog.length; ) {
-		catalogs += img.Catalog[ii++]
+		catalogs += img.Catalog[ii++].Name
 		if (ii < img.Catalog.length) {
 			catalogs += ","
 		} else {
@@ -210,8 +201,7 @@ image.constructImageItem = function(img) {
 };
 
 image.editImage = function(editUrl) {
-	$.post(editUrl, {
-		accesscode: image.accessCode
+	$.get(editUrl, {
 	}, function(result) {
 		$("#image-List div.notification").hide();
 		
@@ -221,16 +211,14 @@ image.editImage = function(editUrl) {
 			return
 		}
 		
-		console.log(result);
-		
-		$("#image-Edit .image-Form .image-id").val(result.Id);
-		$("#image-Edit .image-Form .image-url").val(result.Url);
-		$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", result.Desc);
+		$("#image-Edit .image-Form .image-id").val(result.Image.Id);
+		$("#image-Edit .image-Form .image-url").val(result.Image.Url);
+		$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", result.Image.Desc);
 		
 		$("#image-Edit .image-Form .image-catalog input").prop("checked", false);
-		if (result.Catalog) {
-			for (var ii =0; ii < result.Catalog.length; ++ii) {
-				var ca = result.Catalog[ii];
+		if (result.Image.Catalog) {
+			for (var ii =0; ii < result.Image.Catalog.length; ++ii) {
+				var ca = result.Image.Catalog[ii];
 				$("#image-Edit .image-Form .image-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
 			}
 		}
@@ -243,8 +231,7 @@ image.editImage = function(editUrl) {
 };
 
 image.deleteImage = function(deleteUrl) {
-	$.post(deleteUrl, {
-		accesscode: image.accessCode
+	$.get(deleteUrl, {
 	}, function(result) {
 		$("#image-List div.notification").hide();
 		

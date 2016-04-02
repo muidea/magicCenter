@@ -11,8 +11,7 @@
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.account.group.js"></script>
 <script type="text/javascript">
-group.accesscode = {{.Accesscode}};
-group.groupInfo = {{.GroupInfo}};
+group.groupInfo = {{.Groups}};
 	
 	$(document).ready(function() {
 		group.initialize();
@@ -35,6 +34,7 @@ group.groupInfo = {{.GroupInfo}};
 							<tr>
 								<th>分组名</th>
 								<th>成员数量</th>
+								<th>创建人</th>
 								<th>操作</th>
 							</tr>
 						</thead>
@@ -50,6 +50,7 @@ group.groupInfo = {{.GroupInfo}};
 								<td><a class="edit" href="/content/link/query"
 									title="title">Group Name</a></td>
 								<td>User Count</td>
+								<td>Creater</td>
 								<td><a class="delete"
 									href="/content/link/delete" title="Delete"><img
 										src="/resources/images/icons/cross.png" alt="Delete" /></a></td>

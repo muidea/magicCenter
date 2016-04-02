@@ -1,8 +1,12 @@
 package util
 
 import (
+	"net/http"
 	"net/smtp"
 	"strings"
+	"os"
+	"path"
+	"io"
 )
 
 
@@ -17,6 +21,39 @@ func SplitParam(params string) map[string]string {
 	}
 	
 	return result
+}
+
+func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
+	dstFile := ""
+	var err error
+	
+	for true {
+		src, head, err := r.FormFile(field)
+		if err != nil {
+			break
+		}
+		defer src.Close()
+		
+		_, err = os.Stat(dstPath)
+		if err != nil {
+			err = os.MkdirAll(dstPath, os.ModeDir)
+		}
+		if err != nil {
+			break
+		}
+		
+		dstFile = path.Join(dstPath, head.Filename)
+		dst,err:=os.Create(dstFile)
+		if err != nil {
+			break			
+		}
+		
+		defer dst.Close()
+		_, err = io.Copy(dst, src)
+		break
+	}
+	
+	return dstFile, err
 }
 
 /*

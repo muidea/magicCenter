@@ -1,7 +1,6 @@
 
 
 var link = {
-	accesscode:'',
 	errCode:0,
 	reason:'',
 	linkInfo:{},
@@ -81,26 +80,16 @@ link.initialize = function() {
 };
 
 link.refreshCatalog = function() {
-	$.post("/admin/content/queryAllCatalogInfo/", {
-		accesscode: link.accessCode
-	}, function(result){
-		link.errCode = result.ErrCode;
-		link.reason = result.Reason;
-		
-		link.catalogInfo = result.Catalog;
-		
-		$("#link-Edit .link-Form .link-catalog").children().remove();
-		for (var ii =0; ii < link.catalogInfo.length; ++ii) {
-			var catalog = link.catalogInfo[ii];
-			$("#link-Edit .link-Form .link-catalog").append("<input type='checkbox' name='link-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
-		}
-	}, "json");
+	$("#link-Edit .link-Form .link-catalog").children().remove();
+	for (var ii =0; ii < link.catalogInfo.length; ++ii) {
+		var catalog = link.catalogInfo[ii];
+		$("#link-Edit .link-Form .link-catalog").append("<input type='checkbox' name='link-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+	}
 };
 
 
 link.refreshLink = function() {
-	$.post("/admin/content/queryAllLink/", {
-		accesscode: link.accessCode
+	$.get("/admin/content/queryAllLink/", {
 	}, function(result){
 		article.errCode = result.ErrCode;
 		article.reason = result.Reason;
@@ -174,19 +163,11 @@ link.constructLinkItem = function(lnk) {
 	urlTd.innerHTML = lnk.Url;
 	tr.appendChild(urlTd);
 
-	var styleTd = document.createElement("td");
-	if (lnk.Style == 0) {
-		styleTd.innerHTML = "Logo";
-	} else {
-		styleTd.innerHTML = "文字";
-	}
-	tr.appendChild(styleTd);
-	
 	var catalogTd = document.createElement("td");
 	var catalogs = "";
 	if (lnk.Catalog) {
 		for (var ii =0; ii < lnk.Catalog.length; ) {
-			catalogs += lnk.Catalog[ii++]
+			catalogs += lnk.Catalog[ii++].Name;
 			if (ii < lnk.Catalog.length) {
 				catalogs += ","
 			} else {
@@ -225,8 +206,7 @@ link.constructLinkItem = function(lnk) {
 };
 
 link.editLink = function(editUrl) {
-	$.post(editUrl, {
-		accesscode: link.accessCode
+	$.get(editUrl, {
 	}, function(result) {
 		$("#link-List div.notification").hide();
 		
@@ -236,20 +216,19 @@ link.editLink = function(editUrl) {
 			return
 		}
 		
-		$("#link-Edit .link-Form .link-id").val(result.Id);
-		$("#link-Edit .link-Form .link-name").val(result.Name);
-		$("#link-Edit .link-Form .link-url").val(result.Url);
-		$("#link-Edit .link-Form .link-logo").val(result.Logo);
-		$("#link-Edit .link-Form .link-style input").filter("[value="+ result.Style +"]").prop("checked", true);
+		$("#link-Edit .link-Form .link-id").val(result.Link.Id);
+		$("#link-Edit .link-Form .link-name").val(result.Link.Name);
+		$("#link-Edit .link-Form .link-url").val(result.Link.Url);
+		$("#link-Edit .link-Form .link-logo").val(result.Link.Logo);
 		
 		$("#link-Edit .link-Form .link-catalog input").prop("checked", false);
-		if (result.Catalog) {
-			for (var ii =0; ii < result.Catalog.length; ++ii) {
-				var ca = result.Catalog[ii];
+		if (result.Link.Catalog) {
+			for (var ii =0; ii < result.Link.Catalog.length; ++ii) {
+				var ca = result.Link.Catalog[ii];
 				$("#link-Edit .link-Form .link-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
 			}			
 		}
-						
+		
 		$("#link-content .content-box-tabs li a").removeClass('current');
 		$("#link-content .content-box-tabs li a.link-Edit-tab").addClass('current');
 		$("#link-Edit").siblings().hide();
@@ -258,8 +237,7 @@ link.editLink = function(editUrl) {
 };
 
 link.deleteLink = function(deleteUrl) {
-	$.post(deleteUrl, {
-		accesscode: link.accessCode
+	$.get(deleteUrl, {
 	}, function(result) {
 		$("#link-List div.notification").hide();
 		

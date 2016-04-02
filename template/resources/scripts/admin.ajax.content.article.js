@@ -1,18 +1,16 @@
 
 
 var article = {
-	accesscode:'',
 	errCode:0,
-	reason:'',
+	reason:"",
 	articleInfo:{},
 	catalogInfo:{}
 };
 
 article.initialize = function() {
 	article.refreshCatalog();
-	
 	article.fillArticleView();
-		
+	
     // 绑定表单提交事件处理器
     $("#article-content .article-Form").submit(function() {
         var options = { 
@@ -73,30 +71,20 @@ article.initialize = function() {
 };
 
 article.refreshCatalog = function() {
-	$.post("/admin/content/queryAllCatalogInfo/", {
-		accesscode: article.accessCode
-	}, function(result){
-		if (result.ErrCode == 0) {
-			article.catalogInfo = result.Catalog;
-
-			$("#article-Edit .article-Form .article-catalog").children().remove();
-			for (var ii =0; ii < article.catalogInfo.length; ++ii) {
-				var catalog = article.catalogInfo[ii];
-				$("#article-Edit .article-Form .article-catalog").append("<input type='checkbox' name='article-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
-			}
+		$("#article-Edit .article-Form .article-catalog").children().remove();
+		for (var ii =0; ii < article.catalogInfo.length; ++ii) {
+			var catalog = article.catalogInfo[ii];
+			$("#article-Edit .article-Form .article-catalog").append("<input type='checkbox' name='article-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
 		}
-		
-	}, "json");	
 };
 
 article.refreshArticle = function() {
-	$.post("/admin/content/queryAllArticle/", {
-		accesscode: article.accessCode
+	$.get("/admin/content/queryAllArticle/", {
 	}, function(result){
 		article.errCode = result.ErrCode;
 		article.reason = result.Reason;
 		
-		article.articleInfo = result.ArticleInfo;		
+		article.articleInfo = result.Articles;		
 		
 		article.fillArticleView();
 	}, "json");	
@@ -154,7 +142,7 @@ article.constructArticleItem = function(articleInfo) {
 	var catalogs = "";
 	if (articleInfo.Catalog) {
 		for (var ii =0; ii < articleInfo.Catalog.length;) {
-			catalogs += articleInfo.Catalog[ii++]
+			catalogs += articleInfo.Catalog[ii++].Name
 			if (ii < articleInfo.Catalog.length) {
 				catalogs += ","
 			} else {
@@ -167,7 +155,7 @@ article.constructArticleItem = function(articleInfo) {
 	tr.appendChild(cataLogTd);
 
 	var authorTd = document.createElement("td");
-	authorTd.innerHTML = articleInfo.Author;
+	authorTd.innerHTML = articleInfo.Author.Name;
 	tr.appendChild(authorTd);
 	
 	var createDateTd = document.createElement("td");
@@ -177,7 +165,7 @@ article.constructArticleItem = function(articleInfo) {
 	var editTd = document.createElement("td");
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
-	editLink.setAttribute("href","#queryArticle");
+	editLink.setAttribute("href","#editArticle");
 	editLink.setAttribute("onclick","article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false" );
 	var editImage = document.createElement("img");
 	editImage.setAttribute("src","/resources/images/icons/pencil.png");
@@ -201,8 +189,7 @@ article.constructArticleItem = function(articleInfo) {
 };
 
 article.editArticle = function(editUrl) {
-	$.post(editUrl, {
-		accesscode: article.accessCode
+	$.get(editUrl, {
 	}, function(result) {
 		$("#article-List div.notification").hide();
 		
@@ -212,14 +199,16 @@ article.editArticle = function(editUrl) {
 			return
 		}
 		
-		$("#article-Edit .article-Form .article-id").val(result.Id);
-		$("#article-Edit .article-Form .article-title").val(result.Title);
-		$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Content);
+		$("#article-Edit .article-Form .article-id").val(result.Article.Id);
+		$("#article-Edit .article-Form .article-title").val(result.Article.Title);
+		$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Article.Content);
 		$("#article-Edit .article-Form .article-catalog input").prop("checked", false);
 		
-		for (var ii =0; ii < result.Catalog.length; ++ii) {
-			var ca = result.Catalog[ii];
-			$("#article-Edit .article-Form .article-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
+		if (result.Article.Catalog) {
+			for (var ii =0; ii < result.Article.Catalog.length; ++ii) {
+				var ca = result.Article.Catalogs[ii];
+				$("#article-Edit .article-Form .article-catalog input").filter("[value="+ ca.Id +"]").prop("checked", true);			
+			}			
 		}
 		
 		$("#article-content .content-box-tabs li a").removeClass('current');
@@ -230,8 +219,7 @@ article.editArticle = function(editUrl) {
 };
 
 article.deleteArticle = function(deleteUrl) {
-	$.post(deleteUrl, {
-		accesscode: article.accessCode
+	$.get(deleteUrl, {
 	}, function(result) {
 		$("#article-List div.notification").hide();
 		

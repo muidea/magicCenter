@@ -1,7 +1,6 @@
 
 
 var group = {
-	accesscode:'',
 	errCode:0,
 	reason:'',
 	groupInfo:{}
@@ -63,13 +62,12 @@ group.initialize = function() {
 };
 
 group.refreshGroup = function() {
-	$.post("/admin/account/queryAllGroup/", {
-		accesscode: group.accessCode
+	$.get("/admin/account/queryAllGroup/", {
 	}, function(result){
 		article.errCode = result.ErrCode;
 		article.reason = result.Reason;
 		
-		group.groupInfo = result.Group;		
+		group.groupInfo = result.Groups;		
 		
 		group.fillGroupView();
 	}, "json");	
@@ -114,6 +112,10 @@ group.constructGroupItem = function(group) {
 	userCountlTd.innerHTML = group.UserCount;
 	tr.appendChild(userCountlTd);
 	
+	var createrTd = document.createElement("td");
+	createrTd.innerHTML = group.Creater.Name
+	tr.appendChild(createrTd);
+	
 	var editTd = document.createElement("td");
 	if (group.Catalog > 0) {
 		var deleteLink = document.createElement("a");
@@ -130,29 +132,27 @@ group.constructGroupItem = function(group) {
 	}
 	
 	tr.appendChild(editTd);
-	tr.setAttribute("onclick","group.editGroup('/admin/account/editGroup/?id=" + group.Id + "'); return false;" );
+	tr.setAttribute("onclick","group.editGroup('/admin/account/queryGroup/?id=" + group.Id + "'); return false;" );
 	
 	return tr;
 };
 
 group.editGroup = function(editUrl) {
-	$.post(editUrl, {
-		accesscode: group.accessCode
+	$.get(editUrl, {
 	}, function(result) {
     	$("#group-content .content-box-content .content-edit div.notification").hide();
     	if (result.ErrCode > 0) {
     		$("#group-content .content-box-content .content-edit div.error div").html(result.Reason);
     		$("#group-content .content-box-content .content-edit div.error").show();        		
     	} else {
-    		$("#group-content .content-box-content .content-edit .group-Form .group-id").val(result.Id);
-    		$("#group-content .content-box-content .content-edit .group-Form .group-name").val(result.Name);
+    		$("#group-content .content-box-content .content-edit .group-Form .group-id").val(result.Group.Id);
+    		$("#group-content .content-box-content .content-edit .group-Form .group-name").val(result.Group.Name);
     	}
 	}, "json");
 };
 
 group.deleteGroup = function(deleteUrl) {
-	$.post(deleteUrl, {
-		accesscode: group.accessCode
+	$.get(deleteUrl, {
 	}, function(result) {
     	$("#group-content .content-box-content .content-edit div.notification").hide();
     	if (result.ErrCode > 0) {

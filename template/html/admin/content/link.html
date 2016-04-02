@@ -12,8 +12,8 @@
 <script type="text/javascript" src="/resources/scripts/admin.jquery.content.link.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.content.link.js"></script>
 <script type="text/javascript">
-link.accesscode = {{.Accesscode}};
-link.linkInfo = {{.LinkInfo}};
+	link.linkInfo = {{.Links}};
+	link.catalogInfo = {{.Catalogs}};
 	
 	$(document).ready(function() {
 		link.initialize();
@@ -51,7 +51,6 @@ link.linkInfo = {{.LinkInfo}};
 								<th><input class="check-all" type="checkbox" /></th>
 								<th>站点名</th>
 								<th>网址</th>
-								<th>显示类型</th>
 								<th>分类</th>
 								<th>操作</th>
 							</tr>
@@ -85,7 +84,6 @@ link.linkInfo = {{.LinkInfo}};
 								<td><a class="edit" href="/content/link/query"
 									title="title">StieName</a></td>
 								<td>Url</td>
-								<td>Style</td>
 								<td>Catalog</td>
 								<td><a class="edit" href="/content/link/query"
 									title="Edit"><img src="/resources/images/icons/pencil.png"
@@ -127,18 +125,6 @@ link.linkInfo = {{.LinkInfo}};
 								<label>网址</label> <input
 									class="text-input small-input link-url" type="text"
 									name="link-url" />
-							</p>
-							<p>
-								<label>Logo</label> <input
-									class="text-input small-input link-logo" type="text"
-									name="link-logo" />
-							</p>
-							<p>
-								<label>显示类型</label> 
-								<radioBox class = "link-style">
-										<input type="radio" name="link-style" value="0" /><span>Logo</span>
-										<input type="radio" name="link-style" value="1" /><span>文字</span>
-								</radioBox>
 							</p>
 							<p>
 								<label>分类</label>

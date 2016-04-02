@@ -13,9 +13,9 @@
 <script type="text/javascript" src="/resources/scripts/admin.jquery.content.article.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.content.article.js"></script>
 <script type="text/javascript">
-article.accesscode = {{.Accesscode}};
-article.articleInfo = {{.ArticleInfo}};
-	
+
+	article.articleInfo = {{.Articles}};
+	article.catalogInfo = {{.Catalogs}};
 	$(document).ready(function() {
 		article.initialize();
 	});	

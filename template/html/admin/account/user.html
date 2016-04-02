@@ -12,9 +12,8 @@
 <script type="text/javascript" src="/resources/scripts/admin.jquery.account.user.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.account.user.js"></script>
 <script type="text/javascript">
-	user.accesscode = {{.Accesscode}};
-	user.userInfo = {{.UserInfo}};
-	user.groupInfo = {{.GroupInfo}};
+	user.userInfo = {{.Users}};
+	user.groupInfo = {{.Groups}};
 	
 	$(document).ready(function() {
 		user.initialize();

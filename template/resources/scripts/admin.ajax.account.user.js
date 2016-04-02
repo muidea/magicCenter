@@ -1,7 +1,6 @@
 
 
 var user = {
-	accesscode:'',
 	errCode:0,
 	reason:'',
 	userInfo:{},
@@ -90,13 +89,12 @@ user.initialize = function() {
 };
 
 user.refreshUser = function() {
-	$.post("/admin/account/queryAllUser/", {
-		accesscode: user.accessCode
+	$.get("/admin/account/queryAllUser/", {
 	}, function(result){
 		article.errCode = result.ErrCode;
 		article.reason = result.Reason;
 		
-		user.userInfo = result.User;		
+		user.userInfo = result.Users;		
 		
 		user.fillUserView();
 	}, "json");	
@@ -162,7 +160,7 @@ user.constructUserItem = function(user) {
 	tr.appendChild(accountTd);
 
 	var nickNameTd = document.createElement("td");
-	nickNameTd.innerHTML = user.NickName;
+	nickNameTd.innerHTML = user.Name;
 	tr.appendChild(nickNameTd);
 
 	var emailTd = document.createElement("td");
@@ -170,7 +168,19 @@ user.constructUserItem = function(user) {
 	tr.appendChild(emailTd);
 	
 	var groupTd = document.createElement("td");
-	groupTd.innerHTML = user.Group;
+	var groups = "";
+	if (user.Groups) {
+		for (var ii =0; ii < user.Groups.length;) {
+			groups += user.Groups[ii++].Name
+			if (ii < user.Groups.length) {
+				groups += ","
+			} else {
+				break;
+			}
+		}		
+	}
+	groups = groups.length == 0 ? '-' :groups;	
+	groupTd.innerHTML = groups;
 	tr.appendChild(groupTd);
 	
 	var statusTd = document.createElement("td");
@@ -211,8 +221,7 @@ user.constructUserItem = function(user) {
 };
 
 user.editUser = function(editUrl) {
-	$.post(editUrl, {
-		accesscode: user.accessCode
+	$.get(editUrl, {
 	}, function(result) {
 		$("#user-List div.notification").hide();
 		
@@ -247,8 +256,7 @@ user.editUser = function(editUrl) {
 };
 
 user.deleteUser = function(deleteUrl) {
-	$.post(deleteUrl, {
-		accesscode: user.accessCode
+	$.get(deleteUrl, {
 	}, function(result) {
 		$("#user-List div.notification").hide();
 		

@@ -11,12 +11,12 @@
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
 <script type="text/javascript" src="/resources/scripts/admin.ajax.system.setting.js"></script>
 <script type="text/javascript">
-setting.name={{.Name}};
-setting.logo={{.Logo}};
-setting.domain={{.Domain}};
-setting.emailServer={{.MailServer}};
-setting.emailAccount={{.MailAccount}};
-setting.emailPassword={{.MailPassword}};
+setting.name={{.SystemInfo.Name}};
+setting.logo={{.SystemInfo.Logo}};
+setting.domain={{.SystemInfo.Domain}};
+setting.emailServer={{.SystemInfo.MailServer}};
+setting.emailAccount={{.SystemInfo.MailAccount}};
+setting.emailPassword={{.SystemInfo.MailPassword}};
 $(document).ready(function() {
 	setting.initialize();
 });	
