@@ -36,7 +36,7 @@ func DeleteGroup(id int) bool {
 	return dal.DeleteGroup(helper, id)	
 }
 
-func SaveGroup(id int, name string, catalog int) bool {
+func SaveGroup(id int, name string) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -46,7 +46,6 @@ func SaveGroup(id int, name string, catalog int) bool {
 	group := model.Group{}
 	group.Id = id
 	group.Name = name
-	group.Type = catalog
 	
 	return dal.SaveGroup(helper, group)	
 }

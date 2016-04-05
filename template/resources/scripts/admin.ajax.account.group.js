@@ -24,13 +24,14 @@ group.initialize = function() {
         } 
         // post-submit callback
         function showResponse(result) {
-        	$("#group-content .content-box-content .content-edit div.notification").hide();
+        	$("#group-content .content-box-content div.notification").hide();
         	if (result.ErrCode > 0) {
-        		$("#group-content .content-box-content .content-edit div.error div").html(result.Reason);
-        		$("#group-content .content-box-content .content-edit div.error").show();        		
+        		$("#group-content .content-box-content div.error div").html(result.Reason);
+        		$("#group-content .content-box-content div.error").show();        		
         	} else {
-        		$("#group-content .content-box-content .content-edit div.success div").html(result.Reason);
-        		$("#group-content .content-box-content .content-edit div.success").show();        		
+        		$("#group-content .content-box-content div.success div").html(result.Reason);
+        		$("#group-content .content-box-content div.success").show();
+        		
         		group.refreshGroup();
         	}
         }
@@ -80,7 +81,7 @@ group.fillGroupView = function() {
 		return;
 	}
 	
-	$("#group-content .content-box-content .content-edit div.notification").hide();
+	$("#group-content .content-box-content div.notification").hide();
 	$("#group-content .content-box-content .content-edit .group-Form .group-id").val("-1");
 	$("#group-content .content-box-content .content-edit .group-Form .group-name").val("");
 	
@@ -117,7 +118,7 @@ group.constructGroupItem = function(group) {
 	tr.appendChild(createrTd);
 	
 	var editTd = document.createElement("td");
-	if (group.Catalog > 0) {
+	if (group.Type > 0) {
 		var deleteLink = document.createElement("a");
 		deleteLink.setAttribute("class","delete");
 		deleteLink.setAttribute("href","#deleteGroup" );
@@ -140,13 +141,13 @@ group.constructGroupItem = function(group) {
 group.editGroup = function(editUrl) {
 	$.get(editUrl, {
 	}, function(result) {
-    	$("#group-content .content-box-content .content-edit div.notification").hide();
+    	$("#group-content .content-box-content div.notification").hide();
     	if (result.ErrCode > 0) {
-    		$("#group-content .content-box-content .content-edit div.error div").html(result.Reason);
-    		$("#group-content .content-box-content .content-edit div.error").show();        		
+    		$("#group-content .content-box-content div.error div").html(result.Reason);
+    		$("#group-content .content-box-content div.error").show();        		
     	} else {
-    		$("#group-content .content-box-content .content-edit .group-Form .group-id").val(result.Group.Id);
-    		$("#group-content .content-box-content .content-edit .group-Form .group-name").val(result.Group.Name);
+    		$("#group-content .content-box-content .group-Form .group-id").val(result.Group.Id);
+    		$("#group-content .content-box-content .group-Form .group-name").val(result.Group.Name);
     	}
 	}, "json");
 };
@@ -154,13 +155,13 @@ group.editGroup = function(editUrl) {
 group.deleteGroup = function(deleteUrl) {
 	$.get(deleteUrl, {
 	}, function(result) {
-    	$("#group-content .content-box-content .content-edit div.notification").hide();
+    	$("#group-content .content-box-content div.notification").hide();
     	if (result.ErrCode > 0) {
-    		$("#group-content .content-box-content .content-edit div.error div").html(result.Reason);
-    		$("#group-content .content-box-content .content-edit div.error").show();        		
+    		$("#group-content .content-box-content div.error div").html(result.Reason);
+    		$("#group-content .content-box-content div.error").show();        		
     	} else {
-    		$("#group-content .content-box-content .content-edit div.success div").html(result.Reason);
-    		$("#group-content .content-box-content .content-edit div.success").show();        		
+    		$("#group-content .content-box-content div.success div").html(result.Reason);
+    		$("#group-content .content-box-content div.success").show();        		
     		group.refreshGroup();
     	}		
 

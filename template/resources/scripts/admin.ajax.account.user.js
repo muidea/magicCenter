@@ -14,7 +14,6 @@ user.initialize = function() {
 	$('#user-content .user-Form .user-account').keyup(function() {
 		var account = $("#user-content .user-Form .user-account").val();
 		$.post("/admin/account/checkAccount/", {
-			"accesscode": user.accesscode,
 			"user-account": account,
 		}, function(result) {
 			
@@ -153,8 +152,8 @@ user.constructUserItem = function(user) {
 	var accountTd = document.createElement("td");
 	var accountLink = document.createElement("a");
 	accountLink.setAttribute("class","edit");
-	accountLink.setAttribute("href","#editLink" );
-	accountLink.setAttribute("onclick","user.editUser('/admin/account/editUser/?id=" + user.Id + "'); return false;" );
+	accountLink.setAttribute("href","#editUser" );
+	accountLink.setAttribute("onclick","user.editUser('/admin/account/queryUser/?id=" + user.Id + "'); return false;" );
 	accountLink.innerHTML = user.Account;
 	accountTd.appendChild(accountLink);
 	tr.appendChild(accountTd);
@@ -235,17 +234,17 @@ user.editUser = function(editUrl) {
 		
 		
 		$("#user-Edit .user-Form .button").val("保存");
-		$("#user-Edit .user-Form .user-id").val(result.Id);
-		$("#user-Edit .user-Form .user-account").val(result.Account);
+		$("#user-Edit .user-Form .user-id").val(result.User.Id);
+		$("#user-Edit .user-Form .user-account").val(result.User.Account);
 		$("#user-Edit .user-Form .user-account").prop("readonly", true);
-		$("#user-Edit .user-Form .user-email").val(result.Email);
+		$("#user-Edit .user-Form .user-email").val(result.User.Email);
 		
 		$("#user-Edit .user-Form .user-group input").prop("checked", false);
-		if (result.Group) {
-			for (var ii =0; ii < result.Group.length; ++ii) {
-				var ca = result.Group[ii];
-				$("#user-Edit .user-Form .user-group input").filter("[value="+ ca +"]").prop("checked", true);			
-			}			
+		if (result.User.Groups) {
+			for (var ii =0; ii < result.User.Groups.length; ++ii) {
+				var ca = result.User.Groups[ii];
+				$("#user-Edit .user-Form .user-group input").filter("[value="+ ca.Id +"]").prop("checked", true);			
+			}
 		}
 						
 		$("#user-content .content-box-tabs li a").removeClass('current');

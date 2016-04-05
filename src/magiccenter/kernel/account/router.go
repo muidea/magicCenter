@@ -9,6 +9,7 @@ func RegisterRouter() {
     router.AddGetRoute("/admin/account/manageUser/", ui.ManageUserHandler)
 	router.AddGetRoute("/admin/account/queryAllUser/", ui.QueryAllUserHandler)
 	router.AddGetRoute("/admin/account/queryUser/", ui.QueryUserHandler)
+	router.AddPostRoute("/admin/account/checkAccount/", ui.CheckAccountHandler)
 	router.AddGetRoute("/admin/account/deleteUser/", ui.DeleteUserHandler)
     router.AddPostRoute("/admin/account/ajaxUser/", ui.AjaxUserHandler)
     router.AddPostRoute("/admin/account/updateUser/", ui.UpdateUserHandler)

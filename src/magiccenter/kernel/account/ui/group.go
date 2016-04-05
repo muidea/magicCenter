@@ -127,7 +127,6 @@ func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
     	
     	id := r.FormValue("group-id")
 		name := r.FormValue("group-name")
-		catalog := r.FormValue("group-catalog")
 
 		gid, err := strconv.Atoi(id)
 	    if err != nil {
@@ -136,15 +135,8 @@ func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 	    }
-		cid, err := strconv.Atoi(catalog)
-	    if err != nil {
-	    	log.Printf("parse catalog failed, catalog:%s", catalog)
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-	    }
 	    
-	    ok := bll.SaveGroup(gid, name, cid)
+	    ok := bll.SaveGroup(gid, name)
 	    if !ok {
 			result.ErrCode = 1
 			result.Reason = "保存分组失败"
@@ -152,7 +144,7 @@ func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
 	    }
 	    
 	    result.Groups = bll.QueryAllGroupInfo()
-		result.ErrCode = 1
+		result.ErrCode = 0
 		result.Reason = "保存分组成功"
 	    break
 	}

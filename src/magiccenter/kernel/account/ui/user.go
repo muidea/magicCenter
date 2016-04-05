@@ -28,6 +28,10 @@ type QueryUserResult struct {
 	User model.UserDetail
 }
 
+type CheckAccountResult struct {
+	common.Result
+}
+
 type CreateUserResult struct {
 	common.Result
 	Users []model.UserDetail	
@@ -118,6 +122,43 @@ func QueryUserHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
+func CheckAccountHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("CheckAccountHandler");
+	
+	result := CheckAccountResult{}
+	
+	for true {
+	    err := r.ParseForm()
+    	if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+    	}
+    	
+    	account := r.FormValue("user-account")
+    	
+		_, found := bll.QueryUserByAccount(account)
+		if !found {
+    		result.ErrCode = 0
+    		result.Reason = "该账号可用"
+    		break;
+		}
+		
+		result.ErrCode = 1
+		result.Reason = "该账号不可用"		    	
+    	break
+	}
+	
+    b, err := json.Marshal(result)
+    if err != nil {
+    	panic("json.Marshal, failed, err:" + err.Error())
+    }
+    
+    w.Write(b)
+}
+
 func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxUserHandler");
 	
@@ -132,6 +173,14 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 			break
     	}
     	
+		id, err := strconv.Atoi(r.FormValue("user-id"))
+		if err != nil {
+    		log.Print("paseform failed")
+    		
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break			
+		}    	
 		account := r.FormValue("user-account")
 		email := r.FormValue("user-email")
 		groups := r.MultipartForm.Value["user-group"]    	
@@ -148,16 +197,16 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 		    groupList = append(groupList, gid)	    	
 	    }
 	    
-	    ok := bll.CreateUser(account, email, groupList)
+	    ok := bll.SaveUser(id, account, email, groupList)
 	    if !ok {
 			result.ErrCode = 1
-			result.Reason = "保存分组失败"
+			result.Reason = "保存用户信息失败"
 			break	    	
 	    }
 	    
 	    result.Users = bll.QueryAllUser()
-		result.ErrCode = 1
-		result.Reason = "保存分组成功"
+		result.ErrCode = 0
+		result.Reason = "保存用户信息成功"
 	    break
 	}
     

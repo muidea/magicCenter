@@ -1,6 +1,7 @@
 
 var module = {
 	moduleList:{},
+	defaultModule:'',
 	currentModule:{},
 	currentPage:{}
 };
@@ -25,11 +26,14 @@ $(document).ready(function() {
 				defaultModule = $(checkBox).attr("name");
 			}
 			
-			$.post("/admin/system/applyModule/", {
-				enableList:enableList,
-				defaultModule:defaultModule
+			$.post("/admin/system/applyModuleSetting/", {
+				"module-enableList":enableList,
+				"module-defaultModule":defaultModule
 			}, function(result) {
 
+				module.moduleList = result.Modules;
+				module.defaultModule = result.DefaultModule;
+								
 				$("#module-list div.notification").hide();
 	        	if (result.ErrCode > 0) {
 	        		$("#module-list div.error div").html(result.Reason);
@@ -39,6 +43,7 @@ $(document).ready(function() {
 	        		$("#module-list div.success").show();
 	        	}				
 				
+	        	module.fillModuleView();	        	
 			}, "json");
 		}
 	);
@@ -66,6 +71,8 @@ $(document).ready(function() {
         		$("#module-maintain .block .block-Form .module-block").val("");
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
+        		
+        		console.log(module);
         		
         		module.currentModule = result.Module;
         		module.refreshModuleView();
@@ -119,6 +126,8 @@ $(document).ready(function() {
         	} else {
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
+        		
+        		console.log(module);
 
         		module.currentModule = result.Module;
         		if (module.currentPage) {
@@ -180,30 +189,28 @@ module.fillModuleView = function() {
 	$("#module-list table tbody tr:even").addClass("alt-row");	
 };
 
-module.constructModuleItem = function(module) {
+module.constructModuleItem = function(mod) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("class","module");
-	
-	console.log(module);
 	
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
 	nameLink.setAttribute("class","view");
 	nameLink.setAttribute("href","#");
-	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleDetail/?id=" + module.Id + "'); return false;" );
-	nameLink.innerHTML = module.Name;
+	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleDetail/?id=" + mod.Id + "'); return false;" );
+	nameLink.innerHTML = mod.Name;
 	nameTd.appendChild(nameLink);
 	tr.appendChild(nameTd);
 
 	var descriptionTd = document.createElement("td");
-	descriptionTd.innerHTML = module.Description
+	descriptionTd.innerHTML = mod.Description
 	tr.appendChild(descriptionTd);
 	
 	var editTd = document.createElement("td");
 	var radioGroup = document.createElement("radiobox");
 	var enable_radio = document.createElement("input");
 	enable_radio.setAttribute("type","radio");
-	enable_radio.setAttribute("name",module.Id);
+	enable_radio.setAttribute("name",mod.Id);
 	enable_radio.setAttribute("value","1");
 	radioGroup.appendChild(enable_radio);	
 	var enable_span = document.createElement("span");
@@ -212,10 +219,10 @@ module.constructModuleItem = function(module) {
 	
 	var disable_radio = document.createElement("input");
 	disable_radio.setAttribute("type","radio");
-	disable_radio.setAttribute("name",module.Id);
+	disable_radio.setAttribute("name",mod.Id);
 	disable_radio.setAttribute("value","0");
 	radioGroup.appendChild(disable_radio);
-	if (module.Enable) {
+	if (mod.EnableFlag) {
 		enable_radio.checked = true;
 		disable_radio.checked = false;
 	} else {
@@ -232,10 +239,10 @@ module.constructModuleItem = function(module) {
 	var checkGroup = document.createElement("checkbox");
 	var default_check = document.createElement("input");
 	default_check.setAttribute("type","checkbox");
-	default_check.setAttribute("name",module.Id);
-	default_check.setAttribute("onclick","module.selectDefaultModule('"+ module.Id +"');");	
+	default_check.setAttribute("name",mod.Id);
+	default_check.setAttribute("onclick","module.selectDefaultModule('"+ mod.Id +"');");	
 	checkGroup.appendChild(default_check);
-	if (module.Default) {
+	if (module.defaultModule == mod.Id) {
 		default_check.checked = true;
 	} else {
 		default_check.checked = false;

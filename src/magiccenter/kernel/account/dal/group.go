@@ -63,10 +63,11 @@ func SaveGroup(helper modelhelper.Model, group model.Group) bool {
 
 	if !result {
 		// insert
+		group.Type = 1
 		sql = fmt.Sprintf("insert into `group` (name,catalog) values ('%s',%d)", group.Name, group.Type)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update `group` set name ='%s', catalog = %d where id=%d", group.Name, group.Type, group.Id)
+		sql = fmt.Sprintf("update `group` set name ='%s' where id=%d", group.Name, group.Id)
 	}
 	
 	_, ret := helper.Execute(sql)

@@ -169,10 +169,10 @@ func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into user(account,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', %d)", user.Account, user.Name, user.Email, user.Groups, user.Status)
+		sql = fmt.Sprintf("insert into user(account,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', %d)", user.Account, user.Name, user.Email, groups, user.Status)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update user set account ='%s', nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Account, user.Name, user.Email, user.Groups, user.Status, user.Id)
+		sql = fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)
 	}
 	
 	_, result = helper.Execute(sql)

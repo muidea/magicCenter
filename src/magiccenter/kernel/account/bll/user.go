@@ -57,7 +57,7 @@ func DeleteUser(id int) bool {
 	return dal.DeleteUser(helper,id)
 }
 
-func CreateUser(account, email string, groups []int) bool {
+func SaveUser(id int, account, email string, groups []int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -65,6 +65,7 @@ func CreateUser(account, email string, groups []int) bool {
 	defer helper.Release()
 
 	user := model.UserDetail{}
+	user.Id = id
 	user.Account = account
 	user.Email = email
 	user.Status = model.CREATE
