@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 	"path"
+	"html"
 	"net/http"
 	"encoding/json"
 	"html/template"
@@ -61,6 +62,7 @@ func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
     
     view := ManageImageView{}
     view.Images = bll.QueryAllImage()
+    view.Catalogs = bll.QueryAllCatalog()
     
     t.Execute(w, view)    
 }
@@ -124,7 +126,9 @@ func QueryImageHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "操作失败"
 			break			
 		}
-		 
+		
+		
+		image.Desc = html.UnescapeString(image.Desc)
 		result.Image = image
 		result.ErrCode = 0
 		result.Reason = "查询成功"
@@ -232,7 +236,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	    	    
-		desc := r.FormValue("image-desc")
+		desc := html.EscapeString(r.FormValue("image-desc"))
 	    catalog := r.MultipartForm.Value["image-catalog"]
 	    catalogs :=[]int{}
 	    for _, c := range catalog {

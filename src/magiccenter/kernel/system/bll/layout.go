@@ -4,6 +4,7 @@ import (
     "magiccenter/util/modelhelper"
     "magiccenter/kernel/system/dal"
     "magiccenter/kernel/system/model"
+    "magiccenter/module"    
 )
 
 func QueryAllModules() []model.Module {
@@ -22,37 +23,33 @@ func QueryModuleDetail(id string) (model.ModuleDetail, bool) {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-
-	detail := model.ModuleDetail{}
 	
-	module, found := dal.QueryModule(helper, id)
+	detail := model.ModuleDetail{}
+	instance, found := module.FindModule(id)
+	if !found {
+		return detail, found
+	}
+
+	m, found := dal.QueryModule(helper, id)
+	if !found {
+		m.Id = instance.ID()
+		m.Name = instance.Name()
+		m.Description = instance.Description()
+		m.EnableFlag = 0
+		m, found = dal.SaveModule(helper, m)
+	}
+	
 	if found {
-		detail.Id = module.Id
-		detail.Name = module.Name
-		detail.Description = module.Description
-		detail.EnableFlag = module.EnableFlag
+		detail.Id = m.Id
+		detail.Name = m.Name
+		detail.Description = m.Description
+		detail.EnableFlag = m.EnableFlag
+		detail.Blocks = dal.QueryBlocks(helper, id)
 		
-		blocks := dal.QueryBlocks(helper, id)
-		for _, b := range blocks {
-			block := model.Block{}
-			block.Id = b.Id
-			block.Name = b.Name
-			detail.Blocks = append(detail.Blocks, block)
-		}
-		
-		pages := dal.QueryPages(helper, id)
-		for _, p := range pages {
-			page := model.Page{}
-			page.Url = p.Url
-			
-			for _, b := range p.Blocks {
-				block := model.Block{}
-				block.Id = b.Id
-				block.Name = b.Name
-				page.Blocks = append(page.Blocks, block)				
-			}
-			
-			detail.Pages = append(detail.Pages, page)
+		rts := instance.Routes()
+		for _, r := range rts {
+			p, _ := dal.QueryPage(helper, id, r.Pattern())
+			detail.Pages = append(detail.Pages, p)
 		}
 	}
 	
@@ -123,36 +120,33 @@ func AddModuleBlock(name, owner string) (model.ModuleDetail, bool) {
 		return detail, ok
 	}
 	
-	module, found := dal.QueryModule(helper, owner)
-	if found {
-		detail.Id = module.Id
-		detail.Name = module.Name
-		detail.Description = module.Description
-		detail.EnableFlag = module.EnableFlag
-		
-		blocks := dal.QueryBlocks(helper, owner)
-		for _, b := range blocks {
-			block := model.Block{}
-			block.Id = b.Id
-			block.Name = b.Name
-			detail.Blocks = append(detail.Blocks, block)
-		}
-		
-		pages := dal.QueryPages(helper, owner)
-		for _, p := range pages {
-			page := model.Page{}
-			page.Url = p.Url
-			
-			for _, b := range p.Blocks {
-				block := model.Block{}
-				block.Id = b.Id
-				block.Name = b.Name
-				page.Blocks = append(page.Blocks, block)				
-			}
-			
-			detail.Pages = append(detail.Pages, page)
-		}
+	instance, found := module.FindModule(owner)
+	if !found {
+		return detail, found
 	}
+
+	m, found := dal.QueryModule(helper, owner)
+	if !found {
+		m.Id = instance.ID()
+		m.Name = instance.Name()
+		m.Description = instance.Description()
+		m.EnableFlag = 0
+		m, found = dal.SaveModule(helper, m)
+	}
+	
+	if found {
+		detail.Id = m.Id
+		detail.Name = m.Name
+		detail.Description = m.Description
+		detail.EnableFlag = m.EnableFlag
+		detail.Blocks = dal.QueryBlocks(helper, owner)
+		
+		rts := instance.Routes()
+		for _, r := range rts {
+			p, _ := dal.QueryPage(helper, owner, r.Pattern())
+			detail.Pages = append(detail.Pages, p)
+		}
+	}	
 	
 	return detail, found	
 }
@@ -170,36 +164,33 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleDetail, bool) {
 		return detail, ok
 	}
 	
-	module, found := dal.QueryModule(helper, owner)
-	if found {
-		detail.Id = module.Id
-		detail.Name = module.Name
-		detail.Description = module.Description
-		detail.EnableFlag = module.EnableFlag
-		
-		blocks := dal.QueryBlocks(helper, owner)
-		for _, b := range blocks {
-			block := model.Block{}
-			block.Id = b.Id
-			block.Name = b.Name
-			detail.Blocks = append(detail.Blocks, block)
-		}
-		
-		pages := dal.QueryPages(helper, owner)
-		for _, p := range pages {
-			page := model.Page{}
-			page.Url = p.Url
-			
-			for _, b := range p.Blocks {
-				block := model.Block{}
-				block.Id = b.Id
-				block.Name = b.Name
-				page.Blocks = append(page.Blocks, block)				
-			}
-			
-			detail.Pages = append(detail.Pages, page)
-		}
+	instance, found := module.FindModule(owner)
+	if !found {
+		return detail, found
 	}
+
+	m, found := dal.QueryModule(helper, owner)
+	if !found {
+		m.Id = instance.ID()
+		m.Name = instance.Name()
+		m.Description = instance.Description()
+		m.EnableFlag = 0
+		m, found = dal.SaveModule(helper, m)
+	}
+	
+	if found {
+		detail.Id = m.Id
+		detail.Name = m.Name
+		detail.Description = m.Description
+		detail.EnableFlag = m.EnableFlag
+		detail.Blocks = dal.QueryBlocks(helper, owner)
+		
+		rts := instance.Routes()
+		for _, r := range rts {
+			p, _ := dal.QueryPage(helper, owner, r.Pattern())
+			detail.Pages = append(detail.Pages, p)
+		}
+	}	
 	
 	return detail, found	
 }
@@ -222,34 +213,31 @@ func SavePageBlock(owner,url string, blocks []int) (model.ModuleDetail, bool) {
 	
 	helper.Commit()
 	
-	module, found := dal.QueryModule(helper, owner)
+	instance, found := module.FindModule(owner)
+	if !found {
+		return detail, found
+	}
+
+	m, found := dal.QueryModule(helper, owner)
+	if !found {
+		m.Id = instance.ID()
+		m.Name = instance.Name()
+		m.Description = instance.Description()
+		m.EnableFlag = 0
+		m, found = dal.SaveModule(helper, m)
+	}
+	
 	if found {
-		detail.Id = module.Id
-		detail.Name = module.Name
-		detail.Description = module.Description
-		detail.EnableFlag = module.EnableFlag
+		detail.Id = m.Id
+		detail.Name = m.Name
+		detail.Description = m.Description
+		detail.EnableFlag = m.EnableFlag
+		detail.Blocks = dal.QueryBlocks(helper, owner)
 		
-		blocks := dal.QueryBlocks(helper, owner)
-		for _, b := range blocks {
-			block := model.Block{}
-			block.Id = b.Id
-			block.Name = b.Name
-			detail.Blocks = append(detail.Blocks, block)
-		}
-		
-		pages := dal.QueryPages(helper, owner)
-		for _, p := range pages {
-			page := model.Page{}
-			page.Url = p.Url
-			
-			for _, b := range p.Blocks {
-				block := model.Block{}
-				block.Id = b.Id
-				block.Name = b.Name
-				page.Blocks = append(page.Blocks, block)				
-			}
-			
-			detail.Pages = append(detail.Pages, page)
+		rts := instance.Routes()
+		for _, r := range rts {
+			p, _ := dal.QueryPage(helper, owner, r.Pattern())
+			detail.Pages = append(detail.Pages, p)
 		}
 	}
 	

@@ -283,6 +283,7 @@ func EditArticleHandler(w http.ResponseWriter, r *http.Request) {
 			break			
 		}		
     	
+    	article.Content = html.UnescapeString(article.Content)
     	result.Article = article
 		result.ErrCode = 0
 		result.Reason = "查询成功"

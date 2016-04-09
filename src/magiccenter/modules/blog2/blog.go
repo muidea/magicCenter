@@ -1,7 +1,6 @@
 package blog2
 
 import (
-	"log"
 	"magiccenter/module"
 )
 
@@ -16,13 +15,14 @@ type blog2 struct {
 
 var instance *blog2 = nil
 
-func init() {
-	log.Println("register blog2 module")
-	
-	instance = &blog2{}
+func LoadModule() {
+	if instance == nil {
+		instance = &blog2{}
+	}
 	
 	module.RegisterModule(instance)
 }
+
 
 func (this *blog2) Startup() {
 }
@@ -48,8 +48,7 @@ func (this *blog2) Uri() string {
 }
 
 func (this *blog2) Routes() []module.Route {
-	//routes := []module.Route{module.NewRoute(module.GET,"/view/",viewArticleHandler), module.NewRoute(module.GET,"/",indexHandler)}
-	routes := []module.Route{}
+	routes := []module.Route{module.NewRoute(module.GET,"/view/",viewArticleHandler), module.NewRoute(module.GET,"/",indexHandler)}
 	
 	return routes
 }

@@ -173,6 +173,8 @@ $(document).ready(function() {
 module.initialize = function() {
 	module.resetStatus();
 	
+	module.refreshModuleView();
+	
 	module.fillModuleView();
 };
 
@@ -385,6 +387,11 @@ module.deleteBlock = function(deleteUrl) {
 module.refreshModuleView = function() {
 	$("#module-maintain .block table tbody tr").remove();
 	$("#module-maintain .page .page-Form .page-block").children().remove();
+	$("#module-maintain .page table tbody tr").remove();
+	
+	if (!module.currentModule) {
+		return;
+	}
 	
 	if (module.currentModule.Blocks) {
 		for (var ii =0; ii < module.currentModule.Blocks.length; ++ii) {
@@ -399,7 +406,6 @@ module.refreshModuleView = function() {
 	
 	$("#module-maintain .block .block-Form .module-id").val(module.currentModule.Id);
 	
-	$("#module-maintain .page table tbody tr").remove();
 	if (module.currentModule.Pages) {
 		for (var ii =0; ii < module.currentModule.Pages.length; ++ii) {
 			var page = module.currentModule.Pages[ii];

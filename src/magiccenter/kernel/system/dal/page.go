@@ -8,7 +8,7 @@ import (
 
 func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 	page := model.Page{}
-	ret := false
+	ret := true
 	
 	sql := fmt.Sprintf("select id,name,owner from block where id in (select block from page where owner='%s' and url='%s')", owner, url)
 	helper.Query(sql)
@@ -18,8 +18,6 @@ func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 		helper.GetValue(&b.Id, &b.Name, &b.Owner)
 		
 		page.Blocks = append(page.Blocks, b)
-		
-		ret = true
 	}
 	
 	page.Owner = owner

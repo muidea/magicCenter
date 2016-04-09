@@ -94,7 +94,7 @@ image.refreshImage = function() {
 	}, function(result){
 		image.errCode = result.ErrCode;
 		image.reason = result.Reason;
-		image.imageInfo = result.ImageInfo;
+		image.imageInfo = result.Images;
 		
 		image.fillImageView();
 	}, "json");
@@ -144,12 +144,7 @@ image.constructImageItem = function(img) {
 	tr.appendChild(checkBoxTd);
 	
 	var nameTd = document.createElement("td");
-	var nameLink = document.createElement("a");
-	nameLink.setAttribute("class","edit");
-	nameLink.setAttribute("href","#editCatalog" );
-	nameLink.setAttribute("onclick","image.editImage('/admin/content/editImage/?id=" + img.Id + "'); return false;" );
-	nameLink.innerHTML = img.Name;
-	nameTd.appendChild(nameLink);
+	nameTd.innerHTML = img.Name;
 	tr.appendChild(nameTd);
 
 	var urlTd = document.createElement("td");
@@ -174,17 +169,7 @@ image.constructImageItem = function(img) {
 	catalogTd.innerHTML = catalogs;
 	tr.appendChild(catalogTd);	
 	
-	var editTd = document.createElement("td");
-	var editLink = document.createElement("a");
-	editLink.setAttribute("class","edit");
-	editLink.setAttribute("href","#editImage" );
-	editLink.setAttribute("onclick","image.editImage('/admin/content/editImage/?id=" + img.Id + "'); return false;" );
-	var editImage = document.createElement("img");
-	editImage.setAttribute("src","/resources/images/icons/pencil.png");
-	editImage.setAttribute("alt","Edit");
-	editLink.appendChild(editImage);	
-	editTd.appendChild(editLink);
-	
+	var editTd = document.createElement("td");	
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
 	deleteLink.setAttribute("href","#deleteImage" );
@@ -211,15 +196,18 @@ image.editImage = function(editUrl) {
 			return
 		}
 		
+		console.log(result);
+		
 		$("#image-Edit .image-Form .image-id").val(result.Image.Id);
-		$("#image-Edit .image-Form .image-url").val(result.Image.Url);
+		$("#image-Edit .image-Form .image-name").val(result.Image.Name);
+		//$("#image-Edit .image-Form .image-url").val(result.Image.Url);
 		$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", result.Image.Desc);
 		
 		$("#image-Edit .image-Form .image-catalog input").prop("checked", false);
 		if (result.Image.Catalog) {
 			for (var ii =0; ii < result.Image.Catalog.length; ++ii) {
 				var ca = result.Image.Catalog[ii];
-				$("#image-Edit .image-Form .image-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
+				$("#image-Edit .image-Form .image-catalog input").filter("[value="+ ca.Id +"]").prop("checked", true);			
 			}
 		}
 		

@@ -94,7 +94,7 @@ link.refreshLink = function() {
 		article.errCode = result.ErrCode;
 		article.reason = result.Reason;
 		
-		link.linkInfo = result.Link;		
+		link.linkInfo = result.Links;		
 		
 		link.fillLinkView();
 	}, "json");	

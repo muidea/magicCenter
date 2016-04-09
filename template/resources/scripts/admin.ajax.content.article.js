@@ -206,7 +206,7 @@ article.editArticle = function(editUrl) {
 		
 		if (result.Article.Catalog) {
 			for (var ii =0; ii < result.Article.Catalog.length; ++ii) {
-				var ca = result.Article.Catalogs[ii];
+				var ca = result.Article.Catalog[ii];
 				$("#article-Edit .article-Form .article-catalog input").filter("[value="+ ca.Id +"]").prop("checked", true);			
 			}			
 		}

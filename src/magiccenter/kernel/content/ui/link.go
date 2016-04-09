@@ -218,7 +218,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	    
 		name := r.FormValue("link-name")
 	    url := r.FormValue("link-url")
-		desc := r.FormValue("link-desc")
+		logo := r.FormValue("link-logo")
 	    catalog := r.MultipartForm.Value["link-catalog"]
 	    catalogs :=[]int{}
 	    for _, c := range catalog {
@@ -232,14 +232,14 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveLink(id, name, url, desc, 100, catalogs) {
+	    if !bll.SaveLink(id, name, url, logo, 100, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	
 	    }	    
     	
 		result.ErrCode = 0
-		result.Reason = "查询成功"
+		result.Reason = "保存成功"
     	break
 	}
 		
