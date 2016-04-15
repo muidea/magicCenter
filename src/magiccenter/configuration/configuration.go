@@ -18,6 +18,8 @@ const (
 	STATIC_PATH = "@system_staticPath"
 	RESOURCE_PATH = "@system_staticPath"
 	UPLOAD_PATH = "@system_uploadPath"
+	
+	AUTHORITH_ID = "@authorith_Id"
 )
 
 type SystemInfo struct {
@@ -40,7 +42,8 @@ func LoadConfig() {
 	
 	configInfoMap[STATIC_PATH] = "static"
 	configInfoMap[RESOURCE_PATH] = "template"
-	configInfoMap[UPLOAD_PATH] = "upload"	
+	configInfoMap[UPLOAD_PATH] = "upload"
+	configInfoMap[AUTHORITH_ID] = "@@@$$auth_Id@@@"
 }
 
 func UpdateSystemInfo(info SystemInfo) bool {

@@ -1,11 +1,14 @@
 package blog
 
 import (
+	"log"
 	"net/http"
 	"html/template"
 )
 
 func viewArticleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("viewArticleHandler")
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
     t, err := template.ParseFiles("template/html/blog/view.html")
@@ -17,6 +20,8 @@ func viewArticleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("indexHandler")
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	

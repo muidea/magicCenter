@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"html/template"
 	"log"
+	"magiccenter/configuration"
+	"magiccenter/session"
 	"magiccenter/router"
 	"magiccenter/kernel/account/model"
 )
@@ -19,6 +21,17 @@ func RegisterRouter() {
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("adminHandler");
 	
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
+	
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+	
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 	
@@ -28,7 +41,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
     }
     
     view := AdminView{}
-    view.User.Id = 100
-    view.User.Name = "rangh"
+    view.User.Id = user.(model.UserDetail).Id
+    view.User.Name = user.(model.UserDetail).Name
     t.Execute(w, view)	
 }
