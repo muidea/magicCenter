@@ -7,23 +7,26 @@ import (
 	"encoding/json"
 	"html/template"
 	"muidea.com/util"
-	"magiccenter/kernel/common"	
+    "magiccenter/session"
+    "magiccenter/configuration"	
+	"magiccenter/kernel/common"
+	accountModel "magiccenter/kernel/account/model"		
 	"magiccenter/kernel/content/model"
 	"magiccenter/kernel/content/bll"
 )
 
 type ManageLinkView struct {
-	Links []model.LinkDetail
+	Links []model.Link
 	Catalogs []model.CatalogDetail
 }
 
 type QueryAllLinkResult struct {
-	Links []model.LinkDetail
+	Links []model.Link
 }
 
 type QueryLinkResult struct {
 	common.Result
-	Link model.LinkDetail
+	Link model.Link
 }
 
 type DeleteLinkResult struct {
@@ -36,7 +39,7 @@ type AjaxLinkResult struct {
 
 type EditLinkResult struct {
 	common.Result
-	Link model.LinkDetail	
+	Link model.Link	
 }
 
 //
@@ -57,7 +60,7 @@ func ManageLinkHandler(w http.ResponseWriter, r *http.Request) {
     
     view := ManageLinkView{}
     view.Links = bll.QueryAllLink()
-    view.Catalogs = bll.QueryAllCatalog()
+    view.Catalogs = bll.QueryAllCatalogDetail()
     
     t.Execute(w, view)    
 }
@@ -199,6 +202,17 @@ func DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler");
 	
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
+	
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+	
 	result := AjaxLinkResult{}
 	
 	for true {
@@ -232,7 +246,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveLink(id, name, url, logo, 100, catalogs) {
+	    if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetail).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

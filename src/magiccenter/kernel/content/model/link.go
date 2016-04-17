@@ -4,7 +4,7 @@ import (
 	"magiccenter/kernel/account/model"
 )
 
-type LinkDetail struct {
+type Link struct {
 	Id int
 	Name string
 	Url string			
@@ -14,24 +14,25 @@ type LinkDetail struct {
 	Catalog []Catalog	
 }
 
-func (this *LinkDetail) RId() int {
+func (this *Link) RId() int {
 	return this.Id
 }
 
-func (this *LinkDetail) RName() string {
+func (this *Link) RName() string {
 	return this.Name
 }
 
-func (this *LinkDetail) RType() int {
+func (this *Link) RType() int {
 	return LINK
 }
 
-func (this *LinkDetail) RRelative() []Resource {
+func (this *Link) RRelative() []Resource {
 	relatives := []Resource{}
 	
-	for _, c := range this.Catalog {
-		relatives = append(relatives, &c)
+	for i, _ := range this.Catalog {
+		c := &this.Catalog[i]
+		relatives = append(relatives, c)
 	}
 	
-	return relatives
+	return relatives	
 }

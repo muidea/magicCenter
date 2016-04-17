@@ -3,7 +3,7 @@ package dal
 import (
 	"fmt"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/system/model"
+	"magiccenter/kernel/module/model"
 )
 
 func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {

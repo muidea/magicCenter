@@ -23,3 +23,9 @@ type ModuleDetail struct {
 	Pages []Page
 }
 
+type ModuleContent struct {
+	Module
+	Blocks []BlockDetail
+}
+
+

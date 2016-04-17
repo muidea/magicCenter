@@ -132,7 +132,7 @@ $(document).ready(function() {
         		module.currentModule = result.Module;
         		if (module.currentPage) {
         			for (var ii=0; ii < module.currentModule.Pages.length; ++ii) {
-        				page = module.currentModule.Pages[ii];
+        				var page = module.currentModule.Pages[ii];
         				if (page.Url == module.currentPage.Url) {
         					module.currentPage = page;
         					break;

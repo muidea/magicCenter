@@ -7,7 +7,7 @@ import (
     "magiccenter/kernel/content/model"
 )
 
-func QueryAllLink() []model.LinkDetail {
+func QueryAllLink() []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -17,7 +17,7 @@ func QueryAllLink() []model.LinkDetail {
 	return dal.QueryAllLink(helper)
 }
 
-func QueryLinkById(id int) (model.LinkDetail, bool) {
+func QueryLinkById(id int) (model.Link, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -37,7 +37,7 @@ func DeleteLinkById(id int) bool {
 	return dal.DeleteLinkById(helper, id)	
 }
 
-func QueryLinkByCatalog(id int) []model.LinkDetail {
+func QueryLinkByCatalog(id int) []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -47,7 +47,7 @@ func QueryLinkByCatalog(id int) []model.LinkDetail {
 	return dal.QueryLinkByCatalog(helper, id)
 }
 
-func QueryLinkByRang(begin, offset int) []model.LinkDetail {
+func QueryLinkByRang(begin, offset int) []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -64,7 +64,7 @@ func SaveLink(id int, name, url, logo string, uId int, catalogs []int) bool {
 	}
 	defer helper.Release()	
 
-	link := model.LinkDetail{}
+	link := model.Link{}
 	link.Id = id
 	link.Name = name
 	link.Url = url

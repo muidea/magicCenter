@@ -10,8 +10,10 @@ import (
 	"encoding/json"
 	"html/template"
 	"muidea.com/util"
-	"magiccenter/configuration"
-	"magiccenter/kernel/common"	
+    "magiccenter/session"
+    "magiccenter/configuration"	
+	"magiccenter/kernel/common"
+	accountModel "magiccenter/kernel/account/model"	
 	"magiccenter/kernel/content/model"
 	"magiccenter/kernel/content/bll"
 )
@@ -62,7 +64,7 @@ func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
     
     view := ManageImageView{}
     view.Images = bll.QueryAllImage()
-    view.Catalogs = bll.QueryAllCatalog()
+    view.Catalogs = bll.QueryAllCatalogDetail()
     
     t.Execute(w, view)    
 }
@@ -206,6 +208,17 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler");
 	
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
+	
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+		
 	result := AjaxImageResult{}
 	
 	for true {
@@ -250,7 +263,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveImage(id, name, url, desc,100, catalogs) {
+	    if !bll.SaveImage(id, name, url, desc,user.(accountModel.UserDetail).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

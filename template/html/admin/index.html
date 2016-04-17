@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Simpla Admin</title>
+<title>MagicCenter Admin</title>
 <!--                       CSS                       -->
 <!-- Reset Stylesheet -->
 <link rel="stylesheet" href="/resources/css/reset.css" type="text/css"
@@ -51,10 +51,6 @@
 		<!-- Wrapper for the radial gradient background -->
 		<div id="sidebar">
 			<div id="sidebar-wrapper">
-				<!-- Sidebar with logo and menu -->
-				<h1 id="sidebar-title">
-					<a href="#">Simpla Admin</a>
-				</h1>
 				<!-- Logo (221px wide) -->
 				<a href="#"><img id="logo" src="/resources/images/logo.png"
 					alt="Simpla Admin logo" /></a>
@@ -78,13 +74,16 @@
 							<li><a class="nav-sub-item current" href="/admin/account/manageUser/">用户信息</a></li>
 							<li><a class="nav-sub-item" href="/admin/account/manageGroup/">分组信息</a></li>
 						</ul></li>
-
+					<li><a href="#module" class="nav-top-item">模块管理 </a>
+						<ul>
+							<li><a class="nav-sub-item current" href="/admin/system/moduleManage/">模块设置</a></li>
+							<li><a class="nav-sub-item" href="/admin/system/moduleContent/">模块内容</a></li>
+						</ul></li>
+						
 					<li><a href="#system" class="nav-top-item">系统设置 </a>
 						<ul>
 							<li><a class="nav-sub-item current" href="/admin/system/manageSystem/">站点设置</a></li>
-							<li><a class="nav-sub-item" href="/admin/system/manageModule/">模块管理</a></li>
-						</ul>
-					</li>
+						</ul></li>
 				</ul>
 				<!-- End #main-nav -->
 			</div>

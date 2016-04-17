@@ -7,7 +7,7 @@ import (
     "magiccenter/kernel/content/model"
 )
 
-func QueryAllCatalog() []model.CatalogDetail {
+func QueryAllCatalog() []model.Catalog {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -15,6 +15,16 @@ func QueryAllCatalog() []model.CatalogDetail {
 	defer helper.Release()		
 	
 	return dal.QueryAllCatalog(helper)
+}
+
+func QueryAllCatalogDetail() []model.CatalogDetail {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()		
+	
+	return dal.QueryAllCatalogDetail(helper)
 }
 
 func QueryCatalogById(id int) (model.CatalogDetail, bool) {
@@ -81,7 +91,7 @@ func SaveCatalog(id int, name string, uId int, parents []int) bool {
 			log.Printf("illegal catalog id, id:%d", p)
 		}
 	}
-			
+	
 	return dal.SaveCatalog(helper, catalog)
 }
 

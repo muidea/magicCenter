@@ -8,7 +8,25 @@ import (
 	"magiccenter/kernel/account/dal"
 )
 
-func QueryAllCatalog(helper modelhelper.Model) []model.CatalogDetail {
+
+func QueryAllCatalog(helper modelhelper.Model) []model.Catalog {
+	catalogList := []model.Catalog{}
+	
+	sql := fmt.Sprintf(`select id, name from catalog`)
+	helper.Query(sql)
+
+	for helper.Next() {
+		c := model.Catalog{}
+		helper.GetValue(&c.Id, &c.Name)
+		
+		catalogList = append(catalogList, c)
+	}
+		
+	return catalogList
+}
+
+
+func QueryAllCatalogDetail(helper modelhelper.Model) []model.CatalogDetail {
 	catalogList := []model.CatalogDetail{}
 	
 	sql := fmt.Sprintf(`select id, name, creater from catalog`)

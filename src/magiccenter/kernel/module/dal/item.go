@@ -3,7 +3,7 @@ package dal
 import (
 	"fmt"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/system/model"
+	"magiccenter/kernel/module/model"
 )
 
 func AddItem(helper modelhelper.Model, name,url string, owner int) (model.Item, bool) {

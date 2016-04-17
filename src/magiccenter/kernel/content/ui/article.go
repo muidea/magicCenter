@@ -8,7 +8,10 @@ import (
 	"encoding/json"
 	"html/template"
 	"muidea.com/util"
+    "magiccenter/session"
+    "magiccenter/configuration"	
 	"magiccenter/kernel/common"
+	accountModel "magiccenter/kernel/account/model"
 	"magiccenter/kernel/content/model"
 	"magiccenter/kernel/content/bll"
 )
@@ -58,7 +61,7 @@ func ManageArticleHandler(w http.ResponseWriter, r *http.Request) {
         
     view := ManageArticleView{}
     view.Articles = bll.QueryAllArticleSummary()
-    view.Catalogs = bll.QueryAllCatalog()
+    view.Catalogs = bll.QueryAllCatalogDetail()
     
     t.Execute(w, view)
 }
@@ -198,8 +201,18 @@ func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxArticleHandler");
 	
-	result := AjaxArticleResult{}
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
 	
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+		
+	result := AjaxArticleResult{}	
 	for true {
 		err := r.ParseMultipartForm(0)
     	if err != nil {
@@ -232,7 +245,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveArticle(aid, title, content, 100, catalogs) {
+	    if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetail).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

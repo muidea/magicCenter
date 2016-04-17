@@ -33,8 +33,9 @@ func (this *Article) RType() int {
 func (this *Article) RRelative() []Resource {
 	relatives := []Resource{}
 	
-	for _, c := range this.Catalog {
-		relatives = append(relatives, &c)
+	for i, _ := range this.Catalog {
+		c := &this.Catalog[i]
+		relatives = append(relatives, c)
 	}
 	
 	return relatives

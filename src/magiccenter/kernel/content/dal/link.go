@@ -7,13 +7,13 @@ import (
 	"magiccenter/kernel/account/dal"
 )
 
-func QueryAllLink(helper modelhelper.Model) []model.LinkDetail {
-	linkList := []model.LinkDetail{}
+func QueryAllLink(helper modelhelper.Model) []model.Link {
+	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link`)
 	helper.Query(sql)
 
 	for helper.Next() {
-		link := model.LinkDetail{}
+		link := model.Link{}
 		helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)
 		
 		linkList = append(linkList, link)
@@ -39,8 +39,8 @@ func QueryAllLink(helper modelhelper.Model) []model.LinkDetail {
 }
 
 
-func QueryLinkByCatalog(helper modelhelper.Model, id int) []model.LinkDetail {
-	linkList := []model.LinkDetail{}
+func QueryLinkByCatalog(helper modelhelper.Model, id int) []model.Link {
+	linkList := []model.Link{}
 	
 	resList := QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
 	for _, r := range resList {
@@ -48,7 +48,7 @@ func QueryLinkByCatalog(helper modelhelper.Model, id int) []model.LinkDetail {
 		helper.Query(sql)
 		
 		if helper.Next() {
-			link := model.LinkDetail{}
+			link := model.Link{}
 			helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)			
 			linkList = append(linkList, link)
 		}
@@ -73,13 +73,13 @@ func QueryLinkByCatalog(helper modelhelper.Model, id int) []model.LinkDetail {
 	return linkList	
 }
 
-func QueryLinkByRang(helper modelhelper.Model, begin int,offset int) []model.LinkDetail {
-	linkList := []model.LinkDetail{}
+func QueryLinkByRang(helper modelhelper.Model, begin int,offset int) []model.Link {
+	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
 
 	for helper.Next() {
-		link := model.LinkDetail{}
+		link := model.Link{}
 		helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)
 		
 		linkList = append(linkList, link)
@@ -104,8 +104,8 @@ func QueryLinkByRang(helper modelhelper.Model, begin int,offset int) []model.Lin
 	return linkList
 }
 
-func QueryLinkById(helper modelhelper.Model, id int) (model.LinkDetail, bool) {
-	link := model.LinkDetail{}
+func QueryLinkById(helper modelhelper.Model, id int) (model.Link, bool) {
+	link := model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link where id =%d`, id)
 	helper.Query(sql)
 
@@ -137,7 +137,7 @@ func DeleteLinkById(helper modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf(`delete from link where id =%d`, id)	
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
-		link := model.LinkDetail{}
+		link := model.Link{}
 		link.Id = id
 		result  = DeleteResource(helper, &link)
 	}
@@ -145,7 +145,7 @@ func DeleteLinkById(helper modelhelper.Model, id int) bool {
 	return result	
 }
 
-func SaveLink(helper modelhelper.Model, link model.LinkDetail) bool {
+func SaveLink(helper modelhelper.Model, link model.Link) bool {
 	sql := fmt.Sprintf(`select id from link where id=%d`, link.Id)
 	helper.Query(sql)
 

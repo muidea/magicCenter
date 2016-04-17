@@ -138,9 +138,9 @@ catalog.constructCatalogItem = function(ca) {
 	var catalogs = "";
 	if (ca.Parent) {
 		for (var ii =0; ii < ca.Parent.length; ) {
-			catalogs += ca.Parent[ii++]
+			catalogs += ca.Parent[ii++].Name;
 			if (ii < ca.Parent.length) {
-				catalogs += ","
+				catalogs += ",";
 			} else {
 				break;
 			}
@@ -207,7 +207,7 @@ catalog.editCatalog = function(editUrl) {
 		}
 		
 		if (result.Catalog.Parent) {
-			for (var ii=0; ii < result.Catalog.Parent; ++ii) {
+			for (var ii=0; ii < result.Catalog.Parent.length; ++ii) {
 				var ca = result.Catalog.Parent[ii];
 				$("#catalog-Edit .catalog-Form .catalog-parent input").filter("[value="+ ca.Id +"]").prop("checked", true);
 			}

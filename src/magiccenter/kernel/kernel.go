@@ -9,6 +9,7 @@ import (
 	"magiccenter/kernel/admin"
 	"magiccenter/kernel/auth"
 	"magiccenter/kernel/account"
+	moduleManager "magiccenter/kernel/module" 
 	"magiccenter/kernel/system"
 	"magiccenter/kernel/content"
 	"magiccenter/modules/loader"	
@@ -41,6 +42,7 @@ func Initialize() {
 	auth.RegisterRouter()
 	account.RegisterRouter()
 	system.RegisterRouter()
+	moduleManager.RegisterRouter()
 	content.RegisterRouter()
 	
 	loader.LoadAllModules()

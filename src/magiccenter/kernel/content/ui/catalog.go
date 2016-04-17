@@ -7,7 +7,10 @@ import (
 	"encoding/json"
 	"html/template"
 	"muidea.com/util"
+    "magiccenter/session"
+    "magiccenter/configuration"	
 	"magiccenter/kernel/common"
+	accountModel "magiccenter/kernel/account/model"	
 	"magiccenter/kernel/content/model"
 	"magiccenter/kernel/content/bll"
 )
@@ -56,7 +59,7 @@ func ManageCatalogHandler(w http.ResponseWriter, r *http.Request) {
     }
     
     view := ManageCatalogView{}
-    view.Catalogs = bll.QueryAllCatalog()
+    view.Catalogs = bll.QueryAllCatalogDetail()
     
     t.Execute(w, view)    
 }
@@ -69,7 +72,7 @@ func QueryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryAllCatalogHandler");
 	
 	result := QueryAllCatalogResult{}
-	result.Catalogs = bll.QueryAllCatalog()
+	result.Catalogs = bll.QueryAllCatalogDetail()
 		
     b, err := json.Marshal(result)
     if err != nil {
@@ -197,6 +200,17 @@ func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler");
 	
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
+	
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+	
 	result := AjaxCatalogResult{}
 	
 	for true {
@@ -210,7 +224,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
     	id := r.FormValue("catalog-id")
 		name := r.FormValue("catalog-name")
 		parent := r.MultipartForm.Value["catalog-parent"]
-				
+		
 		aid, err := strconv.Atoi(id)
 	    if err != nil {
 			result.ErrCode = 1
@@ -230,7 +244,8 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 		    parents = append(parents, pid)
 	    }
 	    
-	    if !bll.SaveCatalog(aid, name, 100, parents) {
+	    
+	    if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetail).Id, parents) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	
