@@ -6,20 +6,20 @@ import (
 	"magiccenter/kernel/module/model"
 )
 
-func AddItem(helper modelhelper.Model, name,url string, owner int) (model.Item, bool) {
+func AddItem(helper modelhelper.Model, rid, rtype, owner int) (model.Item, bool) {
 	item := model.Item{}
 	ret := false
 	
-	sql := fmt.Sprintf("insert into item (name,url,owner) values('%s','%s',%d)", name, url, owner)
+	sql := fmt.Sprintf("insert into item (rid,rtype,owner) values(%d,%d,%d)", rid, rtype, owner)
 	_, ret = helper.Execute(sql)
 	if ret {
 		ret = false
-		sql = fmt.Sprintf("select id from item where name='%s' and url='%s' and owner=%d", name, url, owner)
+		sql = fmt.Sprintf("select id from item where rid=%d and rtype=%d and owner=%d", rid, rtype, owner)
 		helper.Query(sql)
 		if helper.Next() {
 			helper.GetValue(&item.Id)
-			item.Name = name
-			item.Url = url
+			item.Rid = rid
+			item.Rtype = rtype
 			item.Owner = owner
 			ret = true
 		}
@@ -38,10 +38,10 @@ func QueryItem(helper modelhelper.Model, id int) (model.Item, bool) {
 	item := model.Item{}
 	ret := false
 	
-	sql := fmt.Sprintf("select id,name,url,owner from item where id=%d", id)
+	sql := fmt.Sprintf("select id,rid,rtype,owner from item where id=%d", id)
 	helper.Query(sql)
 	if helper.Next() {
-		helper.GetValue(&item.Id, &item.Name, &item.Url, &item.Owner)
+		helper.GetValue(&item.Id, &item.Rid, &item.Rtype, &item.Owner)
 		ret = true
 	}
 	
@@ -54,14 +54,14 @@ func ClearItems(helper modelhelper.Model, owner int) bool {
 	return ok
 }
 
-func QueryItems(helper modelhelper.Model, owner int) []model.Item {
+func QueryItems(helper modelhelper.Model, rtype, owner int) []model.Item {
 	itemList := []model.Item{}
 	
-	sql := fmt.Sprintf("select id,name,url,owner from item where owner=%d", owner)
+	sql := fmt.Sprintf("select id,rid,rtype,owner from item where rtype=%d and owner=%d", rtype, owner)
 	helper.Query(sql)
 	for helper.Next() {
 		i := model.Item{}
-		helper.GetValue(&i.Id, &i.Name, &i.Url, &i.Owner)
+		helper.GetValue(&i.Id, &i.Rid, &i.Rtype, &i.Owner)
 		
 		itemList = append(itemList, i)
 	}

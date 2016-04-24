@@ -73,11 +73,11 @@ $(document).ready(function() {
 								<td>博客功能</td>
 								<td>
 									<radiobox class="enable-blog">
-										<input type="radio" name="enable-blog" value="0"><span>启用</span>
-										<input type="radio" name="enable-blog" value="1"><span>禁用</span>
+										<input type="radio" name="enable-blog" value="0"/><span>启用</span>
+										<input type="radio" name="enable-blog" value="1"/><span>禁用</span>
 									</radiobox>
 									<checkbox class="default-blog">
-										<input type="checkbox" name="default-blog" value="1">  <span>设为默认</span> 
+										<input type="checkbox" name="default-blog" value="1"/>  <span>设为默认</span> 
 									</checkbox>
 								</td>
 							</tr>
@@ -86,11 +86,11 @@ $(document).ready(function() {
 								<td>网店功能</td>
 								<td>
 									<radiobox class="enable-shop">
-										<input type="radio" name="enable-shop" value="0"><span>启用</span>
-										<input type="radio" name="enable-shop" value="1"><span>禁用</span>
+										<input type="radio" name="enable-shop" value="0"/><span>启用</span>
+										<input type="radio" name="enable-shop" value="1"/><span>禁用</span>
 									</radiobox>
 									<checkbox class="default-shop">
-										<input type="checkbox" name="default-shop" value="1">  <span>设为默认</span> 
+										<input type="checkbox" name="default-shop" value="1"/>  <span>设为默认</span> 
 									</checkbox>
 									<input class="button" type="button" value="卸载模块"/>
 								</td>
@@ -144,11 +144,20 @@ $(document).ready(function() {
 						</table>
 						<form class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
 							<fieldset>
-									<span>名称</span> <input
+								<legend>名称</legend>
+									<p>
+									<input
 										class="text-input small-input module-block" type="text"
 										name="module-block" />
+									</p>
+									<p>
+									<input type="radio" name="block-style" value="0"/><span>显示链接</span>
+									<input type="radio" name="block-style" value="1"/><span>显示内容</span>
+									</p>
+									<p>
 									<input type="hidden" name="module-id" class="module-id"
 										value="-1" /> <input class="button" type="submit" value="新增" />
+									</p>										
 							</fieldset>
 							<div class="clear"></div>
 							<!-- End .clear -->

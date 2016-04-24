@@ -72,8 +72,6 @@ $(document).ready(function() {
         		$("#module-maintain div.success div").html(result.Reason);
         		$("#module-maintain div.success").show();
         		
-        		console.log(module);
-        		
         		module.currentModule = result.Module;
         		module.refreshModuleView();
         	}
@@ -404,6 +402,8 @@ module.refreshModuleView = function() {
 	}
 	$("#module-maintain .block table tbody tr:even").addClass("alt-row");
 	
+	$("#module-maintain .block .block-Form input").prop("checked", false);
+	$("#module-maintain .block .block-Form input").filter("[value=0]").prop("checked", true);
 	$("#module-maintain .block .block-Form .module-id").val(module.currentModule.Id);
 	
 	if (module.currentModule.Pages) {

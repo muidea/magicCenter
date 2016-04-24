@@ -107,7 +107,7 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 	return moduleList, ok
 }
 
-func AddModuleBlock(name, owner string) (model.ModuleDetail, bool) {
+func AddModuleBlock(name string, style int, owner string) (model.ModuleDetail, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -115,7 +115,7 @@ func AddModuleBlock(name, owner string) (model.ModuleDetail, bool) {
 	defer helper.Release()
 	
 	detail := model.ModuleDetail{}
-	_, ok := dal.InsertBlock(helper, name, owner)
+	_, ok := dal.InsertBlock(helper, name, style, owner)
 	if !ok {
 		return detail, ok
 	}

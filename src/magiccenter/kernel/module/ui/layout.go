@@ -204,9 +204,16 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
     	}
 		
 		owner := r.FormValue("module-id")
+		style, err := strconv.Atoi(r.FormValue("block-style"))
+    	if err != nil {
+    		result.ErrCode = 1
+    		result.Reason = "无效请求数据"
+    		break;
+    	}
+    	 
 		block := r.FormValue("module-block")
 		ret := false
-		result.Module, ret = bll.AddModuleBlock(block, owner)
+		result.Module, ret = bll.AddModuleBlock(block, style, owner)
 		if !ret {
 			result.ErrCode = 1
 			result.Reason = "操作失败"    	

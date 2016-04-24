@@ -1,7 +1,6 @@
 package bll
 
 import (
-	"fmt"
     "magiccenter/util/modelhelper"
     "magiccenter/kernel/module/dal"
     "magiccenter/kernel/module/model"
@@ -56,24 +55,21 @@ func SaveBlockItem(block int, articleList, catalogList, linkList []int) {
 	for _, ar := range articleList {
 		article, found := contentdal.QueryArticleById(helper, ar)
 		if found {
-			uri := fmt.Sprintf("view/article/?id=%d",article.Id)
-			dal.AddItem(helper, article.Title, uri, block) 
+			dal.AddItem(helper, article.RId(), article.RType(), block) 
 		}
 	}
 	
 	for _, ca := range catalogList {
 		catalog, found := contentdal.QueryCatalogById(helper, ca)
 		if found {
-			uri := fmt.Sprintf("view/catalog/?id=%d",catalog.Id)
-			dal.AddItem(helper, catalog.Name, uri, block) 
+			dal.AddItem(helper, catalog.RId(), catalog.RType(), block) 
 		}
 	}
 	
 	for _, lnk := range linkList {
 		link, found := contentdal.QueryLinkById(helper, lnk)
 		if found {
-			uri := fmt.Sprintf("view/link/?id=%d",link.Id)
-			dal.AddItem(helper, link.Name, uri, block) 
+			dal.AddItem(helper, link.RId(), link.RType(), block) 
 		}
 	}
 	

@@ -5,6 +5,7 @@ var content = {
 	catalogList:{},
 	linkList:{},
 	currentModule:{},
+	currentBlock:-1,
 };
 
 $(document).ready(function() {
@@ -15,9 +16,16 @@ $(document).ready(function() {
 				var catalogList = "";
 				var linkList = "";
 				var block_id = $("#block-form .block-id").val();
+				var blockArray = $("#block-list table tbody tr td :checkbox:checked");
 				var articleArray = $("#block-form .article-list table tbody tr td :checkbox:checked");
 				var catalogArray = $("#block-form .catalog-list table tbody tr td :checkbox:checked");
 				var linkArray = $("#block-form .link-list table tbody tr td :checkbox:checked");
+				
+				if (blockArray.length == 0) {
+	        		$("#module-content div.error div").html("请选择一个功能块");
+	        		$("#module-content div.error").show();
+	        		return;
+				}
 				
 				for (var ii =0; ii < articleArray.length; ++ii) {
 					var chk = articleArray[ii];
@@ -47,7 +55,7 @@ $(document).ready(function() {
 
 					content.currentModule = result.Module;
 					
-					$("#module-list div.notification").hide();
+					$("#module-content div.notification").hide();
 		        	if (result.ErrCode > 0) {
 		        		$("#module-content div.error div").html(result.Reason);
 		        		$("#module-content div.error").show();
@@ -145,24 +153,35 @@ content.constructBlockItem = function(block) {
 	tr.appendChild(nameTd);
 	
 	var numberTd = document.createElement("td");
-	if (block.Items) {
-		numberTd.innerHTML = block.Items.length;		
-	} else {
-		numberTd.innerHTML = 0;
+	var numVal = 0;
+	if (block.Article) {
+		numVal += block.Article.length;
 	}
+	if (block.Catalog) {
+		numVal += block.Catalog.length;
+	}
+	if (block.Link) {
+		numVal += block.Link.length;
+	}	
+	numberTd.innerHTML = numVal;
+	
 	tr.appendChild(numberTd);
 	
-	tr.setAttribute("onclick","content.editModuleBlock('" + block.Id + "'); return false;" );
+	tr.setAttribute("onclick","content.editModuleBlock(" + block.Id + "); return false;" );
 	
 	return tr;
 };
 
 content.editModuleBlock = function(block) {
+	content.currentBlock = block;
+	
 	$("#block-list table tbody tr td input").prop("checked", false);
 	$("#block-form table tbody tr td input").prop("checked", false);
 	
 	$("#block-list table tbody tr td input").filter("[value="+ block +"]").prop("checked", true);
 	$("#block-form .block-id").val(block);	
+	
+	content.refreshModuleView();
 };
 
 content.constructArticleItem = function(article) {
@@ -229,15 +248,23 @@ content.refreshModuleView = function() {
 		return;
 	}
 	
+	var currentBlock = null;
 	if (content.currentModule.Blocks) {
 		
 		for (var ii =0; ii < content.currentModule.Blocks.length; ++ii) {
 			var block = content.currentModule.Blocks[ii];
+			
+			if (block.Id == content.currentBlock) {
+				currentBlock = block;
+			}
+			
 			var trContent = content.constructBlockItem(block);
 			$("#block-list table tbody").append(trContent);
 		}
 		
 		$("#block-list table tbody tr:even").addClass("alt-row");
+		
+		$("#block-list table tbody tr td input").filter("[value="+ content.currentBlock +"]").prop("checked", true);
 	}
 	
 	if (content.articleList) {
@@ -245,6 +272,13 @@ content.refreshModuleView = function() {
 			var article = content.articleList[ii];
 			var trContent = content.constructArticleItem(article);
 			$("#block-form .article-list table tbody").append(trContent);
+		}
+		
+		if(currentBlock) {
+			for (var ii=0; ii < currentBlock.Article.length; ++ii) {
+				var item = currentBlock.Article[ii];
+				$("#block-form .article-list table tbody tr td input").filter("[value="+ item.Rid +"]").prop("checked", true);
+			}
 		}
 		
 		$("#block-form .article-list table tbody tr:odd").addClass("alt-row");
@@ -257,6 +291,13 @@ content.refreshModuleView = function() {
 			$("#block-form .catalog-list table tbody").append(trContent);
 		}
 		
+		if(currentBlock) {
+			for (var ii=0; ii < currentBlock.Catalog.length; ++ii) {
+				var item = currentBlock.Catalog[ii];
+				$("#block-form .catalog-list table tbody tr td input").filter("[value="+ item.Rid +"]").prop("checked", true);
+			}
+		}
+		
 		$("#block-form .catalog-list table tbody tr:odd").addClass("alt-row");
 	}
 	
@@ -265,6 +306,13 @@ content.refreshModuleView = function() {
 			var link = content.linkList[ii];
 			var trContent = content.constructLinkItem(link);
 			$("#block-form .link-list table tbody").append(trContent);
+		}
+		
+		if(currentBlock) {
+			for (var ii=0; ii < currentBlock.Link.length; ++ii) {
+				var item = currentBlock.Link[ii];
+				$("#block-form .link-list table tbody tr td input").filter("[value="+ item.Rid +"]").prop("checked", true);
+			}
 		}
 		
 		$("#block-form .link-list table tbody tr:odd").addClass("alt-row");
