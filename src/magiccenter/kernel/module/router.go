@@ -15,5 +15,6 @@ func RegisterRouter() {
 		
 	router.AddGetRoute("/admin/system/moduleContent/", ui.ModuleContentHandler)
 	router.AddGetRoute("/admin/system/queryModuleContent/", ui.QueryModuleContentHandler)
+	router.AddPostRoute("/admin/system/ajaxBlockItem/", ui.SaveBlockContentHandler)
 }
 

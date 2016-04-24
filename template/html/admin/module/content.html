@@ -133,12 +133,13 @@ $(document).ready(function() {
 						</tbody>
 					</table>
 				</div>
-				<div>
+				<div id="block-form">
+				<form class="form" action="/admin/system/ajaxBlockItem/"  method="post">
 				<table>
 				<tbody>
 				<tr>
 				<td>
-				<div id="article-list">
+				<div class="article-list">
 					<table>
 						<thead>
 							<tr>
@@ -146,7 +147,7 @@ $(document).ready(function() {
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="article">
+							<tr>
 								<td>导航栏</td>
 							</tr>							
 						</tbody>
@@ -154,7 +155,7 @@ $(document).ready(function() {
 				</div>				
 				</td>
 				<td>
-				<div id="catalog-list">
+				<div class="catalog-list">
 					<table>
 						<thead>
 							<tr>
@@ -162,7 +163,7 @@ $(document).ready(function() {
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="catalog">
+							<tr>
 								<td>导航栏</td>
 							</tr>							
 						</tbody>
@@ -170,7 +171,7 @@ $(document).ready(function() {
 				</div>				
 				</td>
 				<td>
-				<div id="link-list">
+				<div class="link-list">
 					<table>
 						<thead>
 							<tr>
@@ -178,25 +179,26 @@ $(document).ready(function() {
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="link">
+							<tr>
 								<td>导航栏</td>
-							</tr>							
+							</tr>
 						</tbody>
 					</table>
-				</div>				
+				</div>
 				</td>
 				</tr>
 				</tbody>
 				<tfoot>
 				<tr>
 				<td colspan="3">
-				<div><input type="button" class="button" value="保存" /></div>
+				<div><input type="hidden" class="block-id" name="block-id" value="-1" /><input type="button" class="button" value="保存" /></div>
 				</td>
 				</tr>
 				</tfoot>				
 				</table>
+				</form>
 				</div>
-			</div>							
+			</div>
 		</div>
 		<!-- End .content-box-content -->
 	</div>

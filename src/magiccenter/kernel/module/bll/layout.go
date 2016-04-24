@@ -56,41 +56,6 @@ func QueryModuleDetail(id string) (model.ModuleDetail, bool) {
 	return detail, found
 }
 
-
-func QueryModuleContent(id string) (model.ModuleContent, bool) {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct helper failed")
-	}
-	defer helper.Release()
-	
-	detail := model.ModuleContent{}
-	instance, found := module.FindModule(id)
-	if !found {
-		return detail, found
-	}
-
-	m, found := dal.QueryModule(helper, id)
-	if !found {
-		m.Id = instance.ID()
-		m.Name = instance.Name()
-		m.Description = instance.Description()
-		m.EnableFlag = 0
-		m, found = dal.SaveModule(helper, m)
-	}
-	
-	if found {
-		detail.Id = m.Id
-		detail.Name = m.Name
-		detail.Description = m.Description
-		detail.EnableFlag = m.EnableFlag
-		detail.Blocks = dal.QueryBlockDetails(helper, id)
-	}
-	
-	return detail, found
-}
-
-
 func EnableModules(enableList []string) ([]model.Module, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {

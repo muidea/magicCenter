@@ -48,6 +48,12 @@ func QueryItem(helper modelhelper.Model, id int) (model.Item, bool) {
 	return item, ret
 }
 
+func ClearItems(helper modelhelper.Model, owner int) bool {
+	sql := fmt.Sprintf("delete from item where owner=%d", owner)
+	_, ok :=helper.Execute(sql)
+	return ok
+}
+
 func QueryItems(helper modelhelper.Model, owner int) []model.Item {
 	itemList := []model.Item{}
 	
