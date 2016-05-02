@@ -197,7 +197,7 @@ user.constructUserItem = function(user) {
 	var editLink = document.createElement("a");
 	editLink.setAttribute("class","edit");
 	editLink.setAttribute("href","#editUser" );
-	editLink.setAttribute("onclick","user.editUser('/admin/account/editUser/?id=" + user.Id + "'); return false;" );
+	editLink.setAttribute("onclick","user.editUser('/admin/account/queryUser/?id=" + user.Id + "'); return false;" );
 	var editUrl = document.createElement("img");
 	editUrl.setAttribute("src","/resources/images/icons/pencil.png");
 	editUrl.setAttribute("alt","Edit");
@@ -229,10 +229,7 @@ user.editUser = function(editUrl) {
 			$("#user-List div.error").show();
 			return
 		}
-		
-		console.log(result)
-		
-		
+				
 		$("#user-Edit .user-Form .button").val("保存");
 		$("#user-Edit .user-Form .user-id").val(result.User.Id);
 		$("#user-Edit .user-Form .user-account").val(result.User.Account);

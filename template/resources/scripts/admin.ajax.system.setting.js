@@ -1,7 +1,6 @@
 
 
 var setting = {
-	accesscode:'',
 	errCode:0,
 	reason:'',
 	name:'',
@@ -69,9 +68,9 @@ setting.fillSettingView = function() {
 	$("#system-content .content-box-content .system-edit .system-Form .system-name").val(setting.name);
 	$("#system-content .content-box-content .system-edit .system-Form .system-logo").val(setting.logo);
 	$("#system-content .content-box-content .system-edit .system-Form .system-domain").val(setting.domain);
-	$("#system-content .content-box-content .system-edit .system-Form .system-emailserver").val(setting.emailServer);
-	$("#system-content .content-box-content .system-edit .system-Form .system-emailaccount").val(setting.emailAccount);
-	$("#system-content .content-box-content .system-edit .system-Form .system-emailpassword").val(setting.emailPassword);
+	$("#system-content .content-box-content .system-edit .system-Form .email-server").val(setting.emailServer);
+	$("#system-content .content-box-content .system-edit .system-Form .email-account").val(setting.emailAccount);
+	$("#system-content .content-box-content .system-edit .system-Form .email-password").val(setting.emailPassword);
 };
 
 

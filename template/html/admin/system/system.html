@@ -18,6 +18,7 @@ setting.emailServer={{.SystemInfo.MailServer}};
 setting.emailAccount={{.SystemInfo.MailAccount}};
 setting.emailPassword={{.SystemInfo.MailPassword}};
 $(document).ready(function() {
+	console.log(setting);
 	setting.initialize();
 });	
 </script>
@@ -68,18 +69,18 @@ $(document).ready(function() {
 							</p>
 							<p>
 								<label>邮箱服务器</label> <input
-									class="text-input small-input system-emailserver" type="text"
-									name="system-emailserver" /> <span class="png_bg">*发送邮件通知的邮箱服务器，由邮箱服务商提供</span>
+									class="text-input small-input email-server" type="text"
+									name="email-server" /> <span class="png_bg">*发送邮件通知的邮箱服务器，由邮箱服务商提供</span>
 							</p>							
 							<p>
 								<label>邮箱账号</label> <input
-									class="text-input small-input system-emailaccount" type="text"
-									name="system-emailaccount" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
+									class="text-input small-input email-account" type="text"
+									name="email-account" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
 							</p>
 							<p>
 								<label>邮箱密码</label> <input
-									class="text-input small-input system-emailpassword" type="password"
-									name="system-emailpassword" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
+									class="text-input small-input email-password" type="password"
+									name="email-password" /> <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span>
 							</p>
 							<p>
 								<input class="button" type="submit" value="保存" />

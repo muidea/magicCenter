@@ -6,6 +6,8 @@ import (
 	"magiccenter/module"
 	"magiccenter/router"
 	"magiccenter/configuration"
+	"magiccenter/mail"
+	"magiccenter/cache"
 	"magiccenter/kernel/admin"
 	"magiccenter/kernel/auth"
 	"magiccenter/kernel/account"
@@ -25,6 +27,12 @@ func Initialize() {
 	log.Println("initialize kernel...")
 	
 	configuration.LoadConfig()
+	
+	mail.Startup()
+	
+	if !cache.CreateCache(cache.MEMORY_CACHE) {
+		panic("create cache failed")
+	}
 	
 	staticPath, found := configuration.GetOption(configuration.STATIC_PATH)
 	if found {
@@ -52,6 +60,11 @@ func Initialize() {
 
 
 func Uninitialize() {
+		
+	mail.Cleanup()
+	
+	cache.DestroyCache()
+	
 	module.CleanupAllModules()
 }
 

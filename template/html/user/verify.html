@@ -9,108 +9,11 @@
 <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
 <script type="text/javascript">
-	var accesscode = {{.Accesscode}};
-	var id = {{.Id}};
-	var account = {{.Account}};
-	var action =  {{.Action}};
-	
-	$(document).ready(function() {
-		$("#user-Form .user-id").val(id);
-		$("#user-Form .user-account").val(account);
-		
-		$("#user-Form .reset_button").click(
-			function () {
-				$("#user-Form .user-nickname").val("");
-				$("#user-Form .user-password").val("");
-				$("#user-Form .user-repassword").val("");
-			}
-		);
-		
-		$("#user-Form .text-input").keyup(
-				function() {
-					var content = $(this).val();
-					if (content) {
-						$(this).parent().find("span.error").remove();
-					}
-				}
-		);	
-		$("#user-Form .user-repassword").keyup(
-			function() {
-				var password = $("#user-Form .user-password").val();
-				var repassword = $("#user-Form .user-repassword").val();
-				
-				$(this).parent().find("span.error").remove();					
-				if (password != repassword) {
-					$("#user-Form .user-repassword").parent().append("<span class=\"input-notification error png_bg\">两次密码不一致</span>");
-				}
-			}
-		);
-	    // 绑定表单提交事件处理器
-	    $('#user-Form').submit(function() {
-	        var options = { 
-	                beforeSubmit:  showRequest,  // pre-submit callback
-	                success:       showResponse,  // post-submit callback
-	                dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
-	            };
-	        
-	        // pre-submit callback
-	        function showRequest() {
-	            //return false;
-	        } 
-	        // post-submit callback
-	        function showResponse(result) {
-	        	$("#user-Form div.notification").hide();
-	        	
-	        	if (result.ErrCode > 0) {
-	        		$("#user-Form div.error div").html(result.Reason);
-	        		$("#user-Form div.error").show();
-	        	} else {
-	        		$("#user-Form div.success div").html(result.Reason);
-	        		$("#user-Form div.success").show();
-	        	}
-	        	
-	        	return false;
-	        }
-	        
-	        function validate() {
-	        	var result = true
-	        	
-	        	$("#user-Form .user-nickname").parent().find("span.error").remove();
-	        	var name = $("#user-Form .user-nickname").val();
-	        	if (name.length == 0) {
-	        		$("#user-Form .user-nickname").parent().append("<span class=\"input-notification error png_bg\">用户昵称不能为空</span>");
-	        		result = false;
-	        	}
-	        	
-	        	$("#user-Form .user-password").parent().find("span.error").remove();
-	        	var password = $("#user-Form .user-password").val();
-	        	if (password.length == 0) {
-	        		$("#user-Form .user-password").parent().append("<span class=\"input-notification error png_bg\">密码不能为空</span>");
-	        		result = false;
-	        	}
-	       
-	        	$("#user-Form .user-repassword").parent().find("span.error").remove();
-	        	var repassword = $("#user-Form .user-repassword").val();
-	        	if (repassword.length == 0) {
-	        		$("#user-Form .user-repassword").parent().append("<span class=\"input-notification error png_bg\">确认密码不能为空</span>");
-	        		result = false;
-	        	}
-	        	
-	        	return result;
-	        }
-	        
-	        if (!validate()) {
-	        	return false;
-	        }
-	        
-	        //提交表单
-	        $(this).ajaxSubmit(options);	
-	    	
-	        // !!! Important !!!
-	        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
-	        return false;
-	    });		
-	});	
+$(document).ready(function() {
+	var email = {{.User.Email}};
+	var groups = {{.User.Groups}};
+	$("#user-Form .user-account").val({{.User.Account}});
+});
 </script>
 </head>
 <body>

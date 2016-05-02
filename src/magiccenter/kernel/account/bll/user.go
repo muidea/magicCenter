@@ -6,7 +6,7 @@ import (
     "magiccenter/kernel/account/model"
 )
 
-func QueryAllUser() []model.UserDetail {
+func QueryAllUser() []model.UserDetailView {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -16,7 +16,7 @@ func QueryAllUser() []model.UserDetail {
 	return dal.QueryAllUser(helper)
 }
 
-func QueryUserByAccount(account string) (model.UserDetail,bool) {
+func QueryUserByAccount(account string) (model.UserDetailView,bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -26,7 +26,7 @@ func QueryUserByAccount(account string) (model.UserDetail,bool) {
 	return dal.QueryUserByAccount(helper, account)
 }
 
-func VerifyUserByAccount(account,password string) (model.UserDetail,bool) {
+func VerifyUserByAccount(account,password string) (model.UserDetailView,bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -37,7 +37,7 @@ func VerifyUserByAccount(account,password string) (model.UserDetail,bool) {
 }
 
 
-func QueryUserById(id int) (model.UserDetail,bool) {
+func QueryUserById(id int) (model.UserDetailView,bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -64,7 +64,7 @@ func SaveUser(id int, account, email string, groups []int) bool {
 	}
 	defer helper.Release()
 
-	user := model.UserDetail{}
+	user := model.UserDetailView{}
 	user.Id = id
 	user.Account = account
 	user.Email = email

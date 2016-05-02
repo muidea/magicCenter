@@ -2,30 +2,33 @@ package ui
 
 import (
 	"log"
+	"fmt"
 	"strconv"
 	"net/http"
 	"encoding/json"
 	"html/template"
 	"muidea.com/util"
+	"magiccenter/mail"
+	"magiccenter/configuration"
+	"magiccenter/cache"
 	"magiccenter/kernel/common"
     "magiccenter/kernel/account/model"
     "magiccenter/kernel/account/bll"
 )
 
-
 type ManageUserView struct {
-	Users []model.UserDetail
+	Users []model.UserDetailView
 	Groups []model.GroupInfo
 }
 
 type QueryAllUserResult struct {
 	common.Result
-	Users []model.UserDetail
+	Users []model.UserDetailView
 }
 
 type QueryUserResult struct {
 	common.Result
-	User model.UserDetail
+	User model.UserDetailView
 }
 
 type CheckAccountResult struct {
@@ -34,7 +37,7 @@ type CheckAccountResult struct {
 
 type CreateUserResult struct {
 	common.Result
-	Users []model.UserDetail	
+	Users []model.UserDetailView	
 }
 
 type DeleteUserResult struct {
@@ -43,7 +46,7 @@ type DeleteUserResult struct {
 
 type UpdateUserResult struct {
 	common.Result
-	User model.UserDetail	
+	User model.UserDetailView	
 }
 
 func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -159,6 +162,16 @@ func CheckAccountHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
+func sendVerifyMail(user, email, id string) {
+	systemInfo := configuration.GetSystemInfo()
+	
+	subject := "MagicCenter用户验证"
+		
+	content := fmt.Sprintf("<html><head><title>用户信息验证</title></head><body><p>Hi %s</p><p><a href='%s/user/verify/?id=%s'>请点击链接继续验证用户信息</a></p><p>该邮件由MagicCenter自动发送，请勿回复该邮件</p></body></html>", user, systemInfo.Domain, id)
+	
+	mail.PostMail(email, subject, content)
+}
+
 func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxUserHandler");
 	
@@ -181,7 +194,7 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break			
 		}    	
-		account := r.FormValue("user-account")
+		account := r.FormValue("user-account")		
 		email := r.FormValue("user-email")
 		groups := r.MultipartForm.Value["user-group"]    	
 	    groupList := []int{}
@@ -189,6 +202,7 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 			gid, err := strconv.Atoi(g)
 		    if err != nil {
 		    	log.Print("parse group id failed, group:%s", g)
+		    	
 				result.ErrCode = 1
 				result.Reason = "无效请求数据"
 				break
@@ -197,16 +211,42 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 		    groupList = append(groupList, gid)	    	
 	    }
 	    
-	    ok := bll.SaveUser(id, account, email, groupList)
-	    if !ok {
-			result.ErrCode = 1
-			result.Reason = "保存用户信息失败"
-			break	    	
+	    usr, found := bll.QueryUserById(id)
+	    if found {
+	    	// 说明是更新用户信息
+		    ok := bll.SaveUser(id, account, email, groupList)
+		    if !ok {
+				result.ErrCode = 1
+				result.Reason = "保存用户信息失败"
+				break	    	
+		    }
 	    }
-	    
+			    
 	    result.Users = bll.QueryAllUser()
 		result.ErrCode = 0
 		result.Reason = "保存用户信息成功"
+		
+		// 如果是新建用户或者用户的Mail变化了，则还需要发送验证邮件
+		if !found || usr.Email != email {
+	    	// 说明是新建用户，新建用户临时信息需要保存到Cache中
+	    	usr := &model.UserDetail{}
+	    	usr.Id = id
+	    	usr.Account = account
+	    	usr.Email = email
+	    	usr.Groups = groupList
+	    	
+	    	cache, found := cache.GetCache()
+	    	if found {
+	    		id := cache.PutIn(usr, 15)
+	    		
+				sendVerifyMail(account, email, id)
+	    	} else {
+				result.ErrCode = 1
+				result.Reason = "保存用户信息失败"
+				break
+	    	}
+		}
+		
 	    break
 	}
     
@@ -261,7 +301,6 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(b)
 }
 
-
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("UpdateUserHandler");
 	
@@ -282,7 +321,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
     		
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
-			break			
+			break
 		}
 		name := r.FormValue("user-name")
 		email := r.FormValue("user-email")

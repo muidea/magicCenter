@@ -21,5 +21,14 @@ type UserDetail struct {
 	Account string
 	Email string
 	Status int
+	Groups []int
+}
+
+type UserDetailView struct {
+	User
+	
+	Account string
+	Email string
+	Status int
 	Groups []Group
 }

@@ -263,7 +263,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveImage(id, name, url, desc,user.(accountModel.UserDetail).Id, catalogs) {
+	    if !bll.SaveImage(id, name, url, desc,user.(accountModel.UserDetailView).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

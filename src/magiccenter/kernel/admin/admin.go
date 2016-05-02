@@ -41,7 +41,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
     }
     
     view := AdminView{}
-    view.User.Id = user.(model.UserDetail).Id
-    view.User.Name = user.(model.UserDetail).Name
+    view.User.Id = user.(model.UserDetailView).Id
+    view.User.Name = user.(model.UserDetailView).Name
     t.Execute(w, view)	
 }

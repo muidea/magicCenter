@@ -245,7 +245,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	    }
 	    
 	    
-	    if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetail).Id, parents) {
+	    if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetailView).Id, parents) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

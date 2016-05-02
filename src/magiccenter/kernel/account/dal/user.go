@@ -9,19 +9,19 @@ import (
 )
 
 type tempPair struct {
-	user model.UserDetail
+	user model.UserDetailView
 	groups string
 }
 
-func QueryAllUser(helper modelhelper.Model) []model.UserDetail {
-	userList := []model.UserDetail{}
+func QueryAllUser(helper modelhelper.Model) []model.UserDetailView {
+	userList := []model.UserDetailView{}
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user")
 	helper.Query(sql)
 
 	tmpPairList := []tempPair{}
 	for helper.Next() {
 		groups := ""
-		user := model.UserDetail{}
+		user := model.UserDetailView{}
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		
 		tmp := tempPair{}
@@ -50,8 +50,8 @@ func QueryAllUser(helper modelhelper.Model) []model.UserDetail {
 	return userList
 }
 
-func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetail,bool) {
-	user := model.UserDetail{}
+func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetailView,bool) {
+	user := model.UserDetailView{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s'", account)
 	helper.Query(sql)
@@ -79,8 +79,8 @@ func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDet
 	return user, result
 }
 
-func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetail,bool) {
-	user := model.UserDetail{}
+func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetailView,bool) {
+	user := model.UserDetailView{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
@@ -108,8 +108,8 @@ func VerifyUserByAccount(helper modelhelper.Model, account, password string) (mo
 	return user, result
 }
 
-func QueryUserById(helper modelhelper.Model, id int) (model.UserDetail, bool) {
-	user := model.UserDetail{}
+func QueryUserById(helper modelhelper.Model, id int) (model.UserDetailView, bool) {
+	user := model.UserDetailView{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where id=%d", id)
 	helper.Query(sql)
@@ -150,7 +150,7 @@ func DeleteUserByAccount(helper modelhelper.Model, account, password string) boo
 }
 
 
-func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
+func SaveUser(helper modelhelper.Model, user model.UserDetailView) bool {
 	sql := fmt.Sprintf("select id from user where id=%d", user.Id)
 	helper.Query(sql)
 
@@ -180,15 +180,15 @@ func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
 	return result
 }
 
-func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetail {
-	userList := []model.UserDetail{}
+func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetailView {
+	userList := []model.UserDetailView{}
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where `group` like '%d' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d' union select id,account,nickname,email,`group`, status from user where `group` like '%d,%%' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d,%%'", id,id,id,id)
 	helper.Query(sql)
 
 	tmpPairList := []tempPair{}
 	for helper.Next() {
 		groups := ""
-		user := model.UserDetail{}
+		user := model.UserDetailView{}
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		
 		tmp := tempPair{}

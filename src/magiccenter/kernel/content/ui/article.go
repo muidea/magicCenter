@@ -245,7 +245,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetail).Id, catalogs) {
+	    if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetailView).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

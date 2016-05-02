@@ -50,7 +50,7 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
     		break;
     	}
 		
-		info := configuration.SystemInfo{}
+		info := configuration.GetSystemInfo()
 		name := r.FormValue("system-name")
 		if len(name) > 0 {
 			info.Name = name
@@ -66,17 +66,17 @@ func UpdateSystemHandler(w http.ResponseWriter, r *http.Request) {
 			info.Domain = domain
 		}
 		
-		emailServer := r.FormValue("system-emailserver")
+		emailServer := r.FormValue("email-server")
 		if len(emailServer) > 0 {
 			info.MailServer = emailServer
 		}
 		
-		emailAccount := r.FormValue("system-emailaccount")
+		emailAccount := r.FormValue("email-account")
 		if len(emailAccount) > 0 {
 			info.MailAccount = emailAccount
 		}
-		
-		emailPassword := r.FormValue("system-emailpassword")
+				
+		emailPassword := r.FormValue("email-password")
 		if len(emailPassword) > 0 && emailPassword != passwordMark {
 			info.MailPassword = emailPassword
 		}

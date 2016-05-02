@@ -298,6 +298,14 @@ module.constructBlockItem = function(block) {
 	nameTd.innerHTML = block.Name
 	tr.appendChild(nameTd);
 	
+	var styleTd = document.createElement("td");
+	if (block.Style == 0) {
+		styleTd.innerHTML = "链接";
+	} else {
+		styleTd.innerHTML = "内容";
+	}
+	tr.appendChild(styleTd);
+	
 	var editTd = document.createElement("td");
 	var deleteLink = document.createElement("a");
 	deleteLink.setAttribute("class","delete");
