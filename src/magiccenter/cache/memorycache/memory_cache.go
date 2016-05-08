@@ -11,7 +11,8 @@ type commandAction int
 const (
 	putIn commandAction = iota	// 存放数据
 	fetchOut	// 获取数据
-	clearAll	// 清楚全部数据
+	remove		// 删除指定数据
+	clearAll	// 清除全部数据
 	checkTimeOut // 检查超过生命周期的数据
 	end	// 停止Cache
 )
@@ -32,6 +33,10 @@ type fetchOutData struct {
 type fetchOutResult struct {
 	value interface{}
 	found bool
+}
+
+type removeData struct {
+	id string
 }
 
 type cacheData struct {
@@ -84,6 +89,13 @@ func (right memoryCache) FetchOut(id string) (interface{}, bool) {
 	return result.value, result.found
 }
 
+func (right memoryCache) Remove(id string) {
+	removeData := &removeData{}
+	removeData.id = id
+	
+	right <- commandData{action:remove, value:removeData}	
+}
+
 func (right memoryCache) ClearAll() {
 	
 	right <- commandData{action:clearAll}
@@ -122,7 +134,11 @@ func (right memoryCache) run() {
 				result.value = cacheData.data
 			}
 			
-			command.result <- result					
+			command.result <- result
+		case remove:
+			id := command.value.(*removeData).id
+			
+			delete(_cacheData, id)
 		case clearAll:
 			_cacheData = make(map[string]cacheData)
 			

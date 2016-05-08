@@ -150,7 +150,7 @@ func DeleteUserByAccount(helper modelhelper.Model, account, password string) boo
 }
 
 
-func SaveUser(helper modelhelper.Model, user model.UserDetailView) bool {
+func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
 	sql := fmt.Sprintf("select id from user where id=%d", user.Id)
 	helper.Query(sql)
 
@@ -163,16 +163,16 @@ func SaveUser(helper modelhelper.Model, user model.UserDetailView) bool {
 	
 	groups := ""
 	for _, g := range user.Groups {
-		groups = fmt.Sprintf("%s%d,", groups, g.Id)
+		groups = fmt.Sprintf("%s%d,", groups, g)
 	}
 	groups = groups[0:len(groups)-1]
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into user(account,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', %d)", user.Account, user.Name, user.Email, groups, user.Status)
+		sql = fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, user.Password, user.Name, user.Email, groups, user.Status)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)
+		sql = fmt.Sprintf("update user set password='%s' nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Password, user.Name, user.Email, groups, user.Status, user.Id)
 	}
 	
 	_, result = helper.Execute(sql)

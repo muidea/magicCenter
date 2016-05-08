@@ -44,11 +44,6 @@ type DeleteUserResult struct {
 	CreateUserResult
 }
 
-type UpdateUserResult struct {
-	common.Result
-	User model.UserDetailView	
-}
-
 func ManageUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageUserHandler");
 	
@@ -296,74 +291,6 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
     b, err := json.Marshal(result)
     if err != nil {
     	panic("json.Marshal, failed, err:" + err.Error())
-    }
-    
-    w.Write(b)
-}
-
-func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("UpdateUserHandler");
-	
-	result := UpdateUserResult{}
-	for true {
-	    err := r.ParseMultipartForm(0)
-    	if err != nil {
-    		log.Print("paseform failed")
-    		
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-    	}
-    	
-		id, err := strconv.Atoi(r.FormValue("user-id"))
-		if err != nil {
-    		log.Print("paseform failed")
-    		
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-		name := r.FormValue("user-name")
-		email := r.FormValue("user-email")
-		status, err := strconv.Atoi(r.FormValue("user-status"))
-		if err != nil {
-    		log.Print("paseform failed")
-    		
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break			
-		}		
-		groups := r.MultipartForm.Value["user-group"]
-	    groupList := []int{}
-	    for _, g := range groups {
-			gid, err := strconv.Atoi(g)
-		    if err != nil {
-		    	log.Print("parse group id failed, group:%s", g)
-				result.ErrCode = 1
-				result.Reason = "无效请求数据"
-				break
-		    }
-		    
-		    groupList = append(groupList, gid)	    	
-	    }
-	    
-	    ok := bll.UpdateUserDetail(id, name, email, status,groupList)
-	    if !ok {
-			result.ErrCode = 1
-			result.Reason = "更新用户信息失败"
-			break
-	    }
-	    
-	    result.User, _ = bll.QueryUserById(id)
-		result.ErrCode = 0
-		result.Reason = "更新用户信息成功"
-	    break
-	}
-    
-    b, err := json.Marshal(result)
-    if err != nil {
-    	panic("json.Marshal, failed, err:" + err.Error())
-        return
     }
     
     w.Write(b)

@@ -10,9 +10,8 @@
 <script type="text/javascript" src="/resources/scripts/jquery.form.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	var email = {{.User.Email}};
-	var groups = {{.User.Groups}};
 	$("#user-Form .user-account").val({{.User.Account}});
+	$("#user-Form .user-id").val({{.Id}});
 });
 </script>
 </head>
@@ -51,7 +50,7 @@ $(document).ready(function() {
 	<div id="page-bgtop">
 		<h2>用户账号验证</h2>
 		<div>
-			<form id="user-Form" action="/admin/account/ajaxVerifyUser/"
+			<form id="user-Form" action="/user/ajaxVerify/"
 				method="post">
 				<div class="notification success png_bg" style="display: none">
 					<a href="#" class="close"><img

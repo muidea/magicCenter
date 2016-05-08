@@ -11,6 +11,7 @@ const (
 type Cache interface {
 	PutIn(data interface{}, maxAge float64) string
 	FetchOut(id string) (interface{}, bool)
+	Remove(id string)
 	ClearAll()
 	Release()	
 }
