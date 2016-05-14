@@ -240,10 +240,10 @@ user.editUser = function(editUrl) {
 		if (result.User.Groups) {
 			for (var ii =0; ii < result.User.Groups.length; ++ii) {
 				var ca = result.User.Groups[ii];
-				$("#user-Edit .user-Form .user-group input").filter("[value="+ ca.Id +"]").prop("checked", true);			
+				$("#user-Edit .user-Form .user-group input").filter("[value="+ ca +"]").prop("checked", true);			
 			}
 		}
-						
+		
 		$("#user-content .content-box-tabs li a").removeClass('current');
 		$("#user-content .content-box-tabs li a.user-Edit-tab").addClass('current');
 		$("#user-Edit").siblings().hide();

@@ -3,24 +3,25 @@ package account
 import (
 	"magiccenter/router"
 	"magiccenter/kernel/account/ui"
+	"magiccenter/kernel/auth"
 )
 
 func RegisterRouter() {
-    router.AddGetRoute("/admin/account/manageUser/", ui.ManageUserHandler)
-	router.AddGetRoute("/admin/account/queryAllUser/", ui.QueryAllUserHandler)
-	router.AddGetRoute("/admin/account/queryUser/", ui.QueryUserHandler)
+    router.AddGetRoute("/admin/account/manageUser/", ui.ManageUserHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/queryAllUser/", ui.QueryAllUserHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/queryUser/", ui.QueryUserHandler, auth.AdminAuthVerify())
 	// 检查Account是否可用
-	router.AddPostRoute("/admin/account/checkAccount/", ui.CheckAccountHandler)
-	router.AddGetRoute("/admin/account/deleteUser/", ui.DeleteUserHandler)
-    router.AddPostRoute("/admin/account/ajaxUser/", ui.AjaxUserHandler)
+	router.AddPostRoute("/admin/account/checkAccount/", ui.CheckAccountHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/deleteUser/", ui.DeleteUserHandler, auth.AdminAuthVerify())
+    router.AddPostRoute("/admin/account/ajaxUser/", ui.AjaxUserHandler, auth.AdminAuthVerify())
     
-    router.AddGetRoute("/admin/account/manageGroup/", ui.ManageGroupHandler)
-	router.AddGetRoute("/admin/account/queryAllGroup/", ui.QueryAllGroupHandler)
-	router.AddGetRoute("/admin/account/queryGroup/", ui.QueryGroupHandler)
-	router.AddGetRoute("/admin/account/deleteGroup/", ui.DeleteGroupHandler)    
-    router.AddPostRoute("/admin/account/ajaxGroup/", ui.AjaxGroupHandler)
+    router.AddGetRoute("/admin/account/manageGroup/", ui.ManageGroupHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/queryAllGroup/", ui.QueryAllGroupHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/queryGroup/", ui.QueryGroupHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/admin/account/deleteGroup/", ui.DeleteGroupHandler, auth.AdminAuthVerify())
+    router.AddPostRoute("/admin/account/ajaxGroup/", ui.AjaxGroupHandler, auth.AdminAuthVerify())
     
-    router.AddGetRoute("/user/profile/", ui.UserProfileHandler)
-    router.AddGetRoute("/user/verify/", ui.UserVerifyHandler)
-    router.AddPostRoute("/user/ajaxVerify/", ui.AjaxVerifyHandler)
+    router.AddGetRoute("/user/profile/", ui.UserProfileHandler, nil)
+    router.AddGetRoute("/user/verify/", ui.UserVerifyHandler, nil)
+    router.AddPostRoute("/user/ajaxVerify/", ui.AjaxVerifyHandler, nil)
 }

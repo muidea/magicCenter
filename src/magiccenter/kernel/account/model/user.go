@@ -19,7 +19,6 @@ type UserDetail struct {
 	User
 	
 	Account string
-	Password string
 	Email string
 	Status int
 	Groups []int

@@ -28,7 +28,7 @@ type QueryAllUserResult struct {
 
 type QueryUserResult struct {
 	common.Result
-	User model.UserDetailView
+	User model.UserDetail
 }
 
 type CheckAccountResult struct {
@@ -209,7 +209,10 @@ func AjaxUserHandler(w http.ResponseWriter, r *http.Request) {
 	    usr, found := bll.QueryUserById(id)
 	    if found {
 	    	// 说明是更新用户信息
-		    ok := bll.SaveUser(id, account, email, groupList)
+	    	usr.Account = account
+	    	usr.Email = email
+	    	usr.Groups = groupList
+		    ok := bll.SaveUser(usr)
 		    if !ok {
 				result.ErrCode = 1
 				result.Reason = "保存用户信息失败"

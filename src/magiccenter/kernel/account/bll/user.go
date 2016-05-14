@@ -16,7 +16,7 @@ func QueryAllUser() []model.UserDetailView {
 	return dal.QueryAllUser(helper)
 }
 
-func QueryUserByAccount(account string) (model.UserDetailView,bool) {
+func QueryUserByAccount(account string) (model.UserDetail,bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -26,7 +26,7 @@ func QueryUserByAccount(account string) (model.UserDetailView,bool) {
 	return dal.QueryUserByAccount(helper, account)
 }
 
-func VerifyUserByAccount(account,password string) (model.UserDetailView,bool) {
+func VerifyUserByAccount(account,password string) (model.UserDetail,bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -37,7 +37,7 @@ func VerifyUserByAccount(account,password string) (model.UserDetailView,bool) {
 }
 
 
-func QueryUserById(id int) (model.UserDetailView,bool) {
+func QueryUserById(id int) (model.UserDetail, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -57,20 +57,13 @@ func DeleteUser(id int) bool {
 	return dal.DeleteUser(helper,id)
 }
 
-func SaveUser(id int, account, email string, groups []int) bool {
+func SaveUser(user model.UserDetail) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	user := model.UserDetail{}
-	user.Id = id
-	user.Account = account
-	user.Email = email
-	user.Status = model.CREATE
-	user.Groups = groups
-	
 	return dal.SaveUser(helper, user)
 }
 
@@ -84,13 +77,12 @@ func CreateUser(account, password, nickName, email string, status int, groups []
 	user := model.UserDetail{}
 	
 	user.Account = account
-	user.Password = password
 	user.Name = nickName
 	user.Email = email
 	user.Status = status
 	user.Groups = groups
 		
-	return dal.SaveUser(helper, user)
+	return dal.CreateUser(helper, user, password)
 }
 
 

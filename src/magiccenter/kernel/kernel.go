@@ -44,10 +44,9 @@ func Initialize() {
 		BindStatic(resourceFilePath)
 	}
 	
-	instanceFrame.Use(auth.Auth())
+	instanceFrame.Use(auth.Authority())
 	
 	admin.RegisterRouter()
-	auth.RegisterRouter()
 	account.RegisterRouter()
 	system.RegisterRouter()
 	moduleManager.RegisterRouter()

@@ -104,10 +104,10 @@ func StartupAllModules() {
 				
 			
 			if rt.Type() == GET {
-				router.AddGetRoute(pattern, rt.Handler())
+				router.AddGetRoute(pattern, rt.Handler(), nil)
 
 			} else if rt.Type() == POST {
-				router.AddPostRoute(pattern, rt.Handler())
+				router.AddPostRoute(pattern, rt.Handler(), nil)
 				
 			} else {
 				panic("illegal route type, type:" + rt.Type() )

@@ -50,8 +50,8 @@ func QueryAllUser(helper modelhelper.Model) []model.UserDetailView {
 	return userList
 }
 
-func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetailView,bool) {
-	user := model.UserDetailView{}
+func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetail,bool) {
+	user := model.UserDetail{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s'", account)
 	helper.Query(sql)
@@ -68,10 +68,7 @@ func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDet
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
-				group, found := QueryGroupById(helper, gid)
-				if found {					
-					user.Groups = append(user.Groups, group)
-				}
+				user.Groups = append(user.Groups, gid)
 			}
 		}		
 	}
@@ -79,8 +76,8 @@ func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDet
 	return user, result
 }
 
-func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetailView,bool) {
-	user := model.UserDetailView{}
+func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetail,bool) {
+	user := model.UserDetail{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
@@ -97,10 +94,7 @@ func VerifyUserByAccount(helper modelhelper.Model, account, password string) (mo
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
-				group, found := QueryGroupById(helper, gid)
-				if found {					
-					user.Groups = append(user.Groups, group)
-				}
+				user.Groups = append(user.Groups, gid)
 			}
 		}		
 	}
@@ -108,8 +102,8 @@ func VerifyUserByAccount(helper modelhelper.Model, account, password string) (mo
 	return user, result
 }
 
-func QueryUserById(helper modelhelper.Model, id int) (model.UserDetailView, bool) {
-	user := model.UserDetailView{}
+func QueryUserById(helper modelhelper.Model, id int) (model.UserDetail, bool) {
+	user := model.UserDetail{}
 	
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where id=%d", id)
 	helper.Query(sql)
@@ -126,10 +120,7 @@ func QueryUserById(helper modelhelper.Model, id int) (model.UserDetailView, bool
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
-				group, found := QueryGroupById(helper, gid)
-				if found {					
-					user.Groups = append(user.Groups, group)
-				}
+				user.Groups = append(user.Groups, gid)
 			}
 		}		
 	}
@@ -149,33 +140,30 @@ func DeleteUserByAccount(helper modelhelper.Model, account, password string) boo
 	return ret
 }
 
-
-func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
-	sql := fmt.Sprintf("select id from user where id=%d", user.Id)
-	helper.Query(sql)
-
-	result := false;
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
-	}
-	
+func CreateUser(helper modelhelper.Model, user model.UserDetail, password string) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
 	}
 	groups = groups[0:len(groups)-1]
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, user.Password, user.Name, user.Email, groups, user.Status)
-	} else {
-		// modify
-		sql = fmt.Sprintf("update user set password='%s' nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Password, user.Name, user.Email, groups, user.Status, user.Id)
-	}
+	// insert
+	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, password, user.Name, user.Email, groups, user.Status)	
+	_, result := helper.Execute(sql)
 	
-	_, result = helper.Execute(sql)
+	return result
+}
+
+func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
+	groups := ""
+	for _, g := range user.Groups {
+		groups = fmt.Sprintf("%s%d,", groups, g)
+	}
+	groups = groups[0:len(groups)-1]
+
+	// modify
+	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)	
+	_, result := helper.Execute(sql)
 	
 	return result
 }

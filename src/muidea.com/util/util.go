@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"io"
+	"reflect"
 )
 
 
@@ -80,3 +81,13 @@ func SendMail(user, password, host, to, subject, body, mailtype string) error{
     err := smtp.SendMail(host, auth, user, send_to, msg)
     return err
 }
+
+func ValidateFunc(fun interface{}) {
+	if reflect.TypeOf(fun).Kind() != reflect.Func {
+		panic("fun must be a callable func")
+	}
+}
+
+
+
+
