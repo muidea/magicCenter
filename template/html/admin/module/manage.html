@@ -146,12 +146,18 @@ $(document).ready(function() {
 						</table>
 						<form class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
 							<fieldset>
-								<legend>名称</legend>
 									<p>
+									<label>名称</label>
 									<input
-										class="text-input small-input module-block" type="text"
-										name="module-block" />
+										class="text-input small-input block-name" type="text"
+										name="block-name" />
 									</p>
+									<p>
+									<label>模块Tag</label>
+									<input
+										class="text-input small-input block-tag" type="text"
+										name="block-tag" />
+									</p>									
 									<p>
 									<input type="radio" name="block-style" value="0"/><span>显示链接</span>
 									<input type="radio" name="block-style" value="1"/><span>显示内容</span>

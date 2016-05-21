@@ -246,7 +246,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 		    catalogs = append(catalogs, cid)
 	    }
 	    
-	    if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetailView).Id, catalogs) {
+	    if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetail).Id, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break	    	

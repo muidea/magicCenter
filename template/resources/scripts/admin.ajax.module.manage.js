@@ -80,10 +80,10 @@ $(document).ready(function() {
         function validate() {
         	var result = true
         	
-        	$("#module-maintain .block .block-Form .module-block").parent().find("span").remove();
-        	var name = $("#module-maintain .block .block-Form .module-block").val();
+        	$("#module-maintain .block .block-Form .block-name").parent().find("span").remove();
+        	var name = $("#module-maintain .block .block-Form .block-name").val();
         	if (name.length == 0) {
-        		$("#module-maintain .block .block-Form .module-block").parent().append("<span class=\"input-notification error png_bg\">请输入功能块名</span>");
+        		$("#module-maintain .block .block-Form .block-name").parent().append("<span class=\"input-notification error png_bg\">请输入功能块名</span>");
         		result = false;
         	}
         	        	

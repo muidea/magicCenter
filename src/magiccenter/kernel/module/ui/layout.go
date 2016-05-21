@@ -27,7 +27,7 @@ type ApplyModuleSettingResult struct {
 
 type QueryModuleDetailResult struct {
 	common.Result
-	Module model.ModuleDetail
+	Module model.ModuleLayout
 }
 
 type DeleteModuleBlockResult struct {
@@ -211,9 +211,10 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
     		break;
     	}
     	 
-		block := r.FormValue("module-block")
+		block := r.FormValue("block-name")
+		tag := r.FormValue("block-tag")
 		ret := false
-		result.Module, ret = bll.AddModuleBlock(block, style, owner)
+		result.Module, ret = bll.AddModuleBlock(block, tag, style, owner)
 		if !ret {
 			result.ErrCode = 1
 			result.Reason = "操作失败"    	

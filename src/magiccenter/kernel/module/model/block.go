@@ -11,6 +11,7 @@ Block 用来定义页面块
 
 Id: Block ID
 Name: Block 名称
+Tag: Block标记信息，用于客户端进行对象识别
 Style: 显示风格，显示内容还是显示链接
 Owner: Block所属的Module
 Items: Block所拥有的Item列表
@@ -18,6 +19,7 @@ Items: Block所拥有的Item列表
 type Block struct {
 	Id int
 	Name string
+	Tag string
 	Style int
 	Owner string
 }
@@ -27,4 +29,9 @@ type BlockDetail struct {
 	Article []Item
 	Catalog []Item
 	Link []Item
+}
+
+type BlockView struct {
+	Block
+	Items []ItemView
 }

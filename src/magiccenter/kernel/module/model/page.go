@@ -16,3 +16,9 @@ type Page struct {
 	Url string
 	Blocks []Block
 }
+
+type PageView struct {
+	Owner string
+	Url string
+	Blocks []BlockView
+}

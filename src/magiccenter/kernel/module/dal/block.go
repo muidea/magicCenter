@@ -7,11 +7,11 @@ import (
 	contentModel "magiccenter/kernel/content/model"
 )
 
-func InsertBlock(helper modelhelper.Model, name string, style int, owner string) (model.Block, bool) {
+func InsertBlock(helper modelhelper.Model, name, tag string, style int, owner string) (model.Block, bool) {
 	block := model.Block{}
 	ret := false
 	
-	sql := fmt.Sprintf("insert into block (name, style, owner) values('%s', %d, '%s')", name, style, owner)
+	sql := fmt.Sprintf("insert into block (name, tag, style, owner) values('%s','%s', %d, '%s')", name, tag, style, owner)
 	num, ret := helper.Execute(sql)
 	if num == 1 && ret {
 		ret = false
@@ -20,6 +20,7 @@ func InsertBlock(helper modelhelper.Model, name string, style int, owner string)
 		if helper.Next() {
 			helper.GetValue(&block.Id)
 			block.Name = name
+			block.Tag = tag
 			block.Style = style
 			block.Owner = owner
 			ret = true
@@ -39,10 +40,10 @@ func QueryBlock(helper modelhelper.Model, id int) (model.BlockDetail, bool) {
 	block := model.BlockDetail{}
 	ret := false
 	
-	sql := fmt.Sprintf("select id, name, style, owner from block where id=%d", id)
+	sql := fmt.Sprintf("select id, name, tag, style, owner from block where id=%d", id)
 	helper.Query(sql)
 	if helper.Next() {
-		helper.GetValue(&block.Id, &block.Name, &block.Style, &block.Owner)
+		helper.GetValue(&block.Id, &block.Name, &block.Tag, &block.Style, &block.Owner)
 		
 		block.Article = QueryItems(helper, block.Id, contentModel.ARTICLE)
 		block.Catalog = QueryItems(helper, block.Id, contentModel.CATALOG)
@@ -55,12 +56,12 @@ func QueryBlock(helper modelhelper.Model, id int) (model.BlockDetail, bool) {
 
 func QueryBlocks(helper modelhelper.Model, owner string) []model.Block {	
 	blockList := []model.Block{}
-	sql := fmt.Sprintf("select id, name, style, owner from block where owner='%s'", owner)
+	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)
 	helper.Query(sql)
 	
 	for helper.Next() {
 		b := model.Block{}
-		helper.GetValue(&b.Id, &b.Name, &b.Style, &b.Owner)
+		helper.GetValue(&b.Id, &b.Name, &b.Tag, &b.Style, &b.Owner)
 		
 		blockList = append(blockList, b)
 	}
@@ -69,14 +70,14 @@ func QueryBlocks(helper modelhelper.Model, owner string) []model.Block {
 }
 
 
-func QueryBlockDetails(helper modelhelper.Model, owner string) []model.BlockDetail {	
+func QueryBlockDetails(helper modelhelper.Model, owner string) []model.BlockDetail {
 	blockList := []model.BlockDetail{}
-	sql := fmt.Sprintf("select id, name, style, owner from block where owner='%s'", owner)
+	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)
 	helper.Query(sql)
 	
 	for helper.Next() {
 		b := model.BlockDetail{}
-		helper.GetValue(&b.Id, &b.Name, &b.Style, &b.Owner)
+		helper.GetValue(&b.Id, &b.Name, &b.Tag, &b.Style, &b.Owner)
 		
 		blockList = append(blockList, b)
 	}
@@ -90,6 +91,34 @@ func QueryBlockDetails(helper modelhelper.Model, owner string) []model.BlockDeta
 	
 	return blockList
 }
+
+func QueryBlockView(helper modelhelper.Model, uri string, id int) (model.BlockView, bool) {
+	block := model.BlockView{}
+	sql := fmt.Sprintf("select id, name, tag, style, owner from block where id=%d", id)
+	helper.Query(sql)
+	
+	found := false
+	if helper.Next() {
+		helper.GetValue(&block.Id, &block.Name, &block.Tag, &block.Style, &block.Owner)
+		found = true
+	}
+	
+	if found {
+		items := QueryItemViews(helper, block.Id)
+		for ii, _ := range items {
+			item := &items[ii]
+			if block.Style == 0 {
+				item.Url = fmt.Sprintf("%s/%s", uri, item.Url)				
+			} else {
+				item.Url = fmt.Sprintf("%s/%s", uri, item.Url)
+			}
+			
+			block.Items = append(block.Items, *item)
+		}
+	}
+	
+	return block, found
+} 
 
 
 

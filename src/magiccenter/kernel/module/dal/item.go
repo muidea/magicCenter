@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"magiccenter/util/modelhelper"
 	"magiccenter/kernel/module/model"
+	contentmodel "magiccenter/kernel/content/model"
 )
 
 func AddItem(helper modelhelper.Model, rid, rtype, owner int) (model.Item, bool) {
@@ -68,3 +69,48 @@ func QueryItems(helper modelhelper.Model, rtype, owner int) []model.Item {
 	
 	return itemList
 }
+
+func QueryItemView(helper modelhelper.Model, id int) (model.ItemView, bool) {
+	item := model.ItemView{}
+	ret := false
+	
+	sql := fmt.Sprintf("select i.id, r.`name` from item i, resource r where i.rid = r.id and i.rtype = r.type and i.id = %d", id)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&item.Id, &item.Name)
+		ret = true
+	}
+	
+	return item, ret
+}
+
+
+func QueryItemViews(helper modelhelper.Model, owner int) []model.ItemView {
+	itemList := []model.ItemView{}
+	
+	sql := fmt.Sprintf("select i.id, r.`name`, i.rid, i.rtype from item i, resource r where i.rid = r.id and i.rtype = r.type and i.`owner` = %d", owner)
+	helper.Query(sql)
+	for helper.Next() {
+		item := model.ItemView{}
+		oid := 0
+		otype := 0
+		helper.GetValue(&item.Id, &item.Name, &oid, &otype)
+		switch otype {
+			case contentmodel.ARTICLE:
+				item.Url = fmt.Sprintf("view/?id=%d", oid)
+			case contentmodel.CATALOG:
+				item.Url = fmt.Sprintf("catalog/?id=%d", oid)
+			case contentmodel.LINK:
+				item.Url = fmt.Sprintf("link/?id=%d", oid)
+			default:
+				item.Url = fmt.Sprintf("404/?id=%d", oid)
+		}
+		itemList = append(itemList, item)
+	}
+	
+	return itemList
+}
+
+
+
+

@@ -17,14 +17,14 @@ func QueryAllModules() []model.Module {
 	return dal.QueryAllModule(helper)
 }
 
-func QueryModuleDetail(id string) (model.ModuleDetail, bool) {
+func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 	
-	detail := model.ModuleDetail{}
+	detail := model.ModuleLayout{}
 	instance, found := module.FindModule(id)
 	if !found {
 		return detail, found
@@ -107,15 +107,15 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 	return moduleList, ok
 }
 
-func AddModuleBlock(name string, style int, owner string) (model.ModuleDetail, bool) {
+func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayout, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 	
-	detail := model.ModuleDetail{}
-	_, ok := dal.InsertBlock(helper, name, style, owner)
+	detail := model.ModuleLayout{}
+	_, ok := dal.InsertBlock(helper, name, tag, style, owner)
 	if !ok {
 		return detail, ok
 	}
@@ -151,14 +151,14 @@ func AddModuleBlock(name string, style int, owner string) (model.ModuleDetail, b
 	return detail, found	
 }
 
-func RemoveModuleBlock(id int, owner string) (model.ModuleDetail, bool) {
+func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 	
-	detail := model.ModuleDetail{}
+	detail := model.ModuleLayout{}
 	ok := dal.DeleteBlock(helper, id)
 	if !ok {
 		return detail, ok
@@ -195,14 +195,14 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleDetail, bool) {
 	return detail, found	
 }
 
-func SavePageBlock(owner,url string, blocks []int) (model.ModuleDetail, bool) {
+func SavePageBlock(owner,url string, blocks []int) (model.ModuleLayout, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 	
-	detail := model.ModuleDetail{}
+	detail := model.ModuleLayout{}
 	helper.BeginTransaction()
 	_, ok := dal.SavePage(helper, owner, url, blocks)
 	if !ok {
@@ -243,5 +243,6 @@ func SavePageBlock(owner,url string, blocks []int) (model.ModuleDetail, bool) {
 	
 	return detail, found	
 }
+
 
 

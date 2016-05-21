@@ -18,12 +18,12 @@ func DeleteModule(helper modelhelper.Model, id string) {
 
 func QueryModule(helper modelhelper.Model, id string) (model.Module, bool) {
 	m := model.Module{}
-	sql := fmt.Sprintf("select id, name, description, enableflag from module where id='%s'", id)	
+	sql := fmt.Sprintf("select id, name, description, uri, enableflag from module where id='%s'", id)	
 	helper.Query(sql)
 	
 	result := false
 	if helper.Next() {
-		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.EnableFlag)
+		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.Uri, &m.EnableFlag)
 		result = true
 	}
 	
@@ -33,12 +33,12 @@ func QueryModule(helper modelhelper.Model, id string) (model.Module, bool) {
 func QueryAllModule(helper modelhelper.Model) []model.Module {
 	moduleList := []model.Module{}
 	
-	sql := fmt.Sprintf("select id, name, description, enableflag from module")	
+	sql := fmt.Sprintf("select id, name, description, uri, enableflag from module")	
 	helper.Query(sql)
 	
 	for helper.Next() {
 		m := model.Module{}
-		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.EnableFlag)
+		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.Uri, &m.EnableFlag)
 		
 		moduleList = append(moduleList, m)
 	}
@@ -50,10 +50,10 @@ func SaveModule(helper modelhelper.Model, m model.Module) (model.Module, bool) {
 	result := false
 	_, found := QueryModule(helper, m.Id)
 	if found {
-		sql := fmt.Sprintf("update module set name ='%s', description ='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.EnableFlag, m.Id)
+		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.EnableFlag, m.Id)
 		_, result = helper.Execute(sql)
 	} else {
-		sql := fmt.Sprintf("insert into module(id, name, description, enableflag) values ('%s','%s','%s',%d)", m.Id, m.Name, m.Description, m.EnableFlag)
+		sql := fmt.Sprintf("insert into module(id, name, description, uri, enableflag) values ('%s','%s','%s',%d)", m.Id, m.Name, m.Description, m.Uri, m.EnableFlag)
 		_, result = helper.Execute(sql)
 	}
 	

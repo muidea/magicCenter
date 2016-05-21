@@ -34,6 +34,19 @@ func AdminAuthVerify() martini.Handler {
 	}
 }
 
+func LoginAuthVerify() martini.Handler {
+	return func(res http.ResponseWriter, req *http.Request) bool {
+		authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+		if !found {
+			panic("unexpected, can't fetch authorith id")
+		}
+		
+		session := session.GetSession(res, req)		
+		_, found = session.GetOption(authId)
+		return found
+	}
+}
+
 
 func Authority() martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request, c martini.Context, log *log.Logger) {

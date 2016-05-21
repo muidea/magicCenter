@@ -40,7 +40,7 @@ func (this *blog) Uri() string {
 }
 
 func (this *blog) Routes() []module.Route {
-	routes := []module.Route{module.NewRoute(module.GET,"/",indexHandler), module.NewRoute(module.GET,"/view/",viewArticleHandler), module.NewRoute(module.GET,"/guestbook/",indexHandler), module.NewRoute(module.GET,"/aboutsite/",indexHandler), module.NewRoute(module.GET,"/aboutme/",indexHandler)}
+	routes := []module.Route{module.NewRoute(module.GET,"/",indexHandler), module.NewRoute(module.GET,"view/",viewContentHandler), module.NewRoute(module.GET,"catalog/",viewCatalogHandler), module.NewRoute(module.GET,"link/",viewLinkHandler), module.NewRoute(module.GET,"guestbook/",indexHandler), module.NewRoute(module.GET,"aboutsite/",indexHandler), module.NewRoute(module.GET,"aboutme/",indexHandler)}
 	
 	return routes
 }
