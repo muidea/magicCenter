@@ -18,8 +18,9 @@ type Item struct {
 }
 
 /*
-Id: 标识Item对象
+Id: Item对应真是对象的ID，article，Catalog，。。。
 Name: Item名称，根据实际表示的对象来决定，Article为Title，Catalog为Name ect。
+Url:访问Item对应的Url
 */
 type ItemView struct {
 	Id int

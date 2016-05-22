@@ -1,9 +1,9 @@
-var index = {
+var view = {
 		view:{}
 };
 
 $(document).ready(function() {
-	var pageView = index.view;
+	var pageView = view.view;
 	console.log(pageView);
 	var menu = magic.findBlock(pageView, "nav");
 	var menuView = magic.listView(menu);
@@ -19,17 +19,5 @@ $(document).ready(function() {
 	var linkView = magic.listView(link);
 	$("#sidebar .link ul").remove();
 	$("#sidebar .link").append(linkView);
-	
-	$("#content .post").remove();
-	var view = magic.findBlock(pageView, "view");
-	if (view && view.Items) {
-		for(var ii=0; ii < view.Items.length; ++ii) {
-			var item = view.Items[ii];
-			var post = magic.findContent(pageView, item.Id);
-			var postView = magic.contentView(post);
-			
-			$("#content").append(postView);
-		}
-	}
 });	
 

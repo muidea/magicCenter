@@ -225,7 +225,7 @@ link.editLink = function(editUrl) {
 		if (result.Link.Catalog) {
 			for (var ii =0; ii < result.Link.Catalog.length; ++ii) {
 				var ca = result.Link.Catalog[ii];
-				$("#link-Edit .link-Form .link-catalog input").filter("[value="+ ca +"]").prop("checked", true);			
+				$("#link-Edit .link-Form .link-catalog input").filter("[value="+ ca.Id +"]").prop("checked", true);			
 			}			
 		}
 		

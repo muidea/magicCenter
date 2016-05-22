@@ -38,3 +38,61 @@ magic.listView = function(view) {
 	return ul;
 };
 
+magic.findContent = function(view, id) {
+	var val = null;
+	if (view.Contents) {
+		for (var ii =0; ii < view.Contents.length; ++ii) {
+			var content = view.Contents[ii];
+			if (content.Id == id) {
+				val = content;
+				break;
+			}			
+		}
+	}
+	
+	return val;
+};
+
+magic.contentView = function(view) {
+	var div = document.createElement("div");
+	div.setAttribute("class","post");
+	
+	var meta = document.createElement("p");
+	meta.setAttribute("class","meta");
+	
+	var date = document.createElement("span");
+	date.setAttribute("class","date");
+	date.innerHTML = view.CreateDate;
+	meta.appendChild(date);
+	
+	var author = document.createElement("span");
+	author.setAttribute("class","date");
+	author.innerHTML = view.Author.Name;
+	meta.appendChild(author);	
+	
+	div.appendChild(meta);
+	
+	var title = document.createElement("h2");
+	title.setAttribute("class","title");
+	title.innerHTML = view.Title;
+	
+	div.appendChild(title);
+	
+	var entry = document.createElement("div");
+	entry.setAttribute("class","entry");
+	entry.innerHTML = view.Content;
+	
+	div.appendChild(entry);
+	
+	var readMore = document.createElement("div");
+	var a = document.createElement("a");
+	a.innerHTML = "阅读全文。。.";
+	a.setAttribute("href", "#");
+	readMore.appendChild(a);
+	
+	div.appendChild(readMore);
+	
+	return div;
+};
+
+

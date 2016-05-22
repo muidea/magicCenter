@@ -5,6 +5,7 @@ import (
     "magiccenter/kernel/module/dal"
     "magiccenter/kernel/module/model"
     "magiccenter/configuration"
+    contentBll "magiccenter/kernel/content/bll"
 )
 
 
@@ -44,6 +45,17 @@ func QueryPageView(module, url string) (model.PageView, bool) {
 		view,found := dal.QueryBlockView(helper, uri, block.Id)
 		if found {
 			pageView.Blocks = append(pageView.Blocks, view)
+			
+			if view.Style != 0 {
+				// 说明是显示内容,所以这里要继续把Block下对应item的内容取出来	
+				for ii, _ := range view.Items {
+					item := &view.Items[ii]
+					article, found := contentBll.QueryArticleById(item.Id)
+					if found {
+						pageView.Contents = append(pageView.Contents, article)
+					}					
+				}			
+			}
 		}
 	}
 	pageView.Url = page.Url
@@ -51,6 +63,8 @@ func QueryPageView(module, url string) (model.PageView, bool) {
 	
 	return pageView, found
 }
+
+
 
 
 

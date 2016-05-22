@@ -88,22 +88,21 @@ func QueryItemView(helper modelhelper.Model, id int) (model.ItemView, bool) {
 func QueryItemViews(helper modelhelper.Model, owner int) []model.ItemView {
 	itemList := []model.ItemView{}
 	
-	sql := fmt.Sprintf("select i.id, r.`name`, i.rid, i.rtype from item i, resource r where i.rid = r.id and i.rtype = r.type and i.`owner` = %d", owner)
+	sql := fmt.Sprintf("select i.rid, r.`name`, i.rtype from item i, resource r where i.rid = r.id and i.rtype = r.type and i.`owner` = %d", owner)
 	helper.Query(sql)
 	for helper.Next() {
 		item := model.ItemView{}
-		oid := 0
 		otype := 0
-		helper.GetValue(&item.Id, &item.Name, &oid, &otype)
+		helper.GetValue(&item.Id, &item.Name, &otype)
 		switch otype {
 			case contentmodel.ARTICLE:
-				item.Url = fmt.Sprintf("view/?id=%d", oid)
+				item.Url = fmt.Sprintf("view/?id=%d", item.Id)
 			case contentmodel.CATALOG:
-				item.Url = fmt.Sprintf("catalog/?id=%d", oid)
+				item.Url = fmt.Sprintf("catalog/?id=%d", item.Id)
 			case contentmodel.LINK:
-				item.Url = fmt.Sprintf("link/?id=%d", oid)
+				item.Url = fmt.Sprintf("link/?id=%d", item.Id)
 			default:
-				item.Url = fmt.Sprintf("404/?id=%d", oid)
+				item.Url = fmt.Sprintf("404/?id=%d", item.Id)
 		}
 		itemList = append(itemList, item)
 	}

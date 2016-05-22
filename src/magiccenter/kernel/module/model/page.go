@@ -1,7 +1,7 @@
 package model
 
 import (
-
+	contentModel "magiccenter/kernel/content/model"
 )
 
 /*
@@ -21,4 +21,5 @@ type PageView struct {
 	Owner string
 	Url string
 	Blocks []BlockView
+	Contents []contentModel.Article
 }
