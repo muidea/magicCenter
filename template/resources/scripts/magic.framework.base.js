@@ -57,6 +57,7 @@ magic.contentView = function(view) {
 	var div = document.createElement("div");
 	div.setAttribute("class","post");
 	
+	// meta
 	var meta = document.createElement("p");
 	meta.setAttribute("class","meta");
 	
@@ -66,28 +67,31 @@ magic.contentView = function(view) {
 	meta.appendChild(date);
 	
 	var author = document.createElement("span");
-	author.setAttribute("class","date");
+	author.setAttribute("class","author");
 	author.innerHTML = view.Author.Name;
 	meta.appendChild(author);	
 	
 	div.appendChild(meta);
 	
+	// title
 	var title = document.createElement("h2");
 	title.setAttribute("class","title");
 	title.innerHTML = view.Title;
 	
 	div.appendChild(title);
 	
+	// entry
 	var entry = document.createElement("div");
 	entry.setAttribute("class","entry");
 	entry.innerHTML = view.Content;
 	
 	div.appendChild(entry);
 	
+	// readmore
 	var readMore = document.createElement("div");
 	var a = document.createElement("a");
 	a.innerHTML = "阅读全文。。.";
-	a.setAttribute("href", "#");
+	a.setAttribute("href", view.Url);
 	readMore.appendChild(a);
 	
 	div.appendChild(readMore);

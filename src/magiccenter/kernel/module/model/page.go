@@ -17,9 +17,19 @@ type Page struct {
 	Blocks []Block
 }
 
+type Content struct {
+	contentModel.Article
+	Url string
+}
+
 type PageView struct {
 	Owner string
 	Url string
 	Blocks []BlockView
-	Contents []contentModel.Article
+	Contents []Content
+}
+
+type PageContentView struct {
+	PageView
+	Content contentModel.Article
 }

@@ -15,6 +15,10 @@ type PageView struct {
 	View model.PageView
 }
 
+type PageContentView struct {
+	View model.PageContentView
+}
+
 func indexHandler(res http.ResponseWriter, req *http.Request) {
 	log.Printf("indexHandler")
 	
@@ -40,7 +44,6 @@ func viewContentHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("content-type", "text/html")
 	res.Header().Set("charset", "utf-8")
 	
-	/*
 	params := util.SplitParam(req.URL.RawQuery)
 	str, found := params["id"]
 	if !found {
@@ -50,13 +53,12 @@ func viewContentHandler(res http.ResponseWriter, req *http.Request) {
 	id, err := strconv.Atoi(str)
 	if err!= nil {
 		panic("illegl id, err:" + err.Error())
-	}*/
+	}
 		
-	view := PageView{}
+	view := PageContentView{}
 		
 	url := req.URL.Path	
-	view.View, _ = bll.QueryPageView(ID, url)
-	
+	view.View, _ = bll.QueryContentView(ID, url, id)	
     t, err := template.ParseFiles("template/html/blog/view.html")
     if (err != nil) {
     	panic("ParseFiles failed, err:" + err.Error())
