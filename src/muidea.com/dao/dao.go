@@ -142,7 +142,7 @@ func (this *Dao) GetField(value ... interface{}){
 	}
 }
 
-func (this *Dao) Execute(sql string) bool {
+func (this *Dao) Execute(sql string) (int64,bool) {
 	if this.dbHandle == nil {
 		panic("dbHandle is nil");
 	}
@@ -156,12 +156,12 @@ func (this *Dao) Execute(sql string) bool {
 		panic("exec exception, err:" + err.Error())
 	}
 	
-	_, err = result.RowsAffected()
+	num, err := result.RowsAffected()
 	if err != nil {
 		panic("rows affected exception, err:" + err.Error())
 	}
 	
-	return true
+	return num,true
 }
 
 

@@ -12,8 +12,8 @@ Url: Page对应的Url
 Blocks: Page包含的Block列表
 */
 type Page struct {
-	Owner string
-	Url string
+	Owner  string
+	Url    string
 	Blocks []Block
 }
 
@@ -23,10 +23,10 @@ type Content struct {
 }
 
 type PageView struct {
-	Owner string
-	Url string
+	Owner  string
+	Url    string
 	Blocks []BlockView
-	Contents []Content
+	Posts  []Content
 }
 
 type PageContentView struct {
