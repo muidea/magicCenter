@@ -10,7 +10,6 @@ const Description = "blog module"
 const URI = "/blog"
 
 type blog struct {
-	
 }
 
 var instance *blog = nil
@@ -19,7 +18,7 @@ func LoadModule() {
 	if instance == nil {
 		instance = &blog{}
 	}
-	
+
 	module.RegisterModule(instance)
 }
 
@@ -40,8 +39,8 @@ func (this *blog) Uri() string {
 }
 
 func (this *blog) Routes() []module.Route {
-	routes := []module.Route{module.NewRoute(module.GET,"/",indexHandler), module.NewRoute(module.GET,"/view/",viewContentHandler), module.NewRoute(module.GET,"/catalog/",viewCatalogHandler), module.NewRoute(module.GET,"/link/",viewLinkHandler)}
-	
+	routes := []module.Route{module.NewRoute(module.GET, "/", indexHandler), module.NewRoute(module.GET, "/view/", viewContentHandler), module.NewRoute(module.GET, "/catalog/", viewCatalogHandler), module.NewRoute(module.GET, "/link/", viewLinkHandler)}
+
 	return routes
 }
 
@@ -49,7 +48,5 @@ func (this *blog) Startup() {
 }
 
 func (this *blog) Cleanup() {
-	
+
 }
-
-
