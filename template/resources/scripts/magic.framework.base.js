@@ -112,3 +112,20 @@ magic.contentView = function(view) {
 
     return div;
 };
+
+magic.catalogView = function(view) {
+    var div = document.createElement("div");
+    if (view) {
+        for (var ii = 0; ii < view.length; ++ii) {
+            var catalog = view[ii];
+            var single = document.createElement("div");
+            var a = document.createElement("a");
+            a.innerHTML = catalog.Name;
+            a.setAttribute("href", catalog.Url);
+            single.appendChild(a);
+
+            div.appendChild(single);
+        }
+    }
+    return div;
+};

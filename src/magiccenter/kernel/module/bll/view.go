@@ -125,3 +125,34 @@ func QueryContentView(module, url string, id int) (model.PageContentView, bool) 
 
 	return contentView, found
 }
+
+func QueryCatalogView(module, url string, id int) (model.PageCatalogView, bool) {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	catalogView := model.PageCatalogView{}
+
+	page, found := dal.QueryPage(helper, module, url)
+	if !found {
+		return catalogView, found
+	}
+
+	for index, _ := range page.Blocks {
+		block := &page.Blocks[index]
+
+		view, found := dal.QueryBlockView(helper, url, block.Id)
+		if found {
+			catalogView.Blocks = append(catalogView.Blocks, view)
+		}
+	}
+
+	catalogView.Catalogs = dal.QueryItemViews(helper, id)
+
+	catalogView.Url = page.Url
+	catalogView.Owner = page.Owner
+
+	return catalogView, found
+}

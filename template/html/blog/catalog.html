@@ -1,100 +1,85 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>MagicID Webcenter</title>
-<meta name="keywords" content="" />
-<meta name="description" content="" />
-<link rel="stylesheet" href="/resources/css/index-style.css" type="text/css" media="screen" />
 
-<script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>MagicID Webcenter</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/resources/css/index-style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/css/index-style.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/resources/scripts/magic.framework.base.js"></script>
+    <script type="text/javascript" src="/resources/scripts/blog/catalog.js"></script>
+    <script type="text/javascript">
+        catalog.view = {{.View}};
+        
+    </script>
 </head>
+
 <body>
-<div id="header-wrapper">
-	<div id="header">
-		<div id="menu">
-			<ul>
-				<li><a href="/" class="first">首页</a></li>
-				<li><a href="/guestbook/">留言</a></li>
-				<li><a href="/aboutSite/">关于本站</a></li>
-				<li><a href="/aboutMe/">关于本人</a></li>
-			</ul>
-		</div>
-		<!-- end #menu -->
-		<div id="search">
-			<form method="get" action="">
-				<fieldset>
-					<input type="text" name="s" id="search-text" size="15" />
-					<input type="submit" id="search-submit" value="GO" />
-				</fieldset>
-			</form>
-		</div>
-		<!-- end #search -->
-	</div>
-</div>
-<!-- end #header -->
-<!-- end #header-wrapper -->
-<div id="logo">
-	<p><em> template design by <a href="#">www.865171.cn</a></em></p>
-</div>
-<!-- end #logo -->
-<div id="page">
-	<div id="page-bgtop">
-		<div id="content">
-			{{if eq .ErrCode 0}} 
-			<div class="post">
-				<p class="meta"><span class="date">{{.Article.CreateDate}}</span> Posted by <a href="#">{{.Article.Author}}</a></p>
-				<h2 class="title"><a href="#">{{.Article.Title}}</a></h2>
-				<div class="entry">
-				{{.Article.Content}} 
-				</div>
-			</div>
-			{{else}}
-			<div  class="post">{{.Reason}}</div>
-			{{end}}		
-		</div>
-		<!-- end #content -->
-		<div id="sidebar">
-			<ul>
-				<li>
-					<h2>热门标签</h2>
-					<p>Mauris vitae nisl nec metus placerat perdiet est. Phasellus dapibus semper urna. Pellentesque ornare, orci in consectetuer hendrerit, volutpat.</p>
-				</li>
-				<li>
-					<h2>文章分类</h2>
-					<ul>
-				{{with .ArticleCatalog}}
-					{{range .}}
-						<li><a href="#">{{.Name}}</a></li>
-					{{end}}
-				{{end}}
-					</ul>
-				</li>
-				<li>
-					<h2>友情链接</h2>
-					<ul>
-				{{with .SiteLink}}
-					{{range .}}
-						{{if eq .Style 0}}
-						<li><a href="{{.Url}}">{{.Name}}</a></li>
-						{{else}}
-						<li><a href="{{.Url}}">Image {{.Name}}</a></li>
-						{{end}}
-					{{end}}
-				{{end}}
-						<li><a href="#">Nec metus sed donec</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		<!-- end #sidebar -->
-		<div style="clear: both;">&nbsp;</div>
-	</div>
-	<!-- end #page -->
-	<div id="footer">
-		<p>Copyright (c) 2008 Sitename.com. All rights reserved. Design by <a href="/aboutMe/">Rangh</a>.</p>
-	</div>
-	<!-- end #footer -->
-</div>
+    <div id="header-wrapper">
+        <div id="header">
+            <div id="menu">
+                <ul>
+                    <li><a href="/" class="first">首页</a></li>
+                    <li><a href="/guestbook/">留言</a></li>
+                    <li><a href="/aboutSite/">关于本站</a></li>
+                    <li><a href="/aboutMe/">关于本人</a></li>
+                </ul>
+            </div>
+            <!-- end #menu -->
+            <div id="search">
+                <form method="get" action="">
+                    <fieldset>
+                        <input type="text" name="s" id="search-text" size="15" />
+                        <input type="submit" id="search-submit" value="GO" />
+                    </fieldset>
+                </form>
+            </div>
+            <!-- end #search -->
+        </div>
+    </div>
+    <!-- end #header -->
+    <!-- end #header-wrapper -->
+    <div id="logo">
+        <p><em> template design by <a href="#">www.865171.cn</a></em></p>
+    </div>
+    <!-- end #logo -->
+    <div id="page">
+        <div id="page-bgtop">
+            <div id="content">
+            </div>
+            <!-- end #content -->
+            <div id="sidebar">
+                <ul>
+                    <li>
+                        <h2>热门标签</h2>
+                        <p>Mauris vitae nisl nec metus placerat perdiet est. Phasellus dapibus semper urna. Pellentesque ornare, orci in consectetuer hendrerit, volutpat.</p>
+                    </li>
+                    <li class="catalog">
+                        <h2>文章分类</h2>
+                        <ul>
+                            <li><a href="#">11</a></li>
+                        </ul>
+                    </li>
+                    <li class="link">
+                        <h2>友情链接</h2>
+                        <ul>
+                            <li><a href="#">Nec metus sed donec</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- end #sidebar -->
+            <div style="clear: both;">&nbsp;</div>
+        </div>
+        <!-- end #page -->
+        <div id="footer">
+            <p>Copyright (c) 2008 Sitename.com. All rights reserved. Design by <a href="/aboutMe/">Rangh</a>.</p>
+        </div>
+        <!-- end #footer -->
+    </div>
 </body>
+
 </html>

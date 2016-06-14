@@ -33,3 +33,8 @@ type PageContentView struct {
 	PageView
 	Content contentModel.Article
 }
+
+type PageCatalogView struct {
+	PageView
+	Catalogs []ItemView
+}
