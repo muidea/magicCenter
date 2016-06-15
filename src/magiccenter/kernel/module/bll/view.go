@@ -31,7 +31,7 @@ func QueryPageView(module, url string) (model.PageView, bool) {
 		return pageView, found
 	}
 
-	uri := ""
+	uri := "/"
 	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
 	// 如果不是默认模块，则uri为module的Uri
 	if defaultModule != page.Owner {
@@ -53,7 +53,7 @@ func QueryPageView(module, url string) (model.PageView, bool) {
 					if found {
 						content := model.Content{}
 						content.Article = article
-						content.Url = fmt.Sprintf("%s/view/?id=%d", uri, article.Id)
+						content.Url = fmt.Sprintf("%sview/?id=%d", uri, article.Id)
 						pageView.Posts = append(pageView.Posts, content)
 					}
 				}
@@ -85,7 +85,7 @@ func QueryContentView(module, url string, id int) (model.PageContentView, bool) 
 		return contentView, found
 	}
 
-	uri := ""
+	uri := "/"
 	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
 	// 如果不是默认模块，则uri为module的Uri
 	if defaultModule != page.Owner {
@@ -107,7 +107,7 @@ func QueryContentView(module, url string, id int) (model.PageContentView, bool) 
 					if found {
 						content := model.Content{}
 						content.Article = article
-						content.Url = fmt.Sprintf("%s/view/?id=%d", uri, article.Id)
+						content.Url = fmt.Sprintf("%sview/?id=%d", uri, article.Id)
 						contentView.Posts = append(contentView.Posts, content)
 					}
 				}
@@ -140,16 +140,27 @@ func QueryCatalogView(module, url string, id int) (model.PageCatalogView, bool) 
 		return catalogView, found
 	}
 
+	m, found := dal.QueryModule(helper, page.Owner)
+	if !found {
+		return catalogView, found
+	}
+
+	uri := "/"
+	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
+	// 如果不是默认模块，则uri为module的Uri
+	if defaultModule != page.Owner {
+		uri = m.Uri
+	}
 	for index, _ := range page.Blocks {
 		block := &page.Blocks[index]
 
-		view, found := dal.QueryBlockView(helper, url, block.Id)
+		view, found := dal.QueryBlockView(helper, uri, block.Id)
 		if found {
 			catalogView.Blocks = append(catalogView.Blocks, view)
 		}
 	}
 
-	catalogView.Catalogs = dal.QueryItemViews(helper, id)
+	catalogView.Catalogs = dal.QueryItemViews(helper, id, uri)
 
 	catalogView.Url = page.Url
 	catalogView.Owner = page.Owner
