@@ -1,11 +1,35 @@
 package bll
 
 import (
-    "magiccenter/util/modelhelper"
-    "magiccenter/kernel/module/dal"
-    "magiccenter/kernel/module/model"
-    "magiccenter/module"    
+	"magiccenter/kernel/module/dal"
+	"magiccenter/kernel/module/model"
+	"magiccenter/module"
+	"magiccenter/util/modelhelper"
 )
+
+func queryAllModuleInternal(helper modelhelper.Model) []model.Module {
+	modules := dal.QueryAllModule(helper)
+
+	sysModule := module.QueryAllModule()
+
+	for ii, _ := range sysModule {
+		sysMod := sysModule[ii]
+
+		mod, found := dal.QueryModule(helper, sysMod.ID())
+		if !found {
+			mod = model.Module{}
+			mod.Id = sysMod.ID()
+			mod.Name = sysMod.Name()
+			mod.Description = sysMod.Description()
+			mod.Uri = sysMod.Uri()
+			mod.EnableFlag = 0
+
+			modules = append(modules, mod)
+		}
+	}
+
+	return modules
+}
 
 func QueryAllModules() []model.Module {
 	helper, err := modelhelper.NewHelper()
@@ -13,8 +37,8 @@ func QueryAllModules() []model.Module {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
-	return dal.QueryAllModule(helper)
+
+	return queryAllModuleInternal(helper)
 }
 
 func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
@@ -23,7 +47,7 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	detail := model.ModuleLayout{}
 	instance, found := module.FindModule(id)
 	if !found {
@@ -38,21 +62,21 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 		m.EnableFlag = 0
 		m, found = dal.SaveModule(helper, m)
 	}
-	
+
 	if found {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
 		detail.EnableFlag = m.EnableFlag
 		detail.Blocks = dal.QueryBlocks(helper, id)
-		
+
 		rts := instance.Routes()
 		for _, r := range rts {
 			p, _ := dal.QueryPage(helper, id, r.Pattern())
 			detail.Pages = append(detail.Pages, p)
 		}
 	}
-	
+
 	return detail, found
 }
 
@@ -62,19 +86,19 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	helper.BeginTransaction()
-	
+
 	ok := true
-	modules := dal.QueryAllModule(helper)
+	modules := queryAllModuleInternal(helper)
 	for i, _ := range modules {
 		m := &modules[i]
-		
+
 		found := false
 		for _, id := range enableList {
 			if m.Id == id {
 				found = true
-				break;
+				break
 			}
 		}
 
@@ -89,7 +113,7 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 				_, ok = dal.SaveModule(helper, *m)
 			}
 		}
-		
+
 		if !ok {
 			break
 		}
@@ -98,12 +122,12 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 	moduleList := []model.Module{}
 	if ok {
 		helper.Commit()
-		
+
 		moduleList = dal.QueryAllModule(helper)
 	} else {
 		helper.Rollback()
 	}
-	
+
 	return moduleList, ok
 }
 
@@ -113,13 +137,13 @@ func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayo
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	detail := model.ModuleLayout{}
 	_, ok := dal.InsertBlock(helper, name, tag, style, owner)
 	if !ok {
 		return detail, ok
 	}
-	
+
 	instance, found := module.FindModule(owner)
 	if !found {
 		return detail, found
@@ -133,22 +157,22 @@ func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayo
 		m.EnableFlag = 0
 		m, found = dal.SaveModule(helper, m)
 	}
-	
+
 	if found {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
 		detail.EnableFlag = m.EnableFlag
 		detail.Blocks = dal.QueryBlocks(helper, owner)
-		
+
 		rts := instance.Routes()
 		for _, r := range rts {
 			p, _ := dal.QueryPage(helper, owner, r.Pattern())
 			detail.Pages = append(detail.Pages, p)
 		}
-	}	
-	
-	return detail, found	
+	}
+
+	return detail, found
 }
 
 func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
@@ -157,13 +181,13 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	detail := model.ModuleLayout{}
 	ok := dal.DeleteBlock(helper, id)
 	if !ok {
 		return detail, ok
 	}
-	
+
 	instance, found := module.FindModule(owner)
 	if !found {
 		return detail, found
@@ -177,42 +201,42 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 		m.EnableFlag = 0
 		m, found = dal.SaveModule(helper, m)
 	}
-	
+
 	if found {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
 		detail.EnableFlag = m.EnableFlag
 		detail.Blocks = dal.QueryBlocks(helper, owner)
-		
+
 		rts := instance.Routes()
 		for _, r := range rts {
 			p, _ := dal.QueryPage(helper, owner, r.Pattern())
 			detail.Pages = append(detail.Pages, p)
 		}
-	}	
-	
-	return detail, found	
+	}
+
+	return detail, found
 }
 
-func SavePageBlock(owner,url string, blocks []int) (model.ModuleLayout, bool) {
+func SavePageBlock(owner, url string, blocks []int) (model.ModuleLayout, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	detail := model.ModuleLayout{}
 	helper.BeginTransaction()
 	_, ok := dal.SavePage(helper, owner, url, blocks)
 	if !ok {
 		helper.Rollback()
-		
+
 		return detail, ok
 	}
-	
+
 	helper.Commit()
-	
+
 	instance, found := module.FindModule(owner)
 	if !found {
 		return detail, found
@@ -226,23 +250,20 @@ func SavePageBlock(owner,url string, blocks []int) (model.ModuleLayout, bool) {
 		m.EnableFlag = 0
 		m, found = dal.SaveModule(helper, m)
 	}
-	
+
 	if found {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
 		detail.EnableFlag = m.EnableFlag
 		detail.Blocks = dal.QueryBlocks(helper, owner)
-		
+
 		rts := instance.Routes()
 		for _, r := range rts {
 			p, _ := dal.QueryPage(helper, owner, r.Pattern())
 			detail.Pages = append(detail.Pages, p)
 		}
 	}
-	
-	return detail, found	
+
+	return detail, found
 }
-
-
-

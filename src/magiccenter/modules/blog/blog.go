@@ -5,8 +5,8 @@ import (
 )
 
 const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe3e"
-const Name = "Blog"
-const Description = "blog module"
+const Name = "博客"
+const Description = "博客模块"
 const URI = "/blog"
 
 type blog struct {
