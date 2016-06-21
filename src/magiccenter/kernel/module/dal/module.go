@@ -49,7 +49,7 @@ func SaveModule(helper modelhelper.Model, m model.Module) (model.Module, bool) {
 	result := false
 	_, found := QueryModule(helper, m.Id)
 	if found {
-		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.EnableFlag, m.Id)
+		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.Uri, m.EnableFlag, m.Id)
 		_, result = helper.Execute(sql)
 	} else {
 		sql := fmt.Sprintf("insert into module(id, name, description, uri, enableflag) values ('%s','%s','%s','%s',%d)", m.Id, m.Name, m.Description, m.Uri, m.EnableFlag)

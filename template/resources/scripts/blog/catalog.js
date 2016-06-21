@@ -4,8 +4,6 @@
 
     $(document).ready(function() {
         var pageView = catalog.view;
-        console.log(pageView);
-
         var menu = magic.findBlock(pageView, "nav");
         if (menu) {
             $("#menu ul").remove();
