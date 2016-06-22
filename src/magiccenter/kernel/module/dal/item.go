@@ -70,24 +70,34 @@ func QueryItems(helper modelhelper.Model, rtype, owner int) []model.Item {
 	return itemList
 }
 
-func QueryItemView(helper modelhelper.Model, id int) (model.ItemView, bool) {
-	item := model.ItemView{}
-	ret := false
-
-	sql := fmt.Sprintf("select i.id, r.`name` from item i, resource r where i.rid = r.id and i.rtype = r.type and i.id = %d", id)
-	helper.Query(sql)
-	if helper.Next() {
-		helper.GetValue(&item.Id, &item.Name)
-		ret = true
-	}
-
-	return item, ret
-}
-
 func QueryItemViews(helper modelhelper.Model, owner int, uri string) []model.ItemView {
 	itemList := []model.ItemView{}
 
 	sql := fmt.Sprintf("select i.rid, r.`name`, i.rtype from item i, resource r where i.rid = r.id and i.rtype = r.type and i.`owner` = %d", owner)
+	helper.Query(sql)
+	for helper.Next() {
+		item := model.ItemView{}
+		otype := 0
+		helper.GetValue(&item.Id, &item.Name, &otype)
+		switch otype {
+		case contentmodel.ARTICLE:
+			item.Url = fmt.Sprintf("%sview/?id=%d", uri, item.Id)
+		case contentmodel.CATALOG:
+			item.Url = fmt.Sprintf("%scatalog/?id=%d", uri, item.Id)
+		case contentmodel.LINK:
+			item.Url = fmt.Sprintf("%slink/?id=%d", uri, item.Id)
+		default:
+			item.Url = fmt.Sprintf("%s404/?id=%d", uri, item.Id)
+		}
+		itemList = append(itemList, item)
+	}
+
+	return itemList
+}
+
+func QuerySubItemViews(helper modelhelper.Model, owner int, uri string) []model.ItemView {
+	itemList := []model.ItemView{}
+	sql := fmt.Sprintf("select r.id, r.`name`, r.type from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = %d", owner, contentmodel.CATALOG)
 	helper.Query(sql)
 	for helper.Next() {
 		item := model.ItemView{}

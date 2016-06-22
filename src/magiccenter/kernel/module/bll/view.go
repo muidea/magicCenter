@@ -160,7 +160,7 @@ func QueryCatalogView(module, url string, id int) (model.PageCatalogView, bool) 
 		}
 	}
 
-	catalogView.Catalogs = dal.QueryItemViews(helper, id, uri)
+	catalogView.Catalogs = dal.QuerySubItemViews(helper, id, uri)
 
 	catalogView.Url = page.Url
 	catalogView.Owner = page.Owner
