@@ -14,12 +14,14 @@ import (
 	"net/http"
 )
 
-// 后台管理主页面
+// 后台管理主页面信息
 // 包含当前登陆的用户信息
 type AdminView struct {
 	User model.User
 }
 
+// 登陆请求校验信息
+// 包含登陆结果，登陆成功重定向地址
 type VerifyAuthResult struct {
 	common.Result
 	RedirectUrl string
@@ -29,10 +31,11 @@ func RegisterRouter() {
 	router.AddGetRoute("/admin/", AdminHandler, auth.AdminAuthVerify())
 
 	router.AddGetRoute("/admin/login/", LoginHandler, nil)
-	router.AddGetRoute("/admin/logout/", LogoutHandler, auth.AdminAuthVerify())
 	router.AddPostRoute("/admin/verify/", VerifyAuthHandler, nil)
+	router.AddGetRoute("/admin/logout/", LogoutHandler, auth.AdminAuthVerify())
 }
 
+// 后台管理主页面处理器
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("adminHandler")
 
@@ -77,7 +80,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/", http.StatusFound)
 	}
 
-	t, err := template.ParseFiles("template/html/admin/login.html")
+	t, err := template.ParseFiles("resources/view/admin/login.html")
 	if err != nil {
 		panic("parse files failed")
 	}
