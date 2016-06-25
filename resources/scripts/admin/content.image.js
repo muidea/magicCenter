@@ -175,7 +175,7 @@ image.constructImageItem = function(img) {
 	deleteLink.setAttribute("href","#deleteImage" );
 	deleteLink.setAttribute("onclick","image.deleteImage('/admin/content/deleteImage/?id=" + img.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
-	deleteImage.setAttribute("src","/resources/images/icons/cross.png");
+	deleteImage.setAttribute("src","/images/icons/cross.png");
 	deleteImage.setAttribute("alt","Delete");
 	deleteLink.appendChild(deleteImage);	
 	editTd.appendChild(deleteLink);

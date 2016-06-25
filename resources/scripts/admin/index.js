@@ -66,4 +66,6 @@ $(document).ready(function() {
     );
 
     $("#main-nav li:eq(0) ul li:eq(0) a").trigger("click");
+
+    $(".wysiwyg").wysiwyg(); // Applies WYSIWYG editor to any textarea with the class "wysiwyg"
 });

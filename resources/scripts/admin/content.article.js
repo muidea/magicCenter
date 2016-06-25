@@ -164,7 +164,7 @@ article.constructArticleItem = function(articleInfo) {
     editLink.setAttribute("href", "#editArticle");
     editLink.setAttribute("onclick", "article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false");
     var editImage = document.createElement("img");
-    editImage.setAttribute("src", "/resources/images/icons/pencil.png");
+    editImage.setAttribute("src", "/images/icons/pencil.png");
     editImage.setAttribute("alt", "Edit");
     editLink.appendChild(editImage);
     editTd.appendChild(editLink);
@@ -174,7 +174,7 @@ article.constructArticleItem = function(articleInfo) {
     deleteLink.setAttribute("href", "#deleteArticle");
     deleteLink.setAttribute("onclick", "article.deleteArticle('/admin/content/deleteArticle/?id=" + articleInfo.Id + "'); return false;");
     var deleteImage = document.createElement("img");
-    deleteImage.setAttribute("src", "/resources/images/icons/cross.png");
+    deleteImage.setAttribute("src", "/images/icons/cross.png");
     deleteImage.setAttribute("alt", "Delete");
     deleteLink.appendChild(deleteImage);
     editTd.appendChild(deleteLink);
