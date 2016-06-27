@@ -53,7 +53,7 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles("resources/view/admin/index.html")
+	t, err := template.ParseFiles("template/html/admin/index.html")
 	if err != nil {
 		panic("parse file failed")
 	}
@@ -80,7 +80,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/", http.StatusFound)
 	}
 
-	t, err := template.ParseFiles("resources/view/admin/login.html")
+	t, err := template.ParseFiles("template/html/admin/login.html")
 	if err != nil {
 		panic("parse files failed")
 	}
