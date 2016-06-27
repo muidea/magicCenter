@@ -41,7 +41,7 @@ func LoadConfig() {
 	configInfoMap = bll.GetConfiguration(keys)
 
 	configInfoMap[STATIC_PATH] = "static"
-	configInfoMap[RESOURCE_PATH] = "resources"
+	configInfoMap[RESOURCE_PATH] = "template"
 	configInfoMap[UPLOAD_PATH] = "upload"
 	configInfoMap[AUTHORITH_ID] = "@@@$$auth_Id@@@"
 }

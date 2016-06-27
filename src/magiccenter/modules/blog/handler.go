@@ -35,7 +35,7 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 	url := req.URL.Path
 	view.View, _ = bll.QueryPageView(ID, url)
 
-	t, err := template.ParseFiles("template/html/blog/index.html")
+	t, err := template.ParseFiles("template/html/modules/blog/index.html")
 	if err != nil {
 		panic("ParseFiles failed, err:" + err.Error())
 	}
@@ -64,7 +64,7 @@ func viewContentHandler(res http.ResponseWriter, req *http.Request) {
 
 	url := req.URL.Path
 	view.View, _ = bll.QueryContentView(ID, url, id)
-	t, err := template.ParseFiles("template/html/blog/view.html")
+	t, err := template.ParseFiles("template/html/modules/blog/view.html")
 	if err != nil {
 		panic("ParseFiles failed, err:" + err.Error())
 	}
@@ -94,7 +94,7 @@ func viewCatalogHandler(res http.ResponseWriter, req *http.Request) {
 	url := req.URL.Path
 	view.View, _ = bll.QueryCatalogView(ID, url, id)
 
-	t, err := template.ParseFiles("template/html/blog/catalog.html")
+	t, err := template.ParseFiles("template/html/modules/blog/catalog.html")
 	if err != nil {
 		panic("ParseFiles failed, err:" + err.Error())
 	}
