@@ -1,5 +1,4 @@
 $(document).ready(function(){
-				$("#alertInfo #content").hide();
                 var options = { 
                     beforeSubmit:  showRequest,  // pre-submit callback
                     success:       showResponse,  // post-submit callback
@@ -16,13 +15,14 @@ $(document).ready(function(){
                 });
                 // pre-submit callback
                 function showRequest() {
-                    //alert("before submit");
+                    
                 } 
                 // post-submit callback
                 function showResponse(re) {
+                    console.log(re);
 					if (re.ErrCode > 0) {
-						$("#alertInfo #content").html(re.Reason);
-						$("#alertInfo #content").show();						
+                        $("#alertInfo").removeClass('hidden');
+						$("#alertInfo").html(re.Reason);
 					} else {
 						location.href = re.RedirectUrl;
 					}
