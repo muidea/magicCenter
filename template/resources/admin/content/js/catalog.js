@@ -23,8 +23,6 @@ catalog.initialize = function() {
         }
         // post-submit callback
         function showResponse(result) {
-            $("#catalog-Edit div.notification").hide();
-
             if (result.ErrCode > 0) {
                 $("#catalog-Edit div.error div").html(result.Reason);
                 $("#catalog-Edit div.error").show();
@@ -103,10 +101,10 @@ catalog.fillCatalogView = function() {
     $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
     for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
         var ca = catalog.catalogInfo[ii];
-        $("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input> <span>" + ca.Name + "</span> ");
+        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
-        $("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input> <span>-</span> ");
+        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
     }
 };
 
@@ -158,7 +156,7 @@ catalog.constructCatalogItem = function(ca) {
     editLink.setAttribute("href", "#editCatalog");
     editLink.setAttribute("onclick", "catalog.editCatalog('/admin/content/editCatalog/?id=" + ca.Id + "'); return false;");
     var editImage = document.createElement("img");
-    editImage.setAttribute("src", "/images/icons/pencil.png");
+    editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
     editLink.appendChild(editImage);
     editTd.appendChild(editLink);
@@ -168,7 +166,7 @@ catalog.constructCatalogItem = function(ca) {
     deleteLink.setAttribute("href", "#deleteCatalog");
     deleteLink.setAttribute("onclick", "catalog.deleteCatalog('/admin/content/deleteCatalog/?id=" + ca.Id + "'); return false;");
     var deleteImage = document.createElement("img");
-    deleteImage.setAttribute("src", "/images/icons/cross.png");
+    deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
     deleteLink.appendChild(deleteImage);
     editTd.appendChild(deleteLink);
@@ -180,25 +178,26 @@ catalog.constructCatalogItem = function(ca) {
 
 catalog.editCatalog = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-        $("#catalog-List div.notification").hide();
-
+        
+        console.log(result);
+        
         if (result.ErrCode > 0) {
             $("#catalog-List div.error div").html(result.Reason);
             $("#catalog-List div.error").show();
             return
         }
-
+        
         $("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
         $("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
         $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
         if (result.AvalibleParent) {
             for (var ii = 0; ii < result.AvalibleParent.length; ++ii) {
                 var ca = result.AvalibleParent[ii];
-                $("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input> <span>" + ca.Name + "</span> ");
+                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
             }
 
             if (ii == 0) {
-                $("#catalog-Edit .catalog-Form .catalog-parent").append("<input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input> <span>-</span> ");
+                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
             }
         }
 

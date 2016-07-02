@@ -5,12 +5,12 @@ var article = {
     catalogInfo: {}
 };
 
-article.initialize = function() {
+article.initialize = function () {
     article.refreshCatalog();
     article.fillArticleView();
 
     // 绑定表单提交事件处理器
-    $("#article-content .article-Form").submit(function() {
+    $("#article-content .article-Form").submit(function () {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -18,11 +18,10 @@ article.initialize = function() {
         };
 
         // pre-submit callback
-        function showRequest() {}
+        function showRequest() { }
         // post-submit callback
         function showResponse(result) {
-            $("#article-Edit div.notification").hide();
-
+            console.log(result);
             if (result.ErrCode > 0) {
                 $("#article-Edit div.error div").html(result.Reason);
                 $("#article-Edit div.error").show();
@@ -67,16 +66,16 @@ article.initialize = function() {
     });
 };
 
-article.refreshCatalog = function() {
+article.refreshCatalog = function () {
     $("#article-Edit .article-Form .article-catalog").children().remove();
     for (var ii = 0; ii < article.catalogInfo.length; ++ii) {
         var catalog = article.catalogInfo[ii];
-        $("#article-Edit .article-Form .article-catalog").append("<input type='checkbox' name='article-catalog' value=" + catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+        $("#article-Edit .article-Form .article-catalog").append("<label><input type='checkbox' name='article-catalog' value=" + catalog.Id+ "> </input>" + catalog.Name + "</label> ");
     }
 };
 
-article.refreshArticle = function() {
-    $.get("/admin/content/queryAllArticle/", {}, function(result) {
+article.refreshArticle = function () {
+    $.get("/admin/content/queryAllArticle/", {}, function (result) {
         article.errCode = result.ErrCode;
         article.reason = result.Reason;
 
@@ -86,7 +85,7 @@ article.refreshArticle = function() {
     }, "json");
 };
 
-article.fillArticleView = function() {
+article.fillArticleView = function () {
     $("#article-List div.notification").hide();
 
     if (article && article.errCode > 0) {
@@ -111,10 +110,11 @@ article.fillArticleView = function() {
     $("#article-Edit div.notification").hide();
     $("#article-Edit .article-Form .article-id").val(-1);
     $("#article-Edit .article-Form .article-title").val("");
-    $("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
+    //$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
+    $("#article-Edit .article-Form .article-content").val("");
 };
 
-article.constructArticleItem = function(articleInfo) {
+article.constructArticleItem = function (articleInfo) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "article");
 
@@ -164,7 +164,7 @@ article.constructArticleItem = function(articleInfo) {
     editLink.setAttribute("href", "#editArticle");
     editLink.setAttribute("onclick", "article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false");
     var editImage = document.createElement("img");
-    editImage.setAttribute("src", "/images/icons/pencil.png");
+    editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
     editLink.appendChild(editImage);
     editTd.appendChild(editLink);
@@ -174,7 +174,7 @@ article.constructArticleItem = function(articleInfo) {
     deleteLink.setAttribute("href", "#deleteArticle");
     deleteLink.setAttribute("onclick", "article.deleteArticle('/admin/content/deleteArticle/?id=" + articleInfo.Id + "'); return false;");
     var deleteImage = document.createElement("img");
-    deleteImage.setAttribute("src", "/images/icons/cross.png");
+    deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
     deleteLink.appendChild(deleteImage);
     editTd.appendChild(deleteLink);
@@ -184,8 +184,8 @@ article.constructArticleItem = function(articleInfo) {
     return tr;
 };
 
-article.editArticle = function(editUrl) {
-    $.get(editUrl, {}, function(result) {
+article.editArticle = function (editUrl) {
+    $.get(editUrl, {}, function (result) {
         $("#article-List div.notification").hide();
 
         if (result.ErrCode > 0) {
@@ -196,7 +196,8 @@ article.editArticle = function(editUrl) {
 
         $("#article-Edit .article-Form .article-id").val(result.Article.Id);
         $("#article-Edit .article-Form .article-title").val(result.Article.Title);
-        $("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Article.Content);
+        //$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Article.Content);
+        $("#article-Edit .article-Form .article-content").val(result.Article.Content);
         $("#article-Edit .article-Form .article-catalog input").prop("checked", false);
 
         if (result.Article.Catalog) {
@@ -213,8 +214,8 @@ article.editArticle = function(editUrl) {
     }, "json");
 };
 
-article.deleteArticle = function(deleteUrl) {
-    $.get(deleteUrl, {}, function(result) {
+article.deleteArticle = function (deleteUrl) {
+    $.get(deleteUrl, {}, function (result) {
         $("#article-List div.notification").hide();
 
         if (result.ErrCode > 0) {

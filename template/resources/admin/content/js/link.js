@@ -81,7 +81,7 @@ link.refreshCatalog = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var catalog = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<input type='checkbox' name='link-catalog' value=" + catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + catalog.Id+ "> </input>" + catalog.Name + "</label> ");
     }
 };
 
@@ -128,10 +128,10 @@ link.fillLinkView = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var ca = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<input type='checkbox' name='link-catalog' value=" + ca.Id + "> </input> <span>" + ca.Name + "</span> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
-        $("#link-Edit .link-Form .link-catalog").append("<input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input> <span>-</span> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
     }
 };
 
@@ -182,7 +182,7 @@ link.constructLinkItem = function(lnk) {
     editLink.setAttribute("href", "#editLink");
     editLink.setAttribute("onclick", "link.editLink('/admin/content/editLink/?id=" + lnk.Id + "'); return false;");
     var editUrl = document.createElement("img");
-    editUrl.setAttribute("src", "/images/icons/pencil.png");
+    editUrl.setAttribute("src", "/resources/admin/images/pencil.png");
     editUrl.setAttribute("alt", "Edit");
     editLink.appendChild(editUrl);
     editTd.appendChild(editLink);
@@ -192,7 +192,7 @@ link.constructLinkItem = function(lnk) {
     deleteLink.setAttribute("href", "#deleteLink");
     deleteLink.setAttribute("onclick", "link.deleteLink('/admin/content/deleteLink/?id=" + lnk.Id + "'); return false;");
     var deleteUrl = document.createElement("img");
-    deleteUrl.setAttribute("src", "/images/icons/cross.png");
+    deleteUrl.setAttribute("src", "/resources/admin/images/cross.png");
     deleteUrl.setAttribute("alt", "Delete");
     deleteLink.appendChild(deleteUrl);
     editTd.appendChild(deleteLink);

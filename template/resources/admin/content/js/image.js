@@ -84,7 +84,7 @@ image.refreshCatalog = function() {
 	$("#image-Edit .image-Form .image-catalog").children().remove();
 	for (var ii =0; ii < image.catalogInfo.length; ++ii) {
 		var catalog = image.catalogInfo[ii];
-		$("#image-Edit .image-Form .image-catalog").append("<input type='checkbox' name='image-catalog' value=" +  catalog.Id + "> </input> <span>" + catalog.Name + "</span> ");
+		$("#image-Edit .image-Form .image-catalog").append("<label><input type='checkbox' name='image-catalog' value=" + catalog.Id+ "> </input>" + catalog.Name + "</label> ");
 	}		
 };
 
@@ -128,7 +128,8 @@ image.fillImageView = function() {
 	$("#image-Edit .image-Form .image-id").val(-1);
 	$("#image-Edit .image-Form .image-name").val("");
 	$("#image-Edit .image-Form .image-url").val("");
-	$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", "");
+	//$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", "");
+	$("#image-Edit .image-Form .image-desc").val("");
 };
 
 
@@ -175,7 +176,7 @@ image.constructImageItem = function(img) {
 	deleteLink.setAttribute("href","#deleteImage" );
 	deleteLink.setAttribute("onclick","image.deleteImage('/admin/content/deleteImage/?id=" + img.Id + "'); return false;" );
 	var deleteImage = document.createElement("img");
-	deleteImage.setAttribute("src","/images/icons/cross.png");
+	deleteImage.setAttribute("src","/resources/admin/images/cross.png");
 	deleteImage.setAttribute("alt","Delete");
 	deleteLink.appendChild(deleteImage);	
 	editTd.appendChild(deleteLink);
@@ -201,7 +202,8 @@ image.editImage = function(editUrl) {
 		$("#image-Edit .image-Form .image-id").val(result.Image.Id);
 		$("#image-Edit .image-Form .image-name").val(result.Image.Name);
 		//$("#image-Edit .image-Form .image-url").val(result.Image.Url);
-		$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", result.Image.Desc);
+		//$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", result.Image.Desc);
+		$("#image-Edit .image-Form .image-desc").val(result.Image.Desc);
 		
 		$("#image-Edit .image-Form .image-catalog input").prop("checked", false);
 		if (result.Image.Catalog) {

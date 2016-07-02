@@ -55,7 +55,7 @@ func ManageArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles("resources/view/admin/content/article.html")
+	t, err := template.ParseFiles("template/html/admin/content/article.html")
 	if err != nil {
 		panic("parse files failed, err:" + err.Error())
 	}

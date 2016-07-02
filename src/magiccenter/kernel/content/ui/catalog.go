@@ -54,7 +54,7 @@ func ManageCatalogHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Print("ManageCatalogHandler")
 
-	t, err := template.ParseFiles("resources/view/admin/content/catalog.html")
+	t, err := template.ParseFiles("template/html/admin/content/catalog.html")
 	if err != nil {
 		panic("parse files failed")
 	}
