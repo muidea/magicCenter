@@ -15,7 +15,7 @@
 	<script type="text/javascript">
 		content.moduleList={{.Modules}};
 		$(document).ready(function() {
-			content.initialize();
+			//content.initialize();
 		});
     </script>
 </head>
@@ -47,30 +47,17 @@
 					</tfoot>
 					<tbody>
 						<tr class="blog alt-row">
-							<td><a href="/blog/">博客</a></td>
+							<td>博客</td>
 							<td>博客功能</td>
 							<td>
-								<radiobox class="enable-blog">
-									<input type="radio" name="enable-blog" value="0"><span>启用</span>
-									<input type="radio" name="enable-blog" value="1"><span>禁用</span>
-								</radiobox>
-								<checkbox class="default-blog">
-									<input type="checkbox" name="default-blog" value="1"> <span>设为默认</span>
-								</checkbox>
+								<a href="#">内容管理</a>
 							</td>
 						</tr>
 						<tr class="shop">
-							<td><a href="/shop/">网店</a></td>
+							<td>网店</td>
 							<td>网店功能</td>
 							<td>
-								<radiobox class="enable-shop">
-									<input type="radio" name="enable-shop" value="0"><span>启用</span>
-									<input type="radio" name="enable-shop" value="1"><span>禁用</span>
-								</radiobox>
-								<checkbox class="default-shop">
-									<input type="checkbox" name="default-shop" value="1"> <span>设为默认</span>
-								</checkbox>
-								<input class="button" type="button" value="卸载模块" />
+								<a href="#">内容管理</a>
 							</td>
 						</tr>
 					</tbody>
@@ -85,13 +72,6 @@
 								<th>条目数</th>
 							</tr>
 						</thead>
-						<tfoot>
-							<tr>
-								<td colspan="2">
-									<div class="clear"></div>
-								</td>
-							</tr>
-						</tfoot>
 						<tbody>
 							<tr class="block">
 								<td>导航栏</td>
@@ -101,6 +81,87 @@
 					</table>
 				</div>
 				<div id="block-form">
+					<form class="block-Form" action="/admin/system/ajaxBlockItem/" method="post">
+						<div class="container-fluid">
+							<div class="row">
+								<div class="col-md-4">
+									<checkbox class="default-shop">
+										<table class="table">
+											<thead>
+												<tr>
+													<th>文章</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+											</tbody>
+										</table>
+									</checkbox>
+								</div>
+								<div class="col-md-4">
+									<checkbox class="default-shop">
+										<table class="table">
+											<thead>
+												<tr>
+													<th>分类</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+											</tbody>
+										</table>
+									</checkbox>
+								</div>
+								<div class="col-md-4">
+									<checkbox class="default-shop">
+										<table class="table">
+											<thead>
+												<tr>
+													<th>链接</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+												<tr>
+													<td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+												</tr>
+											</tbody>
+										</table>
+									</checkbox>
+								</div>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

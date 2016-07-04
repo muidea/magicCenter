@@ -56,7 +56,7 @@
 									<input type="radio" name="enable-blog" value="1"><span>禁用</span>
 								</radiobox>
 								<checkbox class="default-blog">
-									<input type="checkbox" name="default-blog" value="1">  <span>设为默认</span> 
+									<input type="checkbox" name="default-blog" value="1"> <span>设为默认</span>
 								</checkbox>
 							</td>
 						</tr>
@@ -69,16 +69,82 @@
 									<input type="radio" name="enable-shop" value="1"><span>禁用</span>
 								</radiobox>
 								<checkbox class="default-shop">
-									<input type="checkbox" name="default-shop" value="1">  <span>设为默认</span> 
+									<input type="checkbox" name="default-shop" value="1"> <span>设为默认</span>
 								</checkbox>
-								<input class="button" type="button" value="卸载模块"/>
+								<input class="button" type="button" value="卸载模块" />
 							</td>
-						</tr>							
+						</tr>
 					</tbody>
 				</table>
 			</div>
 			<div class="tab-content" id="module-Maintain">
-
+				<div id="block">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>功能块</th>
+								<th>显示模式</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="block">
+								<td>导航栏</td>
+								<td>链接</td>
+								<td>
+									<a class="delete" href="#" title="Delete"><img src="/resources/images/icons/cross.png" alt="Delete" /></a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<form enctype="multipart/form-data" class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
+						<div class="form-group">
+							<label for="block-name">名称</label> <input class="form-control block-name" type="text" name="block-name" id="block-name"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="block-tag">模块Tag</label> <input class="form-control block-tag" type="text" name="block-tag" id="block-tag"
+							/>
+						</div>
+						<div class="form-group">
+							<label><input type="radio" class="block-style" name="block-style" value="0"/>显示链接</label>
+							<label><input type="radio" class="block-style" name="block-style" value="1"/>显示内容</label>
+						</div>
+						<input type="hidden" class="form-control module-id" name="module-id" value="-1" />
+						<input class="btn btn-default" type="submit" value="新增" />
+					</form>
+				</div>
+				<div id="page">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>路由</th>
+								<th>功能块列表</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="page">
+								<td>导航栏</td>
+								<td>啊啊啊</td>
+							</tr>
+						</tbody>
+					</table>
+					<form enctype="multipart/form-data" class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
+						<div class="form-group">
+							<label for="page-url">路由</label> <input class="form-control page-url" type="text" name="page-url" readonly="true"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="page-block">功能块</label>
+							<chckBox class="checkbox page-block">
+								<label><input type="checkbox"/> Check me out </label>
+								<label><input type="checkbox"/> Check me out </label>
+							</chckBox>
+						</div>
+						<input type="hidden" class="form-control page-owner" name="page-owner" value="-1" />
+						<input class="btn btn-default" type="submit" value="保存" />
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>
