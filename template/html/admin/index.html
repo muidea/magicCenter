@@ -14,60 +14,58 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="container-fluid">
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Library</a></li>
-                <li class="active">Data</li>
-            </ol>
-            <div class="row">
-                <div class="col-xs-6 col-md-3">
-                    <ul class="list-group" id="main-nav">
-                        <li class="list-group-item">
-                            <div id="profile-links">
-                                Hello, <a href="#" class="user-profile" title="Edit your profile">{{.User.Name}}</a> |
-                                <a href="/admin/logout/" title="Sign Out">Sign Out</a>
-                            </div>
-                        </li>
-                        <li class="list-group-item"><a href="#content" class="nav-top-item active">内容管理 </a>
-                            <ul>
-                                <li><a class="nav-sub-item active" href="/admin/content/manageArticle/">文章管理</a></li>
-                                <li><a class="nav-sub-item" href="/admin/content/manageCatalog/">分类管理</a></li>
-                                <li><a class="nav-sub-item" href="/admin/content/manageLink/">链接管理</a></li>
-                                <li><a class="nav-sub-item" href="/admin/content/manageImage/">图片管理</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><a href="#module" class="nav-top-item">模块管理 </a>
-                            <ul>
-                                <li><a class="nav-sub-item active" href="/admin/system/moduleManage/">模块设置</a></li>
-                                <li><a class="nav-sub-item" href="/admin/system/moduleContent/">模块内容</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><a href="#account" class="nav-top-item">账号管理</a>
-                            <ul>
-                                <li><a class="nav-sub-item active" href="/admin/account/manageUser/">用户信息</a></li>
-                                <li><a class="nav-sub-item" href="/admin/account/manageGroup/">分组信息</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><a href="#system" class="nav-top-item">系统设置 </a>
-                            <ul>
-                                <li><a class="nav-sub-item active" href="/admin/system/manageSystem/">站点设置</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-xs-12 col-md-9">
-                    <div id="body-content">
-                    </div>
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Library</a></li>
+            <li class="active">Data</li>
+        </ol>
+        <div class="row">
+            <div class="col-xs-6 col-md-2">
+                <ul class="list-group" id="main-nav">
+                    <li class="list-group-item">
+                        <div id="profile-links">
+                            Hello, <a href="#" class="user-profile" title="Edit your profile">{{.User.Name}}</a> |
+                            <a href="/admin/logout/" title="Sign Out">Sign Out</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item"><a href="#content" class="nav-top-item active">内容管理 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/content/manageArticle/">文章管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageCatalog/">分类管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageLink/">链接管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageImage/">图片管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item"><a href="#module" class="nav-top-item">模块管理 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/system/moduleManage/">模块设置</a></li>
+                            <li><a class="nav-sub-item" href="/admin/system/moduleContent/">模块内容</a></li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item"><a href="#account" class="nav-top-item">账号管理</a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/account/manageUser/">用户信息</a></li>
+                            <li><a class="nav-sub-item" href="/admin/account/manageGroup/">分组信息</a></li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item"><a href="#system" class="nav-top-item">系统设置 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/system/manageSystem/">站点设置</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-md-10">
+                <div id="body-content">
                 </div>
             </div>
-            <div class="row">
-                <small>
+        </div>
+        <div class="row">
+            <small>
 					&#169; Copyright 2010 Your Company | Powered by <a href="http://">admin
 						templates</a> | <a href="#">Top</a>
 				</small>
-            </div>
         </div>
     </div>
 </body>

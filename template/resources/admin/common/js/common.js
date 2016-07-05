@@ -11,7 +11,9 @@ $(document).ready(function () {
             $(this).parent().addClass("active");
             
             $(tabId).siblings().hide();
-            $(tabId).slideToggle("normal");
+            //$(tabId).siblings().slideToggle("normal");
+            //$(tabId).slideToggle("normal");
+            $(tabId).show();
             
             return false;
         }
