@@ -25,8 +25,8 @@
 	<div class="container-fluid content-box" id="module-content">
 		<div class="content-header">
 			<ul class="nav nav-tabs">
-				<li role="presentation" class="active"><a href="#module-List">列表</a></li>
-				<li role="presentation"><a href="#module-Maintain">管理</a></li>
+				<li role="presentation" class="module-List active"><a href="#module-List">列表</a></li>
+				<li role="presentation" class="module-Maintain"><a href="#module-Maintain">管理</a></li>
 			</ul>
 		</div>
 		<div class="content-content">
@@ -39,13 +39,6 @@
 							<th>操作</th>
 						</tr>
 					</thead>
-					<tfoot>
-						<tr>
-							<td colspan="3">
-								<div class="clear"></div>
-							</td>
-						</tr>
-					</tfoot>
 					<tbody>
 						<tr class="blog alt-row">
 							<td><a href="/blog/">博客</a></td>
@@ -78,7 +71,7 @@
 				</table>
 			</div>
 			<div class="tab-content" id="module-Maintain">
-				<div id="block">
+				<div class="block">
 					<table class="table table-hover">
 						<thead>
 							<tr>
@@ -114,7 +107,7 @@
 						<input class="btn btn-default" type="submit" value="新增" />
 					</form>
 				</div>
-				<div id="page">
+				<div class="page">
 					<table class="table table-hover">
 						<thead>
 							<tr>
@@ -129,7 +122,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<form enctype="multipart/form-data" class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
+					<form enctype="multipart/form-data" class="page-Form" action="/admin/system/ajaxModuleBlock/" method="post">
 						<div class="form-group">
 							<label for="page-url">路由</label> <input class="form-control page-url" type="text" name="page-url" readonly="true"
 							/>

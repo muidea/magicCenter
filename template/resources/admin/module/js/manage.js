@@ -168,26 +168,55 @@ $(document).ready(function() {
     });	    
 });
 
+module.getModuleListView = function() {
+	return $("#module-List table")	
+}
+
+module.getModuleBlockListView = function() {
+	return  $("#module-Maintain .block table")
+}
+
+module.getModulePageListView = function() {
+	return $("#module-Maintain .page table")
+}
+
 module.initialize = function() {
-	module.resetStatus();
-	
-	module.refreshModuleView();
-	
-	module.fillModuleView();
+	module.fillModuleListView();
 };
 
-module.fillModuleView = function() {
-		
-	$("#module-list div.notification").hide();
-	$("#module-list table tbody tr").remove();
+
+module.fillModuleListView = function() {
+	var moduleListView = module.getModuleListView();
+	$(moduleListView).find("tbody tr").remove();
 	for (var ii =0; ii < module.moduleList.length; ++ii) {
 		var info = module.moduleList[ii];
-		var trContent = module.constructModuleItem(info);		
-		$("#module-list table tbody").append(trContent);
+		var trContent = module.constructModuleItem(info);
+
+		$(moduleListView).find("tbody").append(trContent);
 	}
-	
-	$("#module-list table tbody tr:even").addClass("alt-row");	
 };
+
+module.fillModuleMaintainView = function() {
+	var blockListView = module.getModuleBlockListView();
+	$(blockListView).find("tbody tr").remove();
+	if (module.currentModule) {
+		for (var ii =0; ii < module.currentModule.Blocks.length; ++ii) {
+			var block = module.currentModule.Blocks[ii];
+			var trContent = module.constructBlockItem(block);
+			$(blockListView).find("tbody").append(trContent);
+		}
+	}
+
+	var pageListView = module.getModulePageListView();
+	$(pageListView).find("tbody tr").remove();
+	if (module.currentModule.Pages) {
+		for (var ii =0; ii < module.currentModule.Pages.length; ++ii) {
+			var page = module.currentModule.Pages[ii];
+			var trContent = module.constructPageItem(page);
+			$(pageListView).find("tbody").append(trContent);
+		}			
+	}	
+}
 
 module.constructModuleItem = function(mod) {
 	var tr = document.createElement("tr");
@@ -195,7 +224,6 @@ module.constructModuleItem = function(mod) {
 	
 	var nameTd = document.createElement("td");
 	var nameLink = document.createElement("a");
-	nameLink.setAttribute("class","view");
 	nameLink.setAttribute("href","#");
 	nameLink.setAttribute("onclick","module.maintainModule('/admin/system/queryModuleDetail/?id=" + mod.Id + "'); return false;" );
 	nameLink.innerHTML = mod.Name;
@@ -267,25 +295,13 @@ module.selectDefaultModule = function(defaultModule) {
 module.maintainModule = function(maintainUrl) {
 	$.get(maintainUrl, {
 	}, function(result) {
-		$("#module-List div.notification").hide();
-		
 		if (result.ErrCode > 0) {
-			$("#module-List div.error div").html(result.Reason);
-			$("#module-List div.error").show();
 			return
 		}
 
-		module.resetStatus();
-		
 		module.currentModule = result.Module;
-		
-		$("#module-content .content-box-tabs li a").removeClass('current');
-		$("#module-content .content-box-tabs li a.module-Maintain-tab").addClass('current');
-		$("#module-maintain").siblings().hide();
-		
-		module.refreshModuleView();
-		
-		$("#module-maintain").show();	
+		module.fillModuleMaintainView();		
+		$("#module-content .content-header .nav .module-Maintain").find("a").trigger("click");	
 	}, "json");	
 };
 
@@ -391,9 +407,9 @@ module.deleteBlock = function(deleteUrl) {
 };
 
 module.refreshModuleView = function() {
-	$("#module-maintain .block table tbody tr").remove();
-	$("#module-maintain .page .page-Form .page-block").children().remove();
-	$("#module-maintain .page table tbody tr").remove();
+	$("#module-Maintain .block table tbody tr").remove();
+	$("#module-Maintain .page .page-Form .page-block").children().remove();
+	$("#module-Maintain .page table tbody tr").remove();
 	
 	if (!module.currentModule) {
 		return;
@@ -457,8 +473,8 @@ module.resetStatus = function() {
 	module.currentModule = null;
 	module.currentPage = null;
 	
-	$("#module-maintain .page .page-Form .page-url").val('');
-	$("#module-maintain .page .page-Form .page-block input").prop("checked", false);	
+	$("#module-Maintain .page .page-Form .page-url").val('');
+	$("#module-Maintain .page .page-Form .page-block input").prop("checked", false);	
 };
 
 
