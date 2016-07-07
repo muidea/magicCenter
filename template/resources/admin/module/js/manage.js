@@ -8,11 +8,11 @@ var module = {
 
 $(document).ready(function() {
 	
-	$("#module-list .button").click(
+	$("#module-List .button").click(
 		function() {
 			var enableList = "";
 			var defaultModule = "";
-			var radioArray = $("#module-list table tbody tr td :radio:checked");
+			var radioArray = $("#module-List table tbody tr td :radio:checked");
 			for (var ii =0; ii < radioArray.length; ++ii) {
 				var radio = radioArray[ii];
 				if ($(radio).val() == 1) {
@@ -20,7 +20,7 @@ $(document).ready(function() {
 					enableList += ",";
 				}				
 			}
-			var defaultArray = $("#module-list .module input:checkbox:checked");
+			var defaultArray = $("#module-List .module input:checkbox:checked");
 			if (defaultArray.length > 0) {
 				var checkBox = defaultArray[0];
 				defaultModule = $(checkBox).attr("name");
@@ -34,22 +34,22 @@ $(document).ready(function() {
 				module.moduleList = result.Modules;
 				module.defaultModule = result.DefaultModule;
 								
-				$("#module-list div.notification").hide();
+				$("#module-List label").addClass("hidden")
 	        	if (result.ErrCode > 0) {
-	        		$("#module-list div.error div").html(result.Reason);
-	        		$("#module-list div.error").show();
+	        		$("#module-List .danger").html(result.Reason);
+	        		$("#module-List .danger").removeClass("hidden");
 	        	} else {
-	        		$("#module-list div.success div").html(result.Reason);
-	        		$("#module-list div.success").show();
-	        	}				
+	        		$("#module-List .success").html(result.Reason);
+	        		$("#module-List .success").removeClass("hidden");
+	        	}
 				
-	        	module.fillModuleView();	        	
+	        	//module.fillModuleView();	        	
 			}, "json");
 		}
 	);
 	
     // 绑定表单提交事件处理器
-    $('#module-maintain .block .block-Form').submit(function() {
+    $('#module-Maintain .block .block-Form').submit(function() {
         var options = { 
                 beforeSubmit:  showRequest,  // pre-submit callback
                 success:       showResponse,  // post-submit callback
