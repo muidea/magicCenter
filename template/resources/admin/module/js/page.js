@@ -3,23 +3,27 @@ var page = {
     currentModule: {}
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
 
 });
 
-page.getModuleListView = function() {
+page.getModuleListView = function () {
     return $("#module-List table");
-}
+};
 
-page.getModulePageListView = function() {
+page.getModulePageListView = function () {
     return $("#page-List table");
-}
+};
 
-page.initialize = function() {
+page.getBlockListView = function() {
+    return $("#page-List .page-Form .page-block");
+};
+
+page.initialize = function () {
     page.fillModuleListView();
 };
 
-page.fillModuleListView = function() {
+page.fillModuleListView = function () {
     var moduleListView = page.getModuleListView()
     $(moduleListView).find("tbody tr").remove();
     for (var ii = 0; ii < page.moduleList.length; ++ii) {
@@ -29,7 +33,7 @@ page.fillModuleListView = function() {
     }
 };
 
-page.fillPageListView = function() {
+page.fillPageListView = function () {
     var pageListView = page.getModulePageListView();
     $(pageListView).find("tbody tr").remove();
     for (var ii = 0; ii < page.currentModule.Pages.length; ++ii) {
@@ -37,9 +41,17 @@ page.fillPageListView = function() {
         var trPage = page.constructPageItem(info);
         $(pageListView).find("tbody").append(trPage);
     }
+
+    var blockListView = page.getBlockListView();
+    $(blockListView).find("label").remove();
+    for (var ii =0; ii < page.currentModule.Blocks.length; ++ii) {
+        var cur = page.currentModule.Blocks[ii];
+        var label = page.constructBlockItem(cur);
+        $(blockListView).append(label);
+    }
 }
 
-page.constructModuleItem = function(mod) {
+page.constructModuleItem = function (mod) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "module");
 
@@ -62,8 +74,7 @@ page.constructModuleItem = function(mod) {
     return tr;
 };
 
-
-page.constructPageItem = function(page) {
+page.constructPageItem = function (page) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "module");
 
@@ -86,18 +97,52 @@ page.constructPageItem = function(page) {
     var blocksTd = document.createElement("td");
     blocksTd.innerHTML = blocks;
     tr.appendChild(blocksTd);
-    tr.setAttribute("onclick", "page.selectPage('" + page + "'); return false;");
+    tr.setAttribute("onclick", "page.selectPage('" + page.Url + "'); return false;");
     return tr;
 };
 
-page.selectPage = function(page) {
-    console.log(page);
-    $("#page-List .page-Form .page-url").val(page.Url);
-    $("#page-List .page-Form .page-owner").val(page.Owner);
+page.constructBlockItem = function(block) {
+    var label = document.createElement("label");
+
+    var chk = document.createElement("input");
+    chk.setAttribute("type", "checkbox");
+    chk.setAttribute("value", block.Id);
+    label.appendChild(chk);
+
+    var span = document.createElement("span");
+    span.innerHTML = block.Name;
+    label.appendChild(span);
+    label.setAttribute("class", "text-center");
+
+    return label;
 }
 
-page.maintainPage = function(maintainUrl) {
-    $.get(maintainUrl, {}, function(result) {
+page.selectPage = function (pageUrl) {
+    if (!page.currentModule) {
+        return;
+    }
+
+    var blockListView = page.getBlockListView();
+    $(blockListView).find("input ").prop("checked", false);
+    for (var ii = 0; ii < page.currentModule.Pages.length; ++ii) {
+        var cur = page.currentModule.Pages[ii];
+        if (cur.Url == pageUrl) {
+            $("#page-List .page-Form .page-url").val(cur.Url);
+            $("#page-List .page-Form .page-owner").val(cur.Owner);
+
+            for (var ii =0; ii < cur.Blocks.length; ++ii) {
+                var block = cur.Blocks[ii];
+                $(blockListView).find("input ").filter("[value=" + block.Id + "]").prop("checked", true);
+            }
+
+            break;
+        }
+    }
+
+}
+
+page.maintainPage = function (maintainUrl) {
+    $.get(maintainUrl, {}, function (result) {
 
         if (result.ErrCode > 0) {
             return
