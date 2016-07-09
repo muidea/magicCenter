@@ -1,9 +1,9 @@
 package module
 
 import (
-	"magiccenter/router"
-	"magiccenter/kernel/module/ui"
 	"magiccenter/kernel/auth"
+	"magiccenter/kernel/module/ui"
+	"magiccenter/router"
 )
 
 func RegisterRouter() {
@@ -13,9 +13,10 @@ func RegisterRouter() {
 	router.AddGetRoute("/admin/system/deleteModuleBlock/", ui.DeleteModuleBlockHandler, auth.AdminAuthVerify())
 	router.AddPostRoute("/admin/system/ajaxModuleBlock/", ui.SaveModuleBlockHandler, auth.AdminAuthVerify())
 	router.AddPostRoute("/admin/system/ajaxPageBlock/", ui.SavePageBlockHandler, auth.AdminAuthVerify())
-		
+
+	router.AddGetRoute("/admin/system/modulePage/", ui.ModulePageHandler, auth.AdminAuthVerify())
+
 	router.AddGetRoute("/admin/system/moduleContent/", ui.ModuleContentHandler, auth.AdminAuthVerify())
 	router.AddGetRoute("/admin/system/queryModuleContent/", ui.QueryModuleContentHandler, auth.AdminAuthVerify())
 	router.AddPostRoute("/admin/system/ajaxBlockItem/", ui.SaveBlockContentHandler, auth.AdminAuthVerify())
 }
-
