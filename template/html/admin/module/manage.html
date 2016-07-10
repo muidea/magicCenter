@@ -22,7 +22,7 @@
 </head>
 
 <body>
-	<div class="container-fluid content-box" id="module-content">
+	<div class="container-fluid content-box" id="module-Content">
 		<div class="content-header">
 			<ul class="nav nav-tabs">
 				<li role="presentation" class="module-List active"><a href="#module-List">列表</a></li>
@@ -99,14 +99,12 @@
 							</tr>
 						</tbody>
 					</table>
-					<form enctype="multipart/form-data" class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
+					<form class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
 						<div class="form-group">
-							<label for="block-name">名称</label> <input class="form-control block-name" type="text" name="block-name" id="block-name"
-							/>
+							<label for="block-name">名称</label> <input class="form-control block-name" type="text" name="block-name"/>
 						</div>
 						<div class="form-group">
-							<label for="block-tag">模块Tag</label> <input class="form-control block-tag" type="text" name="block-tag" id="block-tag"
-							/>
+							<label for="block-tag">模块Tag</label> <input class="form-control block-tag" type="text" name="block-tag"/>
 						</div>
 						<div class="form-group">
 							<label><input type="radio" class="block-style" name="block-style" value="0"/>显示链接</label>

@@ -1,6 +1,4 @@
 var article = {
-    errCode: 0,
-    reason: "",
     articleInfo: {},
     catalogInfo: {}
 };
@@ -17,11 +15,9 @@ article.initialize = function() {
             dataType: "json" // 'xml', 'script', or 'json' (expected server response type) 
         };
 
-        // pre-submit callback
         function showRequest() {}
-        // post-submit callback
+
         function showResponse(result) {
-            console.log(result);
             if (result.ErrCode > 0) {
                 $("#article-Edit div.error div").html(result.Reason);
                 $("#article-Edit div.error").show();

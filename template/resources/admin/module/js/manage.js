@@ -2,7 +2,6 @@ var module = {
     moduleList: {},
     defaultModule: '',
     currentModule: {},
-    currentPage: {}
 };
 
 $(document).ready(function() {
@@ -61,96 +60,15 @@ $(document).ready(function() {
         }
         // post-submit callback
         function showResponse(result) {
-            $("#module-maintain div.notification").hide();
-
-            if (result.ErrCode > 0) {
-                $("#module-maintain div.error div").html(result.Reason);
-                $("#module-maintain div.error").show();
-            } else {
-                $("#module-maintain .block .block-Form .module-block").val("");
-                $("#module-maintain div.success div").html(result.Reason);
-                $("#module-maintain div.success").show();
-
+            console.log(result);
+            if (result.ErrCode > 0) {} else {
                 module.currentModule = result.Module;
-                module.refreshModuleView();
+                module.fillModuleMaintainView();
             }
         }
 
         function validate() {
             var result = true
-
-            $("#module-maintain .block .block-Form .block-name").parent().find("span").remove();
-            var name = $("#module-maintain .block .block-Form .block-name").val();
-            if (name.length == 0) {
-                $("#module-maintain .block .block-Form .block-name").parent().append("<span class=\"input-notification error png_bg\">请输入功能块名</span>");
-                result = false;
-            }
-
-            return result;
-        }
-
-        if (!validate()) {
-            return false;
-        }
-
-        //提交表单
-        $(this).ajaxSubmit(options);
-
-        // !!! Important !!!
-        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
-        return false;
-    });
-
-    // 绑定表单提交事件处理器
-    $('#module-maintain .page .page-Form').submit(function() {
-        var options = {
-            beforeSubmit: showRequest, // pre-submit callback
-            success: showResponse, // post-submit callback
-            dataType: 'json' // 'xml', 'script', or 'json' (expected server response type) 
-        };
-
-        // pre-submit callback
-        function showRequest() {
-            //return false;
-        }
-        // post-submit callback
-        function showResponse(result) {
-            $("#module-maintain div.notification").hide();
-
-            if (result.ErrCode > 0) {
-                $("#module-maintain div.error div").html(result.Reason);
-                $("#module-maintain div.error").show();
-            } else {
-                $("#module-maintain div.success div").html(result.Reason);
-                $("#module-maintain div.success").show();
-
-                console.log(module);
-
-                module.currentModule = result.Module;
-                if (module.currentPage) {
-                    for (var ii = 0; ii < module.currentModule.Pages.length; ++ii) {
-                        var page = module.currentModule.Pages[ii];
-                        if (page.Url == module.currentPage.Url) {
-                            module.currentPage = page;
-                            break;
-                        }
-                    }
-                }
-
-                module.refreshModuleView();
-            }
-        }
-
-        function validate() {
-            var result = true
-
-            $("#module-maintain .page .page-Form .page-url").parent().find("span").remove();
-            var url = $("#module-maintain .page .page-Form .page-url").val();
-            if (url.length == 0) {
-                $("#module-maintain .page .page-Form .page-url").parent().append("<span class=\"input-notification error png_bg\">路由不能为空</span>");
-                result = false;
-            }
-
             return result;
         }
 
@@ -173,10 +91,6 @@ module.getModuleListView = function() {
 
 module.getModuleBlockListView = function() {
     return $("#module-Maintain .block table")
-}
-
-module.getModulePageListView = function() {
-    return $("#module-Maintain .page table")
 }
 
 module.initialize = function() {
@@ -206,15 +120,10 @@ module.fillModuleMaintainView = function() {
         }
     }
 
-    var pageListView = module.getModulePageListView();
-    $(pageListView).find("tbody tr").remove();
-    if (module.currentModule.Pages) {
-        for (var ii = 0; ii < module.currentModule.Pages.length; ++ii) {
-            var page = module.currentModule.Pages[ii];
-            var trContent = module.constructPageItem(page);
-            $(pageListView).find("tbody").append(trContent);
-        }
-    }
+    $("#module-Maintain .block-Form .block-name").val("");
+    $("#module-Maintain .block-Form .block-tag").val("");
+    $("#module-Maintain .block-Form .block-style").checked = false;
+    $("#module-Maintain .block-Form .module-id").val(module.currentModule.Id);
 }
 
 module.constructModuleItem = function(mod) {
@@ -289,8 +198,8 @@ module.constructModuleItem = function(mod) {
 };
 
 module.selectDefaultModule = function(defaultModule) {
-    $("#module-list .module input:checkbox").prop("checked", false);
-    $("#module-list .module input:checkbox[name='" + defaultModule + "']").prop("checked", true);
+    $("#module-List .module input:checkbox").prop("checked", false);
+    $("#module-List .module input:checkbox[name='" + defaultModule + "']").prop("checked", true);
 };
 
 module.maintainModule = function(maintainUrl) {
@@ -301,7 +210,7 @@ module.maintainModule = function(maintainUrl) {
 
         module.currentModule = result.Module;
         module.fillModuleMaintainView();
-        $("#module-content .content-header .nav .module-Maintain").find("a").trigger("click");
+        $("#module-Content .content-header .nav .module-Maintain").find("a").trigger("click");
     }, "json");
 };
 
@@ -336,142 +245,11 @@ module.constructBlockItem = function(block) {
     return tr;
 };
 
-module.constructPageItem = function(page) {
-    var tr = document.createElement("tr");
-    tr.setAttribute("class", "block");
-
-    var nameTd = document.createElement("td");
-    nameTd.innerHTML = page.Url
-    tr.appendChild(nameTd);
-
-    var blocks = "";
-    var blocksTd = document.createElement("td");
-    if (page.Blocks) {
-        for (var ii = 0; ii < page.Blocks.length;) {
-            var block = page.Blocks[ii++];
-            blocks += block.Name;
-            if (ii < page.Blocks.length) {
-                blocks += ",";
-            }
-        }
-    }
-    blocksTd.innerHTML = blocks
-    tr.appendChild(blocksTd);
-    tr.setAttribute("onclick", "module.editPageBlock('" + page.Url + "'); return false;");
-
-    return tr;
-};
-
-module.editPageBlock = function(pageUrl) {
-    if (module.currentModule.Pages) {
-        for (var ii = 0; ii < module.currentModule.Pages.length; ++ii) {
-            var page = module.currentModule.Pages[ii];
-            if (page.Url == pageUrl) {
-                module.currentPage = page;
-                break;
-            }
-        }
-    }
-
-    $("#module-maintain .page .page-Form .page-url").val(pageUrl);
-    $("#module-maintain .page .page-Form .page-block input").prop("checked", false);
-    if (module.currentPage) {
-        if (module.currentPage.Blocks) {
-            for (var jj = 0; jj < module.currentPage.Blocks.length; ++jj) {
-                var block = module.currentPage.Blocks[jj];
-                $("#module-maintain .page .page-Form .page-block input").filter("[value=" + block.Id + "]").prop("checked", true);
-            }
-        }
-    }
-};
-
 module.deleteBlock = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-
-        $("#module-maintain div.notification").hide();
-
-        if (result.ErrCode > 0) {
-            $("#module-maintain div.error div").html(result.Reason);
-            $("#module-maintain div.error").show();
-            return
-        } else {
-            $("#module-maintain div.success div").html(result.Reason);
-            $("#module-maintain div.success").show();
-
-            module.resetStatus();
+        if (result.ErrCode > 0) {} else {
             module.currentModule = result.Module;
-            module.refreshModuleView();
+            module.fillModuleMaintainView();
         }
     }, "json");
-};
-
-module.refreshModuleView = function() {
-    $("#module-Maintain .block table tbody tr").remove();
-    $("#module-Maintain .page .page-Form .page-block").children().remove();
-    $("#module-Maintain .page table tbody tr").remove();
-
-    if (!module.currentModule) {
-        return;
-    }
-
-    if (module.currentModule.Blocks) {
-        for (var ii = 0; ii < module.currentModule.Blocks.length; ++ii) {
-            var block = module.currentModule.Blocks[ii];
-            var trContent = module.constructBlockItem(block);
-            $("#module-maintain .block table tbody").append(trContent);
-
-            $("#module-maintain .page .page-Form .page-block").append("<input type='checkbox' name='page-block' value=" + block.Id + "> </input> <span>" + block.Name + "</span> ");
-        }
-    }
-    $("#module-maintain .block table tbody tr:even").addClass("alt-row");
-
-    $("#module-maintain .block .block-Form input").prop("checked", false);
-    $("#module-maintain .block .block-Form input").filter("[value=0]").prop("checked", true);
-    $("#module-maintain .block .block-Form .module-id").val(module.currentModule.Id);
-
-    if (module.currentModule.Pages) {
-        for (var ii = 0; ii < module.currentModule.Pages.length; ++ii) {
-            var page = module.currentModule.Pages[ii];
-            var trContent = module.constructPageItem(page);
-            $("#module-maintain .page table tbody").append(trContent);
-        }
-    }
-    $("#module-maintain .page table tbody tr:even").addClass("alt-row");
-
-    $("#module-maintain .page .page-Form .page-owner").val(module.currentModule.Id);
-    if (module.currentPage) {
-        if (module.currentPage.Blocks) {
-            for (var jj = 0; jj < module.currentPage.Blocks.length; ++jj) {
-                var block = module.currentPage.Blocks[jj];
-                $("#module-maintain .page .page-Form .page-block input").filter("[value=" + block.Id + "]").prop("checked", true);
-            }
-        }
-    }
-
-};
-
-module.refreshPageView = function() {
-    if (module.pageList && module.currentPage) {
-        for (var ii = 0; ii < module.pageList.length; ++ii) {
-            var page = module.pageList[ii];
-            if (page.Url == module.currentPage) {
-                if (page.Blocks) {
-                    for (var jj = 0; jj < page.Blocks.length; ++jj) {
-                        var block = page.Blocks[jj];
-                        $("#module-maintain .page .page-Form .page-block input").filter("[value=" + block + "]").prop("checked", true);
-                    }
-                }
-
-                break;
-            }
-        }
-    }
-};
-
-module.resetStatus = function() {
-    module.currentModule = null;
-    module.currentPage = null;
-
-    $("#module-Maintain .page .page-Form .page-url").val('');
-    $("#module-Maintain .page .page-Form .page-block input").prop("checked", false);
 };

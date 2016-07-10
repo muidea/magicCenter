@@ -3,15 +3,51 @@ var page = {
     currentModule: {}
 };
 
-$(document).ready(function () {
+$(document).ready(function() {
+    // 绑定表单提交事件处理器
+    $('#page-List .page-Form').submit(function() {
+        var options = {
+            beforeSubmit: showRequest, // pre-submit callback
+            success: showResponse, // post-submit callback
+            dataType: 'json' // 'xml', 'script', or 'json' (expected server response type) 
+        };
 
+        // pre-submit callback
+        function showRequest() {
+            //return false;
+        }
+        // post-submit callback
+        function showResponse(result) {
+            console.log(result);
+            if (result.ErrCode > 0) {} else {
+                page.currentModule = result.Module;
+                page.fillPageListView();
+            }
+        }
+
+        function validate() {
+            var result = true
+            return result;
+        }
+
+        if (!validate()) {
+            return false;
+        }
+
+        //提交表单
+        $(this).ajaxSubmit(options);
+
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });
 });
 
-page.getModuleListView = function () {
+page.getModuleListView = function() {
     return $("#module-List table");
 };
 
-page.getModulePageListView = function () {
+page.getModulePageListView = function() {
     return $("#page-List table");
 };
 
@@ -19,11 +55,11 @@ page.getBlockListView = function() {
     return $("#page-List .page-Form .page-block");
 };
 
-page.initialize = function () {
+page.initialize = function() {
     page.fillModuleListView();
 };
 
-page.fillModuleListView = function () {
+page.fillModuleListView = function() {
     var moduleListView = page.getModuleListView()
     $(moduleListView).find("tbody tr").remove();
     for (var ii = 0; ii < page.moduleList.length; ++ii) {
@@ -33,7 +69,7 @@ page.fillModuleListView = function () {
     }
 };
 
-page.fillPageListView = function () {
+page.fillPageListView = function() {
     var pageListView = page.getModulePageListView();
     $(pageListView).find("tbody tr").remove();
     for (var ii = 0; ii < page.currentModule.Pages.length; ++ii) {
@@ -44,14 +80,17 @@ page.fillPageListView = function () {
 
     var blockListView = page.getBlockListView();
     $(blockListView).find("label").remove();
-    for (var ii =0; ii < page.currentModule.Blocks.length; ++ii) {
+    for (var ii = 0; ii < page.currentModule.Blocks.length; ++ii) {
         var cur = page.currentModule.Blocks[ii];
         var label = page.constructBlockItem(cur);
         $(blockListView).append(label);
     }
+
+    $("#page-List .page-Form .page-url").val("");
+    $("#page-List .page-Form .page-owner").val("");
 }
 
-page.constructModuleItem = function (mod) {
+page.constructModuleItem = function(mod) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "module");
 
@@ -74,7 +113,7 @@ page.constructModuleItem = function (mod) {
     return tr;
 };
 
-page.constructPageItem = function (page) {
+page.constructPageItem = function(page) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "module");
 
@@ -106,6 +145,7 @@ page.constructBlockItem = function(block) {
 
     var chk = document.createElement("input");
     chk.setAttribute("type", "checkbox");
+    chk.setAttribute("name", "page-block");
     chk.setAttribute("value", block.Id);
     label.appendChild(chk);
 
@@ -117,7 +157,7 @@ page.constructBlockItem = function(block) {
     return label;
 }
 
-page.selectPage = function (pageUrl) {
+page.selectPage = function(pageUrl) {
     if (!page.currentModule) {
         return;
     }
@@ -130,19 +170,20 @@ page.selectPage = function (pageUrl) {
             $("#page-List .page-Form .page-url").val(cur.Url);
             $("#page-List .page-Form .page-owner").val(cur.Owner);
 
-            for (var ii =0; ii < cur.Blocks.length; ++ii) {
-                var block = cur.Blocks[ii];
-                $(blockListView).find("input ").filter("[value=" + block.Id + "]").prop("checked", true);
+            if (cur.Blocks) {
+                for (var ii = 0; ii < cur.Blocks.length; ++ii) {
+                    var block = cur.Blocks[ii];
+                    $(blockListView).find("input ").filter("[value=" + block.Id + "]").prop("checked", true);
+                }
             }
-
             break;
         }
     }
 
 }
 
-page.maintainPage = function (maintainUrl) {
-    $.get(maintainUrl, {}, function (result) {
+page.maintainPage = function(maintainUrl) {
+    $.get(maintainUrl, {}, function(result) {
 
         if (result.ErrCode > 0) {
             return
