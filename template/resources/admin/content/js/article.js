@@ -5,12 +5,12 @@ var article = {
     catalogInfo: {}
 };
 
-article.initialize = function () {
+article.initialize = function() {
     article.refreshCatalog();
     article.fillArticleView();
 
     // 绑定表单提交事件处理器
-    $("#article-content .article-Form").submit(function () {
+    $("#article-Content .article-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -18,7 +18,7 @@ article.initialize = function () {
         };
 
         // pre-submit callback
-        function showRequest() { }
+        function showRequest() {}
         // post-submit callback
         function showResponse(result) {
             console.log(result);
@@ -36,17 +36,17 @@ article.initialize = function () {
         function validate() {
             var result = true
 
-            $("#article-content .article-Form .article-title").parent().find("span").remove();
-            var title = $("#article-content .article-Form .article-title").val();
+            $("#article-Content .article-Form .article-title").parent().find("span").remove();
+            var title = $("#article-Content .article-Form .article-title").val();
             if (title.length == 0) {
-                $("#article-content .article-Form .article-title").parent().append("<span class=\"input-notification error\">请输入标题</span>");
+                $("#article-Content .article-Form .article-title").parent().append("<span class=\"input-notification error\">请输入标题</span>");
                 result = false;
             }
 
-            $("#article-content .article-Form .article-content").parent().find("span").remove();
-            var content = $("#article-content .article-Form .article-content").val();
+            $("#article-Content .article-Form .article-content").parent().find("span").remove();
+            var content = $("#article-Content .article-Form .article-content").val();
             if (content.length == 0) {
-                $("#article-content .article-Form .article-content").parent().append("<span class=\"input-notification error\">请输入内容</span>");
+                $("#article-Content .article-Form .article-content").parent().append("<span class=\"input-notification error\">请输入内容</span>");
                 result = false;
             }
 
@@ -66,16 +66,16 @@ article.initialize = function () {
     });
 };
 
-article.refreshCatalog = function () {
+article.refreshCatalog = function() {
     $("#article-Edit .article-Form .article-catalog").children().remove();
     for (var ii = 0; ii < article.catalogInfo.length; ++ii) {
         var catalog = article.catalogInfo[ii];
-        $("#article-Edit .article-Form .article-catalog").append("<label><input type='checkbox' name='article-catalog' value=" + catalog.Id+ "> </input>" + catalog.Name + "</label> ");
+        $("#article-Edit .article-Form .article-catalog").append("<label><input type='checkbox' name='article-catalog' value=" + catalog.Id + "> </input>" + catalog.Name + "</label> ");
     }
 };
 
-article.refreshArticle = function () {
-    $.get("/admin/content/queryAllArticle/", {}, function (result) {
+article.refreshArticle = function() {
+    $.get("/admin/content/queryAllArticle/", {}, function(result) {
         article.errCode = result.ErrCode;
         article.reason = result.Reason;
 
@@ -85,7 +85,7 @@ article.refreshArticle = function () {
     }, "json");
 };
 
-article.fillArticleView = function () {
+article.fillArticleView = function() {
     $("#article-List div.notification").hide();
 
     if (article && article.errCode > 0) {
@@ -114,16 +114,9 @@ article.fillArticleView = function () {
     $("#article-Edit .article-Form .article-content").val("");
 };
 
-article.constructArticleItem = function (articleInfo) {
+article.constructArticleItem = function(articleInfo) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "article");
-
-    var checkBoxTd = document.createElement("td");
-    var checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-
-    checkBoxTd.appendChild(checkBox);
-    tr.appendChild(checkBoxTd);
 
     var titleTd = document.createElement("td");
     var titleLink = document.createElement("a");
@@ -184,8 +177,8 @@ article.constructArticleItem = function (articleInfo) {
     return tr;
 };
 
-article.editArticle = function (editUrl) {
-    $.get(editUrl, {}, function (result) {
+article.editArticle = function(editUrl) {
+    $.get(editUrl, {}, function(result) {
         $("#article-List div.notification").hide();
 
         if (result.ErrCode > 0) {
@@ -207,15 +200,12 @@ article.editArticle = function (editUrl) {
             }
         }
 
-        $("#article-content .content-box-tabs li a").removeClass('current');
-        $("#article-content .content-box-tabs li a.article-Edit-tab").addClass('current');
-        $("#article-Edit").siblings().hide();
-        $("#article-Edit").show();
+        $("#article-Content .content-header .nav .article-Edit").find("a").trigger("click");
     }, "json");
 };
 
-article.deleteArticle = function (deleteUrl) {
-    $.get(deleteUrl, {}, function (result) {
+article.deleteArticle = function(deleteUrl) {
+    $.get(deleteUrl, {}, function(result) {
         $("#article-List div.notification").hide();
 
         if (result.ErrCode > 0) {

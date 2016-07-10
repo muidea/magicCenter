@@ -23,11 +23,11 @@
 </head>
 
 <body>
-    <div class="container-fluid content-box" id="image-content">
+    <div class="container-fluid content-box" id="image-Content">
         <div class="content-header">
             <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#image-List">列表</a></li>
-                <li role="presentation"><a href="#image-Edit">编辑</a></li>
+                <li role="presentation" class="image-List active"><a href="#image-List">列表</a></li>
+                <li role="presentation" class="image-Edit"><a href="#image-Edit">编辑</a></li>
             </ul>
         </div>
         <div class="content-content">
@@ -35,7 +35,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th><input class="check-all" type="checkbox" /></th>
                             <th>名称</th>
                             <th>图片</th>
                             <th>描述</th>
@@ -45,14 +44,13 @@
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="5">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
                         <tr class="image">
-                            <td><input type="checkbox" /></td>
                             <td>Image Name</td>
                             <td><a class="edit" href="/content/image/query" title="title">Image Url</a></td>
                             <td>Image desc</td>

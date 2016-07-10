@@ -13,8 +13,8 @@
 	<script type="text/javascript" src="/resources/admin/common/js/common.js"></script>
 	<script type="text/javascript" src="/resources/admin/account/js/user.js"></script>
 	<script type="text/javascript">
-	user.userInfo = {{.Users}};
-	user.groupInfo = {{.Groups}};
+	user.userInfos = {{.Users}};
+	user.groupInfos = {{.Groups}};
 	
 	$(document).ready(function() {
 		user.initialize();
@@ -35,7 +35,6 @@
 				<table class="table table-hover">
 					<thead>
 						<tr>
-							<th><input class="check-all" type="checkbox" /></th>
 							<th>账号</th>
 							<th>昵称</th>
 							<th>邮箱</th>
@@ -46,7 +45,7 @@
 					</thead>
 					<tfoot>
 						<tr>
-							<td colspan="6">
+							<td colspan="5">
 								<div class="clear"></div>
 							</td>
 						</tr>

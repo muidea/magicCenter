@@ -1,9 +1,19 @@
 $(document).ready(function() {
 
+    function updatePathNav() {
+        var topPath = $("#main-nav>li>a.active").text();
+        var subPath = $("#main-nav>li>a.active").parent().find("ul>li>a.active").text();
+
+        $("#path-nav").find("li").remove();
+        $("#path-nav").append("<li>" + topPath + "</li>");
+        $("#path-nav").append("<li>" + subPath + "</li>");
+    }
+
+
     // 先把所有的隐藏起来，默认显示当前激活的项
     $("#main-nav li ul").hide();
     $("#main-nav li a.active").parent().find("ul").slideToggle("slow");
-    
+
     $("#main-nav li a.nav-top-item").click(
         // 隐藏兄弟项，显示当前项
         function() {
@@ -29,15 +39,18 @@ $(document).ready(function() {
         function() {
             var hrefUrl = $(this).parent().find("ul li a.active").attr("href");
             $("#body-content").load(hrefUrl);
+
+            updatePathNav();
             return false;
         }
     );
 
     $("#main-nav li ul li a.nav-sub-item").click(
-        // When a top menu item is clicked...
         function() {
             var hrefUrl = $(this).attr('href');
-            $("#body-content").load(hrefUrl);            
+            $("#body-content").load(hrefUrl);
+
+            updatePathNav();
             return false;
         }
     );

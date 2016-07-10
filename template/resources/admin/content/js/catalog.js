@@ -10,7 +10,7 @@ catalog.initialize = function() {
     catalog.fillCatalogView();
 
     // 绑定表单提交事件处理器
-    $('#catalog-content .catalog-Form').submit(function() {
+    $('#catalog-Content .catalog-Form').submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -37,10 +37,10 @@ catalog.initialize = function() {
         function validate() {
             var result = true
 
-            $("#catalog-content .catalog-Form .catalog-name").parent().find("span").remove();
-            var title = $("#catalog-content .catalog-Form .catalog-name").val();
+            $("#catalog-Content .catalog-Form .catalog-name").parent().find("span").remove();
+            var title = $("#catalog-Content .catalog-Form .catalog-name").val();
             if (title.length == 0) {
-                $("#catalog-content .catalog-Form .catalog-name").parent().append("<span class=\"input-notification error png_bg\">请输入分类名</span>");
+                $("#catalog-Content .catalog-Form .catalog-name").parent().append("<span class=\"input-notification error png_bg\">请输入分类名</span>");
                 result = false;
             }
 
@@ -101,7 +101,7 @@ catalog.fillCatalogView = function() {
     $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
     for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
         var ca = catalog.catalogInfo[ii];
-        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
+        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
         $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -112,13 +112,6 @@ catalog.fillCatalogView = function() {
 catalog.constructCatalogItem = function(ca) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "catalog");
-
-    var checkBoxTd = document.createElement("td");
-    var checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-
-    checkBoxTd.appendChild(checkBox);
-    tr.appendChild(checkBoxTd);
 
     var titleTd = document.createElement("td");
     var titleLink = document.createElement("a");
@@ -178,22 +171,22 @@ catalog.constructCatalogItem = function(ca) {
 
 catalog.editCatalog = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-        
+
         console.log(result);
-        
+
         if (result.ErrCode > 0) {
             $("#catalog-List div.error div").html(result.Reason);
             $("#catalog-List div.error").show();
             return
         }
-        
+
         $("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
         $("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
         $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
         if (result.AvalibleParent) {
             for (var ii = 0; ii < result.AvalibleParent.length; ++ii) {
                 var ca = result.AvalibleParent[ii];
-                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
+                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
             }
 
             if (ii == 0) {
@@ -208,10 +201,7 @@ catalog.editCatalog = function(editUrl) {
             }
         }
 
-        $("#catalog-content .content-box-tabs li a").removeClass('current');
-        $("#catalog-content .content-box-tabs li a.catalog-Edit-tab").addClass('current');
-        $("#catalog-Edit").siblings().hide();
-        $("#catalog-Edit").show();
+        $("#catalog-Content .content-header .nav .catalog-Edit").find("a").trigger("click");
     }, "json");
 };
 

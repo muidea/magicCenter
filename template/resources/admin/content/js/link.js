@@ -13,7 +13,7 @@ link.initialize = function() {
     link.fillLinkView();
 
     // 绑定表单提交事件处理器
-    $('#link-content .link-Form').submit(function() {
+    $('#link-Content .link-Form').submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -42,22 +42,22 @@ link.initialize = function() {
         function validate() {
             var result = true
 
-            $("#link-content .link-Form .link-name").parent().find("span").remove();
-            var name = $("#link-content .link-Form .link-name").val();
+            $("#link-Content .link-Form .link-name").parent().find("span").remove();
+            var name = $("#link-Content .link-Form .link-name").val();
             if (name.length == 0) {
-                $("#link-content .link-Form .link-name").parent().append("<span class=\"input-notification error png_bg\">请输入站点名</span>");
+                $("#link-Content .link-Form .link-name").parent().append("<span class=\"input-notification error png_bg\">请输入站点名</span>");
                 result = false;
             }
 
-            var url = $("#link-content .link-Form .link-url").val();
+            var url = $("#link-Content .link-Form .link-url").val();
             if (url.length == 0) {
-                $("#link-content .link-Form .link-url").parent().append("<span class=\"input-notification error png_bg\">请输入网址</span>");
+                $("#link-Content .link-Form .link-url").parent().append("<span class=\"input-notification error png_bg\">请输入网址</span>");
                 result = false;
             }
 
-            var logo = $("#link-content .link-Form .link-logo").val();
+            var logo = $("#link-Content .link-Form .link-logo").val();
             if (logo.length == 0) {
-                $("#link-content .link-Form .link-name").parent().append("<span class=\"input-notification error png_bg\">请输入Log地址</span>");
+                $("#link-Content .link-Form .link-name").parent().append("<span class=\"input-notification error png_bg\">请输入Log地址</span>");
                 result = false;
             }
 
@@ -81,7 +81,7 @@ link.refreshCatalog = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var catalog = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + catalog.Id+ "> </input>" + catalog.Name + "</label> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + catalog.Id + "> </input>" + catalog.Name + "</label> ");
     }
 };
 
@@ -128,7 +128,7 @@ link.fillLinkView = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var ca = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id+ "> </input>" + ca.Name + "</label> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
         $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -139,13 +139,6 @@ link.fillLinkView = function() {
 link.constructLinkItem = function(lnk) {
     var tr = document.createElement("tr");
     tr.setAttribute("class", "link");
-
-    var checkBoxTd = document.createElement("td");
-    var checkBox = document.createElement("input");
-    checkBox.setAttribute("type", "checkbox");
-
-    checkBoxTd.appendChild(checkBox);
-    tr.appendChild(checkBoxTd);
 
     var nameTd = document.createElement("td");
     var nameLink = document.createElement("a");
@@ -225,10 +218,7 @@ link.editLink = function(editUrl) {
             }
         }
 
-        $("#link-content .content-box-tabs li a").removeClass('current');
-        $("#link-content .content-box-tabs li a.link-Edit-tab").addClass('current');
-        $("#link-Edit").siblings().hide();
-        $("#link-Edit").show();
+        $("#link-Content .content-header .nav .link-Edit").find("a").trigger("click");
     }, "json");
 };
 
