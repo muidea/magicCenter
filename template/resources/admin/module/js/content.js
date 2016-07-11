@@ -3,8 +3,7 @@ var content = {
     articleList: {},
     catalogList: {},
     linkList: {},
-    currentModule: {},
-    currentBlock: -1,
+    currentModule: {}
 };
 
 $(document).ready(function() {
@@ -136,7 +135,7 @@ content.maintainContent = function(maintainUrl) {
         content.articleList = result.Articles;
         content.catalogList = result.Catalogs;
         content.linkList = result.Links;
-        content.refreshModuleView();
+        content.refreshBlockContentView();
 
         $("#module-Content .content-header .nav .content-List").find("a").trigger("click");
     }, "json");
@@ -172,21 +171,31 @@ content.constructBlockItem = function(block) {
 
     tr.appendChild(numberTd);
 
-    tr.setAttribute("onclick", "content.editModuleBlock(" + block.Id + "); return false;");
+    tr.setAttribute("onclick", "content.selectModuleBlock(" + block.Id + "); return false;");
 
     return tr;
 };
 
-content.editModuleBlock = function(block) {
-    content.currentBlock = block;
+content.selectModuleBlock = function(blockId) {
+    $("#block-List table>tbody>tr>td>input").prop("checked", false);
+    $("#block-Form table>tbody>tr>td>input").prop("checked", false);
 
-    $("#block-list table tbody tr td input").prop("checked", false);
-    $("#block-form table tbody tr td input").prop("checked", false);
+    $("#block-List table tbody tr td input").filter("[value=" + blockId + "]").prop("checked", true);
+    $("#block-Form .block-id").val(blockId);
 
-    $("#block-list table tbody tr td input").filter("[value=" + block + "]").prop("checked", true);
-    $("#block-form .block-id").val(block);
+    var block = null;
+    for (var ii = 0; ii < content.currentModule.Blocks.length; ++ii) {
+        var cur = content.currentModule.Blocks[ii];
+        if (cur.Id == blockId) {
+            block = cur;
+            break;
+        }
+    }
 
-    content.refreshModuleView();
+    if (block) {
+        console.log(block);
+        content.selectBlockContent(block);
+    }
 };
 
 content.constructArticleItem = function(article) {
@@ -243,7 +252,7 @@ content.constructLinkItem = function(link) {
     return tr;
 };
 
-content.refreshModuleView = function() {
+content.refreshBlockContentView = function() {
     var blockListView = content.getBlockListView();
     $(blockListView).find("tbody tr").remove();
     if (content.currentModule && content.currentModule.Blocks) {
@@ -255,7 +264,6 @@ content.refreshModuleView = function() {
     }
 
     var articleListView = content.getArticleListView();
-    console.log(articleListView);
     $(articleListView).find("tbody tr").remove();
     if (content.articleList) {
         for (var ii = 0; ii < content.articleList.length; ++ii) {
@@ -285,3 +293,20 @@ content.refreshModuleView = function() {
         }
     }
 };
+
+content.selectBlockContent = function(block) {
+    for (var ii = 0; ii < block.Article.length; ++ii) {
+        var article = block.Article[ii];
+        $("#block-Form .article-List table tbody tr td input").filter("[value=" + article.Rid + "]").prop("checked", true);
+    }
+
+    for (var ii = 0; ii < block.Catalog.length; ++ii) {
+        var catalog = block.Catalog[ii];
+        $("#block-Form .catalog-List table tbody tr td input").filter("[value=" + catalog.Rid + "]").prop("checked", true);
+    }
+
+    for (var ii = 0; ii < block.Link.length; ++ii) {
+        var link = block.Link[ii];
+        $("#block-Form .link-List table tbody tr td input").filter("[value=" + link.Rid + "]").prop("checked", true);
+    }
+}
