@@ -4,7 +4,6 @@ var group = {
 
 
 group.initialize = function() {
-    console.log(group);
     group.fillGroupListView();
 };
 
@@ -30,8 +29,8 @@ group.constructGroupItem = function(groupInfo) {
     var opTd = document.createElement("td");
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
-    editLink.setAttribute("href", "#editArticle");
-    editLink.setAttribute("onclick", "article.editArticle('/admin/content/editArticle/?id=" + groupInfo.Id + "'); return false");
+    editLink.setAttribute("href", "#editGroup");
+    editLink.setAttribute("onclick", "group.editGroup('/admin/account/queryGroup/?id=" + groupInfo.Id + "'); return false");
     var editImage = document.createElement("img");
     editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
@@ -40,8 +39,8 @@ group.constructGroupItem = function(groupInfo) {
 
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
-    deleteLink.setAttribute("href", "#deleteArticle");
-    deleteLink.setAttribute("onclick", "article.deleteArticle('/admin/content/deleteArticle/?id=" + groupInfo.Id + "'); return false;");
+    deleteLink.setAttribute("href", "#deleteGroup");
+    deleteLink.setAttribute("onclick", "group.deleteGroup('/admin/account/deleteGroup/?id=" + groupInfo.Id + "'); return false;");
     var deleteImage = document.createElement("img");
     deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
@@ -62,4 +61,20 @@ group.fillGroupListView = function() {
 
         $(groupListView).find("tbody").append(trContent);
     }
+};
+
+group.editGroup = function(editUrl) {
+    $.get(editUrl, {}, function(result) {
+        if (result.ErrCode > 0) {
+            return
+        }
+
+        $("#group-Edit .group-Form .group-name").val(result.Group.Name);
+        $("#group-Edit .group-Form .group-id").val(result.Group.Id);
+        $("#group-Content .content-header .nav .group-Edit").find("a").trigger("click");
+    }, "json");
+}
+
+group.deleteGroup = function(deleteUrl) {
+
 };

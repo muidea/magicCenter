@@ -23,11 +23,11 @@
 </head>
 
 <body>
-	<div class="container-fluid content-box" id="user-content">
+	<div class="container-fluid content-box" id="user-Content">
 		<div class="content-header">
 			<ul class="nav nav-tabs">
-				<li role="presentation" class="active"><a href="#user-List">列表</a></li>
-				<li role="presentation"><a href="#user-Edit">编辑</a></li>
+				<li role="presentation" class="user-List active"><a href="#user-List">列表</a></li>
+				<li role="presentation" class="user-Edit"><a href="#user-Edit">编辑</a></li>
 			</ul>
 		</div>
 		<div class="content-content">
@@ -36,7 +36,6 @@
 					<thead>
 						<tr>
 							<th>账号</th>
-							<th>昵称</th>
 							<th>邮箱</th>
 							<th>分组</th>
 							<th>状态</th>
@@ -54,7 +53,6 @@
 						<tr class="user">
 							<td><input type="checkbox" /></td>
 							<td><a class="edit" href="/content/user/query" title="title">Acccount</a></td>
-							<td>NickName</td>
 							<td>EMail</td>
 							<td>Group</td>
 							<td>Status</td>
@@ -69,12 +67,11 @@
 			<div class="tab-content" id="user-Edit">
 				<form enctype="multipart/form-data" class="user-Form" action="/admin/account/ajaxUser/" method="post">
 					<div class="form-group">
-						<label for="user-account">账号</label> <input class="form-control user-account" type="text" name="user-account" id="user-account"
-						/>
+						<label for="user-account">账号</label> <input class="form-control user-account" type="text" name="user-account"/>
 					</div>
 					<div class="form-group">
 						<label for="user-email">备用邮箱</label>
-						<input class="form-control user-email" type="text" name="user-email" id="user-email" />
+						<input class="form-control user-email" type="text" name="user-email"/>
 					</div>
 					<div class="form-group">
 						<label for="user-group">分组</label>
