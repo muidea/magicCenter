@@ -10,21 +10,19 @@ article.initialize = function() {
     // 绑定表单提交事件处理器
     $("#article-Content .article-Form").submit(function() {
         var options = {
-            beforeSubmit: showRequest, // pre-submit callback
-            success: showResponse, // post-submit callback
-            dataType: "json" // 'xml', 'script', or 'json' (expected server response type) 
+            beforeSubmit: showRequest,
+            success: showResponse,
+            dataType: "json"
         };
 
         function showRequest() {}
 
         function showResponse(result) {
-            if (result.ErrCode > 0) {
-                $("#article-Edit div.error div").html(result.Reason);
-                $("#article-Edit div.error").show();
-            } else {
-                $("#article-Edit div.success div").html(result.Reason);
-                $("#article-Edit div.success").show();
 
+            if (result.ErrCode > 0) {
+                $("#article-Edit .alert-Info .content").innerHTML = result.Reason;
+                $("#article-Edit .alert-Info").modal();
+            } else {
                 article.refreshArticle();
             }
         }
@@ -175,11 +173,9 @@ article.constructArticleItem = function(articleInfo) {
 
 article.editArticle = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-        $("#article-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#article-List div.error div").html(result.Reason);
-            $("#article-List div.error").show();
+            $("#article-List .alert-Info .content").innerHTML = result.Reason;
+            $("#article-List .alert-Info").modal();
             return
         }
 
