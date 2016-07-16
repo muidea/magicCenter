@@ -30,6 +30,17 @@
 		</div>
 		<div class="content-content">
 			<div class="tab-content" id="group-List">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>				
 				<table class="table table-hover">
 					<thead>
 						<tr>
@@ -59,6 +70,17 @@
 				</table>
 			</div>
 			<div class="tab-content" id="group-Edit">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>				
 				<form enctype="multipart/form-data" class="group-Form" action="/admin/account/ajaxGroup/" method="post">
 					<div class="form-group">
 						<label for="group-name">分组名</label> <input class="form-control group-name" type="text" name="group-name" />

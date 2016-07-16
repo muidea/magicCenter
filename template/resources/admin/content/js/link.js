@@ -5,13 +5,7 @@ var link = {
     catalogInfo: {}
 };
 
-
-link.initialize = function() {
-
-    link.refreshCatalog();
-
-    link.fillLinkView();
-
+$(document).ready(function() {
     // 绑定表单提交事件处理器
     $('#link-Content .link-Form').submit(function() {
         var options = {
@@ -26,15 +20,10 @@ link.initialize = function() {
         }
         // post-submit callback
         function showResponse(result) {
-            $("#link-Edit div.notification").hide();
-
             if (result.ErrCode > 0) {
-                $("#link-Edit div.error div").html(result.Reason);
-                $("#link-Edit div.error").show();
+                $("#link-Edit .alert-Info .content").html(result.Reason);
+                $("#link-Edit .alert-Info").modal();
             } else {
-                $("#link-Edit div.success div").html(result.Reason);
-                $("#link-Edit div.success").show();
-
                 link.refreshLink();
             }
         }
@@ -75,6 +64,13 @@ link.initialize = function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+});
+
+link.initialize = function() {
+
+    link.refreshCatalog();
+
+    link.fillLinkView();
 };
 
 link.refreshCatalog = function() {
@@ -99,17 +95,6 @@ link.refreshLink = function() {
 
 
 link.fillLinkView = function() {
-
-    $("#link-List div.notification").hide();
-
-    if (link.errCode > 0) {
-        $("#link-List div.error div").html(link.reason);
-        $("#link-List div.error").show();
-
-        $("#link-List table").hide();
-        return;
-    }
-
     $("#link-List table tbody tr").remove();
     for (var ii = 0; ii < link.linkInfo.length; ++ii) {
         var info = link.linkInfo[ii];
@@ -119,7 +104,6 @@ link.fillLinkView = function() {
     $("#link-List table tbody tr:even").addClass("alt-row");
     $("#link-List table").show();
 
-    $("#link-Edit div.notification").hide();
     $("#link-Edit .link-Form .link-id").val(-1);
     $("#link-Edit .link-Form .link-name").val("");
     $("#link-Edit .link-Form .link-url").val("");
@@ -197,11 +181,9 @@ link.constructLinkItem = function(lnk) {
 
 link.editLink = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-        $("#link-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#link-List div.error div").html(result.Reason);
-            $("#link-List div.error").show();
+            $("#link-List .alert-Info .content").html(result.Reason);
+            $("#link-List .alert-Info").modal();
             return
         }
 
@@ -224,16 +206,11 @@ link.editLink = function(editUrl) {
 
 link.deleteLink = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-        $("#link-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#link-List div.error div").html(result.Reason);
-            $("#link-List div.error").show();
+            $("#link-List .alert-Info .content").html(result.Reason);
+            $("#link-List .alert-Info").modal();
             return;
         }
-
-        $("#link-List div.success div").html(result.Reason);
-        $("#link-List div.success").show();
 
         link.refreshLink();
     }, "json");

@@ -4,11 +4,7 @@ var catalog = {
     catalogInfo: {}
 };
 
-
-catalog.initialize = function() {
-
-    catalog.fillCatalogView();
-
+$(document).ready(function() {
     // 绑定表单提交事件处理器
     $('#catalog-Content .catalog-Form').submit(function() {
         var options = {
@@ -24,12 +20,9 @@ catalog.initialize = function() {
         // post-submit callback
         function showResponse(result) {
             if (result.ErrCode > 0) {
-                $("#catalog-Edit div.error div").html(result.Reason);
-                $("#catalog-Edit div.error").show();
+                $("#catalog-Edit .alert-Info .content").html(result.Reason);
+                $("#catalog-Edit .alert-Info").modal();
             } else {
-                $("#catalog-Edit div.success div").html(result.Reason);
-                $("#catalog-Edit div.success").show();
-
                 catalog.refreshCatalog();
             }
         }
@@ -58,6 +51,11 @@ catalog.initialize = function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+});
+
+catalog.initialize = function() {
+
+    catalog.fillCatalogView();
 };
 
 catalog.refreshCatalog = function() {
@@ -73,17 +71,6 @@ catalog.refreshCatalog = function() {
 
 
 catalog.fillCatalogView = function() {
-
-    $("#catalog-List div.notification").hide();
-
-    if (catalog.errCode > 0) {
-        $("#catalog-List div.error div").html(catalog.reason);
-        $("#catalog-List div.error").show();
-
-        $("#catalog-List table").hide();
-        return;
-    }
-
     $("#catalog-List table tbody tr").remove();
     for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
         var info = catalog.catalogInfo[ii];
@@ -93,7 +80,6 @@ catalog.fillCatalogView = function() {
     $("#catalog-List table tbody tr:even").addClass("alt-row");
     $("#catalog-List table").show();
 
-    $("#catalog-Edit div.notification").hide();
     $("#catalog-Edit .catalog-Form .catalog-id").val(-1);
     $("#catalog-Edit .catalog-Form .catalog-name").val("");
 
@@ -171,12 +157,9 @@ catalog.constructCatalogItem = function(ca) {
 
 catalog.editCatalog = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-
-        console.log(result);
-
         if (result.ErrCode > 0) {
-            $("#catalog-List div.error div").html(result.Reason);
-            $("#catalog-List div.error").show();
+            $("#catalog-List .alert-Info .content").html(result.Reason);
+            $("#catalog-List .alert-Info").modal();
             return
         }
 
@@ -207,16 +190,11 @@ catalog.editCatalog = function(editUrl) {
 
 catalog.deleteCatalog = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-        $("#catalog-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#catalog-List div.error div").html(result.Reason);
-            $("#catalog-List div.error").show();
+            $("#catalog-List .alert-Info .content").html(result.Reason);
+            $("#catalog-List .alert-Info").modal();
             return;
         }
-
-        $("#catalog-List div.success div").html(result.Reason);
-        $("#catalog-List div.success").show();
 
         catalog.refreshCatalog();
     }, "json");

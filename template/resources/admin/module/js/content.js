@@ -8,20 +8,21 @@ var content = {
 
 $(document).ready(function() {
 
-    $("#block-form .form .button").click(
+    $("#block-Form .button").click(
         function() {
             var articleList = "";
             var catalogList = "";
             var linkList = "";
-            var block_id = $("#block-form .block-id").val();
-            var blockArray = $("#block-list table tbody tr td :checkbox:checked");
-            var articleArray = $("#block-form .article-list table tbody tr td :checkbox:checked");
-            var catalogArray = $("#block-form .catalog-list table tbody tr td :checkbox:checked");
-            var linkArray = $("#block-form .link-list table tbody tr td :checkbox:checked");
+            var ownerModule = $("#block-Form .block-owner").val();
+            var block_id = $("#block-Form .block-id").val();
+            var blockArray = $("#block-List table tbody tr td :checkbox:checked");
+            var articleArray = $("#block-Form .article-List table tbody tr td :checkbox:checked");
+            var catalogArray = $("#block-Form .catalog-List table tbody tr td :checkbox:checked");
+            var linkArray = $("#block-Form .link-List table tbody tr td :checkbox:checked");
 
             if (blockArray.length == 0) {
-                $("#module-content div.error div").html("请选择一个功能块");
-                $("#module-content div.error").show();
+                $("#content-List .alert-Info .content").html("请选择一个功能块");
+                $("#content-List .alert-Info").modal();
                 return;
             }
 
@@ -44,7 +45,7 @@ $(document).ready(function() {
             }
 
             $.post("/admin/system/ajaxBlockItem/", {
-                'module-id': content.currentModule.Id,
+                'module-id': ownerModule,
                 "block-id": block_id,
                 "article-list": articleList,
                 "catalog-list": catalogList,
@@ -52,15 +53,11 @@ $(document).ready(function() {
             }, function(result) {
 
                 content.currentModule = result.Module;
-
-                $("#module-content div.notification").hide();
                 if (result.ErrCode > 0) {
-                    $("#module-content div.error div").html(result.Reason);
-                    $("#module-content div.error").show();
+                    $("#content-List .alert-Info .content").html(result.Reason);
+                    $("#content-List .alert-Info").modal();
                 } else {
-                    $("#module-content div.success div").html(result.Reason);
-                    $("#module-content div.success").show();
-                    content.refreshModuleView();
+                    content.refreshBlockContentView();
                 }
 
             }, "json");
@@ -129,6 +126,8 @@ content.constructModuleItem = function(mod) {
 content.maintainContent = function(maintainUrl) {
     $.get(maintainUrl, {}, function(result) {
         if (result.ErrCode > 0) {
+            $("#module-List .alert-Info .content").html(result.Reason);
+            $("#module-List .alert-Info").modal();
             return
         }
         content.currentModule = result.Module;
@@ -136,6 +135,8 @@ content.maintainContent = function(maintainUrl) {
         content.catalogList = result.Catalogs;
         content.linkList = result.Links;
         content.refreshBlockContentView();
+
+        $("#block-Form .block-owner").val(result.Module.Id);
 
         $("#module-Content .content-header .nav .content-List").find("a").trigger("click");
     }, "json");
@@ -193,7 +194,6 @@ content.selectModuleBlock = function(blockId) {
     }
 
     if (block) {
-        console.log(block);
         content.selectBlockContent(block);
     }
 };
@@ -278,7 +278,7 @@ content.refreshBlockContentView = function() {
     if (content.catalogList) {
         for (var ii = 0; ii < content.catalogList.length; ++ii) {
             var catalog = content.catalogList[ii];
-            var trContent = content.constructBlockItem(catalog);
+            var trContent = content.constructCatalogItem(catalog);
             $(catalogListView).find("tbody").append(trContent);
         }
     }
@@ -295,6 +295,8 @@ content.refreshBlockContentView = function() {
 };
 
 content.selectBlockContent = function(block) {
+    $("#block-Form .block-id").val(block.Id);
+
     for (var ii = 0; ii < block.Article.length; ++ii) {
         var article = block.Article[ii];
         $("#block-Form .article-List table tbody tr td input").filter("[value=" + article.Rid + "]").prop("checked", true);
@@ -309,4 +311,4 @@ content.selectBlockContent = function(block) {
         var link = block.Link[ii];
         $("#block-Form .link-List table tbody tr td input").filter("[value=" + link.Rid + "]").prop("checked", true);
     }
-}
+};

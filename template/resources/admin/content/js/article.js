@@ -3,10 +3,7 @@ var article = {
     catalogInfo: {}
 };
 
-article.initialize = function() {
-    article.refreshCatalog();
-    article.fillArticleView();
-
+$(document).ready(function() {
     // 绑定表单提交事件处理器
     $("#article-Content .article-Form").submit(function() {
         var options = {
@@ -20,7 +17,7 @@ article.initialize = function() {
         function showResponse(result) {
 
             if (result.ErrCode > 0) {
-                $("#article-Edit .alert-Info .content").innerHTML = result.Reason;
+                $("#article-Edit .alert-Info .content").html(result.Reason);
                 $("#article-Edit .alert-Info").modal();
             } else {
                 article.refreshArticle();
@@ -58,6 +55,11 @@ article.initialize = function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+});
+
+article.initialize = function() {
+    article.refreshCatalog();
+    article.fillArticleView();
 };
 
 article.refreshCatalog = function() {
@@ -80,16 +82,6 @@ article.refreshArticle = function() {
 };
 
 article.fillArticleView = function() {
-    $("#article-List div.notification").hide();
-
-    if (article && article.errCode > 0) {
-        $("#article-List div.error div").html(article.reason);
-        $("#article-List div.error").show();
-
-        $("#article-List table").hide();
-        return;
-    }
-
     $("#article-List table tbody tr").remove();
     var articleInfoList = article.articleInfo;
     for (var ii = 0; ii < articleInfoList.length; ++ii) {
@@ -101,11 +93,12 @@ article.fillArticleView = function() {
     $("#article-List table tbody tr:even").addClass("alt-row");
     $("#article-List table").show();
 
-    $("#article-Edit div.notification").hide();
     $("#article-Edit .article-Form .article-id").val(-1);
     $("#article-Edit .article-Form .article-title").val("");
     //$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
     $("#article-Edit .article-Form .article-content").val("");
+    $("#article-Edit .article-Form .article-catalog input").prop("checked", false);
+
 };
 
 article.constructArticleItem = function(articleInfo) {
@@ -174,7 +167,7 @@ article.constructArticleItem = function(articleInfo) {
 article.editArticle = function(editUrl) {
     $.get(editUrl, {}, function(result) {
         if (result.ErrCode > 0) {
-            $("#article-List .alert-Info .content").innerHTML = result.Reason;
+            $("#article-List .alert-Info .content").html(result.Reason);
             $("#article-List .alert-Info").modal();
             return
         }
@@ -198,16 +191,11 @@ article.editArticle = function(editUrl) {
 
 article.deleteArticle = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-        $("#article-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#article-List div.error div").html(result.Reason);
-            $("#article-List div.error").show();
+            $("#article-List .alert-Info .content").html(result.Reason);
+            $("#article-List .alert-Info").modal();
             return
         }
-
-        $("#article-List div.success div").html(result.Reason);
-        $("#article-List div.success").show();
 
         article.refreshArticle();
     }, "json");

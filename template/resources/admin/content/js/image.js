@@ -6,12 +6,7 @@ var image = {
 };
 
 
-image.initialize = function() {
-
-    image.refreshCatalog();
-
-    image.fillImageView();
-
+$(document).ready(function() {
 
     // 绑定表单提交事件处理器
     $('#image-Content .image-Form').submit(function() {
@@ -27,15 +22,10 @@ image.initialize = function() {
         }
         // post-submit callback
         function showResponse(result) {
-            $("#image-Edit div.notification").hide();
-
             if (result.ErrCode > 0) {
-                $("#image-Edit div.error div").html(result.Reason);
-                $("#image-Edit div.error").show();
+                $("#image-Edit .alert-Info .content").html(result.Reason);
+                $("#image-Edit .alert-Info").modal();
             } else {
-                $("#image-Edit div.success div").html(result.Reason);
-                $("#image-Edit div.success").show();
-
                 image.refreshImage();
             }
         }
@@ -64,10 +54,22 @@ image.initialize = function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+});
+
+
+image.initialize = function() {
+
+    image.refreshCatalog();
+
+    image.fillImageView();
+
 };
 
 image.assignDefaltName = function() {
     var url = $("#image-Edit .image-Form .image-url").val();
+
+    console.log(url);
+
     if (url.length == 0) {
         return;
     }
@@ -99,17 +101,6 @@ image.refreshImage = function() {
 
 
 image.fillImageView = function() {
-
-    $("#image-List div.notification").hide();
-
-    if (image.errCode > 0) {
-        $("#image-List div.error div").html(image.reason);
-        $("#image-List div.error").show();
-
-        $("#image-List table").hide();
-        return;
-    }
-
     $("#image-List table tbody tr").remove();
     if (image.imageInfo) {
         for (var ii = 0; ii < image.imageInfo.length; ++ii) {
@@ -121,12 +112,12 @@ image.fillImageView = function() {
     $("#image-List table tbody tr:even").addClass("alt-row");
     $("#image-List table").show();
 
-    $("#image-Edit div.notification").hide();
     $("#image-Edit .image-Form .image-id").val(-1);
     $("#image-Edit .image-Form .image-name").val("");
     $("#image-Edit .image-Form .image-url").val("");
     //$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", "");
     $("#image-Edit .image-Form .image-desc").val("");
+    $("#image-Edit .image-Form .image-catalog input").prop("checked", false);
 };
 
 
@@ -178,15 +169,11 @@ image.constructImageItem = function(img) {
 
 image.editImage = function(editUrl) {
     $.get(editUrl, {}, function(result) {
-        $("#image-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#image-List div.error div").html(result.Reason);
-            $("#image-List div.error").show();
+            $("#image-List .alert-Info .content").html(result.Reason);
+            $("#image-List .alert-Info").modal();
             return
         }
-
-        console.log(result);
 
         $("#image-Edit .image-Form .image-id").val(result.Image.Id);
         $("#image-Edit .image-Form .image-name").val(result.Image.Name);
@@ -208,16 +195,11 @@ image.editImage = function(editUrl) {
 
 image.deleteImage = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-        $("#image-List div.notification").hide();
-
         if (result.ErrCode > 0) {
-            $("#image-List div.error div").html(result.Reason);
-            $("#image-List div.error").show();
+            $("#image-List .alert-Info .content").html(result.Reason);
+            $("#image-List .alert-Info").modal();
             return;
         }
-
-        $("#image-List div.success div").html(result.Reason);
-        $("#image-List div.success").show();
 
         image.refreshImage();
     }, "json");

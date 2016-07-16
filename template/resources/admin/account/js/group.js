@@ -2,6 +2,45 @@ var group = {
     groupInfos: {}
 };
 
+$(document).ready(function() {
+
+    // 绑定表单提交事件处理器
+    $("#group-Content .group-Form").submit(function() {
+        var options = {
+            beforeSubmit: showRequest,
+            success: showResponse,
+            dataType: "json"
+        };
+
+        function showRequest() {}
+
+        function showResponse(result) {
+
+            if (result.ErrCode > 0) {
+                $("#group-Edit .alert-Info .content").html(result.Reason);
+                $("#group-Edit .alert-Info").modal();
+            } else {
+                group.fillGroupListView();
+            }
+        }
+
+        function validate() {
+            var result = true;
+            return result;
+        }
+
+        if (!validate()) {
+            return false;
+        }
+
+        //提交表单
+        $(this).ajaxSubmit(options);
+
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });
+});
 
 group.initialize = function() {
     group.fillGroupListView();
@@ -61,11 +100,16 @@ group.fillGroupListView = function() {
 
         $(groupListView).find("tbody").append(trContent);
     }
+
+    $("#group-Edit .group-Form .group-id").val("");
+    $("#group-Edit .group-Form .group-name").val("");
 };
 
 group.editGroup = function(editUrl) {
     $.get(editUrl, {}, function(result) {
         if (result.ErrCode > 0) {
+            $("#group-List .alert-Info .content").html(result.Reason);
+            $("#group-List .alert-Info").modal();
             return
         }
 
@@ -76,5 +120,13 @@ group.editGroup = function(editUrl) {
 }
 
 group.deleteGroup = function(deleteUrl) {
+    $.get(deleteUrl, {}, function(result) {
+        if (result.ErrCode > 0) {
+            $("#group-List .alert-Info .content").html(result.Reason);
+            $("#group-List .alert-Info").modal();
+            return
+        }
 
+        group.fillGroupListView();
+    }, "json");
 };

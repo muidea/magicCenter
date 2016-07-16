@@ -3,6 +3,45 @@ var user = {
     groupInfos: {}
 };
 
+$(document).ready(function() {
+
+    // 绑定表单提交事件处理器
+    $("#user-Content .user-Form").submit(function() {
+        var options = {
+            beforeSubmit: showRequest,
+            success: showResponse,
+            dataType: "json"
+        };
+
+        function showRequest() {}
+
+        function showResponse(result) {
+
+            if (result.ErrCode > 0) {
+                $("#user-Edit .alert-Info .content").html(result.Reason);
+                $("#user-Edit .alert-Info").modal();
+            } else {
+                user.fillUserListView();
+            }
+        }
+
+        function validate() {
+            var result = true;
+            return result;
+        }
+
+        if (!validate()) {
+            return false;
+        }
+
+        //提交表单
+        $(this).ajaxSubmit(options);
+
+        // !!! Important !!!
+        // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
+        return false;
+    });
+});
 
 user.initialize = function() {
     user.fillUserListView();
@@ -85,6 +124,10 @@ user.fillUserListView = function() {
 
         $(userListView).find("tbody").append(trContent);
     }
+
+    $("#user-Edit .user-Form .user-account").val("");
+    $("#user-Edit .user-Form .user-mail").val("");
+    $("#user-Edit .user-Form .user-group").prop("checked", false);
 };
 
 user.constructGroupItem = function(group) {
@@ -118,6 +161,8 @@ user.fillGroupListView = function() {
 user.editUser = function(editUrl) {
     $.get(editUrl, {}, function(result) {
         if (result.ErrCode > 0) {
+            $("#user-List .alert-Info .content").html(result.Reason);
+            $("#user-List .alert-Info").modal();
             return
         }
 
@@ -138,8 +183,11 @@ user.editUser = function(editUrl) {
 user.deleteUser = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
         if (result.ErrCode > 0) {
+            $("#user-List .alert-Info .content").html(result.Reason);
+            $("#user-List .alert-Info").modal();
             return
         }
 
+        user.fillUserListView();
     }, "json");
 };

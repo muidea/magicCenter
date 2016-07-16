@@ -20,7 +20,7 @@
 		setting.emailAccount={{.SystemInfo.MailAccount}};
 		setting.emailPassword={{.SystemInfo.MailPassword}};
 		$(document).ready(function() {
-			//setting.initialize();
+			setting.initialize();
 		});	
     </script>
 </head>
@@ -34,7 +34,18 @@
 		</div>		
 		<div class="content-content">
 			<div class="tab-content" id="system-Edit">
-				<form enctype="multipart/form-data" class="user-Form" action="/admin/account/ajaxUser/" method="post">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>				
+				<form enctype="multipart/form-data" class="system-Form" action="/admin/account/ajaxUser/" method="post">
 					<div class="form-group">
 						<label for="system-name">系统名称</label> <input class="form-control system-name" type="text" name="system-name" id="system-name"
 						/>

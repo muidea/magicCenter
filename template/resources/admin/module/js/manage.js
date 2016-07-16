@@ -61,7 +61,10 @@ $(document).ready(function() {
         // post-submit callback
         function showResponse(result) {
             console.log(result);
-            if (result.ErrCode > 0) {} else {
+            if (result.ErrCode > 0) {
+                $("#module-Maintain .alert-Info .content").html(result.Reason);
+                $("#module-Maintain .alert-Info").modal();
+            } else {
                 module.currentModule = result.Module;
                 module.fillModuleMaintainView();
             }
@@ -85,6 +88,10 @@ $(document).ready(function() {
     });
 });
 
+module.initialize = function() {
+    module.fillModuleListView();
+};
+
 module.getModuleListView = function() {
     return $("#module-List table")
 }
@@ -92,11 +99,6 @@ module.getModuleListView = function() {
 module.getModuleBlockListView = function() {
     return $("#module-Maintain .block table")
 }
-
-module.initialize = function() {
-    module.fillModuleListView();
-};
-
 
 module.fillModuleListView = function() {
     var moduleListView = module.getModuleListView();
@@ -122,7 +124,7 @@ module.fillModuleMaintainView = function() {
 
     $("#module-Maintain .block-Form .block-name").val("");
     $("#module-Maintain .block-Form .block-tag").val("");
-    $("#module-Maintain .block-Form .block-style").checked = false;
+    $("#module-Maintain .block-Form .block-style").filter("[value='0']").prop("checked", true);
     $("#module-Maintain .block-Form .module-id").val(module.currentModule.Id);
 }
 
@@ -205,6 +207,8 @@ module.selectDefaultModule = function(defaultModule) {
 module.maintainModule = function(maintainUrl) {
     $.get(maintainUrl, {}, function(result) {
         if (result.ErrCode > 0) {
+            $("#module-List .alert-Info .content").html(result.Reason);
+            $("#module-List .alert-Info").modal();
             return
         }
 
@@ -247,7 +251,10 @@ module.constructBlockItem = function(block) {
 
 module.deleteBlock = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
-        if (result.ErrCode > 0) {} else {
+        if (result.ErrCode > 0) {
+            $("#module-List .alert-Info .content").html(result.Reason);
+            $("#module-List .alert-Info").modal();
+        } else {
             module.currentModule = result.Module;
             module.fillModuleMaintainView();
         }
