@@ -15,11 +15,14 @@ $(document).ready(function() {
         function showRequest() {}
 
         function showResponse(result) {
+            console.log(result);
 
             if (result.ErrCode > 0) {
                 $("#group-Edit .alert-Info .content").html(result.Reason);
                 $("#group-Edit .alert-Info").modal();
             } else {
+                group.groupInfos = result.Groups;
+
                 group.fillGroupListView();
             }
         }
@@ -40,6 +43,12 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+
+    $("#group-Edit .group-Form button.reset").click(
+        function() {
+            $("#group-Edit .group-Form .group-id").val("");
+            $("#group-Edit .group-Form .group-name").val("");
+        });
 });
 
 group.initialize = function() {
@@ -126,6 +135,8 @@ group.deleteGroup = function(deleteUrl) {
             $("#group-List .alert-Info").modal();
             return
         }
+        
+        group.groupInfos = result.Groups;
 
         group.fillGroupListView();
     }, "json");

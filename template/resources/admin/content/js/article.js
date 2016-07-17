@@ -55,6 +55,14 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+
+    $("#article-Content .article-Form button.reset").click(function() {
+        $("#article-Edit .article-Form .article-id").val(-1);
+        $("#article-Edit .article-Form .article-title").val("");
+        //$("#article-Edit .article-Form .article-content").wysiwyg("setContent", "");
+        $("#article-Edit .article-Form .article-content").val("");
+        $("#article-Edit .article-Form .article-catalog input").prop("checked", false);
+    });
 });
 
 article.initialize = function() {
@@ -89,9 +97,6 @@ article.fillArticleView = function() {
         var trContent = article.constructArticleItem(articleInfo);
         $("#article-List table tbody").append(trContent);
     }
-
-    $("#article-List table tbody tr:even").addClass("alt-row");
-    $("#article-List table").show();
 
     $("#article-Edit .article-Form .article-id").val(-1);
     $("#article-Edit .article-Form .article-title").val("");

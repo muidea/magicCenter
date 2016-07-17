@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
+	"magiccenter/configuration"
 	"magiccenter/kernel/account/bll"
 	"magiccenter/kernel/account/model"
 	"magiccenter/kernel/common"
+	"magiccenter/session"
 	"net/http"
 	"strconv"
 
@@ -113,9 +115,20 @@ func QueryGroupHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ajaxGroupHandler")
 
+	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	if !found {
+		panic("unexpected, can't fetch authorith id")
+	}
+
+	session := session.GetSession(w, r)
+	user, found := session.GetOption(authId)
+	if !found {
+		panic("unexpected, must login system first.")
+	}
+
 	result := SaveGroupResult{}
 	for true {
-		err := r.ParseMultipartForm(0)
+		err := r.ParseForm()
 		if err != nil {
 			log.Print("paseform failed")
 
@@ -127,15 +140,18 @@ func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("group-id")
 		name := r.FormValue("group-name")
 
-		gid, err := strconv.Atoi(id)
-		if err != nil {
-			log.Printf("parse id failed, id:%s", id)
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
+		gid := -1
+		if len(id) > 0 {
+			gid, err = strconv.Atoi(id)
+			if err != nil {
+				log.Printf("parse id failed, id:%s", id)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+			}
 		}
 
-		ok := bll.SaveGroup(gid, name)
+		ok := bll.SaveGroup(gid, name, user.(model.UserDetail).Id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "保存分组失败"

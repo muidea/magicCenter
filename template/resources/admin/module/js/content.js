@@ -8,61 +8,63 @@ var content = {
 
 $(document).ready(function() {
 
-    $("#block-Form .button").click(
-        function() {
-            var articleList = "";
-            var catalogList = "";
-            var linkList = "";
-            var ownerModule = $("#block-Form .block-owner").val();
-            var block_id = $("#block-Form .block-id").val();
-            var blockArray = $("#block-List table tbody tr td :checkbox:checked");
-            var articleArray = $("#block-Form .article-List table tbody tr td :checkbox:checked");
-            var catalogArray = $("#block-Form .catalog-List table tbody tr td :checkbox:checked");
-            var linkArray = $("#block-Form .link-List table tbody tr td :checkbox:checked");
+    $("#block-Form .button").click(function() {
+        var articleList = "";
+        var catalogList = "";
+        var linkList = "";
+        var ownerModule = $("#block-Form .block-owner").val();
+        var block_id = $("#block-Form .block-id").val();
+        var blockArray = $("#block-List table tbody tr td :checkbox:checked");
+        var articleArray = $("#block-Form .article-List table tbody tr td :checkbox:checked");
+        var catalogArray = $("#block-Form .catalog-List table tbody tr td :checkbox:checked");
+        var linkArray = $("#block-Form .link-List table tbody tr td :checkbox:checked");
 
-            if (blockArray.length == 0) {
-                $("#content-List .alert-Info .content").html("请选择一个功能块");
-                $("#content-List .alert-Info").modal();
-                return;
-            }
-
-            for (var ii = 0; ii < articleArray.length; ++ii) {
-                var chk = articleArray[ii];
-                articleList += $(chk).attr("value");
-                articleList += ",";
-            }
-
-            for (var ii = 0; ii < catalogArray.length; ++ii) {
-                var chk = catalogArray[ii];
-                catalogList += $(chk).attr("value");
-                catalogList += ",";
-            }
-
-            for (var ii = 0; ii < linkArray.length; ++ii) {
-                var chk = linkArray[ii];
-                linkList += $(chk).attr("value");
-                linkList += ",";
-            }
-
-            $.post("/admin/system/ajaxBlockItem/", {
-                'module-id': ownerModule,
-                "block-id": block_id,
-                "article-list": articleList,
-                "catalog-list": catalogList,
-                "link-list": linkList
-            }, function(result) {
-
-                content.currentModule = result.Module;
-                if (result.ErrCode > 0) {
-                    $("#content-List .alert-Info .content").html(result.Reason);
-                    $("#content-List .alert-Info").modal();
-                } else {
-                    content.refreshBlockContentView();
-                }
-
-            }, "json");
+        if (blockArray.length == 0) {
+            $("#content-List .alert-Info .content").html("请选择一个功能块");
+            $("#content-List .alert-Info").modal();
+            return;
         }
-    );
+
+        for (var ii = 0; ii < articleArray.length; ++ii) {
+            var chk = articleArray[ii];
+            articleList += $(chk).attr("value");
+            articleList += ",";
+        }
+
+        for (var ii = 0; ii < catalogArray.length; ++ii) {
+            var chk = catalogArray[ii];
+            catalogList += $(chk).attr("value");
+            catalogList += ",";
+        }
+
+        for (var ii = 0; ii < linkArray.length; ++ii) {
+            var chk = linkArray[ii];
+            linkList += $(chk).attr("value");
+            linkList += ",";
+        }
+
+        $.post("/admin/system/ajaxBlockItem/", {
+            'module-id': ownerModule,
+            "block-id": block_id,
+            "article-list": articleList,
+            "catalog-list": catalogList,
+            "link-list": linkList
+        }, function(result) {
+
+            content.currentModule = result.Module;
+            if (result.ErrCode > 0) {
+                $("#content-List .alert-Info .content").html(result.Reason);
+                $("#content-List .alert-Info").modal();
+            } else {
+                content.refreshBlockContentView();
+            }
+
+        }, "json");
+    });
+
+    $("#block-Form button.reset").click(function() {
+
+    });
 });
 
 content.getModeListView = function() {

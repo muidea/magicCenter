@@ -9,7 +9,7 @@ var image = {
 $(document).ready(function() {
 
     // 绑定表单提交事件处理器
-    $('#image-Content .image-Form').submit(function() {
+    $("#image-Content .image-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -53,6 +53,15 @@ $(document).ready(function() {
         // !!! Important !!!
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
+    });
+
+    $("#image-Content .image-Form button.reset").click(function() {
+        $("#image-Edit .image-Form .image-id").val(-1);
+        $("#image-Edit .image-Form .image-name").val("");
+        $("#image-Edit .image-Form .image-url").val("");
+        //$("#image-Edit .image-Form .image-desc").wysiwyg("setContent", "");
+        $("#image-Edit .image-Form .image-desc").val("");
+        $("#image-Edit .image-Form .image-catalog input").prop("checked", false);
     });
 });
 
@@ -109,8 +118,6 @@ image.fillImageView = function() {
             $("#image-List table tbody").append(trContent);
         }
     }
-    $("#image-List table tbody tr:even").addClass("alt-row");
-    $("#image-List table").show();
 
     $("#image-Edit .image-Form .image-id").val(-1);
     $("#image-Edit .image-Form .image-name").val("");

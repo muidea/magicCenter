@@ -6,48 +6,46 @@ var module = {
 
 $(document).ready(function() {
 
-    $("#module-List .button").click(
-        function() {
-            var enableList = "";
-            var defaultModule = "";
-            var radioArray = $("#module-List table tbody tr td :radio:checked");
-            for (var ii = 0; ii < radioArray.length; ++ii) {
-                var radio = radioArray[ii];
-                if ($(radio).val() == 1) {
-                    enableList += $(radio).attr("name");
-                    enableList += ",";
-                }
+    $("#module-List .button").click(function() {
+        var enableList = "";
+        var defaultModule = "";
+        var radioArray = $("#module-List table tbody tr td :radio:checked");
+        for (var ii = 0; ii < radioArray.length; ++ii) {
+            var radio = radioArray[ii];
+            if ($(radio).val() == 1) {
+                enableList += $(radio).attr("name");
+                enableList += ",";
             }
-            var defaultArray = $("#module-List .module input:checkbox:checked");
-            if (defaultArray.length > 0) {
-                var checkBox = defaultArray[0];
-                defaultModule = $(checkBox).attr("name");
-            }
-
-            $.post("/admin/system/applyModuleSetting/", {
-                "module-enableList": enableList,
-                "module-defaultModule": defaultModule
-            }, function(result) {
-
-                module.moduleList = result.Modules;
-                module.defaultModule = result.DefaultModule;
-
-                $("#module-List label").addClass("hidden")
-                if (result.ErrCode > 0) {
-                    $("#module-List .danger").html(result.Reason);
-                    $("#module-List .danger").removeClass("hidden");
-                } else {
-                    $("#module-List .success").html(result.Reason);
-                    $("#module-List .success").removeClass("hidden");
-                }
-
-                //module.fillModuleView();	        	
-            }, "json");
         }
-    );
+        var defaultArray = $("#module-List .module input:checkbox:checked");
+        if (defaultArray.length > 0) {
+            var checkBox = defaultArray[0];
+            defaultModule = $(checkBox).attr("name");
+        }
+
+        $.post("/admin/system/applyModuleSetting/", {
+            "module-enableList": enableList,
+            "module-defaultModule": defaultModule
+        }, function(result) {
+
+            module.moduleList = result.Modules;
+            module.defaultModule = result.DefaultModule;
+
+            $("#module-List label").addClass("hidden")
+            if (result.ErrCode > 0) {
+                $("#module-List .danger").html(result.Reason);
+                $("#module-List .danger").removeClass("hidden");
+            } else {
+                $("#module-List .success").html(result.Reason);
+                $("#module-List .success").removeClass("hidden");
+            }
+
+            //module.fillModuleView();	        	
+        }, "json");
+    });
 
     // 绑定表单提交事件处理器
-    $('#module-Maintain .block .block-Form').submit(function() {
+    $("#module-Maintain .block .block-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -85,6 +83,13 @@ $(document).ready(function() {
         // !!! Important !!!
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
+    });
+
+    $("#module-Maintain .block .block-Form button.reset").click(function() {
+        $("#module-Maintain .block-Form .block-name").val("");
+        $("#module-Maintain .block-Form .block-tag").val("");
+        $("#module-Maintain .block-Form .block-style").filter("[value='0']").prop("checked", true);
+        $("#module-Maintain .block-Form .module-id").val(module.currentModule.Id);
     });
 });
 

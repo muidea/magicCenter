@@ -1,9 +1,9 @@
 package bll
 
 import (
-    "magiccenter/util/modelhelper"
-    "magiccenter/kernel/account/dal"
-    "magiccenter/kernel/account/model"
+	"magiccenter/kernel/account/dal"
+	"magiccenter/kernel/account/model"
+	"magiccenter/util/modelhelper"
 )
 
 func QueryAllGroupInfo() []model.GroupInfo {
@@ -22,8 +22,8 @@ func QueryGroupById(id int) (model.Group, bool) {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
-	return dal.QueryGroupById(helper, id)	
+
+	return dal.QueryGroupById(helper, id)
 }
 
 func DeleteGroup(id int) bool {
@@ -33,22 +33,20 @@ func DeleteGroup(id int) bool {
 	}
 	defer helper.Release()
 
-	return dal.DeleteGroup(helper, id)	
+	return dal.DeleteGroup(helper, id)
 }
 
-func SaveGroup(id int, name string) bool {
+func SaveGroup(id int, name string, creater int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
 	group := model.Group{}
 	group.Id = id
 	group.Name = name
-	
-	return dal.SaveGroup(helper, group)	
+	group.Creater.Id = creater
+
+	return dal.SaveGroup(helper, group)
 }
-
-
-

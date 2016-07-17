@@ -41,6 +41,13 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+
+    $("#user-Content .user-Form button.reset").click(function() {
+        $("#user-Edit .user-Form .user-account").val("");
+        $("#user-Edit .user-Form .user-email").val("");
+        $("#user-Edit .user-Form .user-group").prop("checked", false);
+        $("#user-Edit .user-Form .user-id").val("-1");
+    });
 });
 
 user.initialize = function() {
@@ -126,8 +133,9 @@ user.fillUserListView = function() {
     }
 
     $("#user-Edit .user-Form .user-account").val("");
-    $("#user-Edit .user-Form .user-mail").val("");
+    $("#user-Edit .user-Form .user-email").val("");
     $("#user-Edit .user-Form .user-group").prop("checked", false);
+    $("#user-Edit .user-Form .user-id").val("-1");
 };
 
 user.constructGroupItem = function(group) {
@@ -136,6 +144,7 @@ user.constructGroupItem = function(group) {
     var chk = document.createElement("input");
     chk.setAttribute("type", "checkbox");
     chk.setAttribute("name", "user-group");
+    chk.setAttribute("class", "user-group");
     chk.setAttribute("value", group.Id);
     label.appendChild(chk);
 

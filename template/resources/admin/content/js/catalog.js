@@ -6,7 +6,7 @@ var catalog = {
 
 $(document).ready(function() {
     // 绑定表单提交事件处理器
-    $('#catalog-Content .catalog-Form').submit(function() {
+    $("#catalog-Content .catalog-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -51,6 +51,19 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+
+    $("#catalog-Content .catalog-Form button.reset").click(function() {
+        $("#catalog-Edit .catalog-Form .catalog-id").val(-1);
+        $("#catalog-Edit .catalog-Form .catalog-name").val("");
+        $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
+        for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
+            var ca = catalog.catalogInfo[ii];
+            $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+        }
+        if (ii == 0) {
+            $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
+        }
+    });
 });
 
 catalog.initialize = function() {
@@ -77,8 +90,6 @@ catalog.fillCatalogView = function() {
         var trContent = catalog.constructCatalogItem(info);
         $("#catalog-List table tbody").append(trContent);
     }
-    $("#catalog-List table tbody tr:even").addClass("alt-row");
-    $("#catalog-List table").show();
 
     $("#catalog-Edit .catalog-Form .catalog-id").val(-1);
     $("#catalog-Edit .catalog-Form .catalog-name").val("");

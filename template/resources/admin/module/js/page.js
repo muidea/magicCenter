@@ -5,7 +5,7 @@ var page = {
 
 $(document).ready(function() {
     // 绑定表单提交事件处理器
-    $('#page-List .page-Form').submit(function() {
+    $("#page-List .page-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -42,6 +42,13 @@ $(document).ready(function() {
         // !!! Important !!!
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
+    });
+
+    $("#page-List .page-Form button.reset").click(function() {
+        $("#page-List .page-Form .page-url").val("");
+        
+        var blockListView = page.getBlockListView();
+        $(blockListView).find("input ").prop("checked", false);
     });
 });
 

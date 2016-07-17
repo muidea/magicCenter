@@ -2,34 +2,34 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Group Center</title>
-	<link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="/resources/jquery/jquery-2.1.4.js"></script>
-	<script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
-	<script type="text/javascript" src="/resources/jquery/jquery.hotkeys.js"></script>
-	<script type="text/javascript" src="/resources/bootstrap/3.3.6/js/bootstrap.js"></script>
-	<script type="text/javascript" src="/resources/admin/common/js/common.js"></script>
-	<script type="text/javascript" src="/resources/admin/account/js/group.js"></script>
-	<script type="text/javascript">
-		group.groupInfos = {{.Groups}};
-		$(document).ready(function() {
-			group.initialize();
-		});	
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Group Center</title>
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/resources/jquery/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/resources/admin/common/js/common.js"></script>
+    <script type="text/javascript" src="/resources/admin/account/js/group.js"></script>
+    <script type="text/javascript">
+        group.groupInfos = {{.Groups}};
+        $(document).ready(function() {
+            group.initialize();
+        });
     </script>
 </head>
 
 <body>
-	<div class="container-fluid content-box" id="group-Content">
-		<div class="content-header">
-			<ul class="nav nav-tabs">
-				<li role="presentation" class="group-List active"><a href="#group-List">列表</a></li>
-				<li role="presentation" class="group-Edit"><a href="#group-Edit">编辑</a></li>
-			</ul>
-		</div>
-		<div class="content-content">
-			<div class="tab-content" id="group-List">
+    <div class="container-fluid content-box" id="group-Content">
+        <div class="content-header">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="group-List active"><a href="#group-List">列表</a></li>
+                <li role="presentation" class="group-Edit"><a href="#group-Edit">编辑</a></li>
+            </ul>
+        </div>
+        <div class="content-content">
+            <div class="tab-content" id="group-List">
                 <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -40,36 +40,36 @@
                             </div>
                         </div>
                     </div>
-                </div>				
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>分组名</th>
-							<th>成员数量</th>
-							<th>创建人</th>
-							<th>操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<td colspan="6">
-								<div class="clear"></div>
-							</td>
-						</tr>
-					</tfoot>
-					<tbody>
-						<tr class="group">
-							<td><a class="edit" href="/content/link/query" title="title">Group Name</a></td>
-							<td>User Count</td>
-							<td>Creater</td>
-							<td>
-								<a class="delete" href="/content/link/delete" title="Delete"><img src="/resources/images/icons/cross.png" alt="Delete" /></a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="tab-content" id="group-Edit">
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>分组名</th>
+                            <th>成员数量</th>
+                            <th>创建人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <div class="clear"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <tr class="group">
+                            <td><a class="edit" href="/content/link/query" title="title">Group Name</a></td>
+                            <td>User Count</td>
+                            <td>Creater</td>
+                            <td>
+                                <a class="delete" href="/content/link/delete" title="Delete"><img src="/resources/images/icons/cross.png" alt="Delete" /></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-content" id="group-Edit">
                 <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -80,18 +80,19 @@
                             </div>
                         </div>
                     </div>
-                </div>				
-				<form enctype="multipart/form-data" class="group-Form" action="/admin/account/ajaxGroup/" method="post">
-					<div class="form-group">
-						<label for="group-name">分组名</label> <input class="form-control group-name" type="text" name="group-name" />
-					</div>
-					<input type="hidden" id="group-id" name="group-id" class="group-id" value="-1" />
-					<button type="submit" class="btn btn-default">保存</button>
-					<div class="clear"></div>
-				</form>
-			</div>
-		</div>
-	</div>
+                </div>
+                <form class="group-Form" action="/admin/account/ajaxGroup/" method="post">
+                    <div class="form-group">
+                        <label for="group-name">分组名</label>
+                        <input class="form-control group-name" type="text" name="group-name" />
+                    </div>
+                    <input class="form-control group-id" type="hidden" name="group-id" value="-1" />
+                    <button type="submit" class="btn btn-default">保存</button>
+                    <button type="button" class="btn btn-default reset">重填</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

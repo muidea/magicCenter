@@ -7,7 +7,7 @@ var link = {
 
 $(document).ready(function() {
     // 绑定表单提交事件处理器
-    $('#link-Content .link-Form').submit(function() {
+    $("#link-Content .link-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -64,6 +64,22 @@ $(document).ready(function() {
         // 为了防止普通浏览器进行表单提交和产生页面导航（防止页面刷新？）返回false
         return false;
     });
+
+    $("#link-Content .link-Form button.reset").click(function() {
+        $("#link-Edit .link-Form .link-id").val(-1);
+        $("#link-Edit .link-Form .link-name").val("");
+        $("#link-Edit .link-Form .link-url").val("");
+        $("#link-Edit .link-Form .link-logo").val("");
+
+        $("#link-Edit .link-Form .link-catalog").children().remove();
+        for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
+            var ca = link.catalogInfo[ii];
+            $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+        }
+        if (ii == 0) {
+            $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
+        }
+    });
 });
 
 link.initialize = function() {
@@ -101,8 +117,6 @@ link.fillLinkView = function() {
         var trContent = link.constructLinkItem(info);
         $("#link-List table tbody").append(trContent);
     }
-    $("#link-List table tbody tr:even").addClass("alt-row");
-    $("#link-List table").show();
 
     $("#link-Edit .link-Form .link-id").val(-1);
     $("#link-Edit .link-Form .link-name").val("");
