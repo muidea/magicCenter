@@ -26,7 +26,7 @@
 </head>
 
 <body>
-	<div class="container-fluid content-box" id="system-content">
+	<div class="container-fluid content-box" id="system-Content">
 		<div class="content-header">
 			<ul class="nav nav-tabs">
 				<li role="presentation"  class="active"><a href="#system-Edit">系统信息</a></li>
@@ -45,33 +45,28 @@
                         </div>
                     </div>
                 </div>				
-				<form enctype="multipart/form-data" class="system-Form" action="/admin/account/ajaxUser/" method="post">
+				<form class="system-Form" action="/admin/system/updateSystem/" method="post">
 					<div class="form-group">
-						<label for="system-name">系统名称</label> <input class="form-control system-name" type="text" name="system-name" id="system-name"
+						<label for="system-name">系统名称</label> <input class="form-control system-name" type="text" name="system-name"
 						/>
 					</div>
 					<div class="form-group">
-						<label for="system-logo">系统Logo</label> <input class="form-control system-logo" type="text" name="system-logo" id="system-logo"
+						<label for="system-logo">系统Logo</label> <input class="form-control system-logo" type="text" name="system-logo"
 						/>
 					</div>
 					<div class="form-group">
-						<label for="system-domain">系统域名 <span class="png_bg">*访问系统的互联网域名，由域名服务商提供</span></label> <input class="form-control system-domain" type="text" name="system-domain" id="system-domain"
-						/>
+						<label for="system-domain">系统域名 <span class="png_bg">*访问系统的互联网域名，由域名服务商提供</span></label> <input class="form-control system-domain" type="text" name="system-domain"/>
 					</div>					
 					<div class="form-group">
-						<label for="email-server">邮箱服务器 <span class="png_bg">*发送邮件通知的邮箱服务器，由邮箱服务商提供</span></label> <input class="form-control email-server" type="text" name="email-server" id="email-server"
-						/>
+						<label for="email-server">邮箱服务器 <span class="png_bg">*发送邮件通知的邮箱服务器，由邮箱服务商提供</span></label> <input class="form-control email-server" type="text" name="email-server"/>
 					</div>
 					<div class="form-group">
-						<label for="email-account">邮箱账号 <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span></label> <input class="form-control email-account" type="text" name="email-account"
-							id="email-account" />
+						<label for="email-account">邮箱账号 <span class="png_bg">*发送邮件通知的邮箱账号，由邮箱服务商提供</span></label> <input class="form-control email-account" type="text" name="email-account"/>
 					</div>
 					<div class="form-group">
-						<label for="email-password">邮箱密码 <span class="png_bg">*发送邮件通知的邮箱账号密码</span></label> <input class="form-control email-password" type="text" name="email-password"
-							id="email-password" />
+						<label for="email-password">邮箱密码 <span class="png_bg">*发送邮件通知的邮箱账号密码</span></label> <input class="form-control email-password" type="text" name="email-password"/>
 					</div>
 					<button type="submit" class="btn btn-default">更新</button>
-					<div class="clear"></div>
 				</form>
 			</div>
 		</div>

@@ -251,6 +251,9 @@ module.constructBlockItem = function(block) {
     deleteLink.appendChild(deleteImage);
     editTd.appendChild(deleteLink);
     tr.appendChild(editTd);
+
+    tr.setAttribute("onclick", "module.selectBlock(" + block.Id + ");return false");
+
     return tr;
 };
 
@@ -264,4 +267,25 @@ module.deleteBlock = function(deleteUrl) {
             module.fillModuleMaintainView();
         }
     }, "json");
+};
+
+module.selectBlock = function(blockId) {
+    if (!module.currentModule) {
+        return;
+    }
+
+    var block = null;
+    for (var ii = 0; ii < module.currentModule.Blocks.length; ++ii) {
+        var cur = module.currentModule.Blocks[ii];
+        if (cur.Id == blockId) {
+            block = cur;
+            break;
+        }
+    }
+
+    if (block) {
+        $("#module-Maintain .block-Form .block-name").val(block.Name);
+        $("#module-Maintain .block-Form .block-tag").val(block.Tag);
+        $("#module-Maintain .block-Form .block-style").filter("[value='" + block.Style + "']").prop("checked", true);
+    }
 };

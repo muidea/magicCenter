@@ -12,7 +12,7 @@ var setting = {
 
 $(document).ready(function() {
     // 绑定表单提交事件处理器
-    $('#system-content .content-box-content .system-edit .system-Form').submit(function() {
+    $('#system-Edit .system-Form').submit(function() {
         var options = {
             beforeSubmit: showRequest, // pre-submit callback
             success: showResponse, // post-submit callback
@@ -25,12 +25,12 @@ $(document).ready(function() {
         }
         // post-submit callback
         function showResponse(result) {
-            console.log(result);
-
             if (result.ErrCode > 0) {
-                $("#system-Edit .alert-Info .content").innerHTML = result.Reason;
+                $("#system-Edit .alert-Info .content").html(result.Reason);
                 $("#system-Edit .alert-Info").modal();
-            } else {}
+            } else {
+                // noting todo
+            }
         }
 
         function validate() {

@@ -135,9 +135,8 @@ group.deleteGroup = function(deleteUrl) {
             $("#group-List .alert-Info").modal();
             return
         }
-        
-        group.groupInfos = result.Groups;
 
+        group.groupInfos = result.Groups;
         group.fillGroupListView();
     }, "json");
 };
