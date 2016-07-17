@@ -2,85 +2,64 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>MagicID Webcenter</title>
-    <meta name="keywords" content="" />
-    <meta name="description" content="" />
-    <link rel="stylesheet" href="/resources/css/index-style.css" type="text/css" media="screen" />
-
-    <script type="text/javascript" src="/resources/scripts/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="/resources/scripts/user/profile.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/resources/jquery/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/resources/user/js/common.js"></script>
+    <script type="text/javascript" src="/resources/user/js/profile.js"></script>
+    </script>
 </head>
 
 <body>
-    <div id="header-wrapper">
-        <div id="header">
-            <div id="menu">
-                <ul>
-                    <li><a href="/" class="first">首页</a></li>
-                    <li><a href="/guestbook/">留言</a></li>
-                    <li><a href="/aboutSite/">关于本站</a></li>
-                    <li><a href="/aboutMe/">关于本人</a></li>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>个人空间<small>管理个人内容，资料信息</small></h1>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-md-2">
+                <ul class="list-group" id="main-nav">
+                    <li class="list-group-item">
+                        <div id="profile-links">
+                            Hello, <a href="#" class="user-profile" title="Edit your profile">test</a> |
+                            <a href="/user/logout/" title="Sign Out">Sign Out</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item"><a href="#content" class="nav-top-item active">Blog管理 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/content/manageArticle/">文章管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageCatalog/">分类管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item"><a href="#content" class="nav-top-item active">CMS管理 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/content/manageArticle/">文章管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageCatalog/">分类管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageLink/">链接管理</a></li>
+                            <li><a class="nav-sub-item" href="/admin/content/manageImage/">图片管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item"><a href="#content" class="nav-top-item active">个人资料 </a>
+                        <ul>
+                            <li><a class="nav-sub-item active" href="/admin/content/manageArticle/">资料管理</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
-            <!-- end #menu -->
-            <div id="search">
-                <form method="get" action="">
-                    <fieldset>
-                        <input type="text" name="s" id="search-text" size="15" />
-                        <input type="submit" id="search-submit" value="GO" />
-                    </fieldset>
-                </form>
-            </div>
-            <!-- end #search -->
-        </div>
-    </div>
-    <!-- end #header -->
-    <!-- end #header-wrapper -->
-    <div id="logo">
-        <h1><a href="#">Assiduous  </a></h1>
-        <p><em> template design by <a href="#">www.865171.cn</a></em></p>
-    </div>
-    <hr />
-    <!-- end #logo -->
-    <div id="page">
-        <div id="page-bgtop">
-            <div id="left">
-                <div id="sidebar">
-
-                    <ul>
-                        <li>
-                            <h2>热门标签</h2>
-                            <p>Mauris vitae nisl nec metus placerat perdiet est. Phasellus dapibus semper urna. Pellentesque ornare, orci in consectetuer hendrerit, volutpat.</p>
-                        </li>
-                        <li>
-                            <h2>文章分类</h2>
-                            <ul>
-                            </ul>
-                        </li>
-                        <li>
-                            <h2>友情链接</h2>
-                            <ul>
-                                <li><a href="#">Nec metus sed donec</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+            <div class="col-xs-12 col-md-10">
+                <div id="body-content">
                 </div>
             </div>
-            <!-- end #sidebar -->
-            <div id="right">
-                <div id="content">
-                    Content
-                </div>
-            </div>
-            <!-- end #content -->
-            <div style="clear: both;">&nbsp;</div>
         </div>
-        <!-- end #page -->
-        <div id="footer">
-            <p>Copyright (c) 2008 Sitename.com. All rights reserved. Design by <a href="/aboutMe/">Rangh</a>.</p>
+        <div class="row">
+            <small>
+					&#169; Copyright 2010 Your Company | Powered by <a href="http://">admin
+						templates</a> | <a href="#">Top</a>
+				</small>
         </div>
-        <!-- end #footer -->
     </div>
 </body>
 
