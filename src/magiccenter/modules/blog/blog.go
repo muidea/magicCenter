@@ -5,8 +5,8 @@ import (
 )
 
 const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe3e"
-const Name = "博客"
-const Description = "博客模块"
+const Name = "Magic Blog"
+const Description = "Magic 博客系统"
 const URI = "/blog"
 
 type blog struct {
