@@ -33,7 +33,7 @@ type AjaxUserVerifyResult struct {
 //
 // 个人空间页面
 //
-func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
+func UserProfileViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageUserHandler")
 
 	w.Header().Set("content-type", "text/html")
@@ -55,7 +55,7 @@ func UserProfileHandler(w http.ResponseWriter, r *http.Request) {
 // 获取校验用户信息页面，数据合法后返回提交用户信息页面
 // 以便用户输入账号密码信息
 //
-func UserVerifyHandler(w http.ResponseWriter, r *http.Request) {
+func UserVerifyViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("UserVerifyHandler")
 
 	w.Header().Set("content-type", "text/html")

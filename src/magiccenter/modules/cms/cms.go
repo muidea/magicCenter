@@ -2,18 +2,27 @@ package cms
 
 import (
 	"magiccenter/module"
+	"magiccenter/router"
 )
 
+// ID CMS Module ID
 const ID = "f17133ec-63e9-4b46-8758-e6ca1af6fe3f"
+
+// Name CMS Module Name
 const Name = "Magic CMS"
+
+// Description CMS Module Description
 const Description = "Magic 内容管理系统"
-const URI = "/cms"
+
+// URL CMS Module URL
+const URL = "cms"
 
 type cms struct {
 }
 
-var instance *cms = nil
+var instance *cms
 
+// LoadModule 加载CMS模块
 func LoadModule() {
 	if instance == nil {
 		instance = &cms{}
@@ -22,31 +31,53 @@ func LoadModule() {
 	module.RegisterModule(instance)
 }
 
-func (this *cms) ID() string {
+func (c *cms) ID() string {
 	return ID
 }
 
-func (this *cms) Name() string {
+func (c *cms) Name() string {
 	return Name
 }
 
-func (this *cms) Description() string {
+func (c *cms) Description() string {
 	return Description
 }
 
-func (this *cms) Uri() string {
-	return URI
+func (c *cms) Group() string {
+	return "content"
 }
 
-func (this *cms) Routes() []module.Route {
-	routes := []module.Route{module.NewRoute(module.GET, "/", indexHandler), module.NewRoute(module.GET, "/view/", viewContentHandler), module.NewRoute(module.GET, "/catalog/", viewCatalogHandler), module.NewRoute(module.GET, "/link/", viewLinkHandler)}
+func (c *cms) Type() int {
+	return module.INTERNAL
+}
+
+func (c *cms) URL() string {
+	return URL
+}
+
+func (c *cms) Resource() module.Resource {
+	return nil
+}
+
+func (c *cms) Routes() []router.Route {
+	routes := []router.Route{
+		router.NewRoute(router.GET, "/", indexHandler, nil),
+		router.NewRoute(router.GET, "/view/", viewContentHandler, nil),
+		router.NewRoute(router.GET, "/catalog/", viewCatalogHandler, nil),
+		router.NewRoute(router.GET, "/link/", viewLinkHandler, nil),
+	}
 
 	return routes
 }
 
-func (this *cms) Startup() {
+func (c *cms) Startup() bool {
+	return true
 }
 
-func (this *cms) Cleanup() {
+func (c *cms) Cleanup() {
 
+}
+
+func (c *cms) Invoke(param interface{}) bool {
+	return false
 }

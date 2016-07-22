@@ -2,125 +2,153 @@ package module
 
 import (
 	"log"
-	"magiccenter/router"
 	"magiccenter/configuration"
+	"magiccenter/router"
 )
 
+// 模块类型
 const (
-	GET = "get"
-	POST = "post"
+	// 内核模块，不能被禁用
+	KERNEL = iota
+	// 内置模块，属于系统自带可选模块，可以被禁用
+	INTERNAL
+	// 外部模块，通过外部接口注册进来的模块，可以被禁用
+	EXTERNAL
 )
 
-type Route interface {
-	Type() string
-	Pattern() string
-	Handler() interface{}
-}
-
-type Module interface {	
+// Module 功能模块接口
+type Module interface {
+	// ID 模块ID，UUID
 	ID() string
+	// Name 模块名称
 	Name() string
+	// Description 模块描述
 	Description() string
-	
-	Uri() string
-	Routes() []Route	
+	// Group 模块所属分组
+	Group() string
+	// Type 模块类型
+	Type() int
+	// URL 模块Url，每个模块都对应唯一的Url,不带'/'
+	URL() string
 
-	Startup()
+	// Resource 模块提供的Rest api对象
+	Resource() Resource
+
+	// Routes 模块支持的路由信息
+	Routes() []router.Route
+
+	//Startup 启动模块
+	Startup() bool
+	// Cleanup 清除模块
 	Cleanup()
-}
-
-type route struct {
-	rType string
-	rPattern string
-	rHandler interface{}
-}
-
-func (this *route) Type() string {
-	return this.rType
-}
-
-func (this *route) Pattern() string {
-	return this.rPattern
-}
-
-func (this *route) Handler() interface{} {
-	return this.rHandler
-}
-
-func NewRoute(rType, rPattern string, rHandler interface{}) Route {
-	r := route{}
-	r.rType = rType
-	r.rPattern = rPattern
-	r.rHandler = rHandler
-	
-	return &r	
+	// Invoke 执行指定操作，实际由各个模块具体定义实现
+	Invoke(param interface{}) bool
 }
 
 var moduleIDMap = map[string]Module{}
 
+// QueryAllModule 查询所有的模块
+// 包含启用和未启用的
 func QueryAllModule() []Module {
 	modules := []Module{}
-	
+
 	for _, m := range moduleIDMap {
 		modules = append(modules, m)
 	}
-	
+
 	return modules
 }
 
+// GetAllModuleGroups 获取所有的模块分组
+func GetAllModuleGroups() []string {
+	allGroups := []string{}
+	for _, m := range moduleIDMap {
+		g := m.Group()
+
+		found := false
+		for _, c := range allGroups {
+			if g == c {
+				found = true
+			}
+		}
+		if !found {
+			allGroups = append(allGroups, g)
+		}
+	}
+
+	return allGroups
+}
+
+// GetModulesByGroup 获取指定分组的所有模块
+func GetModulesByGroup(group string) []Module {
+	modules := []Module{}
+	for _, m := range moduleIDMap {
+		g := m.Group()
+
+		if g == group {
+			modules = append(modules, m)
+		}
+	}
+
+	return modules
+}
+
+// FindModule 根据Module ID查找指定模块
 func FindModule(id string) (Module, bool) {
-	m,found := moduleIDMap[id]
-	
-	return m,found
+	m, found := moduleIDMap[id]
+
+	return m, found
 }
 
-func RegisterModule(m Module) {	
+// RegisterModule 在系统中注册模块
+func RegisterModule(m Module) {
 	log.Printf("register module, name:%s, id:%s", m.Name(), m.ID())
-	
-	moduleIDMap[m.ID()] = m	
+
+	moduleIDMap[m.ID()] = m
 }
 
+// UnregisterModule 在系统中取消注册模块
 func UnregisterModule(id string) {
 	log.Printf("register module, id:%s", id)
-	
+
 	delete(moduleIDMap, id)
 }
 
+// StartupAllModules 启动全部模块
 func StartupAllModules() {
 	log.Println("StartupAllModules all modules")
-	
+
 	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
-	
+
 	for _, m := range moduleIDMap {
-		
+
 		routes := m.Routes()
-		for i, _ := range routes {
-			rt := routes[i]
-			
-			pattern := m.Uri() + rt.Pattern()
+		for _, rt := range routes {
+			pattern := m.URL() + rt.Pattern()
 			if m.ID() == defaultModule {
 				pattern = rt.Pattern()
 			}
-				
-			
-			if rt.Type() == GET {
-				router.AddGetRoute(pattern, rt.Handler(), nil)
 
-			} else if rt.Type() == POST {
+			if rt.Type() == router.GET {
+				router.AddGetRoute(pattern, rt.Handler(), nil)
+			} else if rt.Type() == router.PUT {
+				router.AddPutRoute(pattern, rt.Handler(), nil)
+			} else if rt.Type() == router.POST {
 				router.AddPostRoute(pattern, rt.Handler(), nil)
-				
+			} else if rt.Type() == router.DELETE {
+				router.AddDeleteRoute(pattern, rt.Handler(), nil)
 			} else {
-				panic("illegal route type, type:" + rt.Type() )
+				panic("illegal route type, type:" + rt.Type())
 			}
 		}
-		
+
 		m.Startup()
 	}
 }
 
+// CleanupAllModules 清除全部模块
 func CleanupAllModules() {
 	for _, m := range moduleIDMap {
 		m.Cleanup()
-	}	
+	}
 }
-

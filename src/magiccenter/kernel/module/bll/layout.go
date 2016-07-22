@@ -21,7 +21,7 @@ func queryAllModuleInternal(helper modelhelper.Model) []model.Module {
 			mod.Id = sysMod.ID()
 			mod.Name = sysMod.Name()
 			mod.Description = sysMod.Description()
-			mod.Uri = sysMod.Uri()
+			mod.Uri = sysMod.URL()
 			mod.EnableFlag = 0
 
 			modules = append(modules, mod)

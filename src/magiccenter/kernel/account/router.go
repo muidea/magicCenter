@@ -32,9 +32,9 @@ func RegisterRouter() {
 	router.AddPostRoute("/admin/account/ajaxGroup/", ui.AjaxGroupHandler, auth.AdminAuthVerify())
 
 	// 用户空间视图
-	router.AddGetRoute("/user/profile/", ui.UserProfileHandler, nil)
+	router.AddGetRoute("/user/profile/", ui.UserProfileViewHandler, nil)
 	// 校验用户信息视图，用于用户补充昵称，密码这些额外信息
-	router.AddGetRoute("/user/verify/", ui.UserVerifyHandler, nil)
+	router.AddGetRoute("/user/verify/", ui.UserVerifyViewHandler, nil)
 	// 更新用户信息
 	router.AddPostRoute("/user/ajaxVerify/", ui.AjaxVerifyHandler, nil)
 }
