@@ -4,6 +4,8 @@ import (
 	"log"
 	"magiccenter/configuration"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // 模块类型
@@ -18,20 +20,15 @@ const (
 
 // Module 功能模块接口
 type Module interface {
-	// ID 模块ID，UUID
 	ID() string
-	// Name 模块名称
 	Name() string
-	// Description 模块描述
 	Description() string
-	// Group 模块所属分组
 	Group() string
-	// Type 模块类型
 	Type() int
 	// URL 模块Url，每个模块都对应唯一的Url,不带'/'
 	URL() string
 
-	// Resource 模块提供的Rest api对象
+	// Resource 模块提供的Rest api支持
 	Resource() Resource
 
 	// Routes 模块支持的路由信息
@@ -39,12 +36,15 @@ type Module interface {
 
 	//Startup 启动模块
 	Startup() bool
+
 	// Cleanup 清除模块
 	Cleanup()
+
 	// Invoke 执行指定操作，实际由各个模块具体定义实现
 	Invoke(param interface{}) bool
 }
 
+// ID -> Module
 var moduleIDMap = map[string]Module{}
 
 // QueryAllModule 查询所有的模块
@@ -102,14 +102,14 @@ func FindModule(id string) (Module, bool) {
 
 // RegisterModule 在系统中注册模块
 func RegisterModule(m Module) {
-	log.Printf("register module, name:%s, id:%s", m.Name(), m.ID())
+	log.Printf("register module, id:%s, name:%s", m.ID(), m.Name())
 
 	moduleIDMap[m.ID()] = m
 }
 
 // UnregisterModule 在系统中取消注册模块
 func UnregisterModule(id string) {
-	log.Printf("register module, id:%s", id)
+	log.Printf("unregister module, id:%s", id)
 
 	delete(moduleIDMap, id)
 }
@@ -124,19 +124,19 @@ func StartupAllModules() {
 
 		routes := m.Routes()
 		for _, rt := range routes {
-			pattern := m.URL() + rt.Pattern()
+			pattern := util.JoinURL(m.URL(), rt.Pattern())
 			if m.ID() == defaultModule {
 				pattern = rt.Pattern()
 			}
 
 			if rt.Type() == router.GET {
-				router.AddGetRoute(pattern, rt.Handler(), nil)
+				router.AddGetRoute(pattern, rt.Handler(), rt.Verifier())
 			} else if rt.Type() == router.PUT {
-				router.AddPutRoute(pattern, rt.Handler(), nil)
+				router.AddPutRoute(pattern, rt.Handler(), rt.Verifier())
 			} else if rt.Type() == router.POST {
-				router.AddPostRoute(pattern, rt.Handler(), nil)
+				router.AddPostRoute(pattern, rt.Handler(), rt.Verifier())
 			} else if rt.Type() == router.DELETE {
-				router.AddDeleteRoute(pattern, rt.Handler(), nil)
+				router.AddDeleteRoute(pattern, rt.Handler(), rt.Verifier())
 			} else {
 				panic("illegal route type, type:" + rt.Type())
 			}
@@ -148,7 +148,29 @@ func StartupAllModules() {
 
 // CleanupAllModules 清除全部模块
 func CleanupAllModules() {
+	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
+
 	for _, m := range moduleIDMap {
+
+		routes := m.Routes()
+		for _, rt := range routes {
+			pattern := util.JoinURL(m.URL(), rt.Pattern())
+			if m.ID() == defaultModule {
+				pattern = rt.Pattern()
+			}
+
+			if rt.Type() == router.GET {
+				router.RemoveGetRoute(pattern)
+			} else if rt.Type() == router.PUT {
+				router.RemovePutRoute(pattern)
+			} else if rt.Type() == router.POST {
+				router.RemovePostRoute(pattern)
+			} else if rt.Type() == router.DELETE {
+				router.RemoveDeleteRoute(pattern)
+			} else {
+				panic("illegal route type, type:" + rt.Type())
+			}
+		}
 		m.Cleanup()
 	}
 }

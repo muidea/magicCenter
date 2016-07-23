@@ -1,10 +1,11 @@
 package bll
 
 import (
-	"magiccenter/util/modelhelper"
 	"magiccenter/configuration/dal"
+	"magiccenter/util/modelhelper"
 )
 
+// UpdateConfigurations 更新配置集
 func UpdateConfigurations(configs map[string]string) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
@@ -14,22 +15,23 @@ func UpdateConfigurations(configs map[string]string) bool {
 
 	result := true
 	helper.BeginTransaction()
-	for k,v := range configs {
+	for k, v := range configs {
 		if !dal.SetOption(helper, k, v) {
 			result = false
-			break;
-		} 
+			break
+		}
 	}
-	
+
 	if result {
 		helper.Commit()
 	} else {
 		helper.Rollback()
 	}
-	
-	return result	
+
+	return result
 }
 
+// UpdateConfiguration 更新配置项
 func UpdateConfiguration(key, value string) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
@@ -40,6 +42,7 @@ func UpdateConfiguration(key, value string) bool {
 	return dal.SetOption(helper, key, value)
 }
 
+// GetConfiguration 获取配置集
 func GetConfiguration(keys []string) map[string]string {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
@@ -49,13 +52,13 @@ func GetConfiguration(keys []string) map[string]string {
 
 	ret := map[string]string{}
 	for _, k := range keys {
-		v,found := dal.GetOption(helper,k)
+		v, found := dal.GetOption(helper, k)
 		if found {
 			ret[k] = v
 		} else {
 			ret[k] = ""
 		}
 	}
-	
+
 	return ret
 }

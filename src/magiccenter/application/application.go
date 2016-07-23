@@ -1,29 +1,31 @@
 package application
 
 import (
-	"os"
 	"magiccenter/kernel"
+	"os"
 )
 
-var serverPort string = "8888"
+var serverPort = "8888"
 
+// Application 接口
 type Application interface {
 	Run()
 }
 
-var app *application = nil
+var app *application
 
 type application struct {
 }
 
+// AppInstance 返回Application对象
 func AppInstance() Application {
-	if (app == nil) {
+	if app == nil {
 		app = &application{}
-		
+
 		app.construct()
 	}
-	
-	return app 
+
+	return app
 }
 
 func (instance application) construct() {
@@ -32,10 +34,8 @@ func (instance application) construct() {
 
 func (instance application) Run() {
 	kernel.Initialize()
-	
+
 	kernel.Run()
-	
-	kernel.Uninitialize()	
+
+	kernel.Uninitialize()
 }
-
-

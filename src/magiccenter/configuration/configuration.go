@@ -6,22 +6,40 @@ import (
 )
 
 const (
-	APP_NAME   = "@application_name"
-	APP_DOMAIN = "@application_domain"
-	APP_LOGO   = "@application_logo"
+	// AppName 应用名称
+	AppName = "@application_name"
 
-	MAIL_SERVER      = "@system_mailServer"
-	MAIL_ACCOUNT     = "@system_mailAccount"
-	MAIL_PASSWORD    = "@system_mailPassword"
-	SYS_DEFULTMODULE = "@system_defaultModule"
+	// AppDomain 应用域名
+	AppDomain = "@application_domain"
 
-	STATIC_PATH   = "@system_staticPath"
-	RESOURCE_PATH = "@system_staticPath"
-	UPLOAD_PATH   = "@system_uploadPath"
+	// AppLogo 应用Logo
+	AppLogo = "@application_logo"
 
-	AUTHORITH_ID = "@authorith_Id"
+	// MailServer 邮件服务器地址
+	MailServer = "@system_mailServer"
+
+	// MailAccount 邮件账号
+	MailAccount = "@system_mailAccount"
+
+	// MailPassword 邮件账号密码
+	MailPassword = "@system_mailPassword"
+
+	// SysDefaultModule 系统默认模块
+	SysDefaultModule = "@system_defaultModule"
+
+	// StaticPath 静态资源路径
+	StaticPath = "@system_staticPath"
+	// ResourcePath 应用资源路径
+	ResourcePath = "@system_staticPath"
+
+	// UploadPath 上传文件保存路径
+	UploadPath = "@system_uploadPath"
+
+	// AuthorithID 登陆会话鉴权ID
+	AuthorithID = "@authorith_Id"
 )
 
+// SystemInfo 系统信息
 type SystemInfo struct {
 	Name         string
 	Logo         string
@@ -33,19 +51,21 @@ type SystemInfo struct {
 
 var configInfoMap = map[string]string{}
 
+// LoadConfig 加载系统配置信息
 func LoadConfig() {
 	log.Println("configuration initialize ...")
 
-	keys := []string{APP_NAME, APP_DOMAIN, APP_LOGO, MAIL_SERVER, MAIL_ACCOUNT, MAIL_PASSWORD, SYS_DEFULTMODULE}
+	keys := []string{AppName, AppDomain, AppLogo, MailServer, MailAccount, MailPassword, SysDefaultModule}
 
 	configInfoMap = bll.GetConfiguration(keys)
 
-	configInfoMap[STATIC_PATH] = "static"
-	configInfoMap[RESOURCE_PATH] = "template"
-	configInfoMap[UPLOAD_PATH] = "upload"
-	configInfoMap[AUTHORITH_ID] = "@@@$$auth_Id@@@"
+	configInfoMap[StaticPath] = "static"
+	configInfoMap[ResourcePath] = "template"
+	configInfoMap[UploadPath] = "upload"
+	configInfoMap[AuthorithID] = "@@@$$auth_Id@@@"
 }
 
+// UpdateSystemInfo 更新系统信息
 func UpdateSystemInfo(info SystemInfo) bool {
 	configs := map[string]string{}
 	configs[APP_NAME] = info.Name
@@ -65,6 +85,7 @@ func UpdateSystemInfo(info SystemInfo) bool {
 	return bll.UpdateConfigurations(configs)
 }
 
+// GetSystemInfo 获取系统信息
 func GetSystemInfo() SystemInfo {
 	info := SystemInfo{}
 	info.Name = configInfoMap[APP_NAME]
@@ -77,12 +98,14 @@ func GetSystemInfo() SystemInfo {
 	return info
 }
 
+// GetOption 获取指定的配置项
 func GetOption(name string) (string, bool) {
 	value, found := configInfoMap[name]
 
 	return value, found
 }
 
+// SetOption 设置指定配置项
 func SetOption(name, value string) bool {
 	// 如果值没有变化则直接返回成功
 	oldValue, found := configInfoMap[name]
