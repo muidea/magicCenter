@@ -22,6 +22,36 @@ type cache struct {
 
 var instance *cache
 
+// InCacheBox 投放数据请求
+type InCacheBox struct {
+	// Data 放入Cache数据
+	Data interface{}
+	// MaxAge 数据的最大存档期限，单位为minute
+	MaxAge float64
+	// ID Cache分配用于访问数据ID
+	ID *string
+}
+
+// OutCacheBox 获取数据请求
+type OutCacheBox struct {
+	// ID 访问数据的ID
+	ID string
+	// Data 获取到的数据
+	Data *interface{}
+	// Found 是否找到数据
+	Found *bool
+}
+
+// RemoveCacheBox 移除缓存数据请求
+type RemoveCacheBox struct {
+	// ID 访问数据的ID
+	ID string
+}
+
+// ClearAllCacheBox 清除所有缓存请求
+type ClearAllCacheBox struct {
+}
+
 // LoadModule 加载Cache模块
 func LoadModule() {
 	if instance == nil {
@@ -68,15 +98,45 @@ func (instance *cache) Routes() []router.Route {
 
 // Startup 启动Cache模块
 func (instance *cache) Startup() bool {
-	return true
+	return CreateCache(MemoryCache)
 }
 
 // Cleanup 清除Cache模块
 func (instance *cache) Cleanup() {
+	cache := GetCache()
+	cache.Release()
 
+	DestroyCache()
 }
 
 // Invoke 执行外部命令
 func (instance *cache) Invoke(param interface{}) bool {
+
+	cache := GetCache()
+
+	inBox := param.(InCacheBox)
+	if inBox != nil {
+		cache.PutIn(inBox.Data, inBox.MaxAge, inBox.ID)
+		return true
+	}
+
+	outBox := param.(OutCacheBox)
+	if outBox != nil {
+		outBox.Data, outBox.Found = cache.FetchOut(outBox.ID)
+		return true
+	}
+
+	removeBox := param.(RemoveCacheBox)
+	if removeBox != nil {
+		cache.Remove(removeBox.ID)
+		return true
+	}
+
+	clearAllBox := param(ClearAllCacheBox)
+	if clearAllBox != nil {
+		cache.ClearAll()
+		return true
+	}
+
 	return false
 }

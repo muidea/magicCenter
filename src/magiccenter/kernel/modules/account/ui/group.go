@@ -4,40 +4,33 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
-	"magiccenter/configuration"
-	"magiccenter/kernel/account/bll"
-	"magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
-	"magiccenter/session"
+	"magiccenter/common"
+	"magiccenter/kernel/modules/account/bll"
+	"magiccenter/kernel/modules/account/model"
 	"net/http"
 	"strconv"
 
 	"muidea.com/util"
 )
 
+// ManageGroupView 分组管理视图
 type ManageGroupView struct {
 	Groups []model.GroupInfo
 }
 
-type QueryAllGroupResult struct {
+// AllGroupResult 所有分组结果
+type AllGroupResult struct {
 	common.Result
-	Groups []model.GroupInfo
+	Groups []model.Group
 }
 
-type QueryGroupResult struct {
+// SingleGroupResult 当个分组结果
+type SingleGroupResult struct {
 	common.Result
 	Group model.Group
 }
 
-type SaveGroupResult struct {
-	common.Result
-	Groups []model.GroupInfo
-}
-
-type DeleteGroupResult struct {
-	SaveGroupResult
-}
-
+// ManageGroupViewHandler 分组管理视图处理器
 func ManageGroupViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageGroupViewHandler")
 
@@ -55,11 +48,12 @@ func ManageGroupViewHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, view)
 }
 
-func QueryAllGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryAllGroupHandler")
+// QueryAllGroupActionHandler 查询所有分组信息处理器
+func QueryAllGroupActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryAllGroupActionHandler")
 
-	result := QueryAllGroupResult{}
-	result.Groups = bll.QueryAllGroupInfo()
+	result := AllGroupResult{}
+	result.Groups = bll.QueryAllGroup()
 	result.ErrCode = 0
 	result.Reason = "查询成功"
 
@@ -71,10 +65,11 @@ func QueryAllGroupHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func QueryGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryGroupHandler")
+// QueryGroupActionHandler 查询单个分组信息处理器
+func QueryGroupActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryGroupActionHandler")
 
-	result := QueryGroupResult{}
+	result := SingleGroupResult{}
 
 	params := util.SplitParam(r.URL.RawQuery)
 	for true {
@@ -112,71 +107,11 @@ func QueryGroupHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func AjaxGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ajaxGroupHandler")
+// DeleteGroupActionHandler 删除分组处理器
+func DeleteGroupActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("DeleteGroupActionHandler")
 
-	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
-	session := session.GetSession(w, r)
-	user, found := session.GetOption(authId)
-	if !found {
-		panic("unexpected, must login system first.")
-	}
-
-	result := SaveGroupResult{}
-	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		id := r.FormValue("group-id")
-		name := r.FormValue("group-name")
-
-		gid := -1
-		if len(id) > 0 {
-			gid, err = strconv.Atoi(id)
-			if err != nil {
-				log.Printf("parse id failed, id:%s", id)
-				result.ErrCode = 1
-				result.Reason = "无效请求数据"
-				break
-			}
-		}
-
-		ok := bll.SaveGroup(gid, name, user.(model.UserDetail).Id)
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "保存分组失败"
-			break
-		}
-
-		result.Groups = bll.QueryAllGroupInfo()
-		result.ErrCode = 0
-		result.Reason = "保存分组成功"
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-		return
-	}
-
-	w.Write(b)
-}
-
-func DeleteGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteGroupHandler")
-
-	result := DeleteGroupResult{}
+	result := common.Result{}
 	params := util.SplitParam(r.URL.RawQuery)
 	for true {
 		id, found := params["id"]
@@ -202,7 +137,62 @@ func DeleteGroupHandler(w http.ResponseWriter, r *http.Request) {
 
 		result.ErrCode = 0
 		result.Reason = "查询成功"
-		result.Groups = bll.QueryAllGroupInfo()
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// SaveGroupActionHandler 保存分组信息处理器
+func SaveGroupActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("SaveGroupActionHandler")
+
+	result := SingleGroupResult{}
+	for true {
+		err := r.ParseForm()
+		if err != nil {
+			log.Print("paseform failed")
+
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+
+		id := r.FormValue("group-id")
+		name := r.FormValue("group-name")
+
+		gid := -1
+		if len(id) > 0 {
+			gid, err = strconv.Atoi(id)
+			if err != nil {
+				log.Printf("parse id failed, id:%s", id)
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+			}
+		}
+
+		ok := bll.SaveGroup(gid, name)
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "保存分组失败"
+			break
+		}
+
+		group, found := bll.QueryGroupByName(name)
+		if found {
+			result.Group = group
+			result.ErrCode = 0
+			result.Reason = "保存分组成功"
+		} else {
+			result.ErrCode = 1
+			result.Reason = "保存分组失败"
+		}
 		break
 	}
 

@@ -2,11 +2,9 @@ package kernel
 
 import (
 	"log"
-	"magiccenter/cache"
 	"magiccenter/configuration"
 	"magiccenter/kernel/auth"
 	"magiccenter/kernel/dashboard"
-	"magiccenter/kernel/modules"
 	"magiccenter/module"
 	"magiccenter/modules/loader"
 	"magiccenter/router"
@@ -31,10 +29,6 @@ func Initialize() {
 
 	configuration.LoadConfig()
 
-	if !cache.CreateCache(cache.MEMORY_CACHE) {
-		panic("create cache failed")
-	}
-
 	staticPath, found := configuration.GetOption(configuration.STATIC_PATH)
 	if found {
 		BindStatic(staticPath)
@@ -49,8 +43,6 @@ func Initialize() {
 
 	dashboard.RegisterRouter()
 
-	modules.RegisterRouter()
-
 	loader.LoadAllModules()
 
 	module.StartupAllModules()
@@ -58,8 +50,6 @@ func Initialize() {
 
 // Uninitialize 反初始化Kernel，清除相关资源
 func Uninitialize() {
-
-	cache.DestroyCache()
 
 	module.CleanupAllModules()
 }

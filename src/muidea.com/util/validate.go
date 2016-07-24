@@ -8,3 +8,10 @@ func ValidateFunc(fun interface{}) {
 		panic("fun must be a callable func")
 	}
 }
+
+// ValidataPtr 校验是否是指针
+func ValidataPtr(ptr interface{}) {
+	if reflect.TypeOf(ptr).Kind() != reflect.Ptr {
+		panic("fun must be a object ptr")
+	}
+}

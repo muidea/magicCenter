@@ -1,92 +1,80 @@
 package bll
 
 import (
-	"log"
-    "magiccenter/util/modelhelper"
-    "magiccenter/kernel/content/dal"
-    "magiccenter/kernel/content/model"
+	"magiccenter/kernel/modules/content/model"
+	"magiccenter/util/modelhelper"
 )
 
+// QueryAllImage 查询全部图像
 func QueryAllImage() []model.ImageDetail {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryAllImage(helper)
 }
 
-func QueryImageById(id int) (model.ImageDetail, bool) {
+// QueryImageByID 查询指定图像
+func QueryImageByID(id int) (model.ImageDetail, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
-	return dal.QueryImageById(helper, id)	
+	return dal.QueryImageById(helper, id)
 }
 
-func DeleteImageById(id int) bool {
+// DeleteImageByID 删除图像
+func DeleteImageByID(id int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
-	return dal.DeleteImageById(helper, id)	
+	return dal.DeleteImageById(helper, id)
 }
 
+// QueryImageByCatalog 查询指定分类的图像
 func QueryImageByCatalog(id int) []model.ImageDetail {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryImageByCatalog(helper, id)
 }
 
+// QueryImageByRang 查询指定范围图像
 func QueryImageByRang(begin, offset int) []model.ImageDetail {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryImageByRang(helper, begin, offset)
 }
 
-func SaveImage(id int, name, url, desc string, uId int, catalogs []int) bool {
+// SaveImage 保存图像
+func SaveImage(id int, name, url, desc string, uID int, catalogs []int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	image := model.ImageDetail{}
 	image.Id = id
 	image.Name = name
 	image.Url = url
 	image.Desc = desc
-	image.Creater.Id = uId
-	
-	for _, ca := range catalogs {
-		catalog, found := dal.QueryCatalogById(helper, ca)
-		if found {
-			c := model.Catalog{}
-			c.Id = catalog.Id
-			c.Name = catalog.Name
-			image.Catalog = append(image.Catalog, c)
-		} else {
-			log.Printf("illegal catalog id, id:%d", ca)
-		}
-	}		
-	
+	image.Creater = uID
+	image.Catalog = catalogs
+
 	return dal.SaveImage(helper, image)
 }
-
-
-
-
-

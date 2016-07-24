@@ -1,93 +1,81 @@
 package bll
 
 import (
-	"log"
-    "magiccenter/util/modelhelper"
-    "magiccenter/kernel/content/dal"
-    "magiccenter/kernel/content/model"
+	"magiccenter/kernel/modules/content/dal"
+	"magiccenter/kernel/modules/content/model"
+	"magiccenter/util/modelhelper"
 )
 
+// QueryAllLink 查询全部Link
 func QueryAllLink() []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryAllLink(helper)
 }
 
-func QueryLinkById(id int) (model.Link, bool) {
+// QueryLinkByID 查询指定Link
+func QueryLinkByID(id int) (model.Link, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
-	return dal.QueryLinkById(helper, id)	
+	return dal.QueryLinkByID(helper, id)
 }
 
-func DeleteLinkById(id int) bool {
+// DeleteLinkByID 删除Link
+func DeleteLinkByID(id int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
-	return dal.DeleteLinkById(helper, id)	
+	return dal.DeleteLinkByID(helper, id)
 }
 
+// QueryLinkByCatalog 查询指定分类的Link
 func QueryLinkByCatalog(id int) []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryLinkByCatalog(helper, id)
 }
 
+// QueryLinkByRang 查询指定范围的Link
 func QueryLinkByRang(begin, offset int) []model.Link {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryLinkByRang(helper, begin, offset)
 }
 
-func SaveLink(id int, name, url, logo string, uId int, catalogs []int) bool {
+// SaveLink 保存Link
+func SaveLink(id int, name, url, logo string, uID int, catalogs []int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	link := model.Link{}
 	link.Id = id
 	link.Name = name
 	link.Url = url
 	link.Logo = logo
-	link.Creater.Id = uId
-	
-	for _, ca := range catalogs {
-		catalog, found := dal.QueryCatalogById(helper, ca)
-		if found {
-			c := model.Catalog{}
-			c.Id = catalog.Id
-			c.Name = catalog.Name
-			link.Catalog = append(link.Catalog, c)
-		} else {
-			log.Printf("illegal catalog id, id:%d", ca)
-		}
-	}		
-	
+	link.Creater = uID
+	link.Catalog = catalogs
+
 	return dal.SaveLink(helper, link)
 }
-
-
-
-
-
-

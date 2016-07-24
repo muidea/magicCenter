@@ -2,11 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/kernel/modules/content/model"
+	resdal "magiccenter/resource/dal"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/content/model"
-	"magiccenter/kernel/account/dal"
 )
 
+// QueryAllLink 查询全部Link
 func QueryAllLink(helper modelhelper.Model) []model.Link {
 	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link`)
@@ -14,142 +15,111 @@ func QueryAllLink(helper modelhelper.Model) []model.Link {
 
 	for helper.Next() {
 		link := model.Link{}
-		helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)
-		
+		helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.Creater)
+
 		linkList = append(linkList, link)
 	}
-	
-	for i, _ := range linkList {
-		link := &linkList[i]
-		user, found := dal.QueryUserById(helper, link.Creater.Id)
-		if found {
-			link.Creater.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, link.Id, model.LINK)
+
+	for _, link := range linkList {
+		ress := resdal.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
-			catalog := model.Catalog{}
-			catalog.Id = r.RId()
-			catalog.Name = r.RName()
-			link.Catalog = append(link.Catalog, catalog)
-		}		
+			link.Catalog = append(link.Catalog, r.RId())
+		}
 	}
-		
+
 	return linkList
 }
 
-
+// QueryLinkByCatalog 查询指定分类下的Link
 func QueryLinkByCatalog(helper modelhelper.Model, id int) []model.Link {
 	linkList := []model.Link{}
-	
-	resList := QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
+
+	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
 	for _, r := range resList {
 		sql := fmt.Sprintf(`select id, name, url, logo, creater from link where id =%d`, r.RId())
 		helper.Query(sql)
-		
+
 		if helper.Next() {
 			link := model.Link{}
-			helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)			
+			helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.Creater)
 			linkList = append(linkList, link)
 		}
 	}
-	
-	for i, _ := range linkList {
-		link := &linkList[i]
-		user, found := dal.QueryUserById(helper, link.Creater.Id)
-		if found {
-			link.Creater.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, link.Id, model.LINK)
+
+	for _, link := range linkList {
+		ress := resdal.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
-			catalog := model.Catalog{}
-			catalog.Id = r.RId()
-			catalog.Name = r.RName()
-			link.Catalog = append(link.Catalog, catalog)
-		}		
+			link.Catalog = append(link.Catalog, r.RId())
+		}
 	}
-	
-	return linkList	
+
+	return linkList
 }
 
-func QueryLinkByRang(helper modelhelper.Model, begin int,offset int) []model.Link {
+// QueryLinkByRang 查询指定范围的Link
+func QueryLinkByRang(helper modelhelper.Model, begin int, offset int) []model.Link {
 	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
 
 	for helper.Next() {
 		link := model.Link{}
-		helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)
-		
+		helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.Creater)
+
 		linkList = append(linkList, link)
 	}
-	
-	for i, _ := range linkList {
-		link := &linkList[i]
-		user, found := dal.QueryUserById(helper, link.Creater.Id)
-		if found {
-			link.Creater.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, link.Id, model.LINK)
+
+	for _, link := range linkList {
+		ress := resdal.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
-			catalog := model.Catalog{}
-			catalog.Id = r.RId()
-			catalog.Name = r.RName()
-			link.Catalog = append(link.Catalog, catalog)
-		}		
+			link.Catalog = append(link.Catalog, r.RId())
+		}
 	}
-			
+
 	return linkList
 }
 
-func QueryLinkById(helper modelhelper.Model, id int) (model.Link, bool) {
+// QueryLinkByID 查询指定Link
+func QueryLinkByID(helper modelhelper.Model, id int) (model.Link, bool) {
 	link := model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link where id =%d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&link.Id, &link.Name, &link.Url, &link.Logo, &link.Creater.Id)
+		helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.Creater)
 		result = true
 	}
-	
+
 	if result {
-		user, found := dal.QueryUserById(helper, link.Creater.Id)
-		if found {
-			link.Creater.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, link.Id, model.LINK)
+		ress := resdal.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
-			catalog := model.Catalog{}
-			catalog.Id = r.RId()
-			catalog.Name = r.RName()
-			link.Catalog = append(link.Catalog, catalog)
+			link.Catalog = append(link.Catalog, r.RId())
 		}
 	}
-	
+
 	return link, result
 }
 
-func DeleteLinkById(helper modelhelper.Model, id int) bool {
-	sql := fmt.Sprintf(`delete from link where id =%d`, id)	
+// DeleteLinkByID 删除指定Link
+func DeleteLinkByID(helper modelhelper.Model, id int) bool {
+	sql := fmt.Sprintf(`delete from link where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
 		link := model.Link{}
-		link.Id = id
-		result  = DeleteResource(helper, &link)
+		link.ID = id
+		result = resdal.DeleteResource(helper, &link)
 	}
-	
-	return result	
+
+	return result
 }
 
+// SaveLink 保存Link
 func SaveLink(helper modelhelper.Model, link model.Link) bool {
-	sql := fmt.Sprintf(`select id from link where id=%d`, link.Id)
+	sql := fmt.Sprintf(`select id from link where id=%d`, link.ID)
 	helper.Query(sql)
 
-	result := false;
+	result := false
 	if helper.Next() {
 		var id = 0
 		helper.GetValue(&id)
@@ -158,25 +128,25 @@ func SaveLink(helper modelhelper.Model, link model.Link) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf(`insert into link (name,url,logo,creater) values ('%s','%s','%s', %d)`, link.Name, link.Url, link.Logo, link.Creater.Id)
+		sql = fmt.Sprintf(`insert into link (name,url,logo,creater) values ('%s','%s','%s', %d)`, link.Name, link.URL, link.Logo, link.Creater)
 		_, result = helper.Execute(sql)
 		if result {
-			sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, link.Name, link.Url, link.Creater.Id)
-			
+			sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, link.Name, link.URL, link.Creater)
+
 			helper.Query(sql)
 			if helper.Next() {
-				helper.GetValue(&link.Id)
+				helper.GetValue(&link.ID)
 			}
 		}
 	} else {
 		// modify
-		sql = fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', creater=%d where id=%d`, link.Name, link.Url, link.Logo, link.Creater.Id, link.Id)
+		sql = fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', creater=%d where id=%d`, link.Name, link.URL, link.Logo, link.Creater, link.ID)
 		_, result = helper.Execute(sql)
 	}
-	
+
 	if result {
-		result = SaveResource(helper, &link)
+		result = resdal.SaveResource(helper, &link)
 	}
-	
-	return result	
+
+	return result
 }

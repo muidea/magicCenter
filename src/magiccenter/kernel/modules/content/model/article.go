@@ -1,45 +1,20 @@
 package model
 
-import (
-	"magiccenter/kernel/account/model"
-)
+// ARTICLE 文章类型
+const ARTICLE = "article"
 
+// ArticleSummary 文章摘要
 type ArticleSummary struct {
-	Id int
-	Title string
+	ID         int
+	Title      string
 	CreateDate string
-	Catalog []Catalog
-	Author model.User
+	Catalog    []int
+	Author     int
 }
 
+// Article 文章
 type Article struct {
 	ArticleSummary
-	
+
 	Content string
 }
-
-func (this *Article) RId() int {
-	return this.Id
-}
-
-func (this *Article) RName() string {
-	return this.Title
-}
-
-func (this *Article) RType() int {
-	return ARTICLE
-}
-
-func (this *Article) RRelative() []Resource {
-	relatives := []Resource{}
-	
-	for i, _ := range this.Catalog {
-		c := &this.Catalog[i]
-		relatives = append(relatives, c)
-	}
-	
-	return relatives
-}
-
-
-

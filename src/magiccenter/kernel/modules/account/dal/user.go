@@ -2,19 +2,20 @@ package dal
 
 import (
 	"fmt"
-	"strings"
-	"strconv"	
+	"magiccenter/kernel/modules/account/model"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/account/model"
+	"strconv"
+	"strings"
 )
 
 type tempPair struct {
-	user model.UserDetailView
+	user   model.UserDetail
 	groups string
 }
 
-func QueryAllUser(helper modelhelper.Model) []model.UserDetailView {
-	userList := []model.UserDetailView{}
+//QueryAllUser 查询全部用户信息
+func QueryAllUser(helper modelhelper.Model) []model.UserDetail {
+	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user")
 	helper.Query(sql)
 
@@ -23,154 +24,158 @@ func QueryAllUser(helper modelhelper.Model) []model.UserDetailView {
 		groups := ""
 		user := model.UserDetailView{}
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
-		
+
 		tmp := tempPair{}
 		tmp.user = user
 		tmp.groups = groups
-		
+
 		tmpPairList = append(tmpPairList, tmp)
 	}
-	
-	for i, _ := range tmpPairList {
-		tmp := &tmpPairList[i]
+
+	for _, tmp := range tmpPairList {
 		groupArray := strings.Split(tmp.groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
-				group, found := QueryGroupById(helper, gid)
-				if found {					
-					tmp.user.Groups = append(tmp.user.Groups, group)
-				}
+				tmp.user.Groups = append(tmp.user.Groups, gid)
 			}
-		}		
-		
+		}
+
 		userList = append(userList, tmp.user)
 	}
-	
+
 	return userList
 }
 
-func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetail,bool) {
+// QueryUserByAccount 根据账号查询用户信息
+func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
-	
+
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s'", account)
 	helper.Query(sql)
-	
+
 	groups := ""
 	result := false
 	if helper.Next() {
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
-	
+
 	if result {
-		groupArray := strings.Split(groups,",")
+		groupArray := strings.Split(groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
 				user.Groups = append(user.Groups, gid)
 			}
-		}		
+		}
 	}
-		
+
 	return user, result
 }
 
-func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetail,bool) {
+// VerifyUserByAccount 校验账号信息，如果账号信息正确，返回用户信息
+func VerifyUserByAccount(helper modelhelper.Model, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
-	
+
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
-	
+
 	groups := ""
 	result := false
 	if helper.Next() {
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
-	
+
 	if result {
-		groupArray := strings.Split(groups,",")
+		groupArray := strings.Split(groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
 				user.Groups = append(user.Groups, gid)
 			}
-		}		
+		}
 	}
-		
+
 	return user, result
 }
 
-func QueryUserById(helper modelhelper.Model, id int) (model.UserDetail, bool) {
+// QueryUserByID 根据用户ID查询用户信息
+func QueryUserByID(helper modelhelper.Model, id int) (model.UserDetail, bool) {
 	user := model.UserDetail{}
-	
+
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where id=%d", id)
 	helper.Query(sql)
-	
+
 	groups := ""
 	result := false
 	if helper.Next() {
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
-	
+
 	if result {
-		groupArray := strings.Split(groups,",")
+		groupArray := strings.Split(groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
 				user.Groups = append(user.Groups, gid)
 			}
-		}		
+		}
 	}
-		
+
 	return user, result
 }
 
+// DeleteUser 删除用户，根据用户ID
 func DeleteUser(helper modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf("delete from user where id =%d", id)
-	_ ,ret := helper.Execute(sql)
+	_, ret := helper.Execute(sql)
 	return ret
 }
 
+// DeleteUserByAccount 删除用户，根据用户账号&密码
 func DeleteUserByAccount(helper modelhelper.Model, account, password string) bool {
 	sql := fmt.Sprintf("delete from user where account ='%s' and password='%s'", account, password)
-	_, ret := helper.Execute(sql) 
+	_, ret := helper.Execute(sql)
 	return ret
 }
 
+// CreateUser 创建新用户，根据用户信息和密码
 func CreateUser(helper modelhelper.Model, user model.UserDetail, password string) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
 	}
-	groups = groups[0:len(groups)-1]
+	groups = groups[0 : len(groups)-1]
 
 	// insert
-	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, password, user.Name, user.Email, groups, user.Status)	
+	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, password, user.Name, user.Email, groups, user.Status)
 	_, result := helper.Execute(sql)
-	
+
 	return result
 }
 
+// SaveUser 保存用户信息
 func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
 	}
-	groups = groups[0:len(groups)-1]
+	groups = groups[0 : len(groups)-1]
 
 	// modify
-	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)	
+	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)
 	_, result := helper.Execute(sql)
-	
+
 	return result
 }
 
-func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetailView {
-	userList := []model.UserDetailView{}
-	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where `group` like '%d' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d' union select id,account,nickname,email,`group`, status from user where `group` like '%d,%%' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d,%%'", id,id,id,id)
+// QueryUserByGroup 查询指定分组下的用户信息
+func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetail {
+	userList := []model.UserDetail{}
+	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where `group` like '%d' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d' union select id,account,nickname,email,`group`, status from user where `group` like '%d,%%' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d,%%'", id, id, id, id)
 	helper.Query(sql)
 
 	tmpPairList := []tempPair{}
@@ -178,33 +183,25 @@ func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetailView {
 		groups := ""
 		user := model.UserDetailView{}
 		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
-		
+
 		tmp := tempPair{}
 		tmp.user = user
 		tmp.groups = groups
-		
+
 		tmpPairList = append(tmpPairList, tmp)
 	}
-	
-	for i, _ := range tmpPairList {
-		tmp := &tmpPairList[i]
+
+	for _, tmpPairList := range tmpPairList {
 		groupArray := strings.Split(tmp.groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)
 			if err == nil {
-				group, found := QueryGroupById(helper, gid)
-				if found {					
-					tmp.user.Groups = append(tmp.user.Groups, group)
-				}
+				tmp.user.Groups = append(tmp.user.Groups, gid)
 			}
-		}		
-		
+		}
+
 		userList = append(userList, tmp.user)
 	}
 
 	return userList
 }
-
-
-
-

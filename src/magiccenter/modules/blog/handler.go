@@ -3,9 +3,9 @@ package blog
 import (
 	"html/template"
 	"log"
-	contentbll "magiccenter/kernel/content/bll"
-	"magiccenter/kernel/module/bll"
-	"magiccenter/kernel/module/model"
+	"magiccenter/kernel/dashboard/module/bll"
+	"magiccenter/kernel/dashboard/module/model"
+	contentbll "magiccenter/kernel/modules/content/bll"
 	"net/http"
 	"strconv"
 

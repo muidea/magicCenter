@@ -1,38 +1,15 @@
 package model
 
-import (
-	"magiccenter/kernel/account/model"
-)
+// LINK 链接类型
+const LINK = "link"
 
+// Link 链接
 type Link struct {
-	Id int
-	Name string
-	Url string			
-	Logo string
-	Creater model.User
-	
-	Catalog []Catalog	
-}
+	ID      int
+	Name    string
+	URL     string
+	Logo    string
+	Creater int
 
-func (this *Link) RId() int {
-	return this.Id
-}
-
-func (this *Link) RName() string {
-	return this.Name
-}
-
-func (this *Link) RType() int {
-	return LINK
-}
-
-func (this *Link) RRelative() []Resource {
-	relatives := []Resource{}
-	
-	for i, _ := range this.Catalog {
-		c := &this.Catalog[i]
-		relatives = append(relatives, c)
-	}
-	
-	return relatives	
+	Catalog []int
 }

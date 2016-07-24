@@ -1,10 +1,9 @@
 package system
 
-
 import (
-	"magiccenter/router"
-	"magiccenter/kernel/system/ui"
 	"magiccenter/kernel/auth"
+	"magiccenter/kernel/dashboard/system/ui"
+	"magiccenter/router"
 )
 
 func RegisterRouter() {

@@ -1,7 +1,7 @@
 package model
 
 import (
-	contentModel "magiccenter/kernel/content/model"
+	contentModel "magiccenter/kernel/modules/content/model"
 )
 
 /*

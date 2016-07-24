@@ -2,8 +2,8 @@ package dal
 
 import (
 	"fmt"
-	contentModel "magiccenter/kernel/content/model"
-	"magiccenter/kernel/module/model"
+	"magiccenter/kernel/dashboard/module/model"
+	contentModel "magiccenter/kernel/modules/content/model"
 	"magiccenter/util/modelhelper"
 )
 

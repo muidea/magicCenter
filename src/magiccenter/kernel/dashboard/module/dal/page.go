@@ -2,53 +2,53 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/kernel/dashboard/module/model"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/module/model"
 )
 
 func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 	page := model.Page{}
 	ret := true
-	
+
 	sql := fmt.Sprintf("select id,name,owner from block where id in (select block from page where owner='%s' and url='%s')", owner, url)
 	helper.Query(sql)
-	
+
 	for helper.Next() {
 		b := model.Block{}
 		helper.GetValue(&b.Id, &b.Name, &b.Owner)
-		
+
 		page.Blocks = append(page.Blocks, b)
 	}
-	
+
 	page.Owner = owner
 	page.Url = url
-	
+
 	return page, ret
 }
 
 func QueryPages(helper modelhelper.Model, owner string) []model.Page {
-	
+
 	sql := fmt.Sprintf("select distinct url from page where owner='%s' order by url", owner)
 	helper.Query(sql)
-	
+
 	urlList := []string{}
 	for helper.Next() {
 		url := ""
 		helper.GetValue(&url)
-		
+
 		urlList = append(urlList, url)
 	}
-	
+
 	pageList := []model.Page{}
 	for _, url := range urlList {
 		page, _ := QueryPage(helper, owner, url)
 		pageList = append(pageList, page)
 	}
-	
+
 	return pageList
 }
 
-func SavePage(helper modelhelper.Model, owner,url string, blocks []int) (model.Page, bool) {
+func SavePage(helper modelhelper.Model, owner, url string, blocks []int) (model.Page, bool) {
 	ret := false
 	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
 	_, ret = helper.Execute(sql)
@@ -63,11 +63,11 @@ func SavePage(helper modelhelper.Model, owner,url string, blocks []int) (model.P
 			}
 		}
 	}
-	
+
 	if !ret {
 		page := model.Page{}
 		return page, ret
 	}
-	
+
 	return QueryPage(helper, owner, url)
 }

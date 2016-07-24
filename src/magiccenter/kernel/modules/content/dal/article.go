@@ -2,11 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/kernel/modules/content/model"
+	resdal "magiccenter/resource/dal"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/content/model"
-	"magiccenter/kernel/account/dal"
 )
 
+// QueryAllArticleSummary 查询所有文章摘要
 func QueryAllArticleSummary(helper modelhelper.Model) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	sql := fmt.Sprintf(`select id, title, author, createdate from article`)
@@ -14,150 +15,113 @@ func QueryAllArticleSummary(helper modelhelper.Model) []model.ArticleSummary {
 
 	for helper.Next() {
 		summary := model.ArticleSummary{}
-		helper.GetValue(&summary.Id, &summary.Title, &summary.Author.Id, &summary.CreateDate)
-		
+		helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
+
 		articleSummaryList = append(articleSummaryList, summary)
 	}
-	
-	for i, _ := range articleSummaryList {
-		summary := &articleSummaryList[i]
-		
-		user, found := dal.QueryUserById(helper, summary.Author.Id)
-		if found {
-			summary.Author.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, summary.Id, model.ARTICLE)
+
+	for _, summary := range articleSummaryList {
+		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
 		for _, r := range ress {
-			ca := model.Catalog{}
-			ca.Id = r.RId()
-			ca.Name = r.RName()
-			
-			summary.Catalog = append(summary.Catalog, ca)
+			summary.Catalog = append(summary.Catalog, r.RId())
 		}
 	}
 
 	return articleSummaryList
 }
 
+// QueryArticleByCatalog 查询指定分类下的所有文章摘要
 func QueryArticleByCatalog(helper modelhelper.Model, id int) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
-	resList := QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
+	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
 		sql := fmt.Sprintf(`select id, title, author, createdate from article where id =%d`, r.RId())
 		helper.Query(sql)
-		
+
 		if helper.Next() {
 			summary := model.ArticleSummary{}
-			helper.GetValue(&summary.Id, &summary.Title, &summary.Author.Id, &summary.CreateDate)
-			
+			helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
+
 			articleSummaryList = append(articleSummaryList, summary)
 		}
 	}
-	
-	for i, _ := range articleSummaryList {
-		summary := &articleSummaryList[i]
-		
-		user, found := dal.QueryUserById(helper, summary.Author.Id)
-		if found {
-			summary.Author.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, summary.Id, model.ARTICLE)
+
+	for _, summary := range articleSummaryList {
+		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
 		for _, r := range ress {
-			ca := model.Catalog{}
-			ca.Id = r.RId()
-			ca.Name = r.RName()
-			
-			summary.Catalog = append(summary.Catalog, ca)
+			summary.Catalog = append(summary.Catalog, r.RId())
 		}
-	}	
+	}
 
 	return articleSummaryList
 }
 
-func QueryArticleByRang(helper modelhelper.Model, begin int,offset int) []model.ArticleSummary {
+// QueryArticleByRang 查询指定范围的文章摘要
+func QueryArticleByRang(helper modelhelper.Model, begin int, offset int) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	sql := fmt.Sprintf(`select id, title, author, createdate from article order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
 
 	for helper.Next() {
 		summary := model.ArticleSummary{}
-		helper.GetValue(&summary.Id, &summary.Title, &summary.Author.Id, &summary.CreateDate)
+		helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
 
 		articleSummaryList = append(articleSummaryList, summary)
 	}
-	
-	for i, _ := range articleSummaryList {
-		summary := &articleSummaryList[i]
-		
-		user, found := dal.QueryUserById(helper, summary.Author.Id)
-		if found {
-			summary.Author.Name = user.Name
-		}
-		
-		ress := QueryRelativeResource(helper, summary.Id, model.ARTICLE)
+
+	for _, summary := range articleSummaryList {
+		ress := resdal.QueryRelativeResource(helper, summary.Id, model.ARTICLE)
 		for _, r := range ress {
-			ca := model.Catalog{}
-			ca.Id = r.RId()
-			ca.Name = r.RName()
-			
-			summary.Catalog = append(summary.Catalog, ca)
-		}		
-	}	
+			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+	}
 
 	return articleSummaryList
 }
 
-func QueryArticleById(helper modelhelper.Model, id int) (model.Article, bool) {
+// QueryArticleByID 查询指定文章
+func QueryArticleByID(helper modelhelper.Model, id int) (model.Article, bool) {
 	ar := model.Article{}
-	
+
 	sql := fmt.Sprintf(`select id, title, content, author, createdate from article where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&ar.Id, &ar.Title, &ar.Content, &ar.Author.Id, &ar.CreateDate)
+		helper.GetValue(&ar.ID, &ar.Title, &ar.Content, &ar.Author, &ar.CreateDate)
 		result = true
 	}
-	
+
 	if result {
-		user, found := dal.QueryUserById(helper, ar.Author.Id)
-		if found {
-			ar.Author.Name = user.Name
-		}
-				
-		ress := QueryRelativeResource(helper, ar.Id, model.ARTICLE)
+		ress := resdal.QueryRelativeResource(helper, ar.ID, model.ARTICLE)
 		for _, r := range ress {
-			ca := model.Catalog{}
-			ca.Id = r.RId()
-			ca.Name = r.RName()
-			
-			ar.Catalog = append(ar.Catalog, ca)
+			ar.Catalog = append(ar.Catalog, r.RId())
 		}
 	}
 
-	return ar, result	
+	return ar, result
 }
 
+// DeleteArticle 删除文章
 func DeleteArticle(helper modelhelper.Model, id int) bool {
 	sql := fmt.Sprintf(`delete from article where id=%d`, id)
-	
+
 	_, result := helper.Execute(sql)
 	if result {
 		ar := model.Article{}
-		ar.Id = id
-		result  = DeleteResource(helper, &ar)
+		ar.ID = id
+		result = resdal.DeleteResource(helper, &ar)
 	}
-	
-	return result	
+
+	return result
 }
 
+// SaveArticle 保存文章
 func SaveArticle(helper modelhelper.Model, article model.Article) bool {
-	sql := fmt.Sprintf(`select id from article where id=%d`, article.Id)
+	sql := fmt.Sprintf(`select id from article where id=%d`, article.ID)
 	helper.Query(sql)
 
-	result := false;
+	result := false
 	if helper.Next() {
 		var id = 0
 		helper.GetValue(&id)
@@ -166,27 +130,25 @@ func SaveArticle(helper modelhelper.Model, article model.Article) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, article.Title, article.Content, article.Author.Id, article.CreateDate)
+		sql = fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, article.Title, article.Content, article.Author, article.CreateDate)
 		_, result = helper.Execute(sql)
-		sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, article.Title, article.Author.Id, article.CreateDate)
-		
+		sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, article.Title, article.Author, article.CreateDate)
+
 		helper.Query(sql)
 		result = false
 		if helper.Next() {
-			helper.GetValue(&article.Id)
+			helper.GetValue(&article.ID)
 			result = true
 		}
 	} else {
 		// modify
-		sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Title, article.Content, article.Author.Id, article.CreateDate, article.Id)
+		sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Title, article.Content, article.Author, article.CreateDate, article.ID)
 		_, result = helper.Execute(sql)
 	}
-	
+
 	if result {
-		result = SaveResource(helper, &article)
+		result = resdal.SaveResource(helper, &article)
 	}
-	
+
 	return result
 }
-
-

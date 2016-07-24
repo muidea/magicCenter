@@ -1,8 +1,8 @@
 package account
 
 import (
-	"magiccenter/kernel/account/ui"
 	"magiccenter/kernel/auth"
+	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/module"
 	"magiccenter/router"
 )
@@ -66,18 +66,18 @@ func (instance *account) Routes() []router.Route {
 	routes := []router.Route{
 		// 用户账号信息管理
 		router.NewRoute(router.GET, "manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryAllUser/", ui.QueryAllUserHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryUser/", ui.QueryUserHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "deleteUser/", ui.DeleteUserHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "checkAccount/", ui.CheckAccountHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "ajaxUser/", ui.AjaxUserHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "queryAllUser/", ui.QueryAllUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "queryUser/", ui.QueryUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
 
 		// 用户分组信息管理
 		router.NewRoute(router.GET, "manageGroup/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryAllGroup/", ui.QueryAllGroupHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryGroup/", ui.QueryGroupHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "deleteGroup/", ui.DeleteGroupHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "ajaxGroup/", ui.AjaxGroupHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "queryAllGroup/", ui.QueryAllGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "queryGroup/", ui.QueryGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.GET, "deleteGroup/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(router.POST, "ajaxGroup/", ui.SaveGroupActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

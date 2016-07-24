@@ -1,62 +1,18 @@
 package model
 
-import (
-	"magiccenter/kernel/account/model"
-)
+// CATALOG 分类类型
+const CATALOG = "catalog"
 
+// Catalog 分类
 type Catalog struct {
-	Id int
+	ID   int
 	Name string
 }
 
+// CatalogDetail 分类详细信息
 type CatalogDetail struct {
 	Catalog
 
-	Creater model.User
-	Parent []Catalog
+	Creater int
+	Parent  []int
 }
-
-
-func (this *Catalog) RId() int {
-	return this.Id
-}
-
-func (this *Catalog) RName() string {
-	return this.Name
-}
-
-func (this *Catalog) RType() int {
-	return CATALOG
-}
-
-func (this *Catalog) RRelative() []Resource {
-	relatives := []Resource{}
-	return relatives
-}
-
-func (this *CatalogDetail) RId() int {
-	return this.Id
-}
-
-func (this *CatalogDetail) RName() string {
-	return this.Name
-}
-
-func (this *CatalogDetail) RType() int {
-	return CATALOG
-}
-
-func (this *CatalogDetail) RRelative() []Resource {
-	relatives := []Resource{}
-	
-	for i, _ := range this.Parent {
-		p := &this.Parent[i]
-		relatives = append(relatives, p)
-	}
-	
-	return relatives
-}
-
-
-
-

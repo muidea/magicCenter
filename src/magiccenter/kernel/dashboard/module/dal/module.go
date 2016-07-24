@@ -2,7 +2,7 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/kernel/module/model"
+	"magiccenter/kernel/dashboard/module/model"
 	"magiccenter/util/modelhelper"
 )
 

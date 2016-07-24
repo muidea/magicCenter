@@ -2,6 +2,7 @@ package loader
 
 import (
 	"magiccenter/kernel/modules/account"
+	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
 	"magiccenter/kernel/modules/mail"
 )
@@ -10,6 +11,8 @@ import (
 func LoadAllModules() {
 
 	mail.LoadModule()
+
+	cache.LoadModule()
 
 	account.LoadModule()
 

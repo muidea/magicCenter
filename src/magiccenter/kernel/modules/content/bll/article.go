@@ -1,92 +1,84 @@
 package bll
 
 import (
-	"log"
+	"magiccenter/kernel/modules/content/dal"
+	"magiccenter/kernel/modules/content/model"
+	"magiccenter/util/modelhelper"
 	"time"
-    "magiccenter/util/modelhelper"
-    "magiccenter/kernel/content/dal"
-    "magiccenter/kernel/content/model"
 )
 
+// QueryAllArticleSummary 查询全部文章摘要
 func QueryAllArticleSummary() []model.ArticleSummary {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
-	
+	defer helper.Release()
+
 	return dal.QueryAllArticleSummary(helper)
 }
 
-func QueryArticleById(id int) (model.Article, bool) {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct helper failed")
-	}
-	defer helper.Release()	
-	
-	ar, result := dal.QueryArticleById(helper, id)
-		
-	return ar, result		
-}
-
-func DeleteArticle(id int) bool {
-	helper, err := modelhelper.NewHelper()
-	if err != nil {
-		panic("construct helper failed")
-	}
-	defer helper.Release()	
-
-	return dal.DeleteArticle(helper, id)	
-}
-
-func SaveArticle(id int, title, content string, uId int, catalogs []int) bool {
+// QueryArticleByID 查询指定文章
+func QueryArticleByID(id int) (model.Article, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
-	
+
+	ar, result := dal.QueryArticleByID(helper, id)
+
+	return ar, result
+}
+
+// DeleteArticle 删除文章
+func DeleteArticle(id int) bool {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.DeleteArticle(helper, id)
+}
+
+// SaveArticle 保存文章
+func SaveArticle(id int, title, content string, uID int, catalogs []int) bool {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
 	article := model.Article{}
 	article.Id = id
 	article.Title = title
 	article.Content = content
 	article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-	article.Author.Id = uId
-	
-	for _, ca := range catalogs {
-		catalog, found := dal.QueryCatalogById(helper, ca)
-		if found {
-			c := model.Catalog{}
-			c.Id = catalog.Id
-			c.Name = catalog.Name
-			article.Catalog = append(article.Catalog, c)
-		} else {
-			log.Printf("illegal catalog id, id:%d", ca)
-		}
-	}
-		
+	article.Author = uID
+	article.Catalog = catalogs
+
 	return dal.SaveArticle(helper, article)
 }
 
+// QueryArticleByCatalog 查询指定分类文章
 func QueryArticleByCatalog(id int) []model.ArticleSummary {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryArticleByCatalog(helper, id)
 }
 
-func QueryArticleByRang(begin int,offset int) []model.ArticleSummary {
+// QueryArticleByRang 查询指定范围文章
+func QueryArticleByRang(begin int, offset int) []model.ArticleSummary {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
-	defer helper.Release()	
+	defer helper.Release()
 
 	return dal.QueryArticleByRang(helper, begin, offset)
 }
-
-

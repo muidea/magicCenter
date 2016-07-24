@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
-	"magiccenter/kernel/module/bll"
-	"magiccenter/kernel/module/model"
+	"magiccenter/kernel/dashboard/module/bll"
+	"magiccenter/kernel/dashboard/module/model"
 	"net/http"
 	"strconv"
 )

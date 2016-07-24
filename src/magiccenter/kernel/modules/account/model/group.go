@@ -1,29 +1,20 @@
 package model
 
-import (
-
-)
-
 const (
-	ADMIN_GROUP = iota
-	COMMON_GROUP
+	// AdminGroup 管理员组
+	AdminGroup = iota
+	// CommonGroup 普通组
+	CommonGroup
 )
 
+// Group 分组信息
 type Group struct {
-	Id int
+	ID   int
 	Name string
 	Type int
-	Creater User
 }
 
-type GroupInfo struct {
-	Group
-
-	UserCount int
+// AdminGroup 是否是管理员组
+func (g *Group) AdminGroup() bool {
+	return g.Type == AdminGroup
 }
-
-func (this *Group)AdminGroup() bool {
-	return this.Type == ADMIN_GROUP
-}
-
-

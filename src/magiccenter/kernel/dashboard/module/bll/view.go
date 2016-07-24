@@ -3,9 +3,9 @@ package bll
 import (
 	"fmt"
 	"magiccenter/configuration"
-	contentBll "magiccenter/kernel/content/bll"
-	"magiccenter/kernel/module/dal"
-	"magiccenter/kernel/module/model"
+	"magiccenter/kernel/dashboard/module/dal"
+	"magiccenter/kernel/dashboard/module/model"
+	contentBll "magiccenter/kernel/modules/content/bll"
 	"magiccenter/util/modelhelper"
 )
 

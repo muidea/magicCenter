@@ -2,7 +2,7 @@ package module
 
 import (
 	"magiccenter/kernel/auth"
-	"magiccenter/kernel/module/ui"
+	"magiccenter/kernel/dashboard/module/ui"
 	"magiccenter/router"
 )
 

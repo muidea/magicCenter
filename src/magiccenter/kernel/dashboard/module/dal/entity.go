@@ -2,8 +2,8 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/kernel/dashboard/module/model"
 	"magiccenter/util/modelhelper"
-	"magiccenter/kernel/module/model"
 )
 
 func NewEntity(helper modelhelper.Model, id, name, description, module string) (model.Entity, bool) {
@@ -26,31 +26,31 @@ func DeleteEntity(helper modelhelper.Model, id string) bool {
 
 func QueryEntity(helper modelhelper.Model, id string) (model.Entity, bool) {
 	e := model.Entity{}
-	sql := fmt.Sprintf("select id, name, description, enableflag, defaultflag, module from entity where id='%s'", id)	
+	sql := fmt.Sprintf("select id, name, description, enableflag, defaultflag, module from entity where id='%s'", id)
 	helper.Query(sql)
-	
+
 	result := false
 	if helper.Next() {
 		helper.GetValue(&e.Id, &e.Name, &e.Description, &e.EnableFlag, &e.DefaultFlag, &e.Module)
 		result = true
 	}
-	
-	return e, result	
+
+	return e, result
 }
 
 func QueryEntities(helper modelhelper.Model, module string) []model.Entity {
 	entities := []model.Entity{}
-	
+
 	sql := fmt.Sprintf("select id, name, description, enableflag, defaultlfag, module from entity where module='%s'", module)
 	helper.Query(sql)
-	
+
 	for helper.Next() {
 		e := model.Entity{}
 		helper.GetValue(&e.Id, &e.Name, &e.Description, &e.EnableFlag, &e.DefaultFlag, &e.Module)
-		
+
 		entities = append(entities, e)
 	}
-	
+
 	return entities
 }
 
@@ -64,6 +64,6 @@ func SaveEntity(helper modelhelper.Model, e model.Entity) (model.Entity, bool) {
 		sql := fmt.Sprintf("insert into entity(id, name, description, enableflag, defaultflag, module) values ('%s','%s','%s',%d,%d,'%s')", e.Id, e.Name, e.Description, e.EnableFlag, e.DefaultFlag, e.Module)
 		_, result = helper.Execute(sql)
 	}
-	
+
 	return e, result
 }

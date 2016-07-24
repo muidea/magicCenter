@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	"magiccenter/kernel/common"
 	"net/http"
 )
 

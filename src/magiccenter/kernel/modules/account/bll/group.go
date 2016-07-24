@@ -6,17 +6,19 @@ import (
 	"magiccenter/util/modelhelper"
 )
 
-func QueryAllGroupInfo() []model.GroupInfo {
+// QueryAllGroup 查询所有分组
+func QueryAllGroup() []model.Group {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.QueryAllGroupInfo(helper)
+	return dal.QueryAllGroup(helper)
 }
 
-func QueryGroupById(id int) (model.Group, bool) {
+// QueryGroupByID 查询指定分组
+func QueryGroupByID(id int) (model.Group, bool) {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -26,6 +28,18 @@ func QueryGroupById(id int) (model.Group, bool) {
 	return dal.QueryGroupById(helper, id)
 }
 
+// QueryGroupByName 查询指定分组
+func QueryGroupByName(name string) (model.Group, bool) {
+	helper, err := modelhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.QueryGroupByName(helper, name)
+}
+
+// DeleteGroup 删除分组
 func DeleteGroup(id int) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
@@ -36,7 +50,8 @@ func DeleteGroup(id int) bool {
 	return dal.DeleteGroup(helper, id)
 }
 
-func SaveGroup(id int, name string, creater int) bool {
+// SaveGroup 保存分组信息
+func SaveGroup(id int, name string) bool {
 	helper, err := modelhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -46,7 +61,6 @@ func SaveGroup(id int, name string, creater int) bool {
 	group := model.Group{}
 	group.Id = id
 	group.Name = name
-	group.Creater.Id = creater
 
 	return dal.SaveGroup(helper, group)
 }
