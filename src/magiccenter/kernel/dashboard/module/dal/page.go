@@ -6,6 +6,7 @@ import (
 	"magiccenter/util/modelhelper"
 )
 
+// QueryPage 查询page信息
 func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 	page := model.Page{}
 	ret := true
@@ -15,17 +16,18 @@ func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 
 	for helper.Next() {
 		b := model.Block{}
-		helper.GetValue(&b.Id, &b.Name, &b.Owner)
+		helper.GetValue(&b.ID, &b.Name, &b.Owner)
 
 		page.Blocks = append(page.Blocks, b)
 	}
 
 	page.Owner = owner
-	page.Url = url
+	page.URL = url
 
 	return page, ret
 }
 
+// QueryPages 查询Module的Pages
 func QueryPages(helper modelhelper.Model, owner string) []model.Page {
 
 	sql := fmt.Sprintf("select distinct url from page where owner='%s' order by url", owner)
@@ -48,6 +50,7 @@ func QueryPages(helper modelhelper.Model, owner string) []model.Page {
 	return pageList
 }
 
+// SavePage 保存页面信息
 func SavePage(helper modelhelper.Model, owner, url string, blocks []int) (model.Page, bool) {
 	ret := false
 	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)

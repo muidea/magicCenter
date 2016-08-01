@@ -1,31 +1,28 @@
 package model
 
 import (
+	"fmt"
 
+	"muidea.com/util"
 )
 
 /*
-Id:表示Item对象
+Item 记录项
+ID:表示Item对象
 Rid:对应对象的ID
 Rtype:对应对象的类型，article,catalog,link
 Owner: Item所属的Block
 */
 type Item struct {
-	Id int
-	Rid int
-	Rtype int
+	ID    int
+	Rid   int
+	Rtype string
 	Owner int
 }
 
-/*
-Id: Item对应真是对象的ID，article，Catalog，。。。
-Name: Item名称，根据实际表示的对象来决定，Article为Title，Catalog为Name ect。
-Url:访问Item对应的Url
-*/
-type ItemView struct {
-	Id int
-	Name string
-	Url string
+// URL 返回资源对应的URL
+func (i Item) URL() string {
+	param := fmt.Sprintf("?id=%d", i.Rid)
+
+	return util.JoinURL(i.Rtype, param)
 }
-
-

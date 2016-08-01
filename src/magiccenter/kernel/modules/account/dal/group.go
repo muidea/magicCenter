@@ -14,7 +14,7 @@ func QueryAllGroup(helper modelhelper.Model) []model.Group {
 
 	for helper.Next() {
 		g := model.Group{}
-		helper.GetValue(&g.Id, &g.Name, &g.Type)
+		helper.GetValue(&g.ID, &g.Name, &g.Type)
 
 		groupList = append(groupList, g)
 	}
@@ -30,7 +30,7 @@ func QueryGroupByID(helper modelhelper.Model, id int) (model.Group, bool) {
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&group.Id, &group.Name, &group.Type)
+		helper.GetValue(&group.ID, &group.Name, &group.Type)
 		result = true
 	}
 
@@ -45,7 +45,7 @@ func QueryGroupByName(helper modelhelper.Model, name string) (model.Group, bool)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&group.Id, &group.Name, &group.Type)
+		helper.GetValue(&group.ID, &group.Name, &group.Type)
 		result = true
 	}
 
@@ -62,7 +62,7 @@ func DeleteGroup(helper modelhelper.Model, id int) bool {
 
 // SaveGroup 保存分组
 func SaveGroup(helper modelhelper.Model, group model.Group) bool {
-	sql := fmt.Sprintf("select id from `group` where id=%d", group.Id)
+	sql := fmt.Sprintf("select id from `group` where id=%d", group.ID)
 	helper.Query(sql)
 
 	result := false
@@ -78,7 +78,7 @@ func SaveGroup(helper modelhelper.Model, group model.Group) bool {
 		sql = fmt.Sprintf("insert into `group` (name, catalog) values ('%s',%d)", group.Name, group.Type)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update `group` set name ='%s' where id=%d", group.Name, group.Id)
+		sql = fmt.Sprintf("update `group` set name ='%s' where id=%d", group.Name, group.ID)
 	}
 
 	_, ret := helper.Execute(sql)

@@ -22,8 +22,8 @@ func QueryAllUser(helper modelhelper.Model) []model.UserDetail {
 	tmpPairList := []tempPair{}
 	for helper.Next() {
 		groups := ""
-		user := model.UserDetailView{}
-		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		user := model.UserDetail{}
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 
 		tmp := tempPair{}
 		tmp.user = user
@@ -57,7 +57,7 @@ func QueryUserByAccount(helper modelhelper.Model, account string) (model.UserDet
 	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
 
@@ -84,7 +84,7 @@ func VerifyUserByAccount(helper modelhelper.Model, account, password string) (mo
 	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
 
@@ -111,7 +111,7 @@ func QueryUserByID(helper modelhelper.Model, id int) (model.UserDetail, bool) {
 	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 		result = true
 	}
 
@@ -166,7 +166,7 @@ func SaveUser(helper modelhelper.Model, user model.UserDetail) bool {
 	groups = groups[0 : len(groups)-1]
 
 	// modify
-	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.Id)
+	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.ID)
 	_, result := helper.Execute(sql)
 
 	return result
@@ -181,8 +181,8 @@ func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetail {
 	tmpPairList := []tempPair{}
 	for helper.Next() {
 		groups := ""
-		user := model.UserDetailView{}
-		helper.GetValue(&user.Id, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		user := model.UserDetail{}
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
 
 		tmp := tempPair{}
 		tmp.user = user
@@ -191,7 +191,7 @@ func QueryUserByGroup(helper modelhelper.Model, id int) []model.UserDetail {
 		tmpPairList = append(tmpPairList, tmp)
 	}
 
-	for _, tmpPairList := range tmpPairList {
+	for _, tmp := range tmpPairList {
 		groupArray := strings.Split(tmp.groups, ",")
 		for _, g := range groupArray {
 			gid, err := strconv.Atoi(g)

@@ -50,7 +50,7 @@ func QueryImageByCatalog(helper modelhelper.Model, id int) []model.ImageDetail {
 		}
 	}
 
-	for , image := range imageList {
+	for _, image := range imageList {
 		ress := resdal.QueryRelativeResource(helper, id, model.IMAGE)
 		for _, r := range ress {
 			image.Catalog = append(image.Catalog, r.RId())
@@ -73,7 +73,7 @@ func QueryImageByRang(helper modelhelper.Model, begin int, offset int) []model.I
 		imageList = append(imageList, image)
 	}
 
-	for , image := range imageList {
+	for _, image := range imageList {
 		ress := resdal.QueryRelativeResource(helper, image.ID, model.IMAGE)
 		for _, r := range ress {
 			image.Catalog = append(image.Catalog, r.RId())
@@ -83,8 +83,8 @@ func QueryImageByRang(helper modelhelper.Model, begin int, offset int) []model.I
 	return imageList
 }
 
-// QueryImageById 查询指定的图像
-func QueryImageById(helper modelhelper.Model, id int) (model.ImageDetail, bool) {
+// QueryImageByID 查询指定的图像
+func QueryImageByID(helper modelhelper.Model, id int) (model.ImageDetail, bool) {
 	image := model.ImageDetail{}
 
 	sql := fmt.Sprintf(`select id, name, url, description, creater from image where id = %d`, id)

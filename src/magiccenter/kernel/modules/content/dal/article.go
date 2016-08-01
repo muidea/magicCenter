@@ -70,7 +70,7 @@ func QueryArticleByRang(helper modelhelper.Model, begin int, offset int) []model
 	}
 
 	for _, summary := range articleSummaryList {
-		ress := resdal.QueryRelativeResource(helper, summary.Id, model.ARTICLE)
+		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}

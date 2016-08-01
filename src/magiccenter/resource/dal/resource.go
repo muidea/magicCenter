@@ -2,7 +2,10 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/resource"
 	"magiccenter/util/modelhelper"
+
+	"muidea.com/util"
 )
 
 // SimpleRes 简单资源对象
@@ -10,7 +13,7 @@ type simpleRes struct {
 	rid      int
 	rname    string
 	rtype    string
-	relative []Resource
+	relative []resource.Resource
 }
 
 func createSimpleRes(rid int, rtype, rname string) simpleRes {
@@ -18,7 +21,7 @@ func createSimpleRes(rid int, rtype, rname string) simpleRes {
 	res.rid = rid
 	res.rtype = rtype
 	res.rname = rname
-	
+
 	return res
 }
 
@@ -34,12 +37,18 @@ func (s *simpleRes) RType() string {
 	return s.rtype
 }
 
-func (s *simpleRes) RRelative() []Resource {
+func (s *simpleRes) URL() string {
+	param := fmt.Sprintf("id=%d", s.rid)
+
+	return util.JoinURL(s.rname, param)
+}
+
+func (s *simpleRes) RRelative() []resource.Resource {
 	return s.relative
 }
 
 // QueryResource 查询资源
-func QueryResource(helper modelhelper.Model, rid int, rtype string) (Resource, bool) {
+func QueryResource(helper modelhelper.Model, rid int, rtype string) (resource.Resource, bool) {
 	sql := fmt.Sprintf(`select id, type, name from resource where id =%d and type ='%s'`, rid, rtype)
 	helper.Query(sql)
 
@@ -51,18 +60,18 @@ func QueryResource(helper modelhelper.Model, rid int, rtype string) (Resource, b
 	}
 
 	if result {
-		res.relative = QueryRelativeResource(helper, id, tid)
+		res.relative = QueryRelativeResource(helper, rid, rtype)
 	}
 
 	return &res, result
 }
 
 // QueryRelativeResource 查询关联的资源
-func QueryRelativeResource(helper modelhelper.Model, rid int, rtype string) []Resource {
+func QueryRelativeResource(helper modelhelper.Model, rid int, rtype string) []resource.Resource {
 	sql := fmt.Sprintf(`select rr.dst id, rr.dstType type, r.name name from resource_relative rr, resource r where rr.dst = r.id and rr.dstType = r.type and rr.src =%d and rr.srcType ='%s'`, rid, rtype)
 	helper.Query(sql)
 
-	resultList := []Resource{}
+	resultList := []resource.Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.rid, &res.rtype, &res.rname)
@@ -76,16 +85,16 @@ func QueryRelativeResource(helper modelhelper.Model, rid int, rtype string) []Re
 // rID Res ID
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
-func QueryReferenceResource(helper modelhelper.Model, rID int, rType, referenceType string) []Resource {
+func QueryReferenceResource(helper modelhelper.Model, rID int, rType, referenceType string) []resource.Resource {
 	sql := ""
-	if referenceType) == "" {
+	if referenceType == "" {
 		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = '%s'`, rID, rType)
 	} else {
 		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = '%s' and rr.srcType ='%s'`, rID, rType, referenceType)
 	}
 	helper.Query(sql)
 
-	resultList := []Resource{}
+	resultList := []resource.Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.rid, &res.rtype, &res.rname)
@@ -96,7 +105,7 @@ func QueryReferenceResource(helper modelhelper.Model, rID int, rType, referenceT
 }
 
 // SaveResource 保存资源
-func SaveResource(helper modelhelper.Model, res Resource) bool {
+func SaveResource(helper modelhelper.Model, res resource.Resource) bool {
 	sql := fmt.Sprintf(`select id from resource where id=%d and type='%s'`, res.RId(), res.RType())
 	helper.Query(sql)
 
@@ -124,7 +133,7 @@ func SaveResource(helper modelhelper.Model, res Resource) bool {
 }
 
 // DeleteResource 删除资源
-func DeleteResource(helper modelhelper.Model, res Resource) bool {
+func DeleteResource(helper modelhelper.Model, res resource.Resource) bool {
 	sql := fmt.Sprintf(`delete from resource where type='%s' and id=%d`, res.RType(), res.RId())
 	_, result := helper.Execute(sql)
 	if result {
@@ -137,7 +146,7 @@ func DeleteResource(helper modelhelper.Model, res Resource) bool {
 }
 
 // 保存关联资源
-func saveResourceRelative(helper modelhelper.Model, res model.Resource) bool {
+func saveResourceRelative(helper modelhelper.Model, res resource.Resource) bool {
 	result := false
 
 	deleteResourceRelative(helper, res)
@@ -167,7 +176,7 @@ func saveResourceRelative(helper modelhelper.Model, res model.Resource) bool {
 }
 
 // 删除关联资源
-func deleteResourceRelative(helper modelhelper.Model, res model.Resource) bool {
+func deleteResourceRelative(helper modelhelper.Model, res resource.Resource) bool {
 	sql := fmt.Sprintf(`delete from resource_relative where src=%d and srcType='%s'`, res.RId(), res.RType())
 	_, result := helper.Execute(sql)
 	if !result {

@@ -68,19 +68,19 @@ func LoadConfig() {
 // UpdateSystemInfo 更新系统信息
 func UpdateSystemInfo(info SystemInfo) bool {
 	configs := map[string]string{}
-	configs[APP_NAME] = info.Name
-	configs[APP_DOMAIN] = info.Domain
-	configs[APP_LOGO] = info.Logo
-	configs[MAIL_SERVER] = info.MailServer
-	configs[MAIL_ACCOUNT] = info.MailAccount
-	configs[MAIL_PASSWORD] = info.MailPassword
+	configs[AppName] = info.Name
+	configs[AppDomain] = info.Domain
+	configs[AppLogo] = info.Logo
+	configs[MailServer] = info.MailServer
+	configs[MailAccount] = info.MailAccount
+	configs[MailPassword] = info.MailPassword
 
-	configInfoMap[APP_NAME] = info.Name
-	configInfoMap[APP_DOMAIN] = info.Domain
-	configInfoMap[APP_LOGO] = info.Logo
-	configInfoMap[MAIL_SERVER] = info.MailServer
-	configInfoMap[MAIL_ACCOUNT] = info.MailAccount
-	configInfoMap[MAIL_PASSWORD] = info.MailPassword
+	configInfoMap[AppName] = info.Name
+	configInfoMap[AppDomain] = info.Domain
+	configInfoMap[AppLogo] = info.Logo
+	configInfoMap[MailServer] = info.MailServer
+	configInfoMap[MailAccount] = info.MailAccount
+	configInfoMap[MailPassword] = info.MailPassword
 
 	return bll.UpdateConfigurations(configs)
 }
@@ -88,12 +88,12 @@ func UpdateSystemInfo(info SystemInfo) bool {
 // GetSystemInfo 获取系统信息
 func GetSystemInfo() SystemInfo {
 	info := SystemInfo{}
-	info.Name = configInfoMap[APP_NAME]
-	info.Domain = configInfoMap[APP_DOMAIN]
-	info.Logo = configInfoMap[APP_LOGO]
-	info.MailServer = configInfoMap[MAIL_SERVER]
-	info.MailAccount = configInfoMap[MAIL_ACCOUNT]
-	info.MailPassword = configInfoMap[MAIL_PASSWORD]
+	info.Name = configInfoMap[AppName]
+	info.Domain = configInfoMap[AppDomain]
+	info.Logo = configInfoMap[AppLogo]
+	info.MailServer = configInfoMap[MailServer]
+	info.MailAccount = configInfoMap[MailAccount]
+	info.MailPassword = configInfoMap[MailPassword]
 
 	return info
 }

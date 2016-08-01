@@ -25,7 +25,7 @@ func QueryGroupByID(id int) (model.Group, bool) {
 	}
 	defer helper.Release()
 
-	return dal.QueryGroupById(helper, id)
+	return dal.QueryGroupByID(helper, id)
 }
 
 // QueryGroupByName 查询指定分组
@@ -59,7 +59,7 @@ func SaveGroup(id int, name string) bool {
 	defer helper.Release()
 
 	group := model.Group{}
-	group.Id = id
+	group.ID = id
 	group.Name = name
 
 	return dal.SaveGroup(helper, group)

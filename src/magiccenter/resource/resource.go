@@ -9,6 +9,8 @@ type Resource interface {
 	RName() string
 	// RType 资源类型
 	RType() string
+	// URL 访问资源的URL
+	URL() string
 	// RRelative 关联的资源
 	RRelative() []Resource
 }

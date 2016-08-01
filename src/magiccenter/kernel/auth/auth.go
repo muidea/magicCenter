@@ -14,7 +14,7 @@ import (
 // AdminAuthVerify 管理权限校验器
 func AdminAuthVerify() martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request) bool {
-		authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+		authID, found := configuration.GetOption(configuration.AuthorithID)
 		if !found {
 			panic("unexpected, can't fetch authorith id")
 		}
@@ -24,7 +24,7 @@ func AdminAuthVerify() martini.Handler {
 		user, found := session.GetOption(authID)
 		if found {
 			for _, gid := range user.(model.UserDetail).Groups {
-				group, found := bll.QueryGroupById(gid)
+				group, found := bll.QueryGroupByID(gid)
 				if found && group.AdminGroup() {
 					result = true
 				}
@@ -38,7 +38,7 @@ func AdminAuthVerify() martini.Handler {
 // LoginAuthVerify 登陆权限校验器
 func LoginAuthVerify() martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request) bool {
-		authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+		authID, found := configuration.GetOption(configuration.AuthorithID)
 		if !found {
 			panic("unexpected, can't fetch authorith id")
 		}

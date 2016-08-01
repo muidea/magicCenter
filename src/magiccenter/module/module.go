@@ -118,7 +118,7 @@ func UnregisterModule(id string) {
 func StartupAllModules() {
 	log.Println("StartupAllModules all modules")
 
-	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
+	defaultModule, _ := configuration.GetOption(configuration.SysDefaultModule)
 
 	for _, m := range moduleIDMap {
 
@@ -148,7 +148,7 @@ func StartupAllModules() {
 
 // CleanupAllModules 清除全部模块
 func CleanupAllModules() {
-	defaultModule, _ := configuration.GetOption(configuration.SYS_DEFULTMODULE)
+	defaultModule, _ := configuration.GetOption(configuration.SysDefaultModule)
 
 	for _, m := range moduleIDMap {
 

@@ -6,6 +6,7 @@ import (
 	"magiccenter/util/modelhelper"
 )
 
+// DeleteModule 删除指定Module
 func DeleteModule(helper modelhelper.Model, id string) {
 	sql := fmt.Sprintf("delete from module where id='%s'", id)
 	num, ret := helper.Execute(sql)
@@ -15,6 +16,7 @@ func DeleteModule(helper modelhelper.Model, id string) {
 	}
 }
 
+// QueryModule 查询指定Module
 func QueryModule(helper modelhelper.Model, id string) (model.Module, bool) {
 	m := model.Module{}
 	sql := fmt.Sprintf("select id, name, description, uri, enableflag from module where id='%s'", id)
@@ -22,13 +24,14 @@ func QueryModule(helper modelhelper.Model, id string) (model.Module, bool) {
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.Uri, &m.EnableFlag)
+		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.EnableFlag)
 		result = true
 	}
 
 	return m, result
 }
 
+// QueryAllModule 查询所有Module
 func QueryAllModule(helper modelhelper.Model) []model.Module {
 	moduleList := []model.Module{}
 
@@ -37,7 +40,7 @@ func QueryAllModule(helper modelhelper.Model) []model.Module {
 
 	for helper.Next() {
 		m := model.Module{}
-		helper.GetValue(&m.Id, &m.Name, &m.Description, &m.Uri, &m.EnableFlag)
+		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.EnableFlag)
 
 		moduleList = append(moduleList, m)
 	}
@@ -45,14 +48,15 @@ func QueryAllModule(helper modelhelper.Model) []model.Module {
 	return moduleList
 }
 
+// SaveModule 保存Module
 func SaveModule(helper modelhelper.Model, m model.Module) (model.Module, bool) {
 	result := false
-	_, found := QueryModule(helper, m.Id)
+	_, found := QueryModule(helper, m.ID)
 	if found {
-		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.Uri, m.EnableFlag, m.Id)
+		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', enableflag =%d where Id='%s'", m.Name, m.Description, m.URL, m.EnableFlag, m.ID)
 		_, result = helper.Execute(sql)
 	} else {
-		sql := fmt.Sprintf("insert into module(id, name, description, uri, enableflag) values ('%s','%s','%s','%s',%d)", m.Id, m.Name, m.Description, m.Uri, m.EnableFlag)
+		sql := fmt.Sprintf("insert into module(id, name, description, uri, enableflag) values ('%s','%s','%s','%s',%d)", m.ID, m.Name, m.Description, m.URL, m.EnableFlag)
 		_, result = helper.Execute(sql)
 	}
 

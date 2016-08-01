@@ -31,7 +31,7 @@ type VerifyAuthResult struct {
 func AdminViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("adminViewHandler")
 
-	authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
@@ -51,7 +51,7 @@ func AdminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := AdminView{}
-	view.User.Id = user.(model.UserDetail).Id
+	view.User.ID = user.(model.UserDetail).ID
 	view.User.Name = user.(model.UserDetail).Name
 	t.Execute(w, view)
 }
@@ -62,7 +62,7 @@ func LoginViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
@@ -87,7 +87,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 
 	result := VerifyAuthResult{}
 
-	authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
@@ -113,7 +113,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 
 		isAdmin := false
 		for _, gid := range user.Groups {
-			group, found := bll.QueryGroupById(gid)
+			group, found := bll.QueryGroupByID(gid)
 			if found && group.AdminGroup() {
 				isAdmin = true
 			}
@@ -147,7 +147,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("logoutActionHandler")
 
-	authID, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
