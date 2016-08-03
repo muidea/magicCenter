@@ -12,5 +12,7 @@ type Resource interface {
 	// URL 访问资源的URL
 	URL() string
 	// RRelative 关联的资源
-	RRelative() []Resource
+	Relative() []Resource
+	// AppendRelative 追加关联资源
+	AppendRelative(r Resource)
 }

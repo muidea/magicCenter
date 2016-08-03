@@ -3,11 +3,11 @@ package dal
 import (
 	"fmt"
 	"magiccenter/kernel/modules/account/model"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // QueryAllGroup 查询所有的分组
-func QueryAllGroup(helper modelhelper.Model) []model.Group {
+func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 	groupList := []model.Group{}
 	sql := fmt.Sprintf("select id, name, catalog from `group`")
 	helper.Query(sql)
@@ -23,7 +23,7 @@ func QueryAllGroup(helper modelhelper.Model) []model.Group {
 }
 
 // QueryGroupByID 查询指定分组
-func QueryGroupByID(helper modelhelper.Model, id int) (model.Group, bool) {
+func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.Group, bool) {
 	group := model.Group{}
 	sql := fmt.Sprintf("select id,name,catalog from `group` where id=%d", id)
 	helper.Query(sql)
@@ -38,7 +38,7 @@ func QueryGroupByID(helper modelhelper.Model, id int) (model.Group, bool) {
 }
 
 // QueryGroupByName 查询指定分组
-func QueryGroupByName(helper modelhelper.Model, name string) (model.Group, bool) {
+func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool) {
 	group := model.Group{}
 	sql := fmt.Sprintf("select id,name,catalog from `group` where name='%s'", name)
 	helper.Query(sql)
@@ -53,7 +53,7 @@ func QueryGroupByName(helper modelhelper.Model, name string) (model.Group, bool)
 }
 
 // DeleteGroup 删除分组
-func DeleteGroup(helper modelhelper.Model, id int) bool {
+func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf("delete from `group` where id =%d", id)
 	_, result := helper.Execute(sql)
 
@@ -61,7 +61,7 @@ func DeleteGroup(helper modelhelper.Model, id int) bool {
 }
 
 // SaveGroup 保存分组
-func SaveGroup(helper modelhelper.Model, group model.Group) bool {
+func SaveGroup(helper dbhelper.DBHelper, group model.Group) bool {
 	sql := fmt.Sprintf("select id from `group` where id=%d", group.ID)
 	helper.Query(sql)
 
@@ -74,7 +74,6 @@ func SaveGroup(helper modelhelper.Model, group model.Group) bool {
 
 	if !result {
 		// insert
-		group.Type = 1
 		sql = fmt.Sprintf("insert into `group` (name, catalog) values ('%s',%d)", group.Name, group.Type)
 	} else {
 		// modify

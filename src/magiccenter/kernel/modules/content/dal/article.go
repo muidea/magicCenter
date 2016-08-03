@@ -3,6 +3,7 @@ package dal
 import (
 	"fmt"
 	"magiccenter/kernel/modules/content/model"
+	"magiccenter/resource"
 	resdal "magiccenter/resource/dal"
 	"magiccenter/util/modelhelper"
 )
@@ -108,9 +109,9 @@ func DeleteArticle(helper modelhelper.Model, id int) bool {
 
 	_, result := helper.Execute(sql)
 	if result {
-		ar := model.Article{}
-		ar.ID = id
-		result = resdal.DeleteResource(helper, &ar)
+		// 删除资源时，名称时不用关注的，所以这里填“”好了
+		res := resource.CreateSimpleRes(id, model.Article, "")
+		result = resdal.DeleteResource(helper, res)
 	}
 
 	return result
@@ -147,7 +148,8 @@ func SaveArticle(helper modelhelper.Model, article model.Article) bool {
 	}
 
 	if result {
-		result = resdal.SaveResource(helper, &article)
+		res := resource.CreateSimpleRes(article.ID, model.Article, article.Title)
+		result = resdal.SaveResource(helper, res)
 	}
 
 	return result
