@@ -1,7 +1,7 @@
 package memorycache_test
 
 import (
-	"magiccenter/cache/memorycache"
+	"magiccenter/kernel/modules/cache/memorycache"
 	"testing"
 	"time"
 )

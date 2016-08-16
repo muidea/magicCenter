@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"magiccenter/kernel/modules/content/model"
 	resdal "magiccenter/resource/dal"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // QueryAllImage 查询所有图像
-func QueryAllImage(helper modelhelper.Model) []model.ImageDetail {
+func QueryAllImage(helper dbhelper.DBHelper) []model.ImageDetail {
 	imageList := []model.ImageDetail{}
 	sql := fmt.Sprintf(`select id, name, url, description, creater from image`)
 	helper.Query(sql)
@@ -23,11 +23,7 @@ func QueryAllImage(helper modelhelper.Model) []model.ImageDetail {
 	for _, image := range imageList {
 		ress := resdal.QueryRelativeResource(helper, image.ID, model.IMAGE)
 		for _, r := range ress {
-			catalog := model.Catalog{}
-			catalog.ID = r.RId()
-			catalog.Name = r.RName()
-
-			image.Catalog = append(image.Catalog, catalog)
+			image.Catalog = append(image.Catalog, r.RId())
 		}
 	}
 
@@ -35,7 +31,7 @@ func QueryAllImage(helper modelhelper.Model) []model.ImageDetail {
 }
 
 // QueryImageByCatalog 查询指定分类的图像
-func QueryImageByCatalog(helper modelhelper.Model, id int) []model.ImageDetail {
+func QueryImageByCatalog(helper dbhelper.DBHelper, id int) []model.ImageDetail {
 	imageList := []model.ImageDetail{}
 
 	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.IMAGE)
@@ -61,7 +57,7 @@ func QueryImageByCatalog(helper modelhelper.Model, id int) []model.ImageDetail {
 }
 
 // QueryImageByRang 查询指定范围的图像
-func QueryImageByRang(helper modelhelper.Model, begin int, offset int) []model.ImageDetail {
+func QueryImageByRang(helper dbhelper.DBHelper, begin int, offset int) []model.ImageDetail {
 	imageList := []model.ImageDetail{}
 	sql := fmt.Sprintf(`select id, name, url, description, creater from image order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
@@ -84,7 +80,7 @@ func QueryImageByRang(helper modelhelper.Model, begin int, offset int) []model.I
 }
 
 // QueryImageByID 查询指定的图像
-func QueryImageByID(helper modelhelper.Model, id int) (model.ImageDetail, bool) {
+func QueryImageByID(helper dbhelper.DBHelper, id int) (model.ImageDetail, bool) {
 	image := model.ImageDetail{}
 
 	sql := fmt.Sprintf(`select id, name, url, description, creater from image where id = %d`, id)
@@ -106,21 +102,20 @@ func QueryImageByID(helper modelhelper.Model, id int) (model.ImageDetail, bool) 
 	return image, result
 }
 
-// DeleteImageById 删除图像
-func DeleteImageById(helper modelhelper.Model, id int) bool {
+// DeleteImageByID 删除图像
+func DeleteImageByID(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from image where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
-		img := model.ImageDetail{}
-		img.ID = id
-		result = resdal.DeleteResource(helper, &img)
+		img := resdal.CreateSimpleRes(id, model.IMAGE, "")
+		result = resdal.DeleteResource(helper, img)
 	}
 
 	return result
 }
 
 // SaveImage 保存图像
-func SaveImage(helper modelhelper.Model, image model.ImageDetail) bool {
+func SaveImage(helper dbhelper.DBHelper, image model.ImageDetail) bool {
 	sql := fmt.Sprintf(`select id from image where id=%d`, image.ID)
 	helper.Query(sql)
 
@@ -150,7 +145,12 @@ func SaveImage(helper modelhelper.Model, image model.ImageDetail) bool {
 	}
 
 	if result {
-		result = resdal.SaveResource(helper, &image)
+		res := resdal.CreateSimpleRes(image.ID, model.IMAGE, image.Name)
+		for _, c := range image.Catalog {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
 	}
 
 	return result

@@ -14,7 +14,7 @@ func TestResource(t *testing.T) {
 
 	res := CreateSimpleRes(0, "test", "test")
 
-	catalog := CreateSimpleRes(1, "catalog", "catalog")
+	catalog := CreateSimpleRes(9, "catalog", "")
 
 	res.AppendRelative(catalog)
 

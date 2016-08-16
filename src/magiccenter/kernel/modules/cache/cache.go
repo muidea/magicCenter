@@ -3,6 +3,8 @@ package cache
 import (
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID Cache模块ID
@@ -37,7 +39,7 @@ type OutCacheBox struct {
 	// ID 访问数据的ID
 	ID string
 	// Data 获取到的数据
-	Data *interface{}
+	Data interface{}
 	// Found 是否找到数据
 	Found *bool
 }
@@ -103,36 +105,42 @@ func (instance *cache) Startup() bool {
 
 // Cleanup 清除Cache模块
 func (instance *cache) Cleanup() {
-	cache := GetCache()
-	cache.Release()
+	cache, found := GetCache()
+	if found {
+		cache.Release()
 
-	DestroyCache()
+		DestroyCache()
+	}
 }
 
 // Invoke 执行外部命令
 func (instance *cache) Invoke(param interface{}) bool {
+	util.ValidataPtr(param)
 
-	cache := GetCache()
+	cache, found := GetCache()
+	if !found {
+		return false
+	}
 
-	inBox := param.(InCacheBox)
+	inBox := param.(*InCacheBox)
 	if inBox != nil {
-		cache.PutIn(inBox.Data, inBox.MaxAge, inBox.ID)
+		*(inBox.ID) = cache.PutIn(inBox.Data, inBox.MaxAge)
 		return true
 	}
 
-	outBox := param.(OutCacheBox)
+	outBox := param.(*OutCacheBox)
 	if outBox != nil {
-		outBox.Data, outBox.Found = cache.FetchOut(outBox.ID)
+		outBox.Data, *(outBox.Found) = cache.FetchOut(outBox.ID)
 		return true
 	}
 
-	removeBox := param.(RemoveCacheBox)
+	removeBox := param.(*RemoveCacheBox)
 	if removeBox != nil {
 		cache.Remove(removeBox.ID)
 		return true
 	}
 
-	clearAllBox := param(ClearAllCacheBox)
+	clearAllBox := param.(*ClearAllCacheBox)
 	if clearAllBox != nil {
 		cache.ClearAll()
 		return true

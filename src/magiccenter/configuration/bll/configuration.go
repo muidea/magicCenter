@@ -2,12 +2,12 @@ package bll
 
 import (
 	"magiccenter/configuration/dal"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // UpdateConfigurations 更新配置集
 func UpdateConfigurations(configs map[string]string) bool {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -33,7 +33,7 @@ func UpdateConfigurations(configs map[string]string) bool {
 
 // UpdateConfiguration 更新配置项
 func UpdateConfiguration(key, value string) bool {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -44,7 +44,7 @@ func UpdateConfiguration(key, value string) bool {
 
 // GetConfiguration 获取配置集
 func GetConfiguration(keys []string) map[string]string {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

@@ -1,13 +1,12 @@
-package cache_test
+package cache
 
-import (
-	"magiccenter/cache"
-	"testing"
-)
+import "testing"
 
 func TestCache(t *testing.T) {
-	ch := cache.CreateCache(cache.MemoryCache)
+	ch := CreateCache(MemoryCache)
 	if !ch {
 		t.Error("create cache failed")
 	}
+
+	DestroyCache()
 }

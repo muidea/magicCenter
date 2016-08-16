@@ -79,7 +79,7 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rtype string) (resource.Re
 
 // QueryRelativeResource 查询关联的资源
 func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rtype string) []resource.Resource {
-	sql := fmt.Sprintf(`select rr.dst id, rr.dstType type, r.name name from resource_relative rr, resource r where rr.src = r.id and rr.srcType = r.type and rr.src =%d and rr.srcType ='%s'`, rid, rtype)
+	sql := fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src =%d and rr.srcType ='%s'`, rid, rtype)
 	helper.Query(sql)
 
 	resultList := []resource.Resource{}
@@ -99,9 +99,9 @@ func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rtype string) []re
 func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []resource.Resource {
 	sql := ""
 	if referenceType == "" {
-		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.dst = %d and rr.dstType = '%s'`, rID, rType)
+		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = '%s'`, rID, rType)
 	} else {
-		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.dst = %d and rr.dstType = '%s' and rr.srcType ='%s'`, rID, rType, referenceType)
+		sql = fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.src and r.type = rr.srcType and rr.dst = %d and rr.dstType = '%s' and rr.srcType ='%s'`, rID, rType, referenceType)
 	}
 	helper.Query(sql)
 
