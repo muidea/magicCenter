@@ -144,7 +144,12 @@ func SaveLink(helper dbhelper.DBHelper, link model.Link) bool {
 	}
 
 	if result {
-		//result = resdal.SaveResource(helper, &link)
+		res := resdal.CreateSimpleRes(link.ID, model.LINK, link.Name)
+		for _, c := range link.Catalog {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
 	}
 
 	return result
