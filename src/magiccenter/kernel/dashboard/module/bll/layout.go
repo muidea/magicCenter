@@ -4,10 +4,10 @@ import (
 	"magiccenter/kernel/dashboard/module/dal"
 	"magiccenter/kernel/dashboard/module/model"
 	"magiccenter/module"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
-func queryAllModuleInternal(helper modelhelper.Model) []model.Module {
+func queryAllModuleInternal(helper dbhelper.Model) []model.Module {
 	modules := dal.QueryAllModule(helper)
 
 	sysModule := module.QueryAllModule()
@@ -32,7 +32,7 @@ func queryAllModuleInternal(helper modelhelper.Model) []model.Module {
 }
 
 func QueryAllModules() []model.Module {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -42,7 +42,7 @@ func QueryAllModules() []model.Module {
 }
 
 func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -81,7 +81,7 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 }
 
 func EnableModules(enableList []string) ([]model.Module, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -132,7 +132,7 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 }
 
 func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayout, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -176,7 +176,7 @@ func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayo
 }
 
 func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -220,7 +220,7 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 }
 
 func SavePageBlock(owner, url string, blocks []int) (model.ModuleLayout, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

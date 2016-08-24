@@ -1,13 +1,14 @@
 package bll
 
 import (
+	"magiccenter/kernel/modules/content/dal"
 	"magiccenter/kernel/modules/content/model"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // QueryAllImage 查询全部图像
 func QueryAllImage() []model.ImageDetail {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -18,29 +19,29 @@ func QueryAllImage() []model.ImageDetail {
 
 // QueryImageByID 查询指定图像
 func QueryImageByID(id int) (model.ImageDetail, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.QueryImageById(helper, id)
+	return dal.QueryImageByID(helper, id)
 }
 
 // DeleteImageByID 删除图像
 func DeleteImageByID(id int) bool {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.DeleteImageById(helper, id)
+	return dal.DeleteImageByID(helper, id)
 }
 
 // QueryImageByCatalog 查询指定分类的图像
 func QueryImageByCatalog(id int) []model.ImageDetail {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -51,7 +52,7 @@ func QueryImageByCatalog(id int) []model.ImageDetail {
 
 // QueryImageByRang 查询指定范围图像
 func QueryImageByRang(begin, offset int) []model.ImageDetail {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -62,16 +63,16 @@ func QueryImageByRang(begin, offset int) []model.ImageDetail {
 
 // SaveImage 保存图像
 func SaveImage(id int, name, url, desc string, uID int, catalogs []int) bool {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
 	image := model.ImageDetail{}
-	image.Id = id
+	image.ID = id
 	image.Name = name
-	image.Url = url
+	image.URL = url
 	image.Desc = desc
 	image.Creater = uID
 	image.Catalog = catalogs

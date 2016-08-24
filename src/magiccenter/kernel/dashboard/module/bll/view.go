@@ -6,14 +6,14 @@ import (
 	"magiccenter/kernel/dashboard/module/dal"
 	"magiccenter/kernel/dashboard/module/model"
 	contentBll "magiccenter/kernel/modules/content/bll"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 //
 // 获取module指定url的内容
 //
 func QueryPageView(module, url string) (model.PageView, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -67,7 +67,7 @@ func QueryPageView(module, url string) (model.PageView, bool) {
 }
 
 func QueryContentView(module, url string, id int) (model.PageContentView, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -127,7 +127,7 @@ func QueryContentView(module, url string, id int) (model.PageContentView, bool) 
 }
 
 func QueryCatalogView(module, url string, id int) (model.PageCatalogView, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

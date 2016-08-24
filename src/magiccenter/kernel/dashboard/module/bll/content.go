@@ -4,12 +4,12 @@ import (
 	"magiccenter/kernel/dashboard/module/dal"
 	"magiccenter/kernel/dashboard/module/model"
 	"magiccenter/module"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // QueryModuleContent 查询指定Module的内容
 func QueryModuleContent(id string) (model.ModuleContent, bool) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -43,7 +43,7 @@ func QueryModuleContent(id string) (model.ModuleContent, bool) {
 
 // SaveBlockItem 保存Block里的Item
 func SaveBlockItem(block int, articleList, catalogList, linkList []int) {
-	helper, err := modelhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

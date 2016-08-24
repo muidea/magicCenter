@@ -1,4 +1,4 @@
-package resource
+package common
 
 // Resource 资源对象
 // 用于表示可用于访问的信息(article,catalog,image,link)

@@ -3,11 +3,11 @@ package dal
 import (
 	"fmt"
 	"magiccenter/kernel/dashboard/module/model"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // InsertBlock 新建一条Block记录
-func InsertBlock(helper modelhelper.Model, name, tag string, style int, owner string) (model.Block, bool) {
+func InsertBlock(helper dbhelper.DBHelper, name, tag string, style int, owner string) (model.Block, bool) {
 	block := model.Block{}
 	ret := false
 
@@ -31,14 +31,14 @@ func InsertBlock(helper modelhelper.Model, name, tag string, style int, owner st
 }
 
 // DeleteBlock 删除一条Block记录
-func DeleteBlock(helper modelhelper.Model, id int) bool {
+func DeleteBlock(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf("delete from block where id=%d", id)
 	num, ret := helper.Execute(sql)
 	return num == 1 && ret
 }
 
 // QueryBlock 查询一条Block
-func QueryBlock(helper modelhelper.Model, id int) (model.BlockDetail, bool) {
+func QueryBlock(helper dbhelper.DBHelper, id int) (model.BlockDetail, bool) {
 	block := model.BlockDetail{}
 	ret := false
 
@@ -55,7 +55,7 @@ func QueryBlock(helper modelhelper.Model, id int) (model.BlockDetail, bool) {
 }
 
 // QueryBlocks 查询指定类型的Block
-func QueryBlocks(helper modelhelper.Model, owner string) []model.Block {
+func QueryBlocks(helper dbhelper.DBHelper, owner string) []model.Block {
 	blockList := []model.Block{}
 	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)
 	helper.Query(sql)
@@ -71,7 +71,7 @@ func QueryBlocks(helper modelhelper.Model, owner string) []model.Block {
 }
 
 // QueryBlockDetails 查询指定类型Block的详情
-func QueryBlockDetails(helper modelhelper.Model, owner string) []model.BlockDetail {
+func QueryBlockDetails(helper dbhelper.DBHelper, owner string) []model.BlockDetail {
 	blockList := []model.BlockDetail{}
 	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)
 	helper.Query(sql)

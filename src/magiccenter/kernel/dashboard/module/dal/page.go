@@ -3,11 +3,11 @@ package dal
 import (
 	"fmt"
 	"magiccenter/kernel/dashboard/module/model"
-	"magiccenter/util/modelhelper"
+	"magiccenter/util/dbhelper"
 )
 
 // QueryPage 查询page信息
-func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
+func QueryPage(helper dbhelper.DBHelper, owner, url string) (model.Page, bool) {
 	page := model.Page{}
 	ret := true
 
@@ -28,7 +28,7 @@ func QueryPage(helper modelhelper.Model, owner, url string) (model.Page, bool) {
 }
 
 // QueryPages 查询Module的Pages
-func QueryPages(helper modelhelper.Model, owner string) []model.Page {
+func QueryPages(helper dbhelper.DBHelper, owner string) []model.Page {
 
 	sql := fmt.Sprintf("select distinct url from page where owner='%s' order by url", owner)
 	helper.Query(sql)
@@ -51,7 +51,7 @@ func QueryPages(helper modelhelper.Model, owner string) []model.Page {
 }
 
 // SavePage 保存页面信息
-func SavePage(helper modelhelper.Model, owner, url string, blocks []int) (model.Page, bool) {
+func SavePage(helper dbhelper.DBHelper, owner, url string, blocks []int) (model.Page, bool) {
 	ret := false
 	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
 	_, ret = helper.Execute(sql)

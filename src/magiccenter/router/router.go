@@ -1,32 +1,13 @@
 package router
 
 import (
+	"magiccenter/common"
 	"martini"
 	"net/http"
 	"reflect"
 
 	"muidea.com/util"
 )
-
-// 基本HTTP行为定义
-const (
-	GET    = "get"
-	PUT    = "put"
-	POST   = "post"
-	DELETE = "delete"
-)
-
-// Route 路由接口
-type Route interface {
-	// Type 路由行为GET/PUT/POST/DELETE
-	Type() string
-	// Pattern 路由规则, 以'/'开始
-	Pattern() string
-	// Handler 路由处理器
-	Handler() interface{}
-	// Verifier 权限校验器
-	Verifier() interface{}
-}
 
 type route struct {
 	rType     string
@@ -55,7 +36,7 @@ func (r *route) Verifier() interface{} {
 }
 
 // NewRoute 新建一个路由对象
-func NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) Route {
+func NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route {
 	r := route{}
 	r.rType = rType
 	r.rPattern = rPattern
