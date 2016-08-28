@@ -1,6 +1,7 @@
 package cms
 
 import (
+	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
 )
@@ -48,14 +49,14 @@ func (c *cms) Group() string {
 }
 
 func (c *cms) Type() int {
-	return module.INTERNAL
+	return common.INTERNAL
 }
 
 func (c *cms) URL() string {
 	return URL
 }
 
-func (c *cms) Resource() module.Resource {
+func (c *cms) EndPoint() common.EndPoint {
 	return nil
 }
 

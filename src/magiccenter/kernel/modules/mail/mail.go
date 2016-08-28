@@ -2,6 +2,7 @@ package mail
 
 import (
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
 	"magiccenter/module"
 	"magiccenter/router"
@@ -59,14 +60,14 @@ func (instance *mail) Group() string {
 }
 
 func (instance *mail) Type() int {
-	return module.KERNEL
+	return common.KERNEL
 }
 
 func (instance *mail) URL() string {
 	return URL
 }
 
-func (instance *mail) Resource() module.Resource {
+func (instance *mail) EndPoint() common.EndPoint {
 	return nil
 }
 

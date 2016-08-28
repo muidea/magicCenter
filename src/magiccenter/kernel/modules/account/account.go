@@ -1,6 +1,7 @@
 package account
 
 import (
+	"magiccenter/common"
 	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/module"
@@ -50,14 +51,14 @@ func (instance *account) Group() string {
 }
 
 func (instance *account) Type() int {
-	return module.KERNEL
+	return common.KERNEL
 }
 
 func (instance *account) URL() string {
 	return URL
 }
 
-func (instance *account) Resource() module.Resource {
+func (instance *account) EndPoint() common.EndPoint {
 	return nil
 }
 

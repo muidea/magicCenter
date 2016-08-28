@@ -1,6 +1,7 @@
 package content
 
 import (
+	"magiccenter/common"
 	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/content/ui"
 	"magiccenter/module"
@@ -50,14 +51,14 @@ func (instance *content) Group() string {
 }
 
 func (instance *content) Type() int {
-	return module.KERNEL
+	return common.KERNEL
 }
 
 func (instance *content) URL() string {
 	return URL
 }
 
-func (instance *content) Resource() module.Resource {
+func (instance *content) EndPoint() common.EndPoint {
 	return nil
 }
 

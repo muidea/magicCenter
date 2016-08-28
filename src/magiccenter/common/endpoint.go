@@ -1,9 +1,10 @@
-package module
+package common
 
 import "net/http"
 
-// Resource 模块资源
-type Resource interface {
+// EndPoint 终端对象
+// 所有对外接口都通过EndPoint来操作
+type EndPoint interface {
 	// Get 获取资源
 	Get(rsp http.ResponseWriter, req *http.Request)
 	// Put 更新资源

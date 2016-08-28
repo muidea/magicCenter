@@ -2,6 +2,7 @@ package module
 
 import (
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
 	"magiccenter/router"
 
@@ -9,12 +10,12 @@ import (
 )
 
 // ID -> Module
-var moduleIDMap = map[string]Module{}
+var moduleIDMap = map[string]common.Module{}
 
 // QueryAllModule 查询所有的模块
 // 包含启用和未启用的
-func QueryAllModule() []Module {
-	modules := []Module{}
+func QueryAllModule() []common.Module {
+	modules := []common.Module{}
 
 	for _, m := range moduleIDMap {
 		modules = append(modules, m)
@@ -44,8 +45,8 @@ func GetAllModuleGroups() []string {
 }
 
 // GetModulesByGroup 获取指定分组的所有模块
-func GetModulesByGroup(group string) []Module {
-	modules := []Module{}
+func GetModulesByGroup(group string) []common.Module {
+	modules := []common.Module{}
 	for _, m := range moduleIDMap {
 		g := m.Group()
 
@@ -58,14 +59,14 @@ func GetModulesByGroup(group string) []Module {
 }
 
 // FindModule 根据Module ID查找指定模块
-func FindModule(id string) (Module, bool) {
+func FindModule(id string) (common.Module, bool) {
 	m, found := moduleIDMap[id]
 
 	return m, found
 }
 
 // RegisterModule 在系统中注册模块
-func RegisterModule(m Module) {
+func RegisterModule(m common.Module) {
 	log.Printf("register module, id:%s, name:%s", m.ID(), m.Name())
 
 	moduleIDMap[m.ID()] = m
@@ -93,13 +94,13 @@ func StartupAllModules() {
 				pattern = rt.Pattern()
 			}
 
-			if rt.Type() == router.GET {
+			if rt.Type() == common.GET {
 				router.AddGetRoute(pattern, rt.Handler(), rt.Verifier())
-			} else if rt.Type() == router.PUT {
+			} else if rt.Type() == common.PUT {
 				router.AddPutRoute(pattern, rt.Handler(), rt.Verifier())
-			} else if rt.Type() == router.POST {
+			} else if rt.Type() == common.POST {
 				router.AddPostRoute(pattern, rt.Handler(), rt.Verifier())
-			} else if rt.Type() == router.DELETE {
+			} else if rt.Type() == common.DELETE {
 				router.AddDeleteRoute(pattern, rt.Handler(), rt.Verifier())
 			} else {
 				panic("illegal route type, type:" + rt.Type())
@@ -123,13 +124,13 @@ func CleanupAllModules() {
 				pattern = rt.Pattern()
 			}
 
-			if rt.Type() == router.GET {
+			if rt.Type() == common.GET {
 				router.RemoveGetRoute(pattern)
-			} else if rt.Type() == router.PUT {
+			} else if rt.Type() == common.PUT {
 				router.RemovePutRoute(pattern)
-			} else if rt.Type() == router.POST {
+			} else if rt.Type() == common.POST {
 				router.RemovePostRoute(pattern)
-			} else if rt.Type() == router.DELETE {
+			} else if rt.Type() == common.DELETE {
 				router.RemoveDeleteRoute(pattern)
 			} else {
 				panic("illegal route type, type:" + rt.Type())

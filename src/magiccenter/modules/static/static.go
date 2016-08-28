@@ -1,6 +1,7 @@
 package static
 
 import (
+	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
 )
@@ -51,7 +52,7 @@ func (instance *static) Group() string {
 }
 
 func (instance *static) Type() int {
-	return module.INTERNAL
+	return common.INTERNAL
 }
 
 // URL Static url
@@ -59,7 +60,7 @@ func (instance *static) URL() string {
 	return URL
 }
 
-func (instance *static) Resource() module.Resource {
+func (instance *static) EndPoint() module.EndPoint {
 	return nil
 }
 

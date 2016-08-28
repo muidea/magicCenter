@@ -1,7 +1,5 @@
 package common
 
-import "magiccenter/router"
-
 // 模块类型
 const (
 	// 内核模块，不能被禁用
@@ -22,11 +20,11 @@ type Module interface {
 	// URL 模块Url，每个模块都对应唯一的Url,不带'/'
 	URL() string
 
-	// Resource 模块提供的Rest api支持
-	Resource() Resource
+	// EndPoint 模块提供的Rest api支持
+	EndPoint() EndPoint
 
 	// Routes 模块支持的路由信息
-	Routes() []router.Route
+	Routes() []Route
 
 	//Startup 启动模块
 	Startup() bool

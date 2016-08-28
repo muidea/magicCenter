@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
 
@@ -80,14 +81,14 @@ func (instance *cache) Group() string {
 }
 
 func (instance *cache) Type() int {
-	return module.KERNEL
+	return common.KERNEL
 }
 
 func (instance *cache) URL() string {
 	return URL
 }
 
-func (instance *cache) Resource() module.Resource {
+func (instance *cache) EndPoint() common.EndPoint {
 	return nil
 }
 

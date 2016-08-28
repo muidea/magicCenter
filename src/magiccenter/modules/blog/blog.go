@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
 )
@@ -48,14 +49,14 @@ func (b *blog) Group() string {
 }
 
 func (b *blog) Type() int {
-	return module.INTERNAL
+	return common.INTERNAL
 }
 
 func (b *blog) URL() string {
 	return URL
 }
 
-func (b *blog) Resource() module.Resource {
+func (b *blog) EndPoint() common.EndPoint {
 	return nil
 }
 
