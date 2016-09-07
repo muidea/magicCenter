@@ -49,7 +49,7 @@ func (c *cms) Group() string {
 }
 
 func (c *cms) Type() int {
-	return common.INTERNAL
+	return common.INTERNAL
 }
 
 func (c *cms) URL() string {
@@ -60,12 +60,12 @@ func (c *cms) EndPoint() common.EndPoint {
 	return nil
 }
 
-func (c *cms) Routes() []router.Route {
-	routes := []router.Route{
-		router.NewRoute(router.GET, "/", indexHandler, nil),
-		router.NewRoute(router.GET, "/view/", viewContentHandler, nil),
-		router.NewRoute(router.GET, "/catalog/", viewCatalogHandler, nil),
-		router.NewRoute(router.GET, "/link/", viewLinkHandler, nil),
+func (c *cms) Routes() []common.Route {
+	routes := []common.Route{
+		router.NewRoute(common.GET, "/", indexHandler, nil),
+		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),
+		router.NewRoute(common.GET, "/catalog/", viewCatalogHandler, nil),
+		router.NewRoute(common.GET, "/link/", viewLinkHandler, nil),
 	}
 
 	return routes

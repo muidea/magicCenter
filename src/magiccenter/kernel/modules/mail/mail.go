@@ -5,7 +5,6 @@ import (
 	"magiccenter/common"
 	"magiccenter/configuration"
 	"magiccenter/module"
-	"magiccenter/router"
 
 	"muidea.com/util"
 )
@@ -72,8 +71,8 @@ func (instance *mail) EndPoint() common.EndPoint {
 }
 
 // Route Mail 路由信息
-func (instance *mail) Routes() []router.Route {
-	routes := []router.Route{}
+func (instance *mail) Routes() []common.Route {
+	routes := []common.Route{}
 
 	return routes
 }
@@ -90,7 +89,9 @@ func (instance *mail) Cleanup() {
 
 // Invoke 执行外部命令
 func (instance *mail) Invoke(param interface{}) bool {
-	postBox := param.(PostBox)
+	util.ValidataPtr(param)
+
+	postBox := param.(*PostBox)
 	if postBox == nil {
 		log.Print("illegal param")
 		return false
@@ -100,7 +101,7 @@ func (instance *mail) Invoke(param interface{}) bool {
 	return true
 }
 
-func postMails(postBox PostBox) {
+func postMails(postBox *PostBox) {
 	for _, user := range postBox.UserList {
 		postMail(user, postBox.Subject, postBox.Content)
 	}

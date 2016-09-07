@@ -29,12 +29,12 @@ func Initialize() {
 
 	configuration.LoadConfig()
 
-	staticPath, found := configuration.GetOption(configuration.STATIC_PATH)
+	staticPath, found := configuration.GetOption(configuration.StaticPath)
 	if found {
 		BindStatic(staticPath)
 	}
 
-	resourceFilePath, found := configuration.GetOption(configuration.RESOURCE_PATH)
+	resourceFilePath, found := configuration.GetOption(configuration.ResourcePath)
 	if found {
 		BindStatic(resourceFilePath)
 	}

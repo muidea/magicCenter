@@ -7,21 +7,21 @@ import (
 	"magiccenter/util/dbhelper"
 )
 
-func queryAllModuleInternal(helper dbhelper.Model) []model.Module {
+func queryAllModuleInternal(helper dbhelper.DBHelper) []model.Module {
+
+	// 由于部分Module可能还未启用，所以这里需要取DB和系统加载信息的全集
 	modules := dal.QueryAllModule(helper)
 
 	sysModule := module.QueryAllModule()
 
-	for ii, _ := range sysModule {
-		sysMod := sysModule[ii]
-
+	for _, sysMod := range sysModule {
 		mod, found := dal.QueryModule(helper, sysMod.ID())
 		if !found {
 			mod = model.Module{}
-			mod.Id = sysMod.ID()
+			mod.ID = sysMod.ID()
 			mod.Name = sysMod.Name()
 			mod.Description = sysMod.Description()
-			mod.Uri = sysMod.URL()
+			mod.URL = sysMod.URL()
 			mod.EnableFlag = 0
 
 			modules = append(modules, mod)
@@ -31,6 +31,7 @@ func queryAllModuleInternal(helper dbhelper.Model) []model.Module {
 	return modules
 }
 
+// QueryAllModules 查询所有Module
 func QueryAllModules() []model.Module {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
@@ -41,6 +42,7 @@ func QueryAllModules() []model.Module {
 	return queryAllModuleInternal(helper)
 }
 
+/*
 func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
@@ -267,3 +269,4 @@ func SavePageBlock(owner, url string, blocks []int) (model.ModuleLayout, bool) {
 
 	return detail, found
 }
+*/

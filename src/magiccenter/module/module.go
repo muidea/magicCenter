@@ -89,7 +89,8 @@ func StartupAllModules() {
 
 		routes := m.Routes()
 		for _, rt := range routes {
-			pattern := util.JoinURL(m.URL(), rt.Pattern())
+			pattern := "/"
+			pattern += util.JoinURL(m.URL(), rt.Pattern())
 			if m.ID() == defaultModule {
 				pattern = rt.Pattern()
 			}

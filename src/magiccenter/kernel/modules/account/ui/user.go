@@ -45,7 +45,7 @@ func ManageUserViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageUserView{}
 	view.Users = bll.QueryAllUser()
-	view.Groups = bll.QueryAllGroupInfo()
+	view.Groups = bll.QueryAllGroup()
 
 	t.Execute(w, view)
 }
@@ -89,7 +89,7 @@ func QueryUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		result.User, found = bll.QueryUserById(uid)
+		result.User, found = bll.QueryUserByID(uid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "指定User不存在"
@@ -164,7 +164,7 @@ func CheckAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 		}
-		_, found := bll.QueryUserByAccount(account)
+		_, found = bll.QueryUserByAccount(account)
 		if !found {
 			result.ErrCode = 0
 			result.Reason = "该账号可用"
@@ -210,10 +210,10 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		uid = -1
-		id = r.FormValue("user-id")
+		uid := -1
+		id := r.FormValue("user-id")
 		if len(id) > 0 {
-			uid, err := strconv.Atoi()
+			uid, err = strconv.Atoi(id)
 			if err != nil {
 				log.Print("paseform failed")
 
@@ -241,7 +241,7 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			groupList = append(groupList, gid)
 		}
 
-		usr, found := bll.QueryUserById(uid)
+		usr, found := bll.QueryUserByID(uid)
 		if found {
 			// 说明是更新用户信息
 			usr.Account = account
@@ -259,7 +259,7 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 				result.User = usr
 			}
 		} else {
-			ok := bll.CreaterUser(account, passWord, nickName, email, 0, groupList)
+			ok := bll.CreateUser(account, passWord, nickName, email, 0, groupList)
 			if !ok {
 				result.ErrCode = 1
 				result.Reason = "创建用户失败"

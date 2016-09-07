@@ -1,5 +1,14 @@
 package model
 
+const (
+	// NEW 新建用户，未激活状态
+	NEW = iota
+	// ACTIVE 用户已经激活
+	ACTIVE
+	// DISABLE 用户被禁用
+	DISABLE
+)
+
 // User 用户信息
 type User struct {
 	//ID 用户ID,唯一标示该用户

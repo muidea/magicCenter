@@ -1,5 +1,6 @@
 package bll
 
+/*
 import (
 	"magiccenter/kernel/dashboard/module/dal"
 	"magiccenter/kernel/dashboard/module/model"
@@ -76,3 +77,4 @@ func SaveBlockItem(block int, articleList, catalogList, linkList []int) {
 
 	helper.Commit()
 }
+*/

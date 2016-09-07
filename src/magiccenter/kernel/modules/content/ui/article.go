@@ -5,11 +5,11 @@ import (
 	"html"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
-	"magiccenter/kernel/content/bll"
-	"magiccenter/kernel/content/model"
+	accountModel "magiccenter/kernel/modules/account/model"
+	"magiccenter/kernel/modules/content/bll"
+	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"strconv"
@@ -17,6 +17,7 @@ import (
 	"muidea.com/util"
 )
 
+// ManageArticleView 文章管理视图
 type ManageArticleView struct {
 	Articles []model.ArticleSummary
 	Catalogs []model.CatalogDetail
@@ -44,13 +45,12 @@ type EditArticleResult struct {
 	Article model.Article
 }
 
-//
-// 文章管理主界面
+// ManageArticleViewHandler 文章管理主界面
 // 显示Article列表信息
 // 返回html页面
 //
-func ManageArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ManageArticleHandler")
+func ManageArticleViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageArticleViewHandler")
 
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
@@ -119,7 +119,7 @@ func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		article, found := bll.QueryArticleById(aid)
+		article, found := bll.QueryArticleByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
@@ -202,13 +202,13 @@ func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxArticleHandler")
 
-	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
 
 	session := session.GetSession(w, r)
-	user, found := session.GetOption(authId)
+	user, found := session.GetOption(authID)
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -246,7 +246,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetail).Id, catalogs) {
+		if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -290,7 +290,7 @@ func EditArticleHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		article, found := bll.QueryArticleById(aid)
+		article, found := bll.QueryArticleByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"

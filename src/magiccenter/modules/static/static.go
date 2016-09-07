@@ -60,13 +60,13 @@ func (instance *static) URL() string {
 	return URL
 }
 
-func (instance *static) EndPoint() module.EndPoint {
+func (instance *static) EndPoint() common.EndPoint {
 	return nil
 }
 
 // Route Static 路由信息
-func (instance *static) Routes() []router.Route {
-	routes := []router.Route{router.NewRoute(router.GET, "/static/**", viewArticleHandler, nil)}
+func (instance *static) Routes() []common.Route {
+	routes := []common.Route{router.NewRoute(common.GET, "/static/**", viewArticleHandler, nil)}
 
 	return routes
 }

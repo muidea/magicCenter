@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
-	"magiccenter/kernel/content/bll"
-	"magiccenter/kernel/content/model"
+	accountModel "magiccenter/kernel/modules/account/model"
+	"magiccenter/kernel/modules/content/bll"
+	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"strconv"
@@ -16,6 +16,7 @@ import (
 	"muidea.com/util"
 )
 
+// ManageCatalogView 分类视图
 type ManageCatalogView struct {
 	Catalogs []model.CatalogDetail
 }
@@ -43,16 +44,15 @@ type EditCatalogResult struct {
 	AvalibleParent []model.Catalog
 }
 
-//
-// 分类管理主界面
+// ManageCatalogViewHandler 分类管理主界面
 // 显示Catalog列表信息
 // 返回html页面
 //
-func ManageCatalogHandler(w http.ResponseWriter, r *http.Request) {
+func ManageCatalogViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageCatalogViewHandler")
+
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
-
-	log.Print("ManageCatalogHandler")
 
 	t, err := template.ParseFiles("template/html/admin/content/catalog.html")
 	if err != nil {
@@ -117,7 +117,7 @@ func QueryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		catalog, found := bll.QueryCatalogById(aid)
+		catalog, found := bll.QueryCatalogByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
@@ -199,13 +199,13 @@ func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
 
 	session := session.GetSession(w, r)
-	user, found := session.GetOption(authId)
+	user, found := session.GetOption(authID)
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -243,7 +243,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			parents = append(parents, pid)
 		}
 
-		if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetail).Id, parents) {
+		if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetail).ID, parents) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -287,7 +287,7 @@ func EditCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		catalog, found := bll.QueryCatalogById(aid)
+		catalog, found := bll.QueryCatalogByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
@@ -295,7 +295,7 @@ func EditCatalogHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		result.Catalog = catalog
-		result.AvalibleParent = bll.QueryAvalibleParentCatalog(catalog.Id)
+		result.AvalibleParent = bll.QueryAvalibleParentCatalog(catalog.ID)
 		result.ErrCode = 0
 		result.Reason = "查询成功"
 

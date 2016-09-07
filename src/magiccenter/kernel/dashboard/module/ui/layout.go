@@ -1,25 +1,6 @@
 package ui
 
-import (
-	"encoding/json"
-	"html/template"
-	"log"
-	"magiccenter/common"
-	"magiccenter/configuration"
-	"magiccenter/kernel/dashboard/module/bll"
-	"magiccenter/kernel/dashboard/module/model"
-	"net/http"
-	"strconv"
-	"strings"
-
-	"muidea.com/util"
-)
-
-type ModuleManageView struct {
-	Modules       []model.Module
-	DefaultModule string
-}
-
+/*
 type ApplyModuleSettingResult struct {
 	common.Result
 	Modules       []model.Module
@@ -41,24 +22,6 @@ type SaveModuleBlockResult struct {
 
 type SavePageBlockResult struct {
 	QueryModuleDetailResult
-}
-
-func ModuleManageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ModuleManageHandler")
-
-	w.Header().Set("content-type", "text/html")
-	w.Header().Set("charset", "utf-8")
-
-	t, err := template.ParseFiles("template/html/admin/module/manage.html")
-	if err != nil {
-		panic("parse files failed")
-	}
-
-	view := ModuleManageView{}
-	view.Modules = bll.QueryAllModules()
-	view.DefaultModule, _ = configuration.GetOption(configuration.SYS_DEFULTMODULE)
-
-	t.Execute(w, view)
 }
 
 func ApplyModuleSettingHandler(w http.ResponseWriter, r *http.Request) {
@@ -231,3 +194,4 @@ func SaveModuleBlockHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(b)
 }
+*/

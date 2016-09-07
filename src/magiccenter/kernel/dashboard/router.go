@@ -2,8 +2,6 @@ package dashboard
 
 import (
 	"magiccenter/kernel/auth"
-	"magiccenter/kernel/dashboard/module"
-	"magiccenter/kernel/dashboard/system"
 	"magiccenter/kernel/dashboard/ui"
 	"magiccenter/router"
 )
@@ -16,7 +14,7 @@ func RegisterRouter() {
 	router.AddPostRoute("/admin/verify/", ui.VerifyAuthActionHandler, nil)
 	router.AddGetRoute("/admin/logout/", ui.LogoutActionHandler, auth.AdminAuthVerify())
 
-	module.RegisterRouter()
+	//module.RegisterRouter()
 
-	system.RegisterRouter()
+	//system.RegisterRouter()
 }

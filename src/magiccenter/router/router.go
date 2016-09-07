@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"magiccenter/common"
 	"martini"
 	"net/http"
@@ -69,6 +70,10 @@ func AddGetRoute(pattern string, handler, verifier interface{}) {
 		routerVerifier[pattern] = verifier
 	}
 
+	if martini.Env != martini.Prod {
+		log.Printf("pattern[get]:%s", pattern)
+	}
+
 	martiniRouter.Get(pattern, handler)
 }
 
@@ -84,6 +89,10 @@ func AddPutRoute(pattern string, handler, verifier interface{}) {
 	if verifier != nil {
 		util.ValidateFunc(verifier)
 		routerVerifier[pattern] = verifier
+	}
+
+	if martini.Env != martini.Prod {
+		log.Printf("pattern[put]:%s", pattern)
 	}
 
 	martiniRouter.Put(pattern, handler)
@@ -103,6 +112,10 @@ func AddPostRoute(pattern string, handler, verifier interface{}) {
 		routerVerifier[pattern] = verifier
 	}
 
+	if martini.Env != martini.Prod {
+		log.Printf("pattern[post]:%s", pattern)
+	}
+
 	martiniRouter.Post(pattern, handler)
 }
 
@@ -118,6 +131,10 @@ func AddDeleteRoute(pattern string, handler, verifier interface{}) {
 	if verifier != nil {
 		util.ValidateFunc(verifier)
 		routerVerifier[pattern] = verifier
+	}
+
+	if martini.Env != martini.Prod {
+		log.Printf("pattern[delete]:%s", pattern)
 	}
 
 	martiniRouter.Delete(pattern, handler)

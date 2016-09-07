@@ -63,22 +63,24 @@ func (instance *account) EndPoint() common.EndPoint {
 }
 
 // Route Account 路由信息
-func (instance *account) Routes() []router.Route {
-	routes := []router.Route{
-		// 用户账号信息管理
-		router.NewRoute(router.GET, "manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryAllUser/", ui.QueryAllUserActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryUser/", ui.QueryUserActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
+func (instance *account) Routes() []common.Route {
+	routes := []common.Route{
+		// 用户账号信息管理视图
+		router.NewRoute(common.GET, "manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify()),
 
-		// 用户分组信息管理
-		router.NewRoute(router.GET, "manageGroup/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryAllGroup/", ui.QueryAllGroupActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "queryGroup/", ui.QueryGroupActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.GET, "deleteGroup/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(router.POST, "ajaxGroup/", ui.SaveGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "queryAllUser/", ui.QueryAllUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "queryUser/", ui.QueryUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
+
+		// 用户分组信息管理视图
+		router.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),
+
+		router.NewRoute(common.GET, "queryAllGroup/", ui.QueryAllGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "queryGroup/", ui.QueryGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "deleteGroup/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "ajaxGroup/", ui.SaveGroupActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

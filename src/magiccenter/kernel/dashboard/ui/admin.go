@@ -140,7 +140,6 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 
 		result.ErrCode = 0
 		result.Reason = "登陆成功"
-		result.RedirectUrl = "/admin/"
 		break
 	}
 

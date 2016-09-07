@@ -3,7 +3,6 @@ package cache
 import (
 	"magiccenter/common"
 	"magiccenter/module"
-	"magiccenter/router"
 
 	"muidea.com/util"
 )
@@ -93,8 +92,8 @@ func (instance *cache) EndPoint() common.EndPoint {
 }
 
 // Route Cache 路由信息
-func (instance *cache) Routes() []router.Route {
-	routes := []router.Route{}
+func (instance *cache) Routes() []common.Route {
+	routes := []common.Route{}
 
 	return routes
 }

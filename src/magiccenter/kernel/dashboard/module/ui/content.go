@@ -1,5 +1,6 @@
 package ui
 
+/*
 import (
 	"encoding/json"
 	"html/template"
@@ -181,3 +182,4 @@ func SaveBlockContentHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(b)
 }
+*/

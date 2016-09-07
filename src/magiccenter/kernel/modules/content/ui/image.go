@@ -5,11 +5,11 @@ import (
 	"html"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
-	"magiccenter/kernel/content/bll"
-	"magiccenter/kernel/content/model"
+	accountModel "magiccenter/kernel/modules/account/model"
+	"magiccenter/kernel/modules/content/bll"
+	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"path"
@@ -19,6 +19,7 @@ import (
 	"muidea.com/util"
 )
 
+// ManageImageView Image管理视图
 type ManageImageView struct {
 	Images   []model.ImageDetail
 	Catalogs []model.CatalogDetail
@@ -46,13 +47,12 @@ type EditImageResult struct {
 	Image model.ImageDetail
 }
 
-//
-// Image管理主界面
+// ManageImageViewHandler Image管理主界面处理器
 // 显示Image列表信息
 // 返回html页面
 //
-func ManageImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ManageImageHandler")
+func ManageImageViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageImageViewHandler")
 
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
@@ -121,7 +121,7 @@ func QueryImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		image, found := bll.QueryImageById(aid)
+		image, found := bll.QueryImageByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
@@ -178,7 +178,7 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		if !bll.DeleteImageById(aid) {
+		if !bll.DeleteImageByID(aid) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -204,13 +204,13 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authID, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
 
 	session := session.GetSession(w, r)
-	user, found := session.GetOption(authId)
+	user, found := session.GetOption(authID)
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -234,8 +234,8 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 
 		name := r.FormValue("image-name")
 
-		staticPath, _ := configuration.GetOption(configuration.STATIC_PATH)
-		uploadPath, _ := configuration.GetOption(configuration.UPLOAD_PATH)
+		staticPath, _ := configuration.GetOption(configuration.StaticPath)
+		uploadPath, _ := configuration.GetOption(configuration.UploadPath)
 		filePath := path.Join(staticPath, uploadPath, time.Now().Format("20060102150405"))
 
 		url, err := util.MultipartFormFile(r, "image-url", filePath)
@@ -259,7 +259,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveImage(id, name, url, desc, user.(accountModel.UserDetail).Id, catalogs) {
+		if !bll.SaveImage(id, name, url, desc, user.(accountModel.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -303,7 +303,7 @@ func EditImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		image, found := bll.QueryImageById(aid)
+		image, found := bll.QueryImageByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"

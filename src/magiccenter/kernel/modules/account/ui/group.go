@@ -15,7 +15,7 @@ import (
 
 // ManageGroupView 分组管理视图
 type ManageGroupView struct {
-	Groups []model.GroupInfo
+	Groups []model.Group
 }
 
 // AllGroupResult 所有分组结果
@@ -43,7 +43,7 @@ func ManageGroupViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := ManageGroupView{}
-	view.Groups = bll.QueryAllGroupInfo()
+	view.Groups = bll.QueryAllGroup()
 
 	t.Execute(w, view)
 }
@@ -87,7 +87,7 @@ func QueryGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		result.Group, found = bll.QueryGroupById(gid)
+		result.Group, found = bll.QueryGroupByID(gid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "指定Group不存在"

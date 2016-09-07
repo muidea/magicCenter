@@ -60,12 +60,12 @@ func (b *blog) EndPoint() common.EndPoint {
 	return nil
 }
 
-func (b *blog) Routes() []router.Route {
-	routes := []router.Route{
-		router.NewRoute(router.GET, "/", indexHandler, nil),
-		router.NewRoute(router.GET, "/view/", viewContentHandler, nil),
-		router.NewRoute(router.GET, "/catalog/", viewCatalogHandler, nil),
-		router.NewRoute(router.GET, "/link/", viewLinkHandler, nil),
+func (b *blog) Routes() []common.Route {
+	routes := []common.Route{
+		router.NewRoute(common.GET, "/", indexHandler, nil),
+		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),
+		router.NewRoute(common.GET, "/catalog/", viewCatalogHandler, nil),
+		router.NewRoute(common.GET, "/link/", viewLinkHandler, nil),
 	}
 
 	return routes

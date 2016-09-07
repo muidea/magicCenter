@@ -1,5 +1,7 @@
 package bll
 
+/*
+
 import (
 	"fmt"
 	"magiccenter/configuration"
@@ -167,3 +169,4 @@ func QueryCatalogView(module, url string, id int) (model.PageCatalogView, bool) 
 
 	return catalogView, found
 }
+*/

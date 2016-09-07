@@ -1,14 +1,16 @@
 package account
 
 import (
-	"magiccenter/kernel/account/ui"
 	"magiccenter/kernel/auth"
+	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/router"
 )
 
+// RegisterRouter 注册路由
 func RegisterRouter() {
 	// 用户管理主视图页面
-	router.AddGetRoute("/admin/account/manageUser/", ui.ManageUserViewHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/account/manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify())
+
 	// 查询全部用户信息
 	router.AddGetRoute("/admin/account/queryAllUser/", ui.QueryAllUserActionHandler, auth.AdminAuthVerify())
 	// 查询指定用户信息
@@ -21,7 +23,8 @@ func RegisterRouter() {
 	router.AddPostRoute("/admin/account/ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify())
 
 	// 用户组管理主视图页面
-	router.AddGetRoute("/admin/account/manageGroup/", ui.ManageGroupViewHandler, auth.AdminAuthVerify())
+	router.AddGetRoute("/account/manageGroupView", ui.ManageGroupViewHandler, auth.AdminAuthVerify())
+
 	// 查询全部用户组信息
 	router.AddGetRoute("/admin/account/queryAllGroup/", ui.QueryAllGroupActionHandler, auth.AdminAuthVerify())
 	// 查询指定用户组

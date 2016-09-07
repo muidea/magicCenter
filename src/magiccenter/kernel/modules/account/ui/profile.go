@@ -4,20 +4,21 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
-	"magiccenter/cache"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	"magiccenter/kernel/account/bll"
-	"magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
+	"magiccenter/kernel/modules/account/bll"
+	"magiccenter/kernel/modules/account/model"
+	"magiccenter/kernel/modules/cache"
 	"magiccenter/session"
 	"net/http"
 
 	"muidea.com/util"
 )
 
+// UserProfileView 用户Profile视图
 type UserProfileView struct {
-	Users  []model.UserDetailView
-	Groups []model.GroupInfo
+	Users  []model.UserDetail
+	Groups []model.Group
 }
 
 type VerifyUserView struct {
@@ -30,8 +31,7 @@ type AjaxUserVerifyResult struct {
 	RedirectUrl string
 }
 
-//
-// 个人空间页面
+// UserProfileViewHandler 个人空间页面处理器
 //
 func UserProfileViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ManageUserHandler")
@@ -45,8 +45,6 @@ func UserProfileViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := UserProfileView{}
-	view.Users = bll.QueryAllUser()
-	view.Groups = bll.QueryAllGroupInfo()
 
 	t.Execute(w, view)
 }
@@ -137,12 +135,12 @@ func AjaxVerifyHandler(w http.ResponseWriter, r *http.Request) {
 
 		userDetail := user.(*model.UserDetail)
 		if bll.CreateUser(userDetail.Account, passWord, nickName, userDetail.Email, model.ACTIVE, userDetail.Groups) {
-			authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+			authID, found := configuration.GetOption(configuration.AuthorithID)
 			if !found {
 				panic("unexpected, can't fetch authorith id")
 			}
 			session := session.GetSession(w, r)
-			session.SetOption(authId, *userDetail)
+			session.SetOption(authID, *userDetail)
 
 			result.ErrCode = 0
 			result.Reason = "激活用户成功"

@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/account/model"
-	"magiccenter/kernel/common"
-	"magiccenter/kernel/content/bll"
-	"magiccenter/kernel/content/model"
+	accountModel "magiccenter/kernel/modules/account/model"
+	"magiccenter/kernel/modules/content/bll"
+	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"strconv"
@@ -48,8 +48,8 @@ type EditLinkResult struct {
 // 显示Link列表信息
 // 返回html页面
 //
-func ManageLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ManageLinkHandler")
+func ManageLinkViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageLinkViewHandler")
 
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
@@ -118,7 +118,7 @@ func QueryLinkHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		image, found := bll.QueryLinkById(aid)
+		image, found := bll.QueryLinkByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
@@ -174,7 +174,7 @@ func DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		if !bll.DeleteLinkById(aid) {
+		if !bll.DeleteLinkByID(aid) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -200,7 +200,7 @@ func DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authId, found := configuration.GetOption(configuration.AUTHORITH_ID)
+	authId, found := configuration.GetOption(configuration.AuthorithID)
 	if !found {
 		panic("unexpected, can't fetch authorith id")
 	}
@@ -244,7 +244,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetail).Id, catalogs) {
+		if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -288,7 +288,7 @@ func EditLinkHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		image, found := bll.QueryLinkById(aid)
+		image, found := bll.QueryLinkByID(aid)
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
