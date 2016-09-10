@@ -1,3 +1,12 @@
+/*
+Module管理
+
+提供系统module注册，注销，启动，清除，查找功能
+
+系统中所有的Module在加载完成后都会注册到这里，进行管理
+
+*/
+
 package module
 
 import (

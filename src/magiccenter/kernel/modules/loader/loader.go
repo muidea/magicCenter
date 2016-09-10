@@ -4,6 +4,7 @@ import (
 	"magiccenter/kernel/modules/account"
 	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
+	"magiccenter/kernel/modules/dashboard"
 	"magiccenter/kernel/modules/mail"
 )
 
@@ -13,6 +14,8 @@ func LoadAllModules() {
 	mail.LoadModule()
 
 	cache.LoadModule()
+
+	dashboard.LoadModule()
 
 	account.LoadModule()
 

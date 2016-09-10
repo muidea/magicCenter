@@ -4,9 +4,8 @@ import (
 	"log"
 	"magiccenter/configuration"
 	"magiccenter/kernel/auth"
-	"magiccenter/kernel/dashboard"
 	"magiccenter/module"
-	"magiccenter/modules/loader"
+	moduleloader "magiccenter/modules/loader"
 	"magiccenter/router"
 	"martini"
 )
@@ -41,9 +40,7 @@ func Initialize() {
 
 	BindAuthVerify()
 
-	dashboard.RegisterRouter()
-
-	loader.LoadAllModules()
+	moduleloader.LoadAllModules()
 
 	module.StartupAllModules()
 }
