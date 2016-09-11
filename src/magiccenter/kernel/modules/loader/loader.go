@@ -5,6 +5,8 @@ import (
 	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
 	"magiccenter/kernel/modules/dashboard"
+	"magiccenter/kernel/modules/dashboard/modulemanage"
+	"magiccenter/kernel/modules/dashboard/systemsetting"
 	"magiccenter/kernel/modules/mail"
 )
 
@@ -16,6 +18,10 @@ func LoadAllModules() {
 	cache.LoadModule()
 
 	dashboard.LoadModule()
+
+	systemsetting.LoadModule()
+
+	modulemanage.LoadModule()
 
 	account.LoadModule()
 

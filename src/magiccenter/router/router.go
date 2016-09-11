@@ -71,7 +71,7 @@ func AddGetRoute(pattern string, handler, verifier interface{}) {
 	}
 
 	if martini.Env != martini.Prod {
-		log.Printf("pattern[get]:%s", pattern)
+		log.Printf("[get]:%s", pattern)
 	}
 
 	martiniRouter.Get(pattern, handler)
@@ -92,7 +92,7 @@ func AddPutRoute(pattern string, handler, verifier interface{}) {
 	}
 
 	if martini.Env != martini.Prod {
-		log.Printf("pattern[put]:%s", pattern)
+		log.Printf("[put]:%s", pattern)
 	}
 
 	martiniRouter.Put(pattern, handler)
@@ -113,7 +113,7 @@ func AddPostRoute(pattern string, handler, verifier interface{}) {
 	}
 
 	if martini.Env != martini.Prod {
-		log.Printf("pattern[post]:%s", pattern)
+		log.Printf("[post]:%s", pattern)
 	}
 
 	martiniRouter.Post(pattern, handler)
@@ -134,7 +134,7 @@ func AddDeleteRoute(pattern string, handler, verifier interface{}) {
 	}
 
 	if martini.Env != martini.Prod {
-		log.Printf("pattern[delete]:%s", pattern)
+		log.Printf("[delete]:%s", pattern)
 	}
 
 	martiniRouter.Delete(pattern, handler)

@@ -66,13 +66,17 @@ group.constructGroupItem = function(groupInfo) {
     nameTd.innerHTML = groupInfo.Name;
     tr.appendChild(nameTd);
 
-    var userCountTd = document.createElement("td");
-    userCountTd.innerHTML = groupInfo.UserCount;
-    tr.appendChild(userCountTd);
+    var descriptionTd = document.createElement("td");
+    descriptionTd.innerHTML = groupInfo.Description;
+    tr.appendChild(descriptionTd);
 
-    var createrlTd = document.createElement("td");
-    createrlTd.innerHTML = groupInfo.Creater.Name;
-    tr.appendChild(createrlTd);
+    var typeInfoTd = document.createElement("td");
+    if (groupInfo.Type == 0) {
+        typeInfoTd.innerHTML = "管理员组";
+    } else {
+        typeInfoTd.innerHTML = "普通组";
+    }
+    tr.appendChild(typeInfoTd);
 
     var opTd = document.createElement("td");
     var editLink = document.createElement("a");

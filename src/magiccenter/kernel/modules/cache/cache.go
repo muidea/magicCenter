@@ -7,16 +7,16 @@ import (
 	"muidea.com/util"
 )
 
-// ID Cache模块ID
+// ID 模块ID
 const ID = "0168384d-900c-47c0-b5b7-693169141979"
 
-// Name Cache块名称
+// Name 块名称
 const Name = "Magic Cache"
 
-// Description Cache模块描述信息
+// Description 模块描述信息
 const Description = "Magic 缓存模块"
 
-// URL Cache模块Url
+// URL 模块Url
 const URL string = "cache"
 
 type cache struct {

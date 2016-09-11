@@ -8,10 +8,14 @@ const (
 )
 
 // Group 分组信息
+// Name 名称
+// Description 描述
+// Type 类型（管理员组，普通组
 type Group struct {
-	ID   int
-	Name string
-	Type int
+	ID          int
+	Name        string
+	Description string
+	Type        int
 }
 
 // AdminGroup 是否是管理员组

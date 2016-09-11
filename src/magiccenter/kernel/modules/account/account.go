@@ -8,16 +8,16 @@ import (
 	"magiccenter/router"
 )
 
-// ID Account模块ID
+// ID 模块ID
 const ID = "f67123ec-63f0-5e46-0000-e6ca1af6fe4e"
 
-// Name Account模块名称
+// Name 模块名称
 const Name = "Magic Account"
 
-// Description Account模块描述信息
+// Description 模块描述信息
 const Description = "Magic 账号管理模块"
 
-// URL Account模块Url
+// URL 模块Url
 const URL string = "account"
 
 type account struct {
@@ -25,7 +25,7 @@ type account struct {
 
 var instance *account
 
-// LoadModule 加载Account模块
+// LoadModule 加载模块
 func LoadModule() {
 	if instance == nil {
 		instance = &account{}

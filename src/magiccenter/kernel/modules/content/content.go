@@ -8,16 +8,16 @@ import (
 	"magiccenter/router"
 )
 
-// ID Content模块ID
+// ID 模块ID
 const ID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
 
-// Name Content模块名称
+// Name 模块名称
 const Name = "Magic Content"
 
-// Description Content模块描述信息
+// Description 模块描述信息
 const Description = "Magic 内容管理模块"
 
-// URL Content模块Url
+// URL 模块Url
 const URL string = "content"
 
 type content struct {
@@ -25,7 +25,7 @@ type content struct {
 
 var instance *content
 
-// LoadModule 加载Content模块
+// LoadModule 加载模块
 func LoadModule() {
 	if instance == nil {
 		instance = &content{}
@@ -62,10 +62,10 @@ func (instance *content) EndPoint() common.EndPoint {
 	return nil
 }
 
-// Route Content 路由信息
+// Route 路由信息
 func (instance *content) Routes() []common.Route {
 	routes := []common.Route{
-		// Article管理视图
+		// 管理视图
 		router.NewRoute(common.GET, "manageArticleView/", ui.ManageArticleViewHandler, auth.AdminAuthVerify()),
 
 		router.NewRoute(common.GET, "queryAllArticle/", ui.QueryAllArticleHandler, auth.AdminAuthVerify()),
