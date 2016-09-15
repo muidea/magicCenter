@@ -79,6 +79,6 @@ func (b *blog) Cleanup() {
 
 }
 
-func (b *blog) Invoke(param interface{}) bool {
+func (b *blog) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

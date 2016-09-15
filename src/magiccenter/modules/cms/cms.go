@@ -79,6 +79,6 @@ func (c *cms) Cleanup() {
 
 }
 
-func (c *cms) Invoke(param interface{}) bool {
+func (c *cms) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

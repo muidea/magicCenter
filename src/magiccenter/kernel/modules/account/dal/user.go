@@ -2,7 +2,7 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/kernel/modules/account/model"
+	"magiccenter/common/model"
 	"magiccenter/util/dbhelper"
 	"strconv"
 	"strings"
@@ -11,6 +11,22 @@ import (
 type tempPair struct {
 	user   model.UserDetail
 	groups string
+}
+
+//QueryAllUserList 查询全部用户列表
+func QueryAllUserList(helper dbhelper.DBHelper) []model.User {
+	userList := []model.User{}
+	sql := fmt.Sprintf("select id,nickname from user")
+	helper.Query(sql)
+
+	for helper.Next() {
+		user := model.User{}
+		helper.GetValue(&user.ID, &user.Name)
+
+		userList = append(userList, user)
+	}
+
+	return userList
 }
 
 //QueryAllUser 查询全部用户信息

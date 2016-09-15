@@ -1,28 +1,22 @@
 package ui
 
 import (
-	"encoding/json"
-	"html"
 	"html/template"
 	"log"
-	"magiccenter/common"
-	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/modules/account/model"
+	commonbll "magiccenter/common/bll"
+	"magiccenter/common/model"
 	"magiccenter/kernel/modules/content/bll"
-	"magiccenter/kernel/modules/content/model"
-	"magiccenter/session"
 	"net/http"
-	"strconv"
-
-	"muidea.com/util"
 )
 
 // ManageArticleView 文章管理视图
 type ManageArticleView struct {
 	Articles []model.ArticleSummary
 	Catalogs []model.CatalogDetail
+	Users    []model.User
 }
 
+/*
 type QueryAllArticleResult struct {
 	Articles []model.ArticleSummary
 }
@@ -44,6 +38,7 @@ type EditArticleResult struct {
 	common.Result
 	Article model.Article
 }
+*/
 
 // ManageArticleViewHandler 文章管理主界面
 // 显示Article列表信息
@@ -63,10 +58,12 @@ func ManageArticleViewHandler(w http.ResponseWriter, r *http.Request) {
 	view := ManageArticleView{}
 	view.Articles = bll.QueryAllArticleSummary()
 	view.Catalogs = bll.QueryAllCatalogDetail()
+	view.Users = commonbll.QueryAllUser()
 
 	t.Execute(w, view)
 }
 
+/*
 //
 // 查询Article
 // 返回json
@@ -246,7 +243,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveArticle(aid, title, content, user.(accountModel.UserDetail).ID, catalogs) {
+		if !bll.SaveArticle(aid, title, content, user.(model.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break
@@ -312,3 +309,4 @@ func EditArticleHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(b)
 }
+*/

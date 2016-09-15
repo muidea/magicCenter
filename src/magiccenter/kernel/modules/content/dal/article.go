@@ -2,7 +2,7 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/kernel/modules/content/model"
+	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
 	"magiccenter/util/dbhelper"
 )
@@ -20,7 +20,8 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.ArticleSummary {
 		articleSummaryList = append(articleSummaryList, summary)
 	}
 
-	for _, summary := range articleSummaryList {
+	for index, _ := range articleSummaryList {
+		summary := &articleSummaryList[index]
 		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())

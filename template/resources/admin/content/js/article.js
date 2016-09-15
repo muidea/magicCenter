@@ -1,6 +1,7 @@
 var article = {
     articleInfo: {},
-    catalogInfo: {}
+    catalogInfo: {},
+    userInfo: {}
 };
 
 $(document).ready(function() {
@@ -123,11 +124,16 @@ article.constructArticleItem = function(articleInfo) {
     var catalogs = "";
     if (articleInfo.Catalog) {
         for (var ii = 0; ii < articleInfo.Catalog.length;) {
-            catalogs += articleInfo.Catalog[ii++].Name
-            if (ii < articleInfo.Catalog.length) {
-                catalogs += ","
-            } else {
-                break;
+            var cid = articleInfo.Catalog[ii++];
+            for (var jj = 0; jj < article.catalogInfo.length;) {
+                var catalog = article.catalogInfo[jj++];
+                if (catalog.ID == cid) {
+                    catalogs += catalog.Name;
+                    if (ii < articleInfo.Catalog.length) {
+                        catalogs += ",";
+                    }
+                    break;
+                }
             }
         }
     }
@@ -136,7 +142,15 @@ article.constructArticleItem = function(articleInfo) {
     tr.appendChild(cataLogTd);
 
     var authorTd = document.createElement("td");
-    authorTd.innerHTML = articleInfo.Author.Name;
+    var authorValue = "-";
+    for (var ii = 0; ii < article.userInfo.length; ii++) {
+        var author = article.userInfo[ii];
+        if (author.ID == articleInfo.Author) {
+            authorValue = author.Name;
+            break;
+        }
+    }
+    authorTd.innerHTML = authorValue;
     tr.appendChild(authorTd);
 
     var createDateTd = document.createElement("td");

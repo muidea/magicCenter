@@ -2,7 +2,7 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/kernel/modules/content/model"
+	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
 	"magiccenter/util/dbhelper"
 )

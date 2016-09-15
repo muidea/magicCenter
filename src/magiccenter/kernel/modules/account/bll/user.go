@@ -1,10 +1,21 @@
 package bll
 
 import (
+	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/dal"
-	"magiccenter/kernel/modules/account/model"
 	"magiccenter/util/dbhelper"
 )
+
+// QueryAllUserList 查询全部用户列表
+func QueryAllUserList() []model.User {
+	helper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.QueryAllUserList(helper)
+}
 
 // QueryAllUser 查询全部用户
 func QueryAllUser() []model.UserDetail {

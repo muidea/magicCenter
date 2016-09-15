@@ -83,6 +83,6 @@ func (instance *modulemanage) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *modulemanage) Invoke(param interface{}) bool {
+func (instance *modulemanage) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

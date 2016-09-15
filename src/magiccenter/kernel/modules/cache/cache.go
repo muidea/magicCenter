@@ -114,7 +114,7 @@ func (instance *cache) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *cache) Invoke(param interface{}) bool {
+func (instance *cache) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
 
 	cache, found := GetCache()

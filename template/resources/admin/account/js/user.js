@@ -78,11 +78,17 @@ user.constructUserItem = function(userInfo) {
     var groupTd = document.createElement("td");
     var groups = "";
     for (var ii = 0; ii < userInfo.Groups.length;) {
-        var group = userInfo.Groups[ii++];
-        groups += group.Name;
-
-        if (ii < userInfo.Groups.length) {
-            groups += ",";
+        var gid = userInfo.Groups[ii++];
+        for (var jj = 0; jj < user.groupInfos.length;) {
+            var group = user.groupInfos[jj++];
+            if (group.ID == gid) {
+                groups += group.Name;
+                
+                if (ii < userInfo.Groups.length) {
+                    groups += ",";
+                }
+                break;
+            }
         }
     }
     groupTd.innerHTML = groups;

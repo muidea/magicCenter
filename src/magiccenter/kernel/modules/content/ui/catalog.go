@@ -5,10 +5,9 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	"magiccenter/common/model"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/modules/account/model"
 	"magiccenter/kernel/modules/content/bll"
-	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"strconv"
@@ -243,7 +242,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			parents = append(parents, pid)
 		}
 
-		if !bll.SaveCatalog(aid, name, user.(accountModel.UserDetail).ID, parents) {
+		if !bll.SaveCatalog(aid, name, user.(model.UserDetail).ID, parents) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break

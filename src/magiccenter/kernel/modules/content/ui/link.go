@@ -5,10 +5,9 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	"magiccenter/common/model"
 	"magiccenter/configuration"
-	accountModel "magiccenter/kernel/modules/account/model"
 	"magiccenter/kernel/modules/content/bll"
-	"magiccenter/kernel/modules/content/model"
 	"magiccenter/session"
 	"net/http"
 	"strconv"
@@ -244,7 +243,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveLink(id, name, url, logo, user.(accountModel.UserDetail).ID, catalogs) {
+		if !bll.SaveLink(id, name, url, logo, user.(model.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "操作失败"
 			break

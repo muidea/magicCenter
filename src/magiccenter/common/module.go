@@ -33,5 +33,6 @@ type Module interface {
 	Cleanup()
 
 	// Invoke 执行指定操作，实际由各个模块具体定义实现
-	Invoke(param interface{}) bool
+	// interface 返回结果
+	Invoke(param interface{}, result interface{}) bool
 }

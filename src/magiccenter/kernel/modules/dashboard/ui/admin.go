@@ -14,9 +14,9 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/account/bll"
-	"magiccenter/kernel/modules/account/model"
 	"magiccenter/session"
 	"net/http"
 )

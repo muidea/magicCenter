@@ -88,7 +88,7 @@ func (instance *mail) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *mail) Invoke(param interface{}) bool {
+func (instance *mail) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
 
 	postBox := param.(*PostBox)

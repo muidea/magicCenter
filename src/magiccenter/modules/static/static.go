@@ -82,6 +82,6 @@ func (instance *static) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *static) Invoke(param interface{}) bool {
+func (instance *static) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

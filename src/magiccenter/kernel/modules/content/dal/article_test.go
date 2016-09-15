@@ -2,7 +2,7 @@ package dal
 
 import (
 	"log"
-	"magiccenter/kernel/modules/content/model"
+	"magiccenter/common/model"
 	"magiccenter/util/dbhelper"
 	"testing"
 )

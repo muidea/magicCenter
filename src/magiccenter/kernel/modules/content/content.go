@@ -68,12 +68,13 @@ func (instance *content) Routes() []common.Route {
 		// 管理视图
 		router.NewRoute(common.GET, "manageArticleView/", ui.ManageArticleViewHandler, auth.AdminAuthVerify()),
 
-		router.NewRoute(common.GET, "queryAllArticle/", ui.QueryAllArticleHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.GET, "/admin/content/queryArticle/", ui.QueryArticleHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.GET, "/admin/content/deleteArticle/", ui.DeleteArticleHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.POST, "/admin/content/ajaxArticle/", ui.AjaxArticleHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.POST, "/admin/content/editArticle/", ui.EditArticleHandler, auth.AdminAuthVerify()),
-
+		/*
+			router.NewRoute(common.GET, "queryAllArticle/", ui.QueryAllArticleHandler, auth.AdminAuthVerify()),
+			router.NewRoute(common.GET, "/admin/content/queryArticle/", ui.QueryArticleHandler, auth.AdminAuthVerify()),
+			router.NewRoute(common.GET, "/admin/content/deleteArticle/", ui.DeleteArticleHandler, auth.AdminAuthVerify()),
+			router.NewRoute(common.POST, "/admin/content/ajaxArticle/", ui.AjaxArticleHandler, auth.AdminAuthVerify()),
+			router.NewRoute(common.POST, "/admin/content/editArticle/", ui.EditArticleHandler, auth.AdminAuthVerify()),
+		*/
 		// Catalog管理视图
 		router.NewRoute(common.GET, "manageCatalogView/", ui.ManageCatalogViewHandler, auth.AdminAuthVerify()),
 
@@ -116,6 +117,6 @@ func (instance *content) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *content) Invoke(param interface{}) bool {
+func (instance *content) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

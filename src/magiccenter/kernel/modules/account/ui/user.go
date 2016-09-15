@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/bll"
-	"magiccenter/kernel/modules/account/model"
 	"net/http"
 	"strconv"
 

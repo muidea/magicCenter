@@ -83,6 +83,6 @@ func (instance *systemsetting) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *systemsetting) Invoke(param interface{}) bool {
+func (instance *systemsetting) Invoke(param interface{}, result interface{}) bool {
 	return false
 }

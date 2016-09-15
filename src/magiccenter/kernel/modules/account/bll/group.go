@@ -1,8 +1,8 @@
 package bll
 
 import (
+	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/dal"
-	"magiccenter/kernel/modules/account/model"
 	"magiccenter/util/dbhelper"
 )
 

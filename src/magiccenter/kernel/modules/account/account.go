@@ -2,14 +2,18 @@ package account
 
 import (
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/kernel/auth"
+	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID 模块ID
-const ID = "f67123ec-63f0-5e46-0000-e6ca1af6fe4e"
+const ID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
 
 // Name 模块名称
 const Name = "Magic Account"
@@ -97,6 +101,43 @@ func (instance *account) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *account) Invoke(param interface{}) bool {
+func (instance *account) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	util.ValidataPtr(result)
+
+	switch param.(type) {
+	case *commonbll.VerifyAdministratorRequest:
+		{
+			request := param.(*commonbll.VerifyAdministratorRequest)
+			if request != nil {
+				response := result.(*commonbll.VerifyAdministratorResponse)
+				response.Result.ErrCode = 1
+
+				groups := request.User.Groups
+				for _, gid := range groups {
+					group, found := bll.QueryGroupByID(gid)
+					if found && group.AdminGroup() {
+						response.Result.ErrCode = 0
+						break
+					}
+				}
+
+				return true
+			}
+		}
+	case *commonbll.QueryAllUserRequest:
+		{
+			request := param.(*commonbll.QueryAllUserRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryAllUserResponse)
+				response.Result.ErrCode = 0
+				response.Users = bll.QueryAllUserList()
+
+				return true
+			}
+		}
+
+	}
+
 	return false
 }

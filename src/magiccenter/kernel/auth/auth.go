@@ -2,9 +2,10 @@ package auth
 
 import (
 	"log"
+	commonbll "magiccenter/common/bll"
+	commonmodel "magiccenter/common/model"
+
 	"magiccenter/configuration"
-	"magiccenter/kernel/modules/account/bll"
-	"magiccenter/kernel/modules/account/model"
 	"magiccenter/router"
 	"magiccenter/session"
 	"martini"
@@ -23,12 +24,7 @@ func AdminAuthVerify() martini.Handler {
 		session := session.GetSession(res, req)
 		user, found := session.GetOption(authID)
 		if found {
-			for _, gid := range user.(model.UserDetail).Groups {
-				group, found := bll.QueryGroupByID(gid)
-				if found && group.AdminGroup() {
-					result = true
-				}
-			}
+			result = commonbll.IsAdministrator(user.(commonmodel.UserDetail))
 		}
 
 		return result

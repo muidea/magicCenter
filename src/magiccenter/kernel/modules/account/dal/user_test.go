@@ -1,7 +1,7 @@
 package dal
 
 import (
-	"magiccenter/kernel/modules/account/model"
+	"magiccenter/common/model"
 	"magiccenter/util/dbhelper"
 	"testing"
 )

@@ -87,6 +87,6 @@ func (instance *dashboard) Cleanup() {
 }
 
 // Invoke 执行外部命令
-func (instance *dashboard) Invoke(param interface{}) bool {
+func (instance *dashboard) Invoke(param interface{}, result interface{}) bool {
 	return false
 }
