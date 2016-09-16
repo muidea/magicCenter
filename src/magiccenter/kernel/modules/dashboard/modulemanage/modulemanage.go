@@ -65,8 +65,12 @@ func (instance *modulemanage) EndPoint() common.EndPoint {
 // Route 路由信息
 func (instance *modulemanage) Routes() []common.Route {
 	routes := []common.Route{
-		// 用户账号信息管理视图
+		// 模块设置
 		router.NewRoute(common.GET, "modulemanage/", ui.ModuleManageViewHandler, auth.AdminAuthVerify()),
+		// 页面设置
+		router.NewRoute(common.GET, "pagemanage/", ui.PageManageViewHandler, auth.AdminAuthVerify()),
+		// 内容设置
+		router.NewRoute(common.GET, "contentmanage/", ui.ContentManageViewHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

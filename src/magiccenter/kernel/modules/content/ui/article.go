@@ -12,7 +12,7 @@ import (
 // ManageArticleView 文章管理视图
 type ManageArticleView struct {
 	Articles []model.ArticleSummary
-	Catalogs []model.CatalogDetail
+	Catalogs []model.Catalog
 	Users    []model.User
 }
 
@@ -57,8 +57,8 @@ func ManageArticleViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageArticleView{}
 	view.Articles = bll.QueryAllArticleSummary()
-	view.Catalogs = bll.QueryAllCatalogDetail()
-	view.Users = commonbll.QueryAllUser()
+	view.Catalogs = bll.QueryAllCatalogList()
+	view.Users = commonbll.QueryAllUserList()
 
 	t.Execute(w, view)
 }

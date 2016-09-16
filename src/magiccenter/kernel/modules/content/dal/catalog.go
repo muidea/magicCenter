@@ -38,10 +38,11 @@ func QueryAllCatalogDetail(helper dbhelper.DBHelper) []model.CatalogDetail {
 		catalogList = append(catalogList, c)
 	}
 
-	for _, c := range catalogList {
-		ress := resdal.QueryRelativeResource(helper, c.ID, model.CATALOG)
+	for index, _ := range catalogList {
+		cur := &catalogList[index]
+		ress := resdal.QueryRelativeResource(helper, cur.ID, model.CATALOG)
 		for _, r := range ress {
-			c.Parent = append(c.Parent, r.RId())
+			cur.Parent = append(cur.Parent, r.RId())
 		}
 	}
 

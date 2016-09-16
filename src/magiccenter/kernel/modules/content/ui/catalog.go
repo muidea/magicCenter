@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
@@ -18,6 +19,7 @@ import (
 // ManageCatalogView 分类视图
 type ManageCatalogView struct {
 	Catalogs []model.CatalogDetail
+	Users    []model.User
 }
 
 type QueryAllCatalogResult struct {
@@ -60,6 +62,7 @@ func ManageCatalogViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageCatalogView{}
 	view.Catalogs = bll.QueryAllCatalogDetail()
+	view.Users = commonbll.QueryAllUserList()
 
 	t.Execute(w, view)
 }

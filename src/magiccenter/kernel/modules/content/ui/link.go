@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
@@ -15,9 +16,11 @@ import (
 	"muidea.com/util"
 )
 
+// ManageLinkView Link管理视图
 type ManageLinkView struct {
 	Links    []model.Link
-	Catalogs []model.CatalogDetail
+	Catalogs []model.Catalog
+	Users    []model.User
 }
 
 type QueryAllLinkResult struct {
@@ -42,7 +45,7 @@ type EditLinkResult struct {
 	Link model.Link
 }
 
-//
+// ManageLinkViewHandler 链接管理视图处理器
 // Link管理主界面
 // 显示Link列表信息
 // 返回html页面
@@ -60,7 +63,8 @@ func ManageLinkViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageLinkView{}
 	view.Links = bll.QueryAllLink()
-	view.Catalogs = bll.QueryAllCatalogDetail()
+	view.Catalogs = bll.QueryAllCatalogList()
+	view.Users = commonbll.QueryAllUserList()
 
 	t.Execute(w, view)
 }

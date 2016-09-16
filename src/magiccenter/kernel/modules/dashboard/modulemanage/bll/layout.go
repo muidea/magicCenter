@@ -1,6 +1,7 @@
 package bll
 
 import (
+	"magiccenter/common"
 	"magiccenter/kernel/modules/dashboard/modulemanage/dal"
 	"magiccenter/kernel/modules/dashboard/modulemanage/model"
 	"magiccenter/module"
@@ -15,6 +16,11 @@ func queryAllModuleInternal(helper dbhelper.DBHelper) []model.Module {
 	sysModule := module.QueryAllModule()
 
 	for _, sysMod := range sysModule {
+		if sysMod.Type() == common.KERNEL {
+			// 不处理Kernal模块
+			continue
+		}
+
 		mod, found := dal.QueryModule(helper, sysMod.ID())
 		if !found {
 			mod = model.Module{}

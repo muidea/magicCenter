@@ -1,8 +1,7 @@
 var link = {
-    errCode: 0,
-    reason: '',
     linkInfo: {},
-    catalogInfo: {}
+    catalogInfo: {},
+    userInfo: {}
 };
 
 $(document).ready(function() {
@@ -148,24 +147,42 @@ link.constructLinkItem = function(lnk) {
     tr.appendChild(nameTd);
 
     var urlTd = document.createElement("td");
-    urlTd.innerHTML = lnk.Url;
+    urlTd.innerHTML = lnk.URL;
     tr.appendChild(urlTd);
 
     var catalogTd = document.createElement("td");
     var catalogs = "";
     if (lnk.Catalog) {
         for (var ii = 0; ii < lnk.Catalog.length;) {
-            catalogs += lnk.Catalog[ii++].Name;
-            if (ii < lnk.Catalog.length) {
-                catalogs += ","
-            } else {
-                break;
+            var cid = lnk.Catalog[ii++];
+            for (var jj = 0; jj < link.catalogInfo.length;) {
+                var catalog = link.catalogInfo[jj++];
+                if (catalog.ID == cid) {
+                    catalogs += catalog.Name;
+                    if (ii < lnk.Catalog.length) {
+                        catalogs += ",";
+                    }
+
+                    break;
+                }
             }
         }
     }
     catalogs = catalogs.length == 0 ? '-' : catalogs;
     catalogTd.innerHTML = catalogs;
     tr.appendChild(catalogTd);
+
+    var createrId = document.createElement("td");
+    var createrValue = "-";
+    for (var ii = 0; ii < link.userInfo.length;) {
+        var user = link.userInfo[ii++];
+        if (user.ID == lnk.Creater) {
+            createrValue = user.Name;
+            break;
+        }
+    }
+    createrId.innerHTML = createrValue;
+    tr.appendChild(createrId);
 
     var editTd = document.createElement("td");
     var editLink = document.createElement("a");

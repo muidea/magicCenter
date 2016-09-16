@@ -15,6 +15,7 @@
     <script type="text/javascript">
         link.linkInfo = {{.Links}};
         link.catalogInfo = {{.Catalogs}};
+        link.userInfo = {{.Users}};
 
         $(document).ready(function() {
             link.initialize();
@@ -49,6 +50,7 @@
                             <th>站点名</th>
                             <th>网址</th>
                             <th>分类</th>
+                            <th>创建者</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -64,6 +66,7 @@
                             <td><a class="edit" href="/content/link/query" title="title">StieName</a></td>
                             <td>Url</td>
                             <td>Catalog</td>
+                            <td>Creater</td>
                             <td>
                                 <a class="edit" href="/content/link/query" title="Edit"><img src="/resources/admin/images/pencil.png" alt="Edit" /></a>
                                 <a class="delete" href="/content/link/delete" title="Delete"><img src="/resources/admin/images/cross.png" alt="Delete" /></a>

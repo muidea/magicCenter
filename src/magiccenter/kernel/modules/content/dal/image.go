@@ -20,7 +20,8 @@ func QueryAllImage(helper dbhelper.DBHelper) []model.ImageDetail {
 		imageList = append(imageList, image)
 	}
 
-	for _, image := range imageList {
+	for index, _ := range imageList {
+		image := &imageList[index]
 		ress := resdal.QueryRelativeResource(helper, image.ID, model.IMAGE)
 		for _, r := range ress {
 			image.Catalog = append(image.Catalog, r.RId())

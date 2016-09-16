@@ -1,7 +1,6 @@
 var catalog = {
-    errCode: 0,
-    reason: '',
-    catalogInfo: {}
+    catalogInfo: {},
+    userInfo: {}
 };
 
 $(document).ready(function() {
@@ -120,24 +119,36 @@ catalog.constructCatalogItem = function(ca) {
     tr.appendChild(titleTd);
 
     var parentTd = document.createElement("td");
-    var catalogs = "";
+    var parentCatalogs = "";
     if (ca.Parent) {
         for (var ii = 0; ii < ca.Parent.length;) {
-            catalogs += ca.Parent[ii++].Name;
-            if (ii < ca.Parent.length) {
-                catalogs += ",";
-            } else {
-                break;
+            var cid = ca.Parent[ii++];
+            for (var jj = 0; jj < catalog.catalogInfo.length;) {
+                var singleCatalog = catalog.catalogInfo[jj++];
+                if (singleCatalog.ID == cid) {
+                    parentCatalogs += singleCatalog.Name;
+                    if (ii < ca.Parent.length) {
+                        parentCatalogs += ",";
+                    }
+                    break;
+                }
             }
         }
     }
-
-    catalogs = catalogs.length == 0 ? '-' : catalogs;
-    parentTd.innerHTML = catalogs;
+    parentCatalogs = parentCatalogs.length == 0 ? '-' : parentCatalogs;
+    parentTd.innerHTML = parentCatalogs;
     tr.appendChild(parentTd);
 
     var createrTd = document.createElement("td");
-    createrTd.innerHTML = ca.Creater.Name;
+    var createrValue = "-"
+    for (var ii = 0; ii < catalog.userInfo.length; ii++) {
+        var author = catalog.userInfo[ii];
+        if (author.ID == ca.Creater) {
+            createrValue = author.Name;
+            break;
+        }
+    }
+    createrTd.innerHTML = createrValue;
     tr.appendChild(createrTd);
 
     var editTd = document.createElement("td");

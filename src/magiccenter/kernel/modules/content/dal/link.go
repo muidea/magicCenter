@@ -20,7 +20,8 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Link {
 		linkList = append(linkList, link)
 	}
 
-	for _, link := range linkList {
+	for index, _ := range linkList {
+		link := &linkList[index]
 		ress := resdal.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
 			link.Catalog = append(link.Catalog, r.RId())

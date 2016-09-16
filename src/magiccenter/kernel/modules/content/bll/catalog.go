@@ -6,8 +6,8 @@ import (
 	"magiccenter/util/dbhelper"
 )
 
-// QueryAllCatalog 查询全部分类
-func QueryAllCatalog() []model.Catalog {
+// QueryAllCatalogList 查询全部分类
+func QueryAllCatalogList() []model.Catalog {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")

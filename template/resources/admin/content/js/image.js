@@ -1,8 +1,7 @@
 var image = {
-    errCode: 0,
-    reason: '',
     imageInfo: {},
-    catalogInfo: {}
+    catalogInfo: {},
+    userInfo: {}
 };
 
 
@@ -129,6 +128,8 @@ image.fillImageView = function() {
 
 
 image.constructImageItem = function(img) {
+    console.log(img);
+
     var tr = document.createElement("tr");
     tr.setAttribute("class", "image");
 
@@ -137,7 +138,7 @@ image.constructImageItem = function(img) {
     tr.appendChild(nameTd);
 
     var urlTd = document.createElement("td");
-    urlTd.innerHTML = img.Url;
+    urlTd.innerHTML = img.URL;
     tr.appendChild(urlTd);
 
     var descTd = document.createElement("td");
@@ -146,17 +147,36 @@ image.constructImageItem = function(img) {
 
     var catalogTd = document.createElement("td");
     var catalogs = ""
-    for (var ii = 0; ii < img.Catalog.length;) {
-        catalogs += img.Catalog[ii++].Name
-        if (ii < img.Catalog.length) {
-            catalogs += ","
-        } else {
-            break;
+    if (img.Catalog) {
+        for (var ii = 0; ii < img.Catalog.length;) {
+            var cid = img.Catalog[ii++];
+            for (var jj = 0; jj < image.catalogInfo.length;) {
+                var catalog = image.catalogInfo[jj++];
+                if (catalog.ID == cid) {
+                    catalogs += catalog.Name;
+                    if (ii < img.Catalog.length) {
+                        catalogs += ",";
+                    }
+                    break;
+                }
+            }
         }
     }
     catalogs = catalogs.length == 0 ? '-' : catalogs;
     catalogTd.innerHTML = catalogs;
     tr.appendChild(catalogTd);
+
+    var createTd = document.createElement("td");
+    var createrValue = "-";
+    for (var ii = 0; ii < image.userInfo.length;) {
+        var user = image.userInfo[ii++];
+        if (user.ID == img.Creater) {
+            createrValue = user.Name;
+            break;
+        }
+    }
+    createTd.innerHTML = createrValue;
+    tr.appendChild(createTd);
 
     var editTd = document.createElement("td");
     var deleteLink = document.createElement("a");

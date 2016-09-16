@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
@@ -21,7 +22,8 @@ import (
 // ManageImageView Image管理视图
 type ManageImageView struct {
 	Images   []model.ImageDetail
-	Catalogs []model.CatalogDetail
+	Catalogs []model.Catalog
+	Users    []model.User
 }
 
 type QueryAllImageResult struct {
@@ -63,7 +65,8 @@ func ManageImageViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageImageView{}
 	view.Images = bll.QueryAllImage()
-	view.Catalogs = bll.QueryAllCatalogDetail()
+	view.Catalogs = bll.QueryAllCatalogList()
+	view.Users = commonbll.QueryAllUserList()
 
 	t.Execute(w, view)
 }

@@ -1,3 +1,10 @@
+/*
+账号相关处理
+1、校验指定用户是否是管理员
+2、查询指定用户信息
+3、查询所有用户
+
+*/
 package bll
 
 import (
@@ -79,8 +86,8 @@ func QueryUserDetail(id int) (commonmodel.UserDetail, bool) {
 	return response.User, false
 }
 
-// QueryAllUser 查询所有用户
-func QueryAllUser() []commonmodel.User {
+// QueryAllUserList 查询所有用户
+func QueryAllUserList() []commonmodel.User {
 	accountModule, found := module.FindModule(AccountModuleID)
 	if !found {
 		panic("can't find account module")
