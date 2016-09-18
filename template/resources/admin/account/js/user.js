@@ -21,6 +21,7 @@ $(document).ready(function() {
                 $("#user-Edit .alert-Info .content").html(result.Reason);
                 $("#user-Edit .alert-Info").modal();
             } else {
+                user.refreshUser();
                 user.fillUserListView();
             }
         }
@@ -83,7 +84,7 @@ user.constructUserItem = function(userInfo) {
             var group = user.groupInfos[jj++];
             if (group.ID == gid) {
                 groups += group.Name;
-                
+
                 if (ii < userInfo.Groups.length) {
                     groups += ",";
                 }
@@ -106,7 +107,7 @@ user.constructUserItem = function(userInfo) {
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
     editLink.setAttribute("href", "#editUser");
-    editLink.setAttribute("onclick", "user.editUser('/admin/account/queryUser/?id=" + userInfo.Id + "'); return false");
+    editLink.setAttribute("onclick", "user.editUser('/account/queryUser/?id=" + userInfo.ID + "'); return false");
     var editImage = document.createElement("img");
     editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
@@ -116,7 +117,7 @@ user.constructUserItem = function(userInfo) {
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
     deleteLink.setAttribute("href", "#deleteUser");
-    deleteLink.setAttribute("onclick", "user.deleteUser('/admin/account/deleteUser/?id=" + userInfo.Id + "'); return false;");
+    deleteLink.setAttribute("onclick", "user.deleteUser('/account/deleteUser/?id=" + userInfo.ID + "'); return false;");
     var deleteImage = document.createElement("img");
     deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
@@ -151,7 +152,7 @@ user.constructGroupItem = function(group) {
     chk.setAttribute("type", "checkbox");
     chk.setAttribute("name", "user-group");
     chk.setAttribute("class", "user-group");
-    chk.setAttribute("value", group.Id);
+    chk.setAttribute("value", group.ID);
     label.appendChild(chk);
 
     var span = document.createElement("span");
@@ -173,6 +174,14 @@ user.fillGroupListView = function() {
     }
 }
 
+user.refreshUser = function() {
+    $.get("/account/queryAllUser/", {}, function(result) {
+        user.userInfos = result.Users;
+
+        user.fillUserListView();
+    }, "json");
+};
+
 user.editUser = function(editUrl) {
     $.get(editUrl, {}, function(result) {
         if (result.ErrCode > 0) {
@@ -183,7 +192,7 @@ user.editUser = function(editUrl) {
 
         $("#user-Edit .user-Form .user-account").val(result.User.Name);
         $("#user-Edit .user-Form .user-email").val(result.User.Email);
-        $("#user-Edit .user-Form .user-id").val(result.User.Id);
+        $("#user-Edit .user-Form .user-id").val(result.User.ID);
 
         var groupListView = user.getGroupListView();
         for (var ii = 0; ii < result.User.Groups.length; ++ii) {
@@ -203,6 +212,6 @@ user.deleteUser = function(deleteUrl) {
             return
         }
 
-        user.fillUserListView();
+        user.refreshUser();
     }, "json");
 };

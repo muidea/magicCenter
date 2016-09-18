@@ -19,14 +19,13 @@ type ManageUserView struct {
 	Groups []model.Group
 }
 
-// AllUserResult 所有用户结果
-type AllUserResult struct {
-	common.Result
+// AllUserList 所有用户结果
+type AllUserList struct {
 	Users []model.UserDetail
 }
 
-// SingleUserResult 单用户结果
-type SingleUserResult struct {
+// SingleUserDetail 单用户结果
+type SingleUserDetail struct {
 	common.Result
 	User model.UserDetail
 }
@@ -54,10 +53,8 @@ func ManageUserViewHandler(w http.ResponseWriter, r *http.Request) {
 func QueryAllUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllUserActionHandler")
 
-	result := AllUserResult{}
+	result := AllUserList{}
 	result.Users = bll.QueryAllUser()
-	result.ErrCode = 0
-	result.Reason = "查询成功"
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -71,7 +68,7 @@ func QueryAllUserActionHandler(w http.ResponseWriter, r *http.Request) {
 func QueryUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryUserActionHandler")
 
-	result := SingleUserResult{}
+	result := SingleUserDetail{}
 
 	params := util.SplitParam(r.URL.RawQuery)
 	for true {
@@ -150,40 +147,6 @@ func DeleteUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-// CheckAccountActionHandler 检查账号是否可用处理器
-func CheckAccountActionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("CheckAccountActionHandler")
-
-	result := common.Result{}
-
-	params := util.SplitParam(r.URL.RawQuery)
-	for true {
-		account, found := params["account"]
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-		_, found = bll.QueryUserByAccount(account)
-		if !found {
-			result.ErrCode = 0
-			result.Reason = "该账号可用"
-			break
-		}
-
-		result.ErrCode = 1
-		result.Reason = "该账号不可用"
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
 /*
 func sendVerifyMail(user, email, id string) {
 	systemInfo := configuration.GetSystemInfo()
@@ -199,7 +162,7 @@ func sendVerifyMail(user, email, id string) {
 func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("SaveUserActionHandler")
 
-	result := SingleUserResult{}
+	result := common.Result{}
 	for {
 		err := r.ParseMultipartForm(0)
 		if err != nil {
@@ -256,7 +219,6 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				result.ErrCode = 0
 				result.Reason = "保存用户信息成功"
-				result.User = usr
 			}
 		} else {
 			ok := bll.CreateUser(account, passWord, nickName, email, 0, groupList)
@@ -268,8 +230,6 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 				if ok {
 					result.ErrCode = 0
 					result.Reason = "创建用户成功"
-
-					result.User = usr
 				} else {
 					result.ErrCode = 1
 					result.Reason = "创建用户失败"
@@ -277,6 +237,40 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// CheckAccountActionHandler 检查账号是否可用处理器
+func CheckAccountActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("CheckAccountActionHandler")
+
+	result := common.Result{}
+
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		account, found := params["account"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+		_, found = bll.QueryUserByAccount(account)
+		if !found {
+			result.ErrCode = 0
+			result.Reason = "该账号可用"
+			break
+		}
+
+		result.ErrCode = 1
+		result.Reason = "该账号不可用"
 		break
 	}
 

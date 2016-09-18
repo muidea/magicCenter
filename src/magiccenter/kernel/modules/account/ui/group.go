@@ -18,14 +18,13 @@ type ManageGroupView struct {
 	Groups []model.Group
 }
 
-// AllGroupResult 所有分组结果
-type AllGroupResult struct {
-	common.Result
+// AllGroupList 所有分组结果
+type AllGroupList struct {
 	Groups []model.Group
 }
 
-// SingleGroupResult 当个分组结果
-type SingleGroupResult struct {
+// SingleGroup 当个分组结果
+type SingleGroup struct {
 	common.Result
 	Group model.Group
 }
@@ -52,10 +51,8 @@ func ManageGroupViewHandler(w http.ResponseWriter, r *http.Request) {
 func QueryAllGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryAllGroupActionHandler")
 
-	result := AllGroupResult{}
+	result := AllGroupList{}
 	result.Groups = bll.QueryAllGroup()
-	result.ErrCode = 0
-	result.Reason = "查询成功"
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -69,7 +66,7 @@ func QueryAllGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 func QueryGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryGroupActionHandler")
 
-	result := SingleGroupResult{}
+	result := SingleGroup{}
 
 	params := util.SplitParam(r.URL.RawQuery)
 	for true {
@@ -152,7 +149,7 @@ func DeleteGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 func SaveGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("SaveGroupActionHandler")
 
-	result := SingleGroupResult{}
+	result := common.Result{}
 	for true {
 		err := r.ParseForm()
 		if err != nil {
@@ -165,6 +162,7 @@ func SaveGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 
 		id := r.FormValue("group-id")
 		name := r.FormValue("group-name")
+		desc := r.FormValue("group-description")
 
 		gid := -1
 		if len(id) > 0 {
@@ -177,22 +175,15 @@ func SaveGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		ok := bll.SaveGroup(gid, name)
+		ok := bll.SaveGroup(gid, name, desc)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "保存分组失败"
 			break
 		}
 
-		group, found := bll.QueryGroupByName(name)
-		if found {
-			result.Group = group
-			result.ErrCode = 0
-			result.Reason = "保存分组成功"
-		} else {
-			result.ErrCode = 1
-			result.Reason = "保存分组失败"
-		}
+		result.ErrCode = 0
+		result.Reason = "保存分组成功"
 		break
 	}
 

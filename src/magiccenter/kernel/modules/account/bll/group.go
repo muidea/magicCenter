@@ -51,7 +51,7 @@ func DeleteGroup(id int) bool {
 }
 
 // SaveGroup 保存分组信息
-func SaveGroup(id int, name string) bool {
+func SaveGroup(id int, name, desc string) bool {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -61,6 +61,7 @@ func SaveGroup(id int, name string) bool {
 	group := model.Group{}
 	group.ID = id
 	group.Name = name
+	group.Description = desc
 
 	return dal.SaveGroup(helper, group)
 }

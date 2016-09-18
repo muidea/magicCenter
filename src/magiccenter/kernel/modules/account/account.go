@@ -71,12 +71,16 @@ func (instance *account) Routes() []common.Route {
 	routes := []common.Route{
 		// 用户账号信息管理视图
 		router.NewRoute(common.GET, "manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify()),
-
+		// 查询全部用户列表
 		router.NewRoute(common.GET, "queryAllUser/", ui.QueryAllUserActionHandler, auth.AdminAuthVerify()),
+		// 查询指定用户
 		router.NewRoute(common.GET, "queryUser/", ui.QueryUserActionHandler, auth.AdminAuthVerify()),
+		// 删除指定用户
 		router.NewRoute(common.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
+		// 保存账号
 		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
+		// 检查账号是否可用
+		router.NewRoute(common.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
 
 		// 用户分组信息管理视图
 		router.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),

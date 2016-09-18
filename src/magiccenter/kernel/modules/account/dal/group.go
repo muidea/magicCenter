@@ -73,6 +73,7 @@ func SaveGroup(helper dbhelper.DBHelper, group model.Group) bool {
 	}
 
 	if !result {
+		group.Type = 1
 		// insert
 		sql = fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", group.Name, group.Description, group.Type)
 	} else {
