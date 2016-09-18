@@ -22,27 +22,15 @@ type ManageCatalogView struct {
 	Users    []model.User
 }
 
-type QueryAllCatalogResult struct {
+// AllCatalogDetailList 全部分类列表
+type AllCatalogDetailList struct {
 	Catalogs []model.CatalogDetail
 }
 
-type QueryCatalogResult struct {
+// SingleCatalogDetail 单个分类信息
+type SingleCatalogDetail struct {
 	common.Result
 	Catalog model.CatalogDetail
-}
-
-type DeleteCatalogResult struct {
-	common.Result
-}
-
-type AjaxCatalogResult struct {
-	common.Result
-}
-
-type EditCatalogResult struct {
-	common.Result
-	Catalog        model.CatalogDetail
-	AvalibleParent []model.Catalog
 }
 
 // ManageCatalogViewHandler 分类管理主界面
@@ -67,14 +55,12 @@ func ManageCatalogViewHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, view)
 }
 
-//
-// 查询全部Catalog
+// QueryAllCatalogHandler 查询全部Catalog
 // 返回json
-//
 func QueryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryAllCatalogHandler")
 
-	result := QueryAllCatalogResult{}
+	result := AllCatalogDetailList{}
 	result.Catalogs = bll.QueryAllCatalogDetail()
 
 	b, err := json.Marshal(result)
@@ -85,25 +71,15 @@ func QueryAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 查询指定Catalog内容
+// QueryCatalogHandler 查询指定Catalog内容
 // 返回json
 //
 func QueryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryCatalogHandler")
 
-	result := QueryCatalogResult{}
+	result := SingleCatalogDetail{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -122,7 +98,7 @@ func QueryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 		catalog, found := bll.QueryCatalogByID(aid)
 		if !found {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "查询失败"
 			break
 		}
 
@@ -141,25 +117,15 @@ func QueryCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 删除指定Catalog
+// DeleteCatalogHandler 删除指定Catalog
 // 返回json
 //
 func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("DeleteCatalogHandler")
 
-	result := DeleteCatalogResult{}
+	result := common.Result{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -177,12 +143,12 @@ func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 
 		if !bll.DeleteCatalog(aid) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "删除失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "查询成功"
+		result.Reason = "删除成功"
 		break
 	}
 
@@ -194,8 +160,7 @@ func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 保存Catalog
+// AjaxCatalogHandler 保存Catalog
 // 返回json
 //
 func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +177,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, must login system first.")
 	}
 
-	result := AjaxCatalogResult{}
+	result := common.Result{}
 
 	for true {
 		err := r.ParseMultipartForm(0)
@@ -247,60 +212,12 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 
 		if !bll.SaveCatalog(aid, name, user.(model.UserDetail).ID, parents) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "保存失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "查询成功"
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-//
-// 编辑Catalog
-// 返回Catalog内容和当前可用Parent Catalog
-//
-func EditCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("EditCatalogHandler")
-
-	result := EditCatalogResult{}
-
-	for true {
-		params := util.SplitParam(r.URL.RawQuery)
-		id, found := params["id"]
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		aid, err := strconv.Atoi(id)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		catalog, found := bll.QueryCatalogByID(aid)
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "操作失败"
-			break
-		}
-
-		result.Catalog = catalog
-		result.AvalibleParent = bll.QueryAvalibleParentCatalog(catalog.ID)
-		result.ErrCode = 0
-		result.Reason = "查询成功"
-
+		result.Reason = "保存成功"
 		break
 	}
 

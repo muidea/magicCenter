@@ -23,8 +23,9 @@ func SplitParam(params string) map[string]string {
 }
 
 // MultipartFormFile 接受文件参数
-func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
+func MultipartFormFile(r *http.Request, field, dstPath string) (string, string, error) {
 	dstFile := ""
+	fileType := ""
 	var err error
 
 	for true {
@@ -41,7 +42,6 @@ func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
 		if err != nil {
 			break
 		}
-
 		dstFile = path.Join(dstPath, head.Filename)
 		dst, err := os.Create(dstFile)
 		if err != nil {
@@ -50,8 +50,19 @@ func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
 
 		defer dst.Close()
 		_, err = io.Copy(dst, src)
+
+		fileInfo, err := os.Stat(dstFile)
+		if err == nil {
+			items := strings.Split(fileInfo.Name(), ".")
+			cnt := len(items)
+			if cnt >= 2 {
+				fileType = items[cnt-1]
+			} else {
+				fileType = "unknown"
+			}
+		}
 		break
 	}
 
-	return dstFile, err
+	return dstFile, fileType, err
 }

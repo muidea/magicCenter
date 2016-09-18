@@ -57,7 +57,7 @@ $(document).ready(function() {
         $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
         for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
             var ca = catalog.catalogInfo[ii];
-            $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+            $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.ID + "> </input>" + ca.Name + "</label> ");
         }
         if (ii == 0) {
             $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -71,10 +71,7 @@ catalog.initialize = function() {
 };
 
 catalog.refreshCatalog = function() {
-    $.get("/admin/content/queryAllCatalog/", {}, function(result) {
-        catalog.errCode = result.ErrCode;
-        catalog.reason = result.Reason;
-
+    $.get("/content/queryAllCatalog/", {}, function(result) {
         catalog.catalogInfo = result.Catalogs;
 
         catalog.fillCatalogView();
@@ -97,7 +94,7 @@ catalog.fillCatalogView = function() {
     $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
     for (var ii = 0; ii < catalog.catalogInfo.length; ++ii) {
         var ca = catalog.catalogInfo[ii];
-        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+        $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.ID + "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
         $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -113,7 +110,7 @@ catalog.constructCatalogItem = function(ca) {
     var titleLink = document.createElement("a");
     titleLink.setAttribute("class", "edit");
     titleLink.setAttribute("href", "#editCatalog");
-    titleLink.setAttribute("onclick", "catalog.editCatalog('/admin/content/editCatalog/?id=" + ca.Id + "'); return false;");
+    titleLink.setAttribute("onclick", "catalog.editCatalog('/content/queryCatalog/?id=" + ca.ID + "'); return false;");
     titleLink.innerHTML = ca.Name;
     titleTd.appendChild(titleLink);
     tr.appendChild(titleTd);
@@ -155,7 +152,7 @@ catalog.constructCatalogItem = function(ca) {
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
     editLink.setAttribute("href", "#editCatalog");
-    editLink.setAttribute("onclick", "catalog.editCatalog('/admin/content/editCatalog/?id=" + ca.Id + "'); return false;");
+    editLink.setAttribute("onclick", "catalog.editCatalog('/content/queryCatalog/?id=" + ca.ID + "'); return false;");
     var editImage = document.createElement("img");
     editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
@@ -165,7 +162,7 @@ catalog.constructCatalogItem = function(ca) {
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
     deleteLink.setAttribute("href", "#deleteCatalog");
-    deleteLink.setAttribute("onclick", "catalog.deleteCatalog('/admin/content/deleteCatalog/?id=" + ca.Id + "'); return false;");
+    deleteLink.setAttribute("onclick", "catalog.deleteCatalog('/content/deleteCatalog/?id=" + ca.ID + "'); return false;");
     var deleteImage = document.createElement("img");
     deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
@@ -185,24 +182,28 @@ catalog.editCatalog = function(editUrl) {
             return
         }
 
-        $("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.Id);
+        $("#catalog-Edit .catalog-Form .catalog-id").val(result.Catalog.ID);
         $("#catalog-Edit .catalog-Form .catalog-name").val(result.Catalog.Name);
         $("#catalog-Edit .catalog-Form .catalog-parent").children().remove();
-        if (result.AvalibleParent) {
-            for (var ii = 0; ii < result.AvalibleParent.length; ++ii) {
-                var ca = result.AvalibleParent[ii];
-                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+        if (catalog.catalogInfo) {
+            var hasParentCatalog = false;
+            for (var ii = 0; ii < catalog.catalogInfo.length;) {
+                var ca = catalog.catalogInfo[ii++];
+                if (ca.ID < result.Catalog.ID) {
+                    $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' value=" + ca.ID + "> </input>" + ca.Name + "</label> ");
+                    hasParentCatalog = true;
+                }
             }
 
-            if (ii == 0) {
-                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
+            if (!hasParentCatalog) {
+                $("#catalog-Edit .catalog-Form .catalog-parent").append("<label><input type='checkbox' name='catalog-parent' readonly='readonly' value='-1' onclick='return false'> </input> - </label> ");
             }
         }
 
         if (result.Catalog.Parent) {
             for (var ii = 0; ii < result.Catalog.Parent.length; ++ii) {
                 var ca = result.Catalog.Parent[ii];
-                $("#catalog-Edit .catalog-Form .catalog-parent input").filter("[value=" + ca.Id + "]").prop("checked", true);
+                $("#catalog-Edit .catalog-Form .catalog-parent input").filter("[value=" + ca + "]").prop("checked", true);
             }
         }
 

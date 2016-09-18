@@ -1,12 +1,20 @@
 package ui
 
 import (
+	"encoding/json"
+	"html"
 	"html/template"
 	"log"
+	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
+	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
+	"magiccenter/session"
 	"net/http"
+	"strconv"
+
+	"muidea.com/util"
 )
 
 // ManageArticleView 文章管理视图
@@ -16,29 +24,16 @@ type ManageArticleView struct {
 	Users    []model.User
 }
 
-/*
-type QueryAllArticleResult struct {
+// AllArticleSummaryList 全部ArticleSummary列表
+type AllArticleSummaryList struct {
 	Articles []model.ArticleSummary
 }
 
-type QueryArticleResult struct {
+// SingleArticle 单篇Article信息
+type SingleArticle struct {
 	common.Result
 	Article model.Article
 }
-
-type DeleteArticleResult struct {
-	common.Result
-}
-
-type AjaxArticleResult struct {
-	common.Result
-}
-
-type EditArticleResult struct {
-	common.Result
-	Article model.Article
-}
-*/
 
 // ManageArticleViewHandler 文章管理主界面
 // 显示Article列表信息
@@ -63,15 +58,12 @@ func ManageArticleViewHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, view)
 }
 
-/*
-//
-// 查询Article
+// QueryAllArticleSummaryHandler 查询所有Article
 // 返回json
-//
-func QueryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("QueryAllArticleHandler")
+func QueryAllArticleSummaryHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryAllArticleSummaryHandler")
 
-	result := QueryAllArticleResult{}
+	result := AllArticleSummaryList{}
 	result.Articles = bll.QueryAllArticleSummary()
 
 	b, err := json.Marshal(result)
@@ -82,25 +74,14 @@ func QueryAllArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 查询指定Article内容
+// QueryArticleHandler 查询指定Article内容
 // 返回json
-//
 func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("QueryArticleHandler")
 
-	result := QueryArticleResult{}
+	result := SingleArticle{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -119,7 +100,7 @@ func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
 		article, found := bll.QueryArticleByID(aid)
 		if !found {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "查询文章失败"
 			break
 		}
 
@@ -139,25 +120,14 @@ func QueryArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 删除指定Article
+// DeleteArticleHandler 删除指定Article
 // 返回json
-//
 func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("DeleteArticleHandler")
 
-	result := DeleteArticleResult{}
+	result := common.Result{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -175,12 +145,12 @@ func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 
 		if !bll.DeleteArticle(aid) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "删除失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "查询成功"
+		result.Reason = "删除成功"
 		break
 	}
 
@@ -192,10 +162,8 @@ func DeleteArticleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 保存Article
+// AjaxArticleHandler 保存Article
 // 返回json
-//
 func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxArticleHandler")
 
@@ -210,7 +178,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, must login system first.")
 	}
 
-	result := AjaxArticleResult{}
+	result := common.Result{}
 	for true {
 		err := r.ParseMultipartForm(0)
 		if err != nil {
@@ -245,12 +213,12 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 
 		if !bll.SaveArticle(aid, title, content, user.(model.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "保存失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "操作成功"
+		result.Reason = "保存成功"
 		break
 	}
 
@@ -261,52 +229,3 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(b)
 }
-
-//
-// 编辑Article
-// 返回article内容和当前可用的catalog
-//
-func EditArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("EditArticleHandler")
-
-	result := EditArticleResult{}
-
-	for true {
-		params := util.SplitParam(r.URL.RawQuery)
-		id, found := params["id"]
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		aid, err := strconv.Atoi(id)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		article, found := bll.QueryArticleByID(aid)
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "操作失败"
-			break
-		}
-
-		article.Content = html.UnescapeString(article.Content)
-		result.Article = article
-		result.ErrCode = 0
-		result.Reason = "查询成功"
-
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-*/

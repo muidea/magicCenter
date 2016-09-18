@@ -73,7 +73,7 @@ $(document).ready(function() {
         $("#link-Edit .link-Form .link-catalog").children().remove();
         for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
             var ca = link.catalogInfo[ii];
-            $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+            $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.ID + "> </input>" + ca.Name + "</label> ");
         }
         if (ii == 0) {
             $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -92,16 +92,13 @@ link.refreshCatalog = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var catalog = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + catalog.Id + "> </input>" + catalog.Name + "</label> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + catalog.ID + "> </input>" + catalog.Name + "</label> ");
     }
 };
 
 
 link.refreshLink = function() {
-    $.get("/admin/content/queryAllLink/", {}, function(result) {
-        article.errCode = result.ErrCode;
-        article.reason = result.Reason;
-
+    $.get("/content/queryAllLink/", {}, function(result) {
         link.linkInfo = result.Links;
 
         link.fillLinkView();
@@ -125,7 +122,7 @@ link.fillLinkView = function() {
     $("#link-Edit .link-Form .link-catalog").children().remove();
     for (var ii = 0; ii < link.catalogInfo.length; ++ii) {
         var ca = link.catalogInfo[ii];
-        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.Id + "> </input>" + ca.Name + "</label> ");
+        $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' value=" + ca.ID + "> </input>" + ca.Name + "</label> ");
     }
     if (ii == 0) {
         $("#link-Edit .link-Form .link-catalog").append("<label><input type='checkbox' name='link-catalog' readonly='readonly' value='-1' onclick='return false'> </input>-</label> ");
@@ -141,7 +138,7 @@ link.constructLinkItem = function(lnk) {
     var nameLink = document.createElement("a");
     nameLink.setAttribute("class", "edit");
     nameLink.setAttribute("href", "#editLink");
-    nameLink.setAttribute("onclick", "link.editLink('/admin/content/editLink/?id=" + lnk.Id + "'); return false;");
+    nameLink.setAttribute("onclick", "link.editLink('/content/queryLink/?id=" + lnk.ID + "'); return false;");
     nameLink.innerHTML = lnk.Name;
     nameTd.appendChild(nameLink);
     tr.appendChild(nameTd);
@@ -188,7 +185,7 @@ link.constructLinkItem = function(lnk) {
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
     editLink.setAttribute("href", "#editLink");
-    editLink.setAttribute("onclick", "link.editLink('/admin/content/editLink/?id=" + lnk.Id + "'); return false;");
+    editLink.setAttribute("onclick", "link.editLink('/content/queryLink/?id=" + lnk.ID + "'); return false;");
     var editUrl = document.createElement("img");
     editUrl.setAttribute("src", "/resources/admin/images/pencil.png");
     editUrl.setAttribute("alt", "Edit");
@@ -198,7 +195,7 @@ link.constructLinkItem = function(lnk) {
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
     deleteLink.setAttribute("href", "#deleteLink");
-    deleteLink.setAttribute("onclick", "link.deleteLink('/admin/content/deleteLink/?id=" + lnk.Id + "'); return false;");
+    deleteLink.setAttribute("onclick", "link.deleteLink('/content/deleteLink/?id=" + lnk.ID + "'); return false;");
     var deleteUrl = document.createElement("img");
     deleteUrl.setAttribute("src", "/resources/admin/images/cross.png");
     deleteUrl.setAttribute("alt", "Delete");
@@ -218,16 +215,16 @@ link.editLink = function(editUrl) {
             return
         }
 
-        $("#link-Edit .link-Form .link-id").val(result.Link.Id);
+        $("#link-Edit .link-Form .link-id").val(result.Link.ID);
         $("#link-Edit .link-Form .link-name").val(result.Link.Name);
-        $("#link-Edit .link-Form .link-url").val(result.Link.Url);
+        $("#link-Edit .link-Form .link-url").val(result.Link.URL);
         $("#link-Edit .link-Form .link-logo").val(result.Link.Logo);
 
         $("#link-Edit .link-Form .link-catalog input").prop("checked", false);
         if (result.Link.Catalog) {
             for (var ii = 0; ii < result.Link.Catalog.length; ++ii) {
                 var ca = result.Link.Catalog[ii];
-                $("#link-Edit .link-Form .link-catalog input").filter("[value=" + ca.Id + "]").prop("checked", true);
+                $("#link-Edit .link-Form .link-catalog input").filter("[value=" + ca + "]").prop("checked", true);
             }
         }
 

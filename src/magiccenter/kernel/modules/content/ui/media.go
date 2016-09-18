@@ -19,67 +19,54 @@ import (
 	"muidea.com/util"
 )
 
-// ManageImageView Image管理视图
-type ManageImageView struct {
-	Images   []model.ImageDetail
+// ManageMediaView Media管理视图
+type ManageMediaView struct {
+	Medias   []model.MediaDetail
 	Catalogs []model.Catalog
 	Users    []model.User
 }
 
-type QueryAllImageResult struct {
-	Images []model.ImageDetail
+// AllMediaList 全部Media列表
+type AllMediaList struct {
+	Medias []model.MediaDetail
 }
 
-type QueryImageResult struct {
+// SingleyMedia 单个Media文件
+type SingleyMedia struct {
 	common.Result
-	Image model.ImageDetail
+	Media model.MediaDetail
 }
 
-type DeleteImageResult struct {
-	common.Result
-}
-
-type AjaxImageResult struct {
-	common.Result
-}
-
-type EditImageResult struct {
-	common.Result
-	Image model.ImageDetail
-}
-
-// ManageImageViewHandler Image管理主界面处理器
-// 显示Image列表信息
+// ManageMediaViewHandler Media管理主界面处理器
+// 显示Media列表信息
 // 返回html页面
 //
-func ManageImageViewHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ManageImageViewHandler")
+func ManageMediaViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("ManageMediaViewHandler")
 
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles("template/html/admin/content/image.html")
+	t, err := template.ParseFiles("template/html/admin/content/media.html")
 	if err != nil {
 		panic("parse files failed")
 	}
 
-	view := ManageImageView{}
-	view.Images = bll.QueryAllImage()
+	view := ManageMediaView{}
+	view.Medias = bll.QueryAllMedia()
 	view.Catalogs = bll.QueryAllCatalogList()
 	view.Users = commonbll.QueryAllUserList()
 
 	t.Execute(w, view)
 }
 
-//
-// 查询全部Image
+// QueryAllMediaHandler 查询全部Media
 // 返回json
-//
-func QueryAllImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("QueryAllImageHandler")
+func QueryAllMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryAllMediaHandler")
 
-	result := QueryAllImageResult{}
-	result.Images = bll.QueryAllImage()
+	result := AllMediaList{}
+	result.Medias = bll.QueryAllMedia()
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -89,25 +76,14 @@ func QueryAllImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 查询指定Image内容
+// QueryMediaHandler 查询指定Media内容
 // 返回json
-//
-func QueryImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("QueryImageHandler")
+func QueryMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("QueryMediaHandler")
 
-	result := QueryImageResult{}
+	result := SingleyMedia{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -123,15 +99,15 @@ func QueryImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		image, found := bll.QueryImageByID(aid)
+		media, found := bll.QueryMediaByID(aid)
 		if !found {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "查询失败"
 			break
 		}
 
-		image.Desc = html.UnescapeString(image.Desc)
-		result.Image = image
+		media.Desc = html.UnescapeString(media.Desc)
+		result.Media = media
 		result.ErrCode = 0
 		result.Reason = "查询成功"
 
@@ -146,25 +122,14 @@ func QueryImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 删除指定Image
+// DeleteMediaHandler 删除指定Media
 // 返回json
-//
-func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("DeleteImageHandler")
+func DeleteMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("DeleteMediaHandler")
 
-	result := DeleteImageResult{}
+	result := common.Result{}
 
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			log.Print("paseform failed")
-
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		params := util.SplitParam(r.URL.RawQuery)
 		id, found := params["id"]
 		if !found {
@@ -180,14 +145,14 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		if !bll.DeleteImageByID(aid) {
+		if !bll.DeleteMediaByID(aid) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "删除失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "查询成功"
+		result.Reason = "删除成功"
 		break
 	}
 
@@ -199,11 +164,9 @@ func DeleteImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//
-// 保存Image
+// AjaxMediaHandler 保存Media
 // 返回json
-//
-func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
+func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
 	authID, found := configuration.GetOption(configuration.AuthorithID)
@@ -217,7 +180,7 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, must login system first.")
 	}
 
-	result := AjaxImageResult{}
+	result := common.Result{}
 
 	for true {
 		err := r.ParseMultipartForm(0)
@@ -227,28 +190,28 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		id, err := strconv.Atoi(r.FormValue("image-id"))
+		id, err := strconv.Atoi(r.FormValue("media-id"))
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
 		}
 
-		name := r.FormValue("image-name")
+		name := r.FormValue("media-name")
 
 		staticPath, _ := configuration.GetOption(configuration.StaticPath)
 		uploadPath, _ := configuration.GetOption(configuration.UploadPath)
 		filePath := path.Join(staticPath, uploadPath, time.Now().Format("20060102150405"))
 
-		url, err := util.MultipartFormFile(r, "image-url", filePath)
+		url, fileType, err := util.MultipartFormFile(r, "media-url", filePath)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
 			break
 		}
 
-		desc := html.EscapeString(r.FormValue("image-desc"))
-		catalog := r.MultipartForm.Value["image-catalog"]
+		desc := html.EscapeString(r.FormValue("media-desc"))
+		catalog := r.MultipartForm.Value["media-catalog"]
 		catalogs := []int{}
 		for _, c := range catalog {
 			cid, err := strconv.Atoi(c)
@@ -261,61 +224,14 @@ func AjaxImageHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveImage(id, name, url, desc, user.(model.UserDetail).ID, catalogs) {
+		if !bll.SaveMedia(id, name, url, fileType, desc, user.(model.UserDetail).ID, catalogs) {
 			result.ErrCode = 1
-			result.Reason = "操作失败"
+			result.Reason = "保存失败"
 			break
 		}
 
 		result.ErrCode = 0
-		result.Reason = "查询成功"
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-//
-// 编辑Image
-// 返回Image内容和当前可用Catalog
-//
-func EditImageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("EditImageHandler")
-
-	result := EditImageResult{}
-
-	for true {
-		params := util.SplitParam(r.URL.RawQuery)
-		id, found := params["id"]
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		aid, err := strconv.Atoi(id)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
-		image, found := bll.QueryImageByID(aid)
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "操作失败"
-			break
-		}
-
-		result.Image = image
-		result.ErrCode = 0
-		result.Reason = "查询成功"
-
+		result.Reason = "保存成功"
 		break
 	}
 

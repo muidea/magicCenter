@@ -75,15 +75,12 @@ article.refreshCatalog = function() {
     $("#article-Edit .article-Form .article-catalog").children().remove();
     for (var ii = 0; ii < article.catalogInfo.length; ++ii) {
         var catalog = article.catalogInfo[ii];
-        $("#article-Edit .article-Form .article-catalog").append("<label><input type='checkbox' name='article-catalog' value=" + catalog.Id + "> </input>" + catalog.Name + "</label> ");
+        $("#article-Edit .article-Form .article-catalog").append("<label><input type='checkbox' name='article-catalog' value=" + catalog.ID + "> </input>" + catalog.Name + "</label> ");
     }
 };
 
 article.refreshArticle = function() {
-    $.get("/admin/content/queryAllArticle/", {}, function(result) {
-        article.errCode = result.ErrCode;
-        article.reason = result.Reason;
-
+    $.get("/content/queryAllArticleSummary/", {}, function(result) {
         article.articleInfo = result.Articles;
 
         article.fillArticleView();
@@ -115,7 +112,7 @@ article.constructArticleItem = function(articleInfo) {
     var titleLink = document.createElement("a");
     titleLink.setAttribute("class", "edit");
     titleLink.setAttribute("href", "#queryArticle");
-    titleLink.setAttribute("onclick", "article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false;");
+    titleLink.setAttribute("onclick", "article.editArticle('/content/queryArticle/?id=" + articleInfo.ID + "'); return false;");
     titleLink.innerHTML = articleInfo.Title;
     titleTd.appendChild(titleLink);
     tr.appendChild(titleTd);
@@ -161,7 +158,7 @@ article.constructArticleItem = function(articleInfo) {
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
     editLink.setAttribute("href", "#editArticle");
-    editLink.setAttribute("onclick", "article.editArticle('/admin/content/editArticle/?id=" + articleInfo.Id + "'); return false");
+    editLink.setAttribute("onclick", "article.editArticle('/content/queryArticle/?id=" + articleInfo.ID + "'); return false");
     var editImage = document.createElement("img");
     editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
@@ -171,7 +168,7 @@ article.constructArticleItem = function(articleInfo) {
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
     deleteLink.setAttribute("href", "#deleteArticle");
-    deleteLink.setAttribute("onclick", "article.deleteArticle('/admin/content/deleteArticle/?id=" + articleInfo.Id + "'); return false;");
+    deleteLink.setAttribute("onclick", "article.deleteArticle('/content/deleteArticle/?id=" + articleInfo.ID + "'); return false;");
     var deleteImage = document.createElement("img");
     deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
@@ -191,7 +188,7 @@ article.editArticle = function(editUrl) {
             return
         }
 
-        $("#article-Edit .article-Form .article-id").val(result.Article.Id);
+        $("#article-Edit .article-Form .article-id").val(result.Article.ID);
         $("#article-Edit .article-Form .article-title").val(result.Article.Title);
         //$("#article-Edit .article-Form .article-content").wysiwyg("setContent", result.Article.Content);
         $("#article-Edit .article-Form .article-content").val(result.Article.Content);
@@ -200,7 +197,7 @@ article.editArticle = function(editUrl) {
         if (result.Article.Catalog) {
             for (var ii = 0; ii < result.Article.Catalog.length; ++ii) {
                 var ca = result.Article.Catalog[ii];
-                $("#article-Edit .article-Form .article-catalog input").filter("[value=" + ca.Id + "]").prop("checked", true);
+                $("#article-Edit .article-Form .article-catalog input").filter("[value=" + ca + "]").prop("checked", true);
             }
         }
 
