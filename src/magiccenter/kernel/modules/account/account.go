@@ -80,7 +80,7 @@ func (instance *account) Routes() []common.Route {
 		// 保存账号
 		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
 		// 检查账号是否可用
-		router.NewRoute(common.POST, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
 
 		// 用户分组信息管理视图
 		router.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),

@@ -43,6 +43,18 @@ $(document).ready(function() {
         return false;
     });
 
+    $("#user-Content .user-Form .user-account").change(function() {
+        $("#user-Content .user-Form .user-account").parent().removeClass("has-error");
+        var account = $("#user-Content .user-Form .user-account").val();
+        $.get("/account/checkAccount/?account=" + account, {}, function(result) {
+            if (result.ErrCode == 0) {
+                return;
+            }
+            $("#user-Content .user-Form .user-account").parent().addClass("has-error");
+            console.log(result);
+        }, "json");
+    });
+
     $("#user-Content .user-Form button.reset").click(function() {
         $("#user-Edit .user-Form .user-account").val("");
         $("#user-Edit .user-Form .user-email").val("");
