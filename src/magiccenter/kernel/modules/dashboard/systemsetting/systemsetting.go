@@ -6,6 +6,8 @@ import (
 	"magiccenter/kernel/modules/dashboard/systemsetting/ui"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID 模块ID
@@ -84,5 +86,10 @@ func (instance *systemsetting) Cleanup() {
 
 // Invoke 执行外部命令
 func (instance *systemsetting) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
+
 	return false
 }

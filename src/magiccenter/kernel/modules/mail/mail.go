@@ -3,6 +3,7 @@ package mail
 import (
 	"log"
 	"magiccenter/common"
+	"magiccenter/common/bll"
 	"magiccenter/configuration"
 	"magiccenter/module"
 
@@ -10,7 +11,7 @@ import (
 )
 
 // ID Mail模块ID
-const ID = "17d73fc4-3a77-4eb1-958d-9f0b93ad6a4f"
+const ID = "7fe4a6fa-b73a-401f-bd37-71e76670d18c"
 
 // Name Mail模块名称
 const Name = "Magic EMail"
@@ -20,13 +21,6 @@ const Description = "Magic 邮件模块"
 
 // URL Mail模块Url
 const URL string = "mail"
-
-// PostBox 投递邮箱
-type PostBox struct {
-	UserList []string
-	Subject  string
-	Content  string
-}
 
 type mail struct {
 }
@@ -90,8 +84,11 @@ func (instance *mail) Cleanup() {
 // Invoke 执行外部命令
 func (instance *mail) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
 
-	postBox := param.(*PostBox)
+	postBox := param.(*bll.PostBox)
 	if postBox == nil {
 		log.Print("illegal param")
 		return false
@@ -101,7 +98,7 @@ func (instance *mail) Invoke(param interface{}, result interface{}) bool {
 	return true
 }
 
-func postMails(postBox *PostBox) {
+func postMails(postBox *bll.PostBox) {
 	for _, user := range postBox.UserList {
 		postMail(user, postBox.Subject, postBox.Content)
 	}

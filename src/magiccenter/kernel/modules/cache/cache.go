@@ -2,13 +2,14 @@ package cache
 
 import (
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/module"
 
 	"muidea.com/util"
 )
 
 // ID 模块ID
-const ID = "0168384d-900c-47c0-b5b7-693169141979"
+const ID = "0424492f-420a-42fb-9106-3882c07bf99e"
 
 // Name 块名称
 const Name = "Magic Cache"
@@ -23,36 +24,6 @@ type cache struct {
 }
 
 var instance *cache
-
-// InCacheBox 投放数据请求
-type InCacheBox struct {
-	// Data 放入Cache数据
-	Data interface{}
-	// MaxAge 数据的最大存档期限，单位为minute
-	MaxAge float64
-	// ID Cache分配用于访问数据ID
-	ID *string
-}
-
-// OutCacheBox 获取数据请求
-type OutCacheBox struct {
-	// ID 访问数据的ID
-	ID string
-	// Data 获取到的数据
-	Data interface{}
-	// Found 是否找到数据
-	Found *bool
-}
-
-// RemoveCacheBox 移除缓存数据请求
-type RemoveCacheBox struct {
-	// ID 访问数据的ID
-	ID string
-}
-
-// ClearAllCacheBox 清除所有缓存请求
-type ClearAllCacheBox struct {
-}
 
 // LoadModule 加载Cache模块
 func LoadModule() {
@@ -116,35 +87,41 @@ func (instance *cache) Cleanup() {
 // Invoke 执行外部命令
 func (instance *cache) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
 
 	cache, found := GetCache()
 	if !found {
 		return false
 	}
 
-	inBox := param.(*InCacheBox)
-	if inBox != nil {
-		*(inBox.ID) = cache.PutIn(inBox.Data, inBox.MaxAge)
-		return true
+	switch param.(type) {
+	case *commonbll.InCacheParam:
+		inBox := param.(*commonbll.InCacheParam)
+		if inBox != nil {
+			result.(*commonbll.InCacheResult).ID = cache.PutIn(inBox.Data, inBox.MaxAge)
+			return true
+		}
+	case *commonbll.OutCacheParam:
+		outBox := param.(*commonbll.OutCacheParam)
+		val := result.(*commonbll.OutCacheResult)
+		if outBox != nil {
+			val.Data, val.Found = cache.FetchOut(outBox.ID)
+			return true
+		}
+	case *commonbll.RemoveCacheParam:
+		removeBox := param.(*commonbll.RemoveCacheParam)
+		if removeBox != nil {
+			cache.Remove(removeBox.ID)
+			return true
+		}
+	case *commonbll.ClearAllCacheParam:
+		clearAllBox := param.(*commonbll.ClearAllCacheParam)
+		if clearAllBox != nil {
+			cache.ClearAll()
+			return true
+		}
 	}
-
-	outBox := param.(*OutCacheBox)
-	if outBox != nil {
-		outBox.Data, *(outBox.Found) = cache.FetchOut(outBox.ID)
-		return true
-	}
-
-	removeBox := param.(*RemoveCacheBox)
-	if removeBox != nil {
-		cache.Remove(removeBox.ID)
-		return true
-	}
-
-	clearAllBox := param.(*ClearAllCacheBox)
-	if clearAllBox != nil {
-		cache.ClearAll()
-		return true
-	}
-
 	return false
 }

@@ -77,8 +77,10 @@ func (instance *account) Routes() []common.Route {
 		router.NewRoute(common.GET, "queryUser/", ui.QueryUserActionHandler, auth.AdminAuthVerify()),
 		// 删除指定用户
 		router.NewRoute(common.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
-		// 保存账号
-		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.AdminAuthVerify()),
+		// 保存Account
+		router.NewRoute(common.POST, "ajaxAccount/", ui.SaveAccountActionHandler, auth.AdminAuthVerify()),
+		// 保存用户信息
+		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.LoginAuthVerify()),
 		// 检查账号是否可用
 		router.NewRoute(common.GET, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
 
@@ -107,7 +109,9 @@ func (instance *account) Cleanup() {
 // Invoke 执行外部命令
 func (instance *account) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
-	util.ValidataPtr(result)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
 
 	switch param.(type) {
 	case *commonbll.VerifyAdministratorRequest:

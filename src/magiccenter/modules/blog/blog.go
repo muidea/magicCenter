@@ -4,6 +4,8 @@ import (
 	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID Blog Module ID
@@ -80,5 +82,10 @@ func (b *blog) Cleanup() {
 }
 
 func (b *blog) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
+
 	return false
 }

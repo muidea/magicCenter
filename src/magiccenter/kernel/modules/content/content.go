@@ -6,6 +6,8 @@ import (
 	"magiccenter/kernel/modules/content/ui"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID 模块ID
@@ -125,5 +127,10 @@ func (instance *content) Cleanup() {
 
 // Invoke 执行外部命令
 func (instance *content) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
+
 	return false
 }

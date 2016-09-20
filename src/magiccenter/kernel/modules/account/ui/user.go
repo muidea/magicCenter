@@ -2,10 +2,13 @@ package ui
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
+	"magiccenter/configuration"
 	"magiccenter/kernel/modules/account/bll"
 	"net/http"
 	"strconv"
@@ -147,7 +150,6 @@ func DeleteUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-/*
 func sendVerifyMail(user, email, id string) {
 	systemInfo := configuration.GetSystemInfo()
 
@@ -155,8 +157,97 @@ func sendVerifyMail(user, email, id string) {
 
 	content := fmt.Sprintf("<html><head><title>用户信息验证</title></head><body><p>Hi %s</p><p><a href='http://%s/user/verify/?id=%s'>请点击链接继续验证用户信息</a></p><p>该邮件由MagicCenter自动发送，请勿回复该邮件</p></body></html>", user, systemInfo.Domain, id)
 
-	mail.PostMail(email, subject, content)
-}*/
+	mailList := []string{}
+	mailList = append(mailList, email)
+	commonbll.PostMail(mailList, subject, content)
+}
+
+// SaveAccountActionHandler 保存账号信息
+func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("SaveAccountActionHandler")
+
+	result := common.Result{}
+	for {
+		err := r.ParseMultipartForm(0)
+		if err != nil {
+			log.Print("paseform failed")
+
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+
+		uid := -1
+		id := r.FormValue("user-id")
+		if len(id) > 0 {
+			uid, err = strconv.Atoi(id)
+			if err != nil {
+				log.Print("paseform failed")
+
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+			}
+		}
+		account := r.FormValue("user-account")
+		email := r.FormValue("user-email")
+		groups := r.MultipartForm.Value["user-group"]
+		groupList := []int{}
+		for _, g := range groups {
+			gid, err := strconv.Atoi(g)
+			if err != nil {
+				log.Printf("parse group id failed, group:%s", g)
+
+				result.ErrCode = 1
+				result.Reason = "无效请求数据"
+				break
+			}
+
+			groupList = append(groupList, gid)
+		}
+
+		usr, found := bll.QueryUserByID(uid)
+		if found {
+			// 说明是更新账号信息
+			usr.Email = email
+			if len(groupList) > 0 {
+				usr.Groups = groupList
+			}
+			ok := bll.SaveUser(usr)
+			if !ok {
+				result.ErrCode = 1
+				result.Reason = "保存账号信息失败"
+			} else {
+				result.ErrCode = 0
+				result.Reason = "保存账号信息成功"
+			}
+		} else {
+			// 新建账号
+			ok := bll.CreateUser(account, "", "", email, model.NEW, groupList)
+			if !ok {
+				result.ErrCode = 1
+				result.Reason = "创建账号失败"
+			} else {
+				result.ErrCode = 0
+				result.Reason = "创建账号成功"
+
+				usr, _ := bll.QueryUserByAccount(account)
+				strID, ok := commonbll.PutInCache(usr, 15) // 有效期15minute
+				if ok {
+					sendVerifyMail(account, account, strID)
+				}
+			}
+		}
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
 
 // SaveUserActionHandler 保存用户信息处理器
 func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
@@ -210,7 +301,9 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			usr.Account = account
 			usr.Name = nickName
 			usr.Email = email
-			usr.Groups = groupList
+			if len(groupList) > 0 {
+				usr.Groups = groupList
+			}
 			ok := bll.SaveUser(usr)
 			if !ok {
 				result.ErrCode = 1
@@ -221,7 +314,7 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 				result.Reason = "保存用户信息成功"
 			}
 		} else {
-			ok := bll.CreateUser(account, passWord, nickName, email, 0, groupList)
+			ok := bll.CreateUser(account, passWord, nickName, email, model.NEW, groupList)
 			if !ok {
 				result.ErrCode = 1
 				result.Reason = "创建用户失败"

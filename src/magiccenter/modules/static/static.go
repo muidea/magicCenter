@@ -4,6 +4,8 @@ import (
 	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID Static模块ID
@@ -83,5 +85,10 @@ func (instance *static) Cleanup() {
 
 // Invoke 执行外部命令
 func (instance *static) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
+
 	return false
 }

@@ -4,6 +4,8 @@ import (
 	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
+
+	"muidea.com/util"
 )
 
 // ID CMS Module ID
@@ -80,5 +82,10 @@ func (c *cms) Cleanup() {
 }
 
 func (c *cms) Invoke(param interface{}, result interface{}) bool {
+	util.ValidataPtr(param)
+	if result != nil {
+		util.ValidataPtr(result)
+	}
+
 	return false
 }

@@ -1,11 +1,10 @@
-/*
-账号相关处理
+package bll
+
+/* 账号相关处理
 1、校验指定用户是否是管理员
 2、查询指定用户信息
 3、查询所有用户
-
 */
-package bll
 
 import (
 	"magiccenter/common"
