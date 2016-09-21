@@ -153,9 +153,9 @@ func DeleteUserActionHandler(w http.ResponseWriter, r *http.Request) {
 func sendVerifyMail(user, email, id string) {
 	systemInfo := configuration.GetSystemInfo()
 
-	subject := "MagicCenter用户验证"
+	subject := "MagicCenter账号验证"
 
-	content := fmt.Sprintf("<html><head><title>用户信息验证</title></head><body><p>Hi %s</p><p><a href='http://%s/user/verify/?id=%s'>请点击链接继续验证用户信息</a></p><p>该邮件由MagicCenter自动发送，请勿回复该邮件</p></body></html>", user, systemInfo.Domain, id)
+	content := fmt.Sprintf("<html><head><title>用户信息验证</title></head><body><p>Hi %s</p><p><a href='http://%s/account/verifyAccount/?id=%s'>请点击链接继续验证用户信息</a></p><p>该邮件由MagicCenter自动发送，请勿回复该邮件</p></body></html>", user, systemInfo.Domain, id)
 
 	mailList := []string{}
 	mailList = append(mailList, email)
@@ -249,6 +249,82 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
+// CheckAccountActionHandler 检查账号是否可用处理器
+func CheckAccountActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("CheckAccountActionHandler")
+
+	result := common.Result{}
+
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		account, found := params["account"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+		_, found = bll.QueryUserByAccount(account)
+		if !found {
+			result.ErrCode = 0
+			result.Reason = "该账号可用"
+			break
+		}
+
+		result.ErrCode = 1
+		result.Reason = "该账号不可用"
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// VerifyAccountViewHandler 校验账号信息视图处理器
+func VerifyAccountViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("VerifyAccountViewHandler")
+
+	result := SingleUserDetail{}
+
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		id, found := params["id"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+
+		data, found := commonbll.FetchOutCache(id)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+		switch data.(type) {
+		case model.UserDetail:
+			result.User = data.(model.UserDetail)
+			result.ErrCode = 0
+		default:
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+		}
+
+		commonbll.RemoveCache(id)
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
 // SaveUserActionHandler 保存用户信息处理器
 func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("SaveUserActionHandler")
@@ -330,40 +406,6 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-// CheckAccountActionHandler 检查账号是否可用处理器
-func CheckAccountActionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("CheckAccountActionHandler")
-
-	result := common.Result{}
-
-	params := util.SplitParam(r.URL.RawQuery)
-	for true {
-		account, found := params["account"]
-		if !found {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-		_, found = bll.QueryUserByAccount(account)
-		if !found {
-			result.ErrCode = 0
-			result.Reason = "该账号可用"
-			break
-		}
-
-		result.ErrCode = 1
-		result.Reason = "该账号不可用"
 		break
 	}
 

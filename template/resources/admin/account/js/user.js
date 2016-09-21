@@ -202,7 +202,7 @@ user.editUser = function(editUrl) {
             return
         }
 
-        $("#user-Edit .user-Form .user-account").val(result.User.Name);
+        $("#user-Edit .user-Form .user-account").val(result.User.Account);
         $("#user-Edit .user-Form .user-email").val(result.User.Email);
         $("#user-Edit .user-Form .user-id").val(result.User.ID);
 

@@ -79,10 +79,12 @@ func (instance *account) Routes() []common.Route {
 		router.NewRoute(common.GET, "deleteUser/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
 		// 保存Account
 		router.NewRoute(common.POST, "ajaxAccount/", ui.SaveAccountActionHandler, auth.AdminAuthVerify()),
-		// 保存用户信息
-		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, auth.LoginAuthVerify()),
 		// 检查账号是否可用
 		router.NewRoute(common.GET, "checkAccount/", ui.CheckAccountActionHandler, auth.AdminAuthVerify()),
+		// 校验账号信息
+		router.NewRoute(common.GET, "verifyAccount/", ui.VerifyAccountViewHandler, nil),
+		// 保存用户信息
+		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, nil),
 
 		// 用户分组信息管理视图
 		router.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),
