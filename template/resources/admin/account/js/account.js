@@ -1,4 +1,4 @@
-var user = {
+var account = {
     userInfos: {},
     groupInfos: {}
 };
@@ -6,7 +6,7 @@ var user = {
 $(document).ready(function() {
 
     // 绑定表单提交事件处理器
-    $("#user-Content .user-Form").submit(function() {
+    $("#account-Content .account-Form").submit(function() {
         var options = {
             beforeSubmit: showRequest,
             success: showResponse,
@@ -18,11 +18,11 @@ $(document).ready(function() {
         function showResponse(result) {
 
             if (result.ErrCode > 0) {
-                $("#user-Edit .alert-Info .content").html(result.Reason);
-                $("#user-Edit .alert-Info").modal();
+                $("#account-Edit .alert-Info .content").html(result.Reason);
+                $("#account-Edit .alert-Info").modal();
             } else {
-                user.refreshUser();
-                user.fillUserListView();
+                account.refreshAccount();
+                account.fillAccountListView();
             }
         }
 
@@ -43,41 +43,41 @@ $(document).ready(function() {
         return false;
     });
 
-    $("#user-Content .user-Form .user-account").change(function() {
-        $("#user-Content .user-Form .user-account").parent().removeClass("has-error");
-        var account = $("#user-Content .user-Form .user-account").val();
+    $("#account-Content .account-Form .account-account").change(function() {
+        $("#account-Content .account-Form .account-account").parent().removeClass("has-error");
+        var account = $("#account-Content .account-Form .account-account").val();
         $.get("/account/checkAccount/?account=" + account, {}, function(result) {
             if (result.ErrCode == 0) {
                 return;
             }
-            $("#user-Content .user-Form .user-account").parent().addClass("has-error");
+            $("#account-Content .account-Form .account-account").parent().addClass("has-error");
             console.log(result);
         }, "json");
     });
 
-    $("#user-Content .user-Form button.reset").click(function() {
-        $("#user-Edit .user-Form .user-account").val("");
-        $("#user-Edit .user-Form .user-email").val("");
-        $("#user-Edit .user-Form .user-group").prop("checked", false);
-        $("#user-Edit .user-Form .user-id").val("-1");
+    $("#account-Content .account-Form button.reset").click(function() {
+        $("#account-Edit .account-Form .account-account").val("");
+        $("#account-Edit .account-Form .account-email").val("");
+        $("#account-Edit .account-Form .account-group").prop("checked", false);
+        $("#account-Edit .account-Form .account-id").val("-1");
     });
 });
 
-user.initialize = function() {
-    user.fillUserListView();
+account.initialize = function() {
+    account.fillAccountListView();
 
-    user.fillGroupListView();
+    account.fillGroupListView();
 };
 
-user.getUserListView = function() {
-    return $("#user-List table");
+account.getAccountListView = function() {
+    return $("#account-List table");
 };
 
-user.getGroupListView = function() {
-    return $("#user-Edit .user-Form .user-group");
+account.getGroupListView = function() {
+    return $("#account-Edit .account-Form .account-group");
 };
 
-user.constructUserItem = function(userInfo) {
+account.constructAccountItem = function(userInfo) {
     var tr = document.createElement("tr");
 
     var nameTd = document.createElement("td");
@@ -92,8 +92,8 @@ user.constructUserItem = function(userInfo) {
     var groups = "";
     for (var ii = 0; ii < userInfo.Groups.length;) {
         var gid = userInfo.Groups[ii++];
-        for (var jj = 0; jj < user.groupInfos.length;) {
-            var group = user.groupInfos[jj++];
+        for (var jj = 0; jj < account.groupInfos.length;) {
+            var group = account.groupInfos[jj++];
             if (group.ID == gid) {
                 groups += group.Name;
 
@@ -118,8 +118,8 @@ user.constructUserItem = function(userInfo) {
     var opTd = document.createElement("td");
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
-    editLink.setAttribute("href", "#editUser");
-    editLink.setAttribute("onclick", "user.editUser('/account/queryUser/?id=" + userInfo.ID + "'); return false");
+    editLink.setAttribute("href", "#editAccount");
+    editLink.setAttribute("onclick", "account.editAccount('/account/queryUser/?id=" + userInfo.ID + "'); return false");
     var editImage = document.createElement("img");
     editImage.setAttribute("src", "/resources/admin/images/pencil.png");
     editImage.setAttribute("alt", "Edit");
@@ -128,8 +128,8 @@ user.constructUserItem = function(userInfo) {
 
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
-    deleteLink.setAttribute("href", "#deleteUser");
-    deleteLink.setAttribute("onclick", "user.deleteUser('/account/deleteUser/?id=" + userInfo.ID + "'); return false;");
+    deleteLink.setAttribute("href", "#deleteAccount");
+    deleteLink.setAttribute("onclick", "account.deleteAccount('/account/deleteUser/?id=" + userInfo.ID + "'); return false;");
     var deleteImage = document.createElement("img");
     deleteImage.setAttribute("src", "/resources/admin/images/cross.png");
     deleteImage.setAttribute("alt", "Delete");
@@ -140,30 +140,30 @@ user.constructUserItem = function(userInfo) {
     return tr;
 };
 
-user.fillUserListView = function() {
-    var userListView = user.getUserListView();
+account.fillAccountListView = function() {
+    var userListView = account.getAccountListView();
 
     $(userListView).find("tbody tr").remove();
-    for (var ii = 0; ii < user.userInfos.length; ++ii) {
-        var userInfo = user.userInfos[ii];
-        var trContent = user.constructUserItem(userInfo);
+    for (var ii = 0; ii < account.userInfos.length; ++ii) {
+        var userInfo = account.userInfos[ii];
+        var trContent = account.constructAccountItem(userInfo);
 
         $(userListView).find("tbody").append(trContent);
     }
 
-    $("#user-Edit .user-Form .user-account").val("");
-    $("#user-Edit .user-Form .user-email").val("");
-    $("#user-Edit .user-Form .user-group").prop("checked", false);
-    $("#user-Edit .user-Form .user-id").val("-1");
+    $("#account-Edit .account-Form .account-account").val("");
+    $("#account-Edit .account-Form .account-email").val("");
+    $("#account-Edit .account-Form .account-group").prop("checked", false);
+    $("#account-Edit .account-Form .account-id").val("-1");
 };
 
-user.constructGroupItem = function(group) {
+account.constructGroupItem = function(group) {
     var label = document.createElement("label");
 
     var chk = document.createElement("input");
     chk.setAttribute("type", "checkbox");
-    chk.setAttribute("name", "user-group");
-    chk.setAttribute("class", "user-group");
+    chk.setAttribute("name", "account-group");
+    chk.setAttribute("class", "account-group");
     chk.setAttribute("value", group.ID);
     label.appendChild(chk);
 
@@ -175,55 +175,55 @@ user.constructGroupItem = function(group) {
     return label;
 };
 
-user.fillGroupListView = function() {
-    var groupListView = user.getGroupListView();
+account.fillGroupListView = function() {
+    var groupListView = account.getGroupListView();
 
     $(groupListView).find("label").remove();
-    for (var ii = 0; ii < user.groupInfos.length; ++ii) {
-        var cur = user.groupInfos[ii];
-        var label = user.constructGroupItem(cur);
+    for (var ii = 0; ii < account.groupInfos.length; ++ii) {
+        var cur = account.groupInfos[ii];
+        var label = account.constructGroupItem(cur);
         $(groupListView).append(label);
     }
 }
 
-user.refreshUser = function() {
+account.refreshAccount = function() {
     $.get("/account/queryAllUser/", {}, function(result) {
-        user.userInfos = result.Users;
+        account.userInfos = result.Users;
 
-        user.fillUserListView();
+        account.fillAccountListView();
     }, "json");
 };
 
-user.editUser = function(editUrl) {
+account.editAccount = function(editUrl) {
     $.get(editUrl, {}, function(result) {
         if (result.ErrCode > 0) {
-            $("#user-List .alert-Info .content").html(result.Reason);
-            $("#user-List .alert-Info").modal();
+            $("#account-List .alert-Info .content").html(result.Reason);
+            $("#account-List .alert-Info").modal();
             return
         }
 
-        $("#user-Edit .user-Form .user-account").val(result.User.Account);
-        $("#user-Edit .user-Form .user-email").val(result.User.Email);
-        $("#user-Edit .user-Form .user-id").val(result.User.ID);
+        $("#account-Edit .account-Form .account-account").val(result.User.Account);
+        $("#account-Edit .account-Form .account-email").val(result.User.Email);
+        $("#account-Edit .account-Form .account-id").val(result.User.ID);
 
-        var groupListView = user.getGroupListView();
+        var groupListView = account.getGroupListView();
         for (var ii = 0; ii < result.User.Groups.length; ++ii) {
             var gid = result.User.Groups[ii];
             $(groupListView).find("input ").filter("[value=" + gid + "]").prop("checked", true);
         }
 
-        $("#user-Content .content-header .nav .user-Edit").find("a").trigger("click");
+        $("#account-Content .content-header .nav .account-Edit").find("a").trigger("click");
     }, "json");
 }
 
-user.deleteUser = function(deleteUrl) {
+account.deleteAccount = function(deleteUrl) {
     $.get(deleteUrl, {}, function(result) {
         if (result.ErrCode > 0) {
-            $("#user-List .alert-Info .content").html(result.Reason);
-            $("#user-List .alert-Info").modal();
+            $("#account-List .alert-Info .content").html(result.Reason);
+            $("#account-List .alert-Info").modal();
             return
         }
 
-        user.refreshUser();
+        account.refreshAccount();
     }, "json");
 };

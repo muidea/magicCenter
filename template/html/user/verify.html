@@ -15,7 +15,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $("#user-Form .user-account").val({{.User.Account}});
-            $("#user-Form .user-id").val({{.Id}});
+            $("#user-Form .user-id").val({{.User.ID}});
         });
     </script>
 </head>
@@ -66,10 +66,10 @@
         </div>
         <!--.jumbotron-->
         <div class="container">
-
+{{if eq .ErrCode 0}}
             <h2>用户账号验证</h2>
             <div>
-                <form id="user-Form" action="/user/ajaxVerify/" method="post">
+                <form id="user-Form" action="/account/ajaxUser/" method="post">
                     <div class="row">
                         <div class="col-md-2 text-right">
                             <label>账号</label>
@@ -110,6 +110,9 @@
                     </div>
                 </form>
             </div>
+{{else}}
+<div class="container">{{.Reason}}</div>
+{{end}}
         </div>
         <div class="container-fluid">
             <div class="row">
