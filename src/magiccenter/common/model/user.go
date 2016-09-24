@@ -5,6 +5,8 @@ const (
 	NEW = iota
 	// ACTIVE 用户已经激活
 	ACTIVE
+	// DEACTIVE 用户未激活
+	DEACTIVE
 	// DISABLE 用户被禁用
 	DISABLE
 )

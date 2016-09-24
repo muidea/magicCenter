@@ -84,7 +84,7 @@ func SaveUser(user model.UserDetail) bool {
 }
 
 // CreateUser 创建新用户
-func CreateUser(account, password, nickName, email string, status int, groups []int) bool {
+func CreateUser(account, email string, status int, groups []int) bool {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -94,10 +94,21 @@ func CreateUser(account, password, nickName, email string, status int, groups []
 	user := model.UserDetail{}
 
 	user.Account = account
-	user.Name = nickName
+	user.Name = ""
 	user.Email = email
 	user.Status = status
 	user.Groups = groups
 
-	return dal.CreateUser(helper, user, password)
+	return dal.CreateUser(helper, user)
+}
+
+// UpdateUserWithPassword 跟新用户信息
+func UpdateUserWithPassword(usr model.UserDetail, password string) bool {
+	helper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.SaveUserWithPassword(helper, usr, password)
 }

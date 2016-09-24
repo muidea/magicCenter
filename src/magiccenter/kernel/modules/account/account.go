@@ -84,7 +84,10 @@ func (instance *account) Routes() []common.Route {
 		// 校验账号信息
 		router.NewRoute(common.GET, "verifyAccount/", ui.VerifyAccountViewHandler, nil),
 		// 保存用户信息
-		router.NewRoute(common.POST, "ajaxUser/", ui.SaveUserActionHandler, nil),
+		router.NewRoute(common.POST, "ajaxUser/", ui.UpdateUserActionHandler, nil),
+
+		// 用户Profile
+		router.NewRoute(common.GET, "userProfile/", ui.UserProfileViewHandler, nil),
 
 		// 用户分组信息管理视图
 		router.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler, auth.AdminAuthVerify()),

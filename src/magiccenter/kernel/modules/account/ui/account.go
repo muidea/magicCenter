@@ -208,11 +208,15 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 
 		usr, found := bll.QueryUserByID(uid)
 		if found {
+			changeFlag := false
 			// 说明是更新账号信息
-			usr.Email = email
-			if len(groupList) > 0 {
-				usr.Groups = groupList
+			if usr.Email != email {
+				usr.Email = email
+				usr.Status = model.DEACTIVE
+				changeFlag = true
 			}
+			usr.Groups = groupList
+
 			ok := bll.SaveUser(usr)
 			if !ok {
 				result.ErrCode = 1
@@ -221,9 +225,16 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 				result.ErrCode = 0
 				result.Reason = "保存账号信息成功"
 			}
+
+			if changeFlag {
+				strID, ok := commonbll.PutInCache(usr, 15) // 有效期15minute
+				if ok {
+					sendVerifyMail(usr.Name, usr.Email, strID)
+				}
+			}
 		} else {
 			// 新建账号
-			ok := bll.CreateUser(account, "", "", email, model.NEW, groupList)
+			ok := bll.CreateUser(account, email, model.NEW, groupList)
 			if !ok {
 				result.ErrCode = 1
 				result.Reason = "创建账号失败"
@@ -234,7 +245,7 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 				usr, _ := bll.QueryUserByAccount(account)
 				strID, ok := commonbll.PutInCache(usr, 15) // 有效期15minute
 				if ok {
-					sendVerifyMail(account, account, strID)
+					sendVerifyMail(account, email, strID)
 				}
 			}
 		}

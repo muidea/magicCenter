@@ -108,10 +108,22 @@ account.constructAccountItem = function(userInfo) {
     tr.appendChild(groupTd);
 
     var statusTd = document.createElement("td");
-    if (userInfo.Status == 0) {
-        statusTd.innerHTML = "正常";
-    } else {
-        statusTd.innerHTML = "锁定";
+    switch (userInfo.Status) {
+        case 0:
+            statusTd.innerHTML = "新建";
+            break;
+        case 1:
+            statusTd.innerHTML = "激活";
+            break;
+        case 2:
+            statusTd.innerHTML = "未激活";
+            break;
+        case 3:
+            statusTd.innerHTML = "锁定";
+            break;
+        default:
+            statusTd.innerHTML = "异常";
+            break;
     }
     tr.appendChild(statusTd);
 

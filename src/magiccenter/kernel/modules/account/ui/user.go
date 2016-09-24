@@ -35,8 +35,8 @@ func VerifyAccountViewHandler(w http.ResponseWriter, r *http.Request) {
 	result := SingleUserDetail{}
 
 	params := util.SplitParam(r.URL.RawQuery)
+	id, found := params["id"]
 	for true {
-		id, found := params["id"]
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "无效请求数据"
@@ -49,6 +49,7 @@ func VerifyAccountViewHandler(w http.ResponseWriter, r *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 		}
+
 		switch data.(type) {
 		case model.UserDetail:
 			result.User = data.(model.UserDetail)
@@ -62,16 +63,25 @@ func VerifyAccountViewHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 
-	t.Execute(w, result)
+	if result.User.Status == model.NEW || result.Fail() {
+		t.Execute(w, result)
+
+	} else if result.User.Status == model.DEACTIVE {
+		result.User.Status = model.ACTIVE
+		bll.SaveUser(result.User)
+		commonbll.RemoveCache(id)
+
+		http.Redirect(w, r, "/account/userProfile/", http.StatusFound)
+	}
 }
 
-// SaveUserActionHandler 保存用户信息处理器
-func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("SaveUserActionHandler")
+// UpdateUserActionHandler 保存用户信息处理器
+func UpdateUserActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("UpdateUserActionHandler")
 
 	result := common.Result{}
 	for {
-		err := r.ParseMultipartForm(0)
+		err := r.ParseForm()
 		if err != nil {
 			log.Print("paseform failed")
 
@@ -92,58 +102,26 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-		account := r.FormValue("user-account")
 		nickName := r.FormValue("user-nickname")
 		passWord := r.FormValue("user-password")
-		email := r.FormValue("user-email")
-		groups := r.MultipartForm.Value["user-group"]
-		groupList := []int{}
-		for _, g := range groups {
-			gid, err := strconv.Atoi(g)
-			if err != nil {
-				log.Printf("parse group id failed, group:%s", g)
-
-				result.ErrCode = 1
-				result.Reason = "无效请求数据"
-				break
-			}
-
-			groupList = append(groupList, gid)
-		}
 
 		usr, found := bll.QueryUserByID(uid)
 		if found {
 			// 说明是更新用户信息
-			usr.Account = account
 			usr.Name = nickName
-			usr.Email = email
-			if len(groupList) > 0 {
-				usr.Groups = groupList
-			}
-			ok := bll.SaveUser(usr)
+			usr.Status = model.ACTIVE
+			ok := bll.UpdateUserWithPassword(usr, passWord)
 			if !ok {
 				result.ErrCode = 1
-				result.Reason = "保存用户信息失败"
+				result.Reason = "更新用户信息失败"
 				break
 			} else {
 				result.ErrCode = 0
-				result.Reason = "保存用户信息成功"
+				result.Reason = "更新用户信息成功"
 			}
 		} else {
-			ok := bll.CreateUser(account, passWord, nickName, email, model.NEW, groupList)
-			if !ok {
-				result.ErrCode = 1
-				result.Reason = "创建用户失败"
-			} else {
-				usr, ok = bll.QueryUserByAccount(account)
-				if ok {
-					result.ErrCode = 0
-					result.Reason = "创建用户成功"
-				} else {
-					result.ErrCode = 1
-					result.Reason = "创建用户失败"
-				}
-			}
+			result.ErrCode = 1
+			result.Reason = "无效用户"
 		}
 
 		break
@@ -158,9 +136,8 @@ func SaveUserActionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserProfileViewHandler 个人空间页面处理器
-//
 func UserProfileViewHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("ManageUserHandler")
+	log.Print("UserProfileViewHandler")
 
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
