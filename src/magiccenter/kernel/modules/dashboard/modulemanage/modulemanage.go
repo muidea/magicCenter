@@ -1,8 +1,8 @@
 package modulemanage
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/dashboard/modulemanage/ui"
 	"magiccenter/module"
 	"magiccenter/router"

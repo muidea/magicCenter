@@ -118,3 +118,23 @@ func viewLinkHandler(res http.ResponseWriter, req *http.Request) {
 		http.Redirect(res, req, link.Url, http.StatusFound)
 	*/
 }
+
+// MaintainViewHandler 管理维护视图处理器
+func MaintainViewHandler(res http.ResponseWriter, req *http.Request) {
+	log.Printf("MaintainViewHandler")
+
+	res.Header().Set("content-type", "text/html")
+	res.Header().Set("charset", "utf-8")
+
+	view := PageView{}
+	/*
+		url := req.URL.Path
+		view.View, _ = bll.QueryPageView(ID, url)
+	*/
+	t, err := template.ParseFiles("template/html/modules/blog/maintain.html")
+	if err != nil {
+		panic("ParseFiles failed, err:" + err.Error())
+	}
+
+	t.Execute(res, view)
+}

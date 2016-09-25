@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="/resources/jquery/jquery.hotkeys.js"></script>
 	<script type="text/javascript" src="/resources/bootstrap/3.3.6/js/bootstrap.js"></script>
 	<script type="text/javascript" src="/resources/admin/common/js/common.js"></script>
-	<script type="text/javascript" src="/resources/admin/module/js/manage.js"></script>
+	<script type="text/javascript" src="/resources/admin/module/js/module.js"></script>
 	<script type="text/javascript">
 		module.moduleList={{.Modules}};
 		module.defaultModule={{.DefaultModule}};
@@ -88,56 +88,8 @@
 						</tr>
 					</tfoot>
 				</table>
-
 			</div>
 			<div class="tab-content" id="module-Maintain">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>				
-				<div class="block">
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>功能块</th>
-								<th>显示模式</th>
-								<th>操作</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="block">
-								<td>导航栏</td>
-								<td>链接</td>
-								<td>
-									<a class="delete" href="#" title="Delete"><img src="/resources/images/icons/cross.png" alt="Delete" /></a>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<form class="block-Form" action="/admin/system/ajaxModuleBlock/" method="post">
-						<div class="form-group">
-							<label for="block-name">名称</label> <input class="form-control block-name" type="text" name="block-name"/>
-						</div>
-						<div class="form-group">
-							<label for="block-tag">模块Tag</label> <input class="form-control block-tag" type="text" name="block-tag"/>
-						</div>
-						<div class="form-group">
-							<label><input type="radio" class="block-style" name="block-style" value="0"/>显示链接</label>
-							<label><input type="radio" class="block-style" name="block-style" value="1"/>显示内容</label>
-						</div>
-						<input type="hidden" class="form-control module-id" name="module-id" value="-1" />
-						<button class="btn btn-default" type="submit">保存</button>
-						<button type="button" class="btn btn-default reset">重填</button>
-					</form>
-				</div>
-
 			</div>
 		</div>
 	</div>

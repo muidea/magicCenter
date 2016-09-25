@@ -1,8 +1,8 @@
 package dashboard
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/dashboard/ui"
 	"magiccenter/module"
 	"magiccenter/router"

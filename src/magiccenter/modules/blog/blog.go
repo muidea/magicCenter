@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
@@ -15,7 +16,7 @@ const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe3e"
 const Name = "Magic Blog"
 
 // Description Blog Module Description
-const Description = "Magic 博客系统"
+const Description = "Magic 博客"
 
 // URL Blog Module URL
 const URL = "blog"
@@ -68,6 +69,7 @@ func (b *blog) Routes() []common.Route {
 		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),
 		router.NewRoute(common.GET, "/catalog/", viewCatalogHandler, nil),
 		router.NewRoute(common.GET, "/link/", viewLinkHandler, nil),
+		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

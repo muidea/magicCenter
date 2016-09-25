@@ -1,9 +1,9 @@
 package account
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
-	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/module"

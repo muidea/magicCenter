@@ -196,7 +196,7 @@ module.constructModuleItem = function(mod) {
 
     var settingButton = document.createElement("input");
     settingButton.setAttribute("type", "button");
-    settingButton.setAttribute("onclick", "module.maintainModule('/admin/system/queryModuleDetail/?id=" + mod.Id + "'); return false;");
+    settingButton.setAttribute("onclick", "module.maintainModule('" + mod.URL + "/maintain/?id=" + mod.ID + "'); return false;");
     settingButton.setAttribute("value", "模块设置");
     settingButton.setAttribute("class", "button");
     editTd.appendChild(settingButton);
@@ -210,17 +210,8 @@ module.selectDefaultModule = function(defaultModule) {
 };
 
 module.maintainModule = function(maintainUrl) {
-    $.get(maintainUrl, {}, function(result) {
-        if (result.ErrCode > 0) {
-            $("#module-List .alert-Info .content").html(result.Reason);
-            $("#module-List .alert-Info").modal();
-            return
-        }
-
-        module.currentModule = result.Module;
-        module.fillModuleMaintainView();
-        $("#module-Content .content-header .nav .module-Maintain").find("a").trigger("click");
-    }, "json");
+    $("#module-Maintain").load(maintainUrl);
+    $("#module-Content .content-header .nav .module-Maintain").find("a").trigger("click");
 };
 
 module.constructBlockItem = function(block) {

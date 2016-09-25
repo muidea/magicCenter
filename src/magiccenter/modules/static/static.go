@@ -15,7 +15,7 @@ const ID = "f17133ec-63f0-4b46-0000-e6ca1af6fe4e"
 const Name = "Magic Static"
 
 // Description Static模块描述信息
-const Description = "Magic 静态管理模块"
+const Description = "Magic 静态文件管理"
 
 // URL Static模块Url
 const URL string = "static"

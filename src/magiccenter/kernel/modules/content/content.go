@@ -1,8 +1,8 @@
 package content
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/content/ui"
 	"magiccenter/module"
 	"magiccenter/router"

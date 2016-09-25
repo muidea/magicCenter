@@ -2,8 +2,8 @@ package kernel
 
 import (
 	"log"
+	"magiccenter/auth"
 	"magiccenter/configuration"
-	"magiccenter/kernel/auth"
 	"magiccenter/module"
 	moduleloader "magiccenter/modules/loader"
 	"magiccenter/router"

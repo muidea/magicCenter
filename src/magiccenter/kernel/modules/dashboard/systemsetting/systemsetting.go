@@ -1,8 +1,8 @@
 package systemsetting
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/kernel/auth"
 	"magiccenter/kernel/modules/dashboard/systemsetting/ui"
 	"magiccenter/module"
 	"magiccenter/router"

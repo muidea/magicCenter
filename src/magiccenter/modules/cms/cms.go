@@ -15,7 +15,7 @@ const ID = "f17133ec-63e9-4b46-8758-e6ca1af6fe3f"
 const Name = "Magic CMS"
 
 // Description CMS Module Description
-const Description = "Magic 内容管理系统"
+const Description = "Magic 内容管理"
 
 // URL CMS Module URL
 const URL = "cms"
