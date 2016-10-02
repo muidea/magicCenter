@@ -70,6 +70,7 @@ func (b *blog) Routes() []common.Route {
 		router.NewRoute(common.GET, "/catalog/", viewCatalogHandler, nil),
 		router.NewRoute(common.GET, "/link/", viewLinkHandler, nil),
 		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "/ajaxMaintain/", MaintainActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

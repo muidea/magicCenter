@@ -1,15 +1,28 @@
 package blog
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"magiccenter/common"
+	"magiccenter/configuration"
 	"net/http"
+)
+
+const (
+	blogTitleID       = "@blog_title"
+	blogDescriptionID = "@blog_description"
 )
 
 // PageView 页面视图
 type PageView struct {
 	View common.PageView
+}
+
+// MaintainView Maintain视图
+type MaintainView struct {
+	Title       string
+	Description string
 }
 
 func indexHandler(res http.ResponseWriter, req *http.Request) {
@@ -126,15 +139,56 @@ func MaintainViewHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("content-type", "text/html")
 	res.Header().Set("charset", "utf-8")
 
-	view := PageView{}
-	/*
-		url := req.URL.Path
-		view.View, _ = bll.QueryPageView(ID, url)
-	*/
+	view := MaintainView{}
+
+	title, found := configuration.GetOption(blogTitleID)
+	if found {
+		view.Title = title
+	}
+
+	description, found := configuration.GetOption(blogDescriptionID)
+	if found {
+		view.Description = description
+	}
+
 	t, err := template.ParseFiles("template/html/modules/blog/maintain.html")
 	if err != nil {
 		panic("ParseFiles failed, err:" + err.Error())
 	}
 
 	t.Execute(res, view)
+}
+
+// MaintainActionHandler 管理维护信息处理器
+func MaintainActionHandler(res http.ResponseWriter, req *http.Request) {
+	log.Printf("MaintainActionHandler")
+
+	result := common.Result{}
+
+	for {
+		err := req.ParseForm()
+		if err != nil {
+			log.Print("parseform failed")
+
+			result.ErrCode = 1
+			result.Reason = "无效请求数据"
+			break
+		}
+
+		title := req.FormValue("blog-title")
+		description := req.FormValue("blog-description")
+		configuration.SetOption(blogTitleID, title)
+		configuration.SetOption(blogDescriptionID, description)
+
+		result.ErrCode = 0
+		result.Reason = "更新成功"
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	res.Write(b)
 }
