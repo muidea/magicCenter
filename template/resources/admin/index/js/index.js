@@ -17,6 +17,7 @@ $(document).ready(function() {
     $("#main-nav li a.nav-top-item").click(
         // 隐藏兄弟项，显示当前项
         function() {
+            var href = $(this).attr("href");
             $(this).parent().siblings().find("a.nav-top-item").removeClass("active");
             $(this).parent().siblings().find("ul").hide();
             $(this).parent().siblings().find("ul").slideUp("normal");
@@ -37,7 +38,11 @@ $(document).ready(function() {
 
     $("#main-nav li a.nav-top-item").click(
         function() {
-            var hrefUrl = $(this).parent().find("ul li a.active").attr("href");
+            var hrefUrl = $(this).attr("href");
+            if (hrefUrl == "#") {
+                hrefUrl = $(this).parent().find("ul li a.active").attr("href");
+            }
+            
             $("#body-content").load(hrefUrl);
 
             updatePathNav();

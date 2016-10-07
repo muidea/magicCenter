@@ -57,7 +57,7 @@ func LoadConfig() {
 
 	keys := []string{AppName, AppDomain, AppLogo, MailServer, MailAccount, MailPassword, SysDefaultModule}
 
-	configInfoMap = bll.GetConfiguration(keys)
+	configInfoMap = bll.GetConfigurations(keys)
 
 	configInfoMap[StaticPath] = "static"
 	configInfoMap[ResourcePath] = "template"
@@ -101,6 +101,9 @@ func GetSystemInfo() SystemInfo {
 // GetOption 获取指定的配置项
 func GetOption(name string) (string, bool) {
 	value, found := configInfoMap[name]
+	if !found {
+		return bll.GetConfiguration(name)
+	}
 
 	return value, found
 }
@@ -114,7 +117,10 @@ func SetOption(name, value string) bool {
 	}
 
 	if bll.UpdateConfiguration(name, value) {
-		configInfoMap[name] = value
+		if found {
+			// 如果之前已经在内存中Load过了，这里也需要把内存中得信息更新一下
+			configInfoMap[name] = value
+		}
 		return true
 	}
 

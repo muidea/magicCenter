@@ -1,5 +1,12 @@
 package model
 
+const (
+	//LinkStyle 显示链接
+	LinkStyle = iota
+	//ContentStyle 显示内容
+	ContentStyle
+)
+
 /*
 Block 用来定义页面块
 导航栏、标签云，分类列表等

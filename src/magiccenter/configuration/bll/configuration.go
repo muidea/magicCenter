@@ -42,8 +42,8 @@ func UpdateConfiguration(key, value string) bool {
 	return dal.SetOption(helper, key, value)
 }
 
-// GetConfiguration 获取配置集
-func GetConfiguration(keys []string) map[string]string {
+// GetConfigurations 获取配置集
+func GetConfigurations(keys []string) map[string]string {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -61,4 +61,15 @@ func GetConfiguration(keys []string) map[string]string {
 	}
 
 	return ret
+}
+
+// GetConfiguration 获取指定配置项
+func GetConfiguration(key string) (string, bool) {
+	helper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.GetOption(helper, key)
 }

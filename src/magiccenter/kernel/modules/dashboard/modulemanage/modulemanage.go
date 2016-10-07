@@ -67,12 +67,12 @@ func (instance *modulemanage) EndPoint() common.EndPoint {
 // Route 路由信息
 func (instance *modulemanage) Routes() []common.Route {
 	routes := []common.Route{
-		// 模块设置
-		router.NewRoute(common.GET, "modulemanage/", ui.ModuleManageViewHandler, auth.AdminAuthVerify()),
-		// 页面设置
-		router.NewRoute(common.GET, "pagemanage/", ui.PageManageViewHandler, auth.AdminAuthVerify()),
-		// 内容设置
-		router.NewRoute(common.GET, "contentmanage/", ui.ContentManageViewHandler, auth.AdminAuthVerify()),
+		// 模块设置视图
+		router.NewRoute(common.GET, "moduleview/", ui.ModuleManageViewHandler, auth.AdminAuthVerify()),
+		// 模块设置处理器
+		router.NewRoute(common.POST, "ajaxmodule/", ui.AjaxModuleActionHandler, auth.AdminAuthVerify()),
+		// 获取模块列表
+		router.NewRoute(common.GET, "modulelist/", ui.ModuleListActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

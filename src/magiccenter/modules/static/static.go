@@ -1,6 +1,7 @@
 package static
 
 import (
+	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/module"
 	"magiccenter/router"
@@ -68,7 +69,11 @@ func (instance *static) EndPoint() common.EndPoint {
 
 // Route Static 路由信息
 func (instance *static) Routes() []common.Route {
-	routes := []common.Route{router.NewRoute(common.GET, "/static/**", viewArticleHandler, nil)}
+	routes := []common.Route{
+		router.NewRoute(common.GET, "/static/**", viewArticleHandler, nil),
+		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "/ajaxMaintain/", MaintainActionHandler, auth.AdminAuthVerify()),
+	}
 
 	return routes
 }

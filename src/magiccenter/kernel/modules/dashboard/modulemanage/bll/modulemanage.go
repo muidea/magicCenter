@@ -2,8 +2,8 @@ package bll
 
 import (
 	"magiccenter/common"
+	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/modulemanage/dal"
-	"magiccenter/kernel/modules/dashboard/modulemanage/model"
 	"magiccenter/module"
 	"magiccenter/util/dbhelper"
 )
@@ -48,6 +48,56 @@ func QueryAllModules() []model.Module {
 	return queryAllModuleInternal(helper)
 }
 
+// EnableModules 启动模块
+func EnableModules(enableList []string) ([]model.Module, bool) {
+	helper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	helper.BeginTransaction()
+
+	ok := true
+	modules := queryAllModuleInternal(helper)
+	for _, m := range modules {
+		found := false
+		for _, id := range enableList {
+			if m.ID == id {
+				found = true
+				break
+			}
+		}
+
+		if found {
+			if m.EnableFlag == 0 {
+				m.EnableFlag = 1
+				_, ok = dal.SaveModule(helper, m)
+			}
+		} else {
+			if m.EnableFlag == 1 {
+				m.EnableFlag = 0
+				_, ok = dal.SaveModule(helper, m)
+			}
+		}
+
+		if !ok {
+			break
+		}
+	}
+
+	moduleList := []model.Module{}
+	if ok {
+		helper.Commit()
+
+		moduleList = dal.QueryAllModule(helper)
+	} else {
+		helper.Rollback()
+	}
+
+	return moduleList, ok
+}
+
 /*
 func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 	helper, err := dbhelper.NewHelper()
@@ -86,57 +136,6 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 	}
 
 	return detail, found
-}
-
-func EnableModules(enableList []string) ([]model.Module, bool) {
-	helper, err := dbhelper.NewHelper()
-	if err != nil {
-		panic("construct helper failed")
-	}
-	defer helper.Release()
-
-	helper.BeginTransaction()
-
-	ok := true
-	modules := queryAllModuleInternal(helper)
-	for i, _ := range modules {
-		m := &modules[i]
-
-		found := false
-		for _, id := range enableList {
-			if m.Id == id {
-				found = true
-				break
-			}
-		}
-
-		if found {
-			if m.EnableFlag == 0 {
-				m.EnableFlag = 1
-				_, ok = dal.SaveModule(helper, *m)
-			}
-		} else {
-			if m.EnableFlag == 1 {
-				m.EnableFlag = 0
-				_, ok = dal.SaveModule(helper, *m)
-			}
-		}
-
-		if !ok {
-			break
-		}
-	}
-
-	moduleList := []model.Module{}
-	if ok {
-		helper.Commit()
-
-		moduleList = dal.QueryAllModule(helper)
-	} else {
-		helper.Rollback()
-	}
-
-	return moduleList, ok
 }
 
 func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayout, bool) {
