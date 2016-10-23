@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/contentmanage/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // GetBlockItem 查询指定Item
 func GetBlockItem(id int) (model.Item, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func GetBlockItem(id int) (model.Item, bool) {
 
 // GetBlockItems 查询属于指定Block的Item
 func GetBlockItems(id int) []model.Item {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func GetBlockItems(id int) []model.Item {
 
 // AppendBlockItem 追加Item
 func AppendBlockItem(item model.Item) (model.Item, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -41,7 +41,7 @@ func AppendBlockItem(item model.Item) (model.Item, bool) {
 
 // DeleteBlockItem 删除一个Module的Block
 func DeleteBlockItem(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -52,7 +52,7 @@ func DeleteBlockItem(id int) bool {
 
 // ClearBlockItem 清空指定Block的Item
 func ClearBlockItem(owner int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

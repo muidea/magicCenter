@@ -10,12 +10,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/contentmanage/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // GetModuleBlock 查询指定Module拥有的Block
 func GetModuleBlock(id int) (model.Block, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -26,7 +26,7 @@ func GetModuleBlock(id int) (model.Block, bool) {
 
 // GetModuleBlockDetail 查询指定Module拥有的Block
 func GetModuleBlockDetail(id int) (model.BlockDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -37,7 +37,7 @@ func GetModuleBlockDetail(id int) (model.BlockDetail, bool) {
 
 // AppendModuleBlock 增加一个Module的Block
 func AppendModuleBlock(block model.Block) (model.Block, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -48,7 +48,7 @@ func AppendModuleBlock(block model.Block) (model.Block, bool) {
 
 // DeleteModuleBlock 删除一个Module的Block
 func DeleteModuleBlock(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -59,7 +59,7 @@ func DeleteModuleBlock(id int) bool {
 
 // UpdateModuleBlock 更新指定的Block
 func UpdateModuleBlock(block model.Block) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -70,7 +70,7 @@ func UpdateModuleBlock(block model.Block) bool {
 
 // QueryModuleBlocks 查询一个Module拥有的Block
 func QueryModuleBlocks(owner string) []model.Block {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

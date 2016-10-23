@@ -2,13 +2,13 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
-	"magiccenter/util/dbhelper"
 )
 
 // QueryAllLink 查询全部Link
-func QueryAllLink(helper dbhelper.DBHelper) []model.Link {
+func QueryAllLink(helper common.DBHelper) []model.Link {
 	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link`)
 	helper.Query(sql)
@@ -32,7 +32,7 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Link {
 }
 
 // QueryLinkByCatalog 查询指定分类下的Link
-func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Link {
+func QueryLinkByCatalog(helper common.DBHelper, id int) []model.Link {
 	linkList := []model.Link{}
 
 	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
@@ -58,7 +58,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Link {
 }
 
 // QueryLinkByRang 查询指定范围的Link
-func QueryLinkByRang(helper dbhelper.DBHelper, begin int, offset int) []model.Link {
+func QueryLinkByRang(helper common.DBHelper, begin int, offset int) []model.Link {
 	linkList := []model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
@@ -81,7 +81,7 @@ func QueryLinkByRang(helper dbhelper.DBHelper, begin int, offset int) []model.Li
 }
 
 // QueryLinkByID 查询指定Link
-func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.Link, bool) {
+func QueryLinkByID(helper common.DBHelper, id int) (model.Link, bool) {
 	link := model.Link{}
 	sql := fmt.Sprintf(`select id, name, url, logo, creater from link where id =%d`, id)
 	helper.Query(sql)
@@ -103,7 +103,7 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.Link, bool) {
 }
 
 // DeleteLinkByID 删除指定Link
-func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
+func DeleteLinkByID(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from link where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
@@ -115,7 +115,7 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // SaveLink 保存Link
-func SaveLink(helper dbhelper.DBHelper, link model.Link) bool {
+func SaveLink(helper common.DBHelper, link model.Link) bool {
 	sql := fmt.Sprintf(`select id from link where id=%d`, link.ID)
 	helper.Query(sql)
 

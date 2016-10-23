@@ -5,7 +5,7 @@ import (
 	"magiccenter/common"
 	"magiccenter/common/bll"
 	"magiccenter/configuration"
-	"magiccenter/module"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -33,7 +33,8 @@ func LoadModule() {
 		instance = &mail{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *mail) ID() string {

@@ -2,12 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 )
 
 // QueryPage 查询page信息
-func QueryPage(helper dbhelper.DBHelper, owner, url string) (model.Page, bool) {
+func QueryPage(helper common.DBHelper, owner, url string) (model.Page, bool) {
 	page := model.Page{}
 	ret := true
 
@@ -27,7 +27,7 @@ func QueryPage(helper dbhelper.DBHelper, owner, url string) (model.Page, bool) {
 }
 
 // QueryPages 查询Module的Pages
-func QueryPages(helper dbhelper.DBHelper, owner string) []model.Page {
+func QueryPages(helper common.DBHelper, owner string) []model.Page {
 
 	sql := fmt.Sprintf("select distinct url from page where owner='%s' order by url", owner)
 	helper.Query(sql)
@@ -50,7 +50,7 @@ func QueryPages(helper dbhelper.DBHelper, owner string) []model.Page {
 }
 
 // SavePage 保存页面信息
-func SavePage(helper dbhelper.DBHelper, page model.Page) bool {
+func SavePage(helper common.DBHelper, page model.Page) bool {
 	ret := false
 	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", page.Owner, page.URL)
 	_, ret = helper.Execute(sql)
@@ -70,7 +70,7 @@ func SavePage(helper dbhelper.DBHelper, page model.Page) bool {
 }
 
 // DeletePage 删除指定页面
-func DeletePage(helper dbhelper.DBHelper, owner, url string) bool {
+func DeletePage(helper common.DBHelper, owner, url string) bool {
 	ret := false
 	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
 	num, ret := helper.Execute(sql)

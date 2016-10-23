@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/content/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // QueryAllLink 查询全部Link
 func QueryAllLink() []model.Link {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func QueryAllLink() []model.Link {
 
 // QueryLinkByID 查询指定Link
 func QueryLinkByID(id int) (model.Link, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func QueryLinkByID(id int) (model.Link, bool) {
 
 // DeleteLinkByID 删除Link
 func DeleteLinkByID(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -41,7 +41,7 @@ func DeleteLinkByID(id int) bool {
 
 // QueryLinkByCatalog 查询指定分类的Link
 func QueryLinkByCatalog(id int) []model.Link {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -52,7 +52,7 @@ func QueryLinkByCatalog(id int) []model.Link {
 
 // QueryLinkByRang 查询指定范围的Link
 func QueryLinkByRang(begin, offset int) []model.Link {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -63,7 +63,7 @@ func QueryLinkByRang(begin, offset int) []model.Link {
 
 // SaveLink 保存Link
 func SaveLink(id int, name, url, logo string, uID int, catalogs []int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

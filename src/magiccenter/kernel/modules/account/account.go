@@ -1,13 +1,11 @@
 package account
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/kernel/modules/account/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -68,6 +66,9 @@ func (instance *account) EndPoint() common.EndPoint {
 
 // Route Account 路由信息
 func (instance *account) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		// 用户账号信息管理视图
 		router.NewRoute(common.GET, "manageUserView/", ui.ManageUserViewHandler, auth.AdminAuthVerify()),

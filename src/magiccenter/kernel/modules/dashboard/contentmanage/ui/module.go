@@ -11,7 +11,7 @@ import (
 	"magiccenter/common"
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/contentmanage/bll"
-	"magiccenter/module"
+	"magiccenter/system"
 	"net/http"
 
 	"muidea.com/util"
@@ -30,6 +30,7 @@ type ModuleView struct {
 func ModuleViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("ModuleViewHandler")
 
+	modulehub := system.GetModuleHub()
 	result := ModuleView{}
 	params := util.SplitParam(r.URL.RawQuery)
 	for true {
@@ -40,7 +41,7 @@ func ModuleViewHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		contentModule, found := module.FindModule(owner)
+		contentModule, found := modulehub.FindModule(owner)
 		if !found {
 			result.Result.ErrCode = 1
 			result.Result.Reason = "无效参数"

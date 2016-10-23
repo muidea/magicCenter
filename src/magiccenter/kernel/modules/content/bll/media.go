@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/content/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // QueryAllMedia 查询全部图像
 func QueryAllMedia() []model.MediaDetail {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func QueryAllMedia() []model.MediaDetail {
 
 // QueryMediaByID 查询指定图像
 func QueryMediaByID(id int) (model.MediaDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func QueryMediaByID(id int) (model.MediaDetail, bool) {
 
 // DeleteMediaByID 删除图像
 func DeleteMediaByID(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -41,7 +41,7 @@ func DeleteMediaByID(id int) bool {
 
 // QueryMediaByCatalog 查询指定分类的图像
 func QueryMediaByCatalog(id int) []model.MediaDetail {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -52,7 +52,7 @@ func QueryMediaByCatalog(id int) []model.MediaDetail {
 
 // QueryMediaByRang 查询指定范围图像
 func QueryMediaByRang(begin, offset int) []model.MediaDetail {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -63,7 +63,7 @@ func QueryMediaByRang(begin, offset int) []model.MediaDetail {
 
 // SaveMedia 保存图像
 func SaveMedia(id int, name, url, mediaType, desc string, uID int, catalogs []int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

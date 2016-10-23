@@ -3,13 +3,13 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/content/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 	"time"
 )
 
 // QueryAllArticleSummary 查询全部文章摘要
 func QueryAllArticleSummary() []model.ArticleSummary {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -20,7 +20,7 @@ func QueryAllArticleSummary() []model.ArticleSummary {
 
 // QueryArticleByID 查询指定文章
 func QueryArticleByID(id int) (model.Article, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -33,7 +33,7 @@ func QueryArticleByID(id int) (model.Article, bool) {
 
 // DeleteArticle 删除文章
 func DeleteArticle(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -44,7 +44,7 @@ func DeleteArticle(id int) bool {
 
 // SaveArticle 保存文章
 func SaveArticle(id int, title, content string, uID int, catalogs []int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -63,7 +63,7 @@ func SaveArticle(id int, title, content string, uID int, catalogs []int) bool {
 
 // QueryArticleByCatalog 查询指定分类文章
 func QueryArticleByCatalog(id int) []model.ArticleSummary {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -74,7 +74,7 @@ func QueryArticleByCatalog(id int) []model.ArticleSummary {
 
 // QueryArticleByRang 查询指定范围文章
 func QueryArticleByRang(begin int, offset int) []model.ArticleSummary {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

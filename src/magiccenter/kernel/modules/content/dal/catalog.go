@@ -2,13 +2,13 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
-	"magiccenter/util/dbhelper"
 )
 
 // QueryAllCatalog 查询所有分类
-func QueryAllCatalog(helper dbhelper.DBHelper) []model.Catalog {
+func QueryAllCatalog(helper common.DBHelper) []model.Catalog {
 	catalogList := []model.Catalog{}
 
 	sql := fmt.Sprintf(`select id, name from catalog`)
@@ -25,7 +25,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Catalog {
 }
 
 // QueryAllCatalogDetail 查询所有分类详情
-func QueryAllCatalogDetail(helper dbhelper.DBHelper) []model.CatalogDetail {
+func QueryAllCatalogDetail(helper common.DBHelper) []model.CatalogDetail {
 	catalogList := []model.CatalogDetail{}
 
 	sql := fmt.Sprintf(`select id, name, creater from catalog`)
@@ -50,7 +50,7 @@ func QueryAllCatalogDetail(helper dbhelper.DBHelper) []model.CatalogDetail {
 }
 
 // QueryCatalogByID 查询指定分类
-func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
+func QueryCatalogByID(helper common.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}
 	sql := fmt.Sprintf(`select id, name, creater from catalog where id = %d`, id)
 	helper.Query(sql)
@@ -74,7 +74,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 
 // QueryAvalibleParentCatalog 查询可用的父类
 // 可用父类的判断规则是比指定分类ID小的就视为可用分类
-func QueryAvalibleParentCatalog(helper dbhelper.DBHelper, id int) []model.Catalog {
+func QueryAvalibleParentCatalog(helper common.DBHelper, id int) []model.Catalog {
 	catalogList := []model.Catalog{}
 	sql := fmt.Sprintf(`select id, name from catalog where id < %d`, id)
 	helper.Query(sql)
@@ -90,7 +90,7 @@ func QueryAvalibleParentCatalog(helper dbhelper.DBHelper, id int) []model.Catalo
 }
 
 // QuerySubCatalog 查询指定分类的子类
-func QuerySubCatalog(helper dbhelper.DBHelper, id int) []model.Catalog {
+func QuerySubCatalog(helper common.DBHelper, id int) []model.Catalog {
 	catalogList := []model.Catalog{}
 
 	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
@@ -106,7 +106,7 @@ func QuerySubCatalog(helper dbhelper.DBHelper, id int) []model.Catalog {
 }
 
 // DeleteCatalog 删除指定类
-func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
+func DeleteCatalog(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from catalog where id=%d`, id)
 
 	num, result := helper.Execute(sql)
@@ -119,7 +119,7 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 }
 
 // SaveCatalog 保存分类
-func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) bool {
+func SaveCatalog(helper common.DBHelper, catalog model.CatalogDetail) bool {
 	sql := fmt.Sprintf(`select id from catalog where id=%d`, catalog.ID)
 	helper.Query(sql)
 

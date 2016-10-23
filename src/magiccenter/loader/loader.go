@@ -2,8 +2,10 @@ package loader
 
 import "magiccenter/common"
 
-//externloader "magiccenter/extern/loader"
-//kernelloader "magiccenter/kernel/loader"
+import (
+	//externloader "magiccenter/extern/loader"
+	kernelloader "magiccenter/kernel/loader"
+)
 
 // Impl ModuleLoader
 type impl struct {
@@ -18,6 +20,6 @@ func CreateLoader() common.ModuleLoader {
 
 // LoadAllModules 加载所有Module
 func (instance impl) LoadAllModules() {
-	//kernelloader.LoadAllModules()
+	kernelloader.LoadAllModules()
 	//externloader.LoadAllModules()
 }

@@ -1,11 +1,9 @@
 package modulemanage
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/kernel/modules/dashboard/modulemanage/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -33,7 +31,8 @@ func LoadModule() {
 		instance = &modulemanage{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *modulemanage) ID() string {
@@ -66,6 +65,9 @@ func (instance *modulemanage) EndPoint() common.EndPoint {
 
 // Route 路由信息
 func (instance *modulemanage) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		// 模块设置视图
 		router.NewRoute(common.GET, "moduleview/", ui.ModuleManageViewHandler, auth.AdminAuthVerify()),

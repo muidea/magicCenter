@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/contentmanage/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // GetModulePage 查询指定Module的指定页面
 func GetModulePage(owner, url string) (model.Page, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func GetModulePage(owner, url string) (model.Page, bool) {
 
 // SaveModulePage 保存Page信息
 func SaveModulePage(page model.Page) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func SaveModulePage(page model.Page) bool {
 
 // DeleteModulePage 删除Page
 func DeleteModulePage(owner, url string) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

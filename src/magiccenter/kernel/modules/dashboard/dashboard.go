@@ -1,11 +1,9 @@
 package dashboard
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/kernel/modules/dashboard/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -33,7 +31,8 @@ func LoadModule() {
 		instance = &dashboard{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *dashboard) ID() string {
@@ -66,6 +65,9 @@ func (instance *dashboard) EndPoint() common.EndPoint {
 
 // Route 路由信息
 func (instance *dashboard) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		// 管理视图
 		router.NewRoute(common.GET, "/", ui.AdminViewHandler, auth.AdminAuthVerify()),

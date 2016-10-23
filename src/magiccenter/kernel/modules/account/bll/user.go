@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // QueryAllUserList 查询全部用户列表
 func QueryAllUserList() []model.User {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func QueryAllUserList() []model.User {
 
 // QueryAllUser 查询全部用户
 func QueryAllUser() []model.UserDetail {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func QueryAllUser() []model.UserDetail {
 
 // QueryUserByAccount 查询指定账号的用户信息
 func QueryUserByAccount(account string) (model.UserDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -41,7 +41,7 @@ func QueryUserByAccount(account string) (model.UserDetail, bool) {
 
 // VerifyUserByAccount 校验指定账号的用户信息
 func VerifyUserByAccount(account, password string) (model.UserDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -52,7 +52,7 @@ func VerifyUserByAccount(account, password string) (model.UserDetail, bool) {
 
 // QueryUserByID 查询指定账号用户信息
 func QueryUserByID(id int) (model.UserDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -63,7 +63,7 @@ func QueryUserByID(id int) (model.UserDetail, bool) {
 
 // DeleteUser 删除用户
 func DeleteUser(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -74,7 +74,7 @@ func DeleteUser(id int) bool {
 
 // SaveUser 保存用户
 func SaveUser(user model.UserDetail) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -85,7 +85,7 @@ func SaveUser(user model.UserDetail) bool {
 
 // CreateUser 创建新用户
 func CreateUser(account, email string, status int, groups []int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -104,7 +104,7 @@ func CreateUser(account, email string, status int, groups []int) bool {
 
 // UpdateUserWithPassword 跟新用户信息
 func UpdateUserWithPassword(usr model.UserDetail, password string) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

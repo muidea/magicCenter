@@ -13,12 +13,9 @@ Content 由三类信息组成
 */
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
-	commonhandler "magiccenter/common/handler"
 	"magiccenter/kernel/modules/dashboard/contentmanage/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 	"net/http"
 
 	"muidea.com/util"
@@ -47,7 +44,9 @@ func LoadModule() {
 		instance = &contentmanage{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *contentmanage) ID() string {
@@ -80,8 +79,10 @@ func (instance *contentmanage) EndPoint() common.EndPoint {
 
 // Route 路由信息
 func (instance *contentmanage) Routes() []common.Route {
-	routes := []common.Route{
+	router := system.GetRouter()
+	auth := system.GetAuthority()
 
+	routes := []common.Route{
 		router.NewRoute(common.GET, "view/", viewHandler, auth.AdminAuthVerify()),
 
 		// Content Restfull API接口

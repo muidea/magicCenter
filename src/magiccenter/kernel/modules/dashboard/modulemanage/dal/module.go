@@ -2,12 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 )
 
 // DeleteModule 删除指定Module
-func DeleteModule(helper dbhelper.DBHelper, id string) {
+func DeleteModule(helper common.DBHelper, id string) {
 	sql := fmt.Sprintf("delete from module where id='%s'", id)
 	num, ret := helper.Execute(sql)
 	if num == 1 && ret {
@@ -17,7 +17,7 @@ func DeleteModule(helper dbhelper.DBHelper, id string) {
 }
 
 // QueryModule 查询指定Module
-func QueryModule(helper dbhelper.DBHelper, id string) (model.Module, bool) {
+func QueryModule(helper common.DBHelper, id string) (model.Module, bool) {
 	m := model.Module{}
 	sql := fmt.Sprintf("select id, name, description, uri, enableflag from module where id='%s'", id)
 	helper.Query(sql)
@@ -32,7 +32,7 @@ func QueryModule(helper dbhelper.DBHelper, id string) (model.Module, bool) {
 }
 
 // QueryAllModule 查询所有Module
-func QueryAllModule(helper dbhelper.DBHelper) []model.Module {
+func QueryAllModule(helper common.DBHelper) []model.Module {
 	moduleList := []model.Module{}
 
 	sql := fmt.Sprintf("select id, name, description, uri, enableflag from module")
@@ -49,7 +49,7 @@ func QueryAllModule(helper dbhelper.DBHelper) []model.Module {
 }
 
 // SaveModule 保存Module
-func SaveModule(helper dbhelper.DBHelper, m model.Module) (model.Module, bool) {
+func SaveModule(helper common.DBHelper, m model.Module) (model.Module, bool) {
 	result := false
 	_, found := QueryModule(helper, m.ID)
 	if found {

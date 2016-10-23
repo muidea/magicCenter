@@ -2,8 +2,8 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"strconv"
 	"strings"
 )
@@ -14,7 +14,7 @@ type tempPair struct {
 }
 
 //QueryAllUserList 查询全部用户列表
-func QueryAllUserList(helper dbhelper.DBHelper) []model.User {
+func QueryAllUserList(helper common.DBHelper) []model.User {
 	userList := []model.User{}
 	sql := fmt.Sprintf("select id,nickname from user")
 	helper.Query(sql)
@@ -30,7 +30,7 @@ func QueryAllUserList(helper dbhelper.DBHelper) []model.User {
 }
 
 //QueryAllUser 查询全部用户信息
-func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
+func QueryAllUser(helper common.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user")
 	helper.Query(sql)
@@ -64,7 +64,7 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 }
 
 // QueryUserByAccount 根据账号查询用户信息
-func QueryUserByAccount(helper dbhelper.DBHelper, account string) (model.UserDetail, bool) {
+func QueryUserByAccount(helper common.DBHelper, account string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s'", account)
@@ -91,7 +91,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account string) (model.UserDet
 }
 
 // VerifyUserByAccount 校验账号信息，如果账号信息正确，返回用户信息
-func VerifyUserByAccount(helper dbhelper.DBHelper, account, password string) (model.UserDetail, bool) {
+func VerifyUserByAccount(helper common.DBHelper, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
 	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s' and password='%s'", account, password)
@@ -118,7 +118,7 @@ func VerifyUserByAccount(helper dbhelper.DBHelper, account, password string) (mo
 }
 
 // QueryUserByID 根据用户ID查询用户信息
-func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
+func QueryUserByID(helper common.DBHelper, id int) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where id=%d", id)
@@ -145,21 +145,21 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 }
 
 // DeleteUser 删除用户，根据用户ID
-func DeleteUser(helper dbhelper.DBHelper, id int) bool {
+func DeleteUser(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf("delete from user where id =%d", id)
 	_, ret := helper.Execute(sql)
 	return ret
 }
 
 // DeleteUserByAccount 删除用户，根据用户账号&密码
-func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) bool {
+func DeleteUserByAccount(helper common.DBHelper, account, password string) bool {
 	sql := fmt.Sprintf("delete from user where account ='%s' and password='%s'", account, password)
 	_, ret := helper.Execute(sql)
 	return ret
 }
 
 // CreateUser 创建新用户，根据用户信息和密码
-func CreateUser(helper dbhelper.DBHelper, user model.UserDetail) bool {
+func CreateUser(helper common.DBHelper, user model.UserDetail) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
@@ -174,7 +174,7 @@ func CreateUser(helper dbhelper.DBHelper, user model.UserDetail) bool {
 }
 
 // SaveUser 保存用户信息
-func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) bool {
+func SaveUser(helper common.DBHelper, user model.UserDetail) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
@@ -189,7 +189,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) bool {
 }
 
 // SaveUserWithPassword 保存用户信息
-func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) bool {
+func SaveUserWithPassword(helper common.DBHelper, user model.UserDetail, password string) bool {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
@@ -204,7 +204,7 @@ func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, passw
 }
 
 // QueryUserByGroup 查询指定分组下的用户信息
-func QueryUserByGroup(helper dbhelper.DBHelper, id int) []model.UserDetail {
+func QueryUserByGroup(helper common.DBHelper, id int) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where `group` like '%d' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d' union select id,account,nickname,email,`group`, status from user where `group` like '%d,%%' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d,%%'", id, id, id, id)
 	helper.Query(sql)

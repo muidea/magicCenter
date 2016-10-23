@@ -3,7 +3,7 @@ package cache
 import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
-	"magiccenter/module"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -31,7 +31,8 @@ func LoadModule() {
 		instance = &cache{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *cache) ID() string {

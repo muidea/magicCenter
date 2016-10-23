@@ -2,13 +2,13 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
-	"magiccenter/util/dbhelper"
 )
 
 // QueryAllArticleSummary 查询所有文章摘要
-func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.ArticleSummary {
+func QueryAllArticleSummary(helper common.DBHelper) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	sql := fmt.Sprintf(`select id, title, author, createdate from article`)
 	helper.Query(sql)
@@ -32,7 +32,7 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.ArticleSummary {
 }
 
 // QueryArticleByCatalog 查询指定分类下的所有文章摘要
-func QueryArticleByCatalog(helper dbhelper.DBHelper, id int) []model.ArticleSummary {
+func QueryArticleByCatalog(helper common.DBHelper, id int) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
@@ -58,7 +58,7 @@ func QueryArticleByCatalog(helper dbhelper.DBHelper, id int) []model.ArticleSumm
 }
 
 // QueryArticleByRang 查询指定范围的文章摘要
-func QueryArticleByRang(helper dbhelper.DBHelper, begin int, offset int) []model.ArticleSummary {
+func QueryArticleByRang(helper common.DBHelper, begin int, offset int) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	sql := fmt.Sprintf(`select id, title, author, createdate from article order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
@@ -81,7 +81,7 @@ func QueryArticleByRang(helper dbhelper.DBHelper, begin int, offset int) []model
 }
 
 // QueryArticleByID 查询指定文章
-func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.Article, bool) {
+func QueryArticleByID(helper common.DBHelper, id int) (model.Article, bool) {
 	ar := model.Article{}
 
 	sql := fmt.Sprintf(`select id, title, content, author, createdate from article where id = %d`, id)
@@ -104,7 +104,7 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.Article, bool) {
 }
 
 // DeleteArticle 删除文章
-func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
+func DeleteArticle(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from article where id=%d`, id)
 
 	num, result := helper.Execute(sql)
@@ -118,7 +118,7 @@ func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
 }
 
 // SaveArticle 保存文章
-func SaveArticle(helper dbhelper.DBHelper, article model.Article) bool {
+func SaveArticle(helper common.DBHelper, article model.Article) bool {
 	sql := fmt.Sprintf(`select id from article where id=%d`, article.ID)
 	helper.Query(sql)
 

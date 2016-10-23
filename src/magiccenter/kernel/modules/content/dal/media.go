@@ -2,13 +2,13 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
 	resdal "magiccenter/resource/dal"
-	"magiccenter/util/dbhelper"
 )
 
 // QueryAllMedia 查询所有图像
-func QueryAllMedia(helper dbhelper.DBHelper) []model.MediaDetail {
+func QueryAllMedia(helper common.DBHelper) []model.MediaDetail {
 	mediaList := []model.MediaDetail{}
 	sql := fmt.Sprintf(`select id, name, url, type, description, creater from media`)
 	helper.Query(sql)
@@ -32,7 +32,7 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.MediaDetail {
 }
 
 // QueryMediaByCatalog 查询指定分类的图像
-func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.MediaDetail {
+func QueryMediaByCatalog(helper common.DBHelper, id int) []model.MediaDetail {
 	mediaList := []model.MediaDetail{}
 
 	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.MEDIA)
@@ -58,7 +58,7 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.MediaDetail {
 }
 
 // QueryMediaByRang 查询指定范围的图像
-func QueryMediaByRang(helper dbhelper.DBHelper, begin int, offset int) []model.MediaDetail {
+func QueryMediaByRang(helper common.DBHelper, begin int, offset int) []model.MediaDetail {
 	mediaList := []model.MediaDetail{}
 	sql := fmt.Sprintf(`select id, name, url, type, description, creater from media order by id where id >= %d limit %d`, begin, offset)
 	helper.Query(sql)
@@ -81,7 +81,7 @@ func QueryMediaByRang(helper dbhelper.DBHelper, begin int, offset int) []model.M
 }
 
 // QueryMediaByID 查询指定的图像
-func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) {
+func QueryMediaByID(helper common.DBHelper, id int) (model.MediaDetail, bool) {
 	media := model.MediaDetail{}
 
 	sql := fmt.Sprintf(`select id, name, url, type, description, creater from media where id = %d`, id)
@@ -104,7 +104,7 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 }
 
 // DeleteMediaByID 删除图像
-func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
+func DeleteMediaByID(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from media where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
@@ -116,7 +116,7 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // SaveMedia 保存图像
-func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) bool {
+func SaveMedia(helper common.DBHelper, media model.MediaDetail) bool {
 	sql := fmt.Sprintf(`select id from media where id=%d`, media.ID)
 	helper.Query(sql)
 

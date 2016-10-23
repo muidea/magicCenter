@@ -2,12 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 )
 
 // AddItem 添加一条Item记录
-func AddItem(helper dbhelper.DBHelper, item model.Item) (model.Item, bool) {
+func AddItem(helper common.DBHelper, item model.Item) (model.Item, bool) {
 	ret := false
 
 	sql := fmt.Sprintf("insert into item (rid,rtype,owner) values(%d,'%s',%d)", item.Rid, item.Rtype, item.Owner)
@@ -26,14 +26,14 @@ func AddItem(helper dbhelper.DBHelper, item model.Item) (model.Item, bool) {
 }
 
 // RemoveItem 删除一条Item记录
-func RemoveItem(helper dbhelper.DBHelper, id int) bool {
+func RemoveItem(helper common.DBHelper, id int) bool {
 	sql := fmt.Sprintf("delete item where id=%d", id)
 	num, ret := helper.Execute(sql)
 	return num == 1 && ret
 }
 
 // QueryItem 查询Item记录
-func QueryItem(helper dbhelper.DBHelper, id int) (model.Item, bool) {
+func QueryItem(helper common.DBHelper, id int) (model.Item, bool) {
 	item := model.Item{}
 	ret := false
 
@@ -48,14 +48,14 @@ func QueryItem(helper dbhelper.DBHelper, id int) (model.Item, bool) {
 }
 
 // ClearItems 清除指定owner的Items记录
-func ClearItems(helper dbhelper.DBHelper, owner int) bool {
+func ClearItems(helper common.DBHelper, owner int) bool {
 	sql := fmt.Sprintf("delete from item where owner=%d", owner)
 	_, ok := helper.Execute(sql)
 	return ok
 }
 
 // QueryItems 查询指定owner的Items记录
-func QueryItems(helper dbhelper.DBHelper, owner int) []model.Item {
+func QueryItems(helper common.DBHelper, owner int) []model.Item {
 	itemList := []model.Item{}
 
 	sql := fmt.Sprintf("select id,rid,rtype,owner from item where owner=%d", owner)

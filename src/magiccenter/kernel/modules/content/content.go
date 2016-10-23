@@ -1,11 +1,9 @@
 package content
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/kernel/modules/content/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -33,7 +31,8 @@ func LoadModule() {
 		instance = &content{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *content) ID() string {
@@ -66,6 +65,9 @@ func (instance *content) EndPoint() common.EndPoint {
 
 // Route 路由信息
 func (instance *content) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		// 管理Article视图
 		router.NewRoute(common.GET, "manageArticleView/", ui.ManageArticleViewHandler, auth.AdminAuthVerify()),

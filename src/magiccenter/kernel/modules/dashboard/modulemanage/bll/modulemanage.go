@@ -4,15 +4,15 @@ import (
 	"magiccenter/common"
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/dashboard/modulemanage/dal"
-	"magiccenter/module"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
-func queryAllModuleInternal(helper dbhelper.DBHelper) []model.Module {
+func queryAllModuleInternal(helper common.DBHelper) []model.Module {
 
 	// 由于部分Module可能还未启用，所以这里需要取DB和系统加载信息的全集
 	modules := dal.QueryAllModule(helper)
 
+	modulehub := system.GetModuleHub()
 	sysModule := module.QueryAllModule()
 
 	for _, sysMod := range sysModule {
@@ -39,7 +39,7 @@ func queryAllModuleInternal(helper dbhelper.DBHelper) []model.Module {
 
 // QueryAllModules 查询所有Module
 func QueryAllModules() []model.Module {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -50,7 +50,7 @@ func QueryAllModules() []model.Module {
 
 // EnableModules 启动模块
 func EnableModules(enableList []string) ([]model.Module, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

@@ -1,11 +1,9 @@
 package systemsetting
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
 	"magiccenter/kernel/modules/dashboard/systemsetting/ui"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -33,7 +31,8 @@ func LoadModule() {
 		instance = &systemsetting{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *systemsetting) ID() string {
@@ -66,6 +65,9 @@ func (instance *systemsetting) EndPoint() common.EndPoint {
 
 // Route 路由信息
 func (instance *systemsetting) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		// 管理视图
 		router.NewRoute(common.GET, "systemsetting/", ui.SystemSettingViewHandler, auth.AdminAuthVerify()),

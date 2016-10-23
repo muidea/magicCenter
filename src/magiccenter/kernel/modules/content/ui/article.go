@@ -10,7 +10,7 @@ import (
 	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
-	"magiccenter/session"
+	"magiccenter/system"
 	"net/http"
 	"strconv"
 
@@ -172,7 +172,7 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, can't fetch authorith id")
 	}
 
-	session := session.GetSession(w, r)
+	session := system.GetSession(w, r)
 	user, found := session.GetOption(authID)
 	if !found {
 		panic("unexpected, must login system first.")

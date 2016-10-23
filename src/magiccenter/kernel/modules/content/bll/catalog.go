@@ -3,12 +3,12 @@ package bll
 import (
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/content/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system"
 )
 
 // QueryAllCatalogList 查询全部分类
 func QueryAllCatalogList() []model.Catalog {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -19,7 +19,7 @@ func QueryAllCatalogList() []model.Catalog {
 
 // QueryAllCatalogDetail 查询全部分类详情
 func QueryAllCatalogDetail() []model.CatalogDetail {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -30,7 +30,7 @@ func QueryAllCatalogDetail() []model.CatalogDetail {
 
 // QueryCatalogByID 查询指定分类
 func QueryCatalogByID(id int) (model.CatalogDetail, bool) {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -42,7 +42,7 @@ func QueryCatalogByID(id int) (model.CatalogDetail, bool) {
 
 // QueryAvalibleParentCatalog 查询可用父类
 func QueryAvalibleParentCatalog(id int) []model.Catalog {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -53,7 +53,7 @@ func QueryAvalibleParentCatalog(id int) []model.Catalog {
 
 // QuerySubCatalog 查询子类
 func QuerySubCatalog(id int) []model.Catalog {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -64,7 +64,7 @@ func QuerySubCatalog(id int) []model.Catalog {
 
 // DeleteCatalog 删除分类
 func DeleteCatalog(id int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
@@ -75,7 +75,7 @@ func DeleteCatalog(id int) bool {
 
 // SaveCatalog 保存分类
 func SaveCatalog(id int, name string, uID int, parents []int) bool {
-	helper, err := dbhelper.NewHelper()
+	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}

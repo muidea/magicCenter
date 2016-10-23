@@ -17,7 +17,7 @@ import (
 	"magiccenter/common/model"
 	"magiccenter/configuration"
 	"magiccenter/kernel/modules/account/bll"
-	"magiccenter/session"
+	"magiccenter/system"
 	"net/http"
 )
 
@@ -45,7 +45,7 @@ func AdminViewHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, can't fetch authorith id")
 	}
 
-	session := session.GetSession(w, r)
+	session := system.GetSession(w, r)
 	user, found := session.GetOption(authID)
 	if !found {
 		panic("unexpected, must login system first.")
@@ -76,7 +76,7 @@ func LoginViewHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, can't fetch authorith id")
 	}
 
-	session := session.GetSession(w, r)
+	session := system.GetSession(w, r)
 	_, found = session.GetOption(authID)
 	if found {
 		http.Redirect(w, r, "/admin/", http.StatusFound)
@@ -135,7 +135,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		session := session.GetSession(w, r)
+		session := system.GetSession(w, r)
 		session.SetOption(authID, user)
 
 		result.ErrCode = 0
@@ -160,7 +160,7 @@ func LogoutActionHandler(w http.ResponseWriter, r *http.Request) {
 		panic("unexpected, can't fetch authorith id")
 	}
 
-	session := session.GetSession(w, r)
+	session := system.GetSession(w, r)
 	session.RemoveOption(authID)
 
 	http.Redirect(w, r, "/", http.StatusFound)
