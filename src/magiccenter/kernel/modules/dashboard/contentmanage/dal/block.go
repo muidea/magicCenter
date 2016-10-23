@@ -6,28 +6,33 @@ import (
 	"magiccenter/util/dbhelper"
 )
 
-// InsertBlock 新建一条Block记录
-func InsertBlock(helper dbhelper.DBHelper, name, tag string, style int, owner string) (model.Block, bool) {
-	block := model.Block{}
+// InsertBlock 新建一条Block
+func InsertBlock(helper dbhelper.DBHelper, block model.Block) (model.Block, bool) {
 	ret := false
 
-	sql := fmt.Sprintf("insert into block (name, tag, style, owner) values('%s','%s', %d, '%s')", name, tag, style, owner)
+	sql := fmt.Sprintf("insert into block (name, tag, style, owner) values('%s','%s', %d, '%s')", block.Name, block.Tag, block.Style, block.Owner)
 	num, ret := helper.Execute(sql)
 	if num == 1 && ret {
 		ret = false
-		sql = fmt.Sprintf("select id from block where name='%s' and owner='%s'", name, owner)
+		sql = fmt.Sprintf("select id from block where name='%s' and owner='%s'", block.Name, block.Owner)
 		helper.Query(sql)
 		if helper.Next() {
 			helper.GetValue(&block.ID)
-			block.Name = name
-			block.Tag = tag
-			block.Style = style
-			block.Owner = owner
 			ret = true
 		}
 	}
 
 	return block, ret
+}
+
+// UpdateBlock 更新一条Block
+func UpdateBlock(helper dbhelper.DBHelper, block model.Block) bool {
+	ret := false
+
+	sql := fmt.Sprintf("update block set name ='%s', tag = '%s', style= %d where id = %d", block.Name, block.Tag, block.Style, block.ID)
+	num, ret := helper.Execute(sql)
+
+	return num == 1 && ret
 }
 
 // DeleteBlock 删除一条Block记录
@@ -37,8 +42,23 @@ func DeleteBlock(helper dbhelper.DBHelper, id int) bool {
 	return num == 1 && ret
 }
 
-// QueryBlock 查询一条Block
-func QueryBlock(helper dbhelper.DBHelper, id int) (model.BlockDetail, bool) {
+// QueryBlock 查询一条BlockDetail
+func QueryBlock(helper dbhelper.DBHelper, id int) (model.Block, bool) {
+	block := model.Block{}
+	ret := false
+
+	sql := fmt.Sprintf("select id, name, tag, style, owner from block where id=%d", id)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&block.ID, &block.Name, &block.Tag, &block.Style, &block.Owner)
+		ret = true
+	}
+
+	return block, ret
+}
+
+// QueryBlockDetail 查询一条BlockDetail
+func QueryBlockDetail(helper dbhelper.DBHelper, id int) (model.BlockDetail, bool) {
 	block := model.BlockDetail{}
 	ret := false
 
@@ -54,7 +74,7 @@ func QueryBlock(helper dbhelper.DBHelper, id int) (model.BlockDetail, bool) {
 	return block, ret
 }
 
-// QueryBlocks 查询指定类型的Block
+// QueryBlocks 查询指定Module拥有的Block
 func QueryBlocks(helper dbhelper.DBHelper, owner string) []model.Block {
 	blockList := []model.Block{}
 	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)

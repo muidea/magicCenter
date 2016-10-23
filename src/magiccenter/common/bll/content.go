@@ -3,7 +3,7 @@ package bll
 import (
 	"magiccenter/common"
 	commonmodel "magiccenter/common/model"
-	"magiccenter/module"
+	"magiccenter/system"
 )
 
 // ContentModuleID ID
@@ -28,7 +28,7 @@ type QueryModulePageRequest struct {
 // QueryModulePageResponse 查询指定Module的页面响应
 type QueryModulePageResponse struct {
 	Result common.Result
-	Page   commonmodel.Page
+	Page   []commonmodel.Page
 }
 
 // QueryBlockItemRequest 查询指定Block拥有的条目请求
@@ -44,7 +44,8 @@ type QueryBlockItemResponse struct {
 
 // QueryModuleBlock 查询指定Module的功能块
 func QueryModuleBlock(id string) ([]commonmodel.Block, bool) {
-	contentModule, found := module.FindModule(ContentModuleID)
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}
@@ -60,7 +61,8 @@ func QueryModuleBlock(id string) ([]commonmodel.Block, bool) {
 
 // QueryModulePage 查询指定Module的页面
 func QueryModulePage(id string) ([]commonmodel.Page, bool) {
-	contentModule, found := module.FindModule(ContentModuleID)
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}
@@ -78,8 +80,9 @@ func QueryModulePage(id string) ([]commonmodel.Page, bool) {
 }
 
 // QueryBlockItem 查询指定Block拥有的Items
-func QueryBlockItem(id string) ([]commonmodel.Item, bool) {
-	contentModule, found := module.FindModule(ContentModuleID)
+func QueryBlockItem(id int) ([]commonmodel.Item, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}

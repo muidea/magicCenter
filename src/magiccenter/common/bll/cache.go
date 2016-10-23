@@ -1,6 +1,6 @@
 package bll
 
-import "magiccenter/module"
+import "magiccenter/system"
 
 /*
 提供临时缓存功能，允许临时保存指定时效的数据
@@ -50,7 +50,8 @@ type ClearAllCacheParam struct {
 // PutInCache 讲数据存入Cache
 // maxAge 单位是minute
 func PutInCache(data interface{}, maxAge float64) (string, bool) {
-	cacheModule, found := module.FindModule(CacheModuleID)
+	moduleHub := system.GetModuleHub()
+	cacheModule, found := moduleHub.FindModule(CacheModuleID)
 	if !found {
 		panic("can't find cache module")
 	}
@@ -70,7 +71,8 @@ func PutInCache(data interface{}, maxAge float64) (string, bool) {
 
 // FetchOutCache 取出数据
 func FetchOutCache(id string) (interface{}, bool) {
-	cacheModule, found := module.FindModule(CacheModuleID)
+	moduleHub := system.GetModuleHub()
+	cacheModule, found := moduleHub.FindModule(CacheModuleID)
 	if !found {
 		panic("can't find cache module")
 	}
@@ -89,7 +91,8 @@ func FetchOutCache(id string) (interface{}, bool) {
 
 // RemoveCache 取出数据
 func RemoveCache(id string) {
-	cacheModule, found := module.FindModule(CacheModuleID)
+	moduleHub := system.GetModuleHub()
+	cacheModule, found := moduleHub.FindModule(CacheModuleID)
 	if !found {
 		panic("can't find cache module")
 	}
@@ -102,7 +105,8 @@ func RemoveCache(id string) {
 
 // ClearAllCache 清空Cache
 func ClearAllCache(id string) {
-	cacheModule, found := module.FindModule(CacheModuleID)
+	moduleHub := system.GetModuleHub()
+	cacheModule, found := moduleHub.FindModule(CacheModuleID)
 	if !found {
 		panic("can't find cache module")
 	}

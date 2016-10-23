@@ -11,13 +11,12 @@ func QueryPage(helper dbhelper.DBHelper, owner, url string) (model.Page, bool) {
 	page := model.Page{}
 	ret := true
 
-	sql := fmt.Sprintf("select id,name,owner from block where id in (select block from page where owner='%s' and url='%s')", owner, url)
+	sql := fmt.Sprintf("select block from page where owner='%s' and url='%s'", owner, url)
 	helper.Query(sql)
 
 	for helper.Next() {
-		b := model.Block{}
-		helper.GetValue(&b.ID, &b.Name, &b.Owner)
-
+		b := -1
+		helper.GetValue(&b)
 		page.Blocks = append(page.Blocks, b)
 	}
 
@@ -51,14 +50,14 @@ func QueryPages(helper dbhelper.DBHelper, owner string) []model.Page {
 }
 
 // SavePage 保存页面信息
-func SavePage(helper dbhelper.DBHelper, owner, url string, blocks []int) (model.Page, bool) {
+func SavePage(helper dbhelper.DBHelper, page model.Page) bool {
 	ret := false
-	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
+	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", page.Owner, page.URL)
 	_, ret = helper.Execute(sql)
 	if ret {
 		ret = true
-		for _, b := range blocks {
-			sql = fmt.Sprintf("insert into page(owner,url,block) values('%s','%s',%d)", owner, url, b)
+		for _, b := range page.Blocks {
+			sql = fmt.Sprintf("insert into page(owner,url,block) values('%s','%s',%d)", page.Owner, page.URL, b)
 			num, ok := helper.Execute(sql)
 			if num != 1 || !ok {
 				ret = false
@@ -67,10 +66,13 @@ func SavePage(helper dbhelper.DBHelper, owner, url string, blocks []int) (model.
 		}
 	}
 
-	if !ret {
-		page := model.Page{}
-		return page, ret
-	}
+	return ret
+}
 
-	return QueryPage(helper, owner, url)
+// DeletePage 删除指定页面
+func DeletePage(helper dbhelper.DBHelper, owner, url string) bool {
+	ret := false
+	sql := fmt.Sprintf("delete from page where owner='%s' and url='%s'", owner, url)
+	num, ret := helper.Execute(sql)
+	return num == 1 && ret
 }

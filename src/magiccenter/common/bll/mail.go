@@ -1,10 +1,10 @@
 package bll
 
+import "magiccenter/system"
+
 /*
  Package bll 邮件辅助，提供发送邮件功能
 */
-
-import "magiccenter/module"
 
 // MailModuleID Mail 模块ID
 const MailModuleID = "7fe4a6fa-b73a-401f-bd37-71e76670d18c"
@@ -18,7 +18,8 @@ type PostBox struct {
 
 // PostMail 发送邮件
 func PostMail(usrMail []string, subject, content string) bool {
-	mailModule, found := module.FindModule(MailModuleID)
+	moduleHub := system.GetModuleHub()
+	mailModule, found := moduleHub.FindModule(MailModuleID)
 	if !found {
 		panic("can't find mail module")
 	}

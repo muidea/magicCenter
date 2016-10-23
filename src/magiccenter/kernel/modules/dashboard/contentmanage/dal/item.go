@@ -7,21 +7,17 @@ import (
 )
 
 // AddItem 添加一条Item记录
-func AddItem(helper dbhelper.DBHelper, rid int, rtype string, owner int) (model.Item, bool) {
-	item := model.Item{}
+func AddItem(helper dbhelper.DBHelper, item model.Item) (model.Item, bool) {
 	ret := false
 
-	sql := fmt.Sprintf("insert into item (rid,rtype,owner) values(%d,'%s',%d)", rid, rtype, owner)
+	sql := fmt.Sprintf("insert into item (rid,rtype,owner) values(%d,'%s',%d)", item.Rid, item.Rtype, item.Owner)
 	_, ret = helper.Execute(sql)
 	if ret {
 		ret = false
-		sql = fmt.Sprintf("select id from item where rid=%d and rtype='%s' and owner=%d", rid, rtype, owner)
+		sql = fmt.Sprintf("select id from item where rid=%d and rtype='%s' and owner=%d", item.Rid, item.Rtype, item.Owner)
 		helper.Query(sql)
 		if helper.Next() {
 			helper.GetValue(&item.ID)
-			item.Rid = rid
-			item.Rtype = rtype
-			item.Owner = owner
 			ret = true
 		}
 	}

@@ -2,7 +2,7 @@ package bll
 
 import (
 	"magiccenter/configuration/dal"
-	"magiccenter/util/dbhelper"
+	"magiccenter/system/dbhelper"
 )
 
 // UpdateConfigurations 更新配置集

@@ -10,5 +10,5 @@ Blocks: Page包含的Block列表
 type Page struct {
 	Owner  string
 	URL    string
-	Blocks []Block
+	Blocks []int
 }

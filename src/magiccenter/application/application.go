@@ -1,7 +1,10 @@
 package application
 
 import (
-	"magiccenter/kernel"
+	"magiccenter/auth"
+	"magiccenter/configuration"
+	"magiccenter/loader"
+	"magiccenter/system"
 	"os"
 )
 
@@ -33,9 +36,15 @@ func (instance application) construct() {
 }
 
 func (instance application) Run() {
-	kernel.Initialize()
+	loader := loader.CreateLoader()
 
-	kernel.Run()
+	authority := auth.CreateAuthority()
 
-	kernel.Uninitialize()
+	configuration := configuration.CreateConfiguration()
+
+	system.Initialize(loader, authority, configuration)
+
+	system.Run()
+
+	system.Uninitialize()
 }

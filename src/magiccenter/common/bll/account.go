@@ -9,7 +9,7 @@ package bll
 import (
 	"magiccenter/common"
 	commonmodel "magiccenter/common/model"
-	"magiccenter/module"
+	"magiccenter/system"
 )
 
 // AccountModuleID Account 模块ID
@@ -48,7 +48,8 @@ type QueryAllUserResponse struct {
 
 // IsAdministrator 用户是否是管理员
 func IsAdministrator(user commonmodel.UserDetail) bool {
-	accountModule, found := module.FindModule(AccountModuleID)
+	moduleHub := system.GetModuleHub()
+	accountModule, found := moduleHub.FindModule(AccountModuleID)
 	if !found {
 		panic("can't find account module")
 	}
@@ -68,7 +69,8 @@ func IsAdministrator(user commonmodel.UserDetail) bool {
 
 // QueryUserDetail 查询指定用户
 func QueryUserDetail(id int) (commonmodel.UserDetail, bool) {
-	accountModule, found := module.FindModule(AccountModuleID)
+	moduleHub := system.GetModuleHub()
+	accountModule, found := moduleHub.FindModule(AccountModuleID)
 	if !found {
 		panic("can't find account module")
 	}
@@ -87,7 +89,8 @@ func QueryUserDetail(id int) (commonmodel.UserDetail, bool) {
 
 // QueryAllUserList 查询所有用户
 func QueryAllUserList() []commonmodel.User {
-	accountModule, found := module.FindModule(AccountModuleID)
+	moduleHub := system.GetModuleHub()
+	accountModule, found := moduleHub.FindModule(AccountModuleID)
 	if !found {
 		panic("can't find account module")
 	}
