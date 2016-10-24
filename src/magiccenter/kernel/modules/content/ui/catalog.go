@@ -7,7 +7,6 @@ import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
 	"magiccenter/system"
 	"net/http"
@@ -166,13 +165,8 @@ func DeleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	user, found := session.GetOption(authID)
+	user, found := session.GetAccount()
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -210,7 +204,7 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			parents = append(parents, pid)
 		}
 
-		if !bll.SaveCatalog(aid, name, user.(model.UserDetail).ID, parents) {
+		if !bll.SaveCatalog(aid, name, user.ID, parents) {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

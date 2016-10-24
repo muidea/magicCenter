@@ -33,7 +33,8 @@ func LoadModule() {
 		instance = &account{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (instance *account) ID() string {

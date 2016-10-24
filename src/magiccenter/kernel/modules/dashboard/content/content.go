@@ -1,4 +1,4 @@
-package contentmanage
+package content
 
 /*
 Content 由三类信息组成
@@ -14,7 +14,8 @@ Content 由三类信息组成
 
 import (
 	"magiccenter/common"
-	"magiccenter/kernel/modules/dashboard/contentmanage/ui"
+	commonhandler "magiccenter/common/handler"
+	"magiccenter/kernel/modules/dashboard/content/ui"
 	"magiccenter/system"
 	"net/http"
 

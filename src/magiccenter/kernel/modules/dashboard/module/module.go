@@ -2,7 +2,7 @@ package modulemanage
 
 import (
 	"magiccenter/common"
-	"magiccenter/kernel/modules/dashboard/modulemanage/ui"
+	"magiccenter/kernel/modules/dashboard/module/ui"
 	"magiccenter/system"
 
 	"muidea.com/util"

@@ -10,7 +10,7 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/kernel/modules/dashboard/contentmanage/bll"
+	"magiccenter/kernel/modules/dashboard/content/bll"
 	"magiccenter/system"
 	"net/http"
 

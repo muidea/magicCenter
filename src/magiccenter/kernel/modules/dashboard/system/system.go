@@ -2,7 +2,7 @@ package systemsetting
 
 import (
 	"magiccenter/common"
-	"magiccenter/kernel/modules/dashboard/systemsetting/ui"
+	"magiccenter/kernel/modules/dashboard/system/ui"
 	"magiccenter/system"
 
 	"muidea.com/util"

@@ -7,7 +7,6 @@ import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
 	"magiccenter/system"
 	"net/http"
@@ -167,13 +166,8 @@ func DeleteLinkHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	user, found := session.GetOption(authID)
+	user, found := session.GetAccount()
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -210,7 +204,7 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveLink(id, name, url, logo, user.(model.UserDetail).ID, catalogs) {
+		if !bll.SaveLink(id, name, url, logo, user.ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

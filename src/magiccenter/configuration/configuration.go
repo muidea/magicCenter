@@ -6,16 +6,6 @@ import (
 	"magiccenter/configuration/bll"
 )
 
-// SystemInfo 系统信息
-type SystemInfo struct {
-	Name         string
-	Logo         string
-	Domain       string
-	MailServer   string
-	MailAccount  string
-	MailPassword string
-}
-
 type impl struct {
 	configInfoMap map[string]string
 }
@@ -42,7 +32,7 @@ func (instance impl) LoadConfig() {
 }
 
 // UpdateSystemInfo 更新系统信息
-func (instance impl) UpdateSystemInfo(info SystemInfo) bool {
+func (instance impl) UpdateSystemInfo(info common.SystemInfo) bool {
 	configs := map[string]string{}
 	configs[common.AppName] = info.Name
 	configs[common.AppDomain] = info.Domain
@@ -62,8 +52,8 @@ func (instance impl) UpdateSystemInfo(info SystemInfo) bool {
 }
 
 // GetSystemInfo 获取系统信息
-func (instance impl) GetSystemInfo() SystemInfo {
-	info := SystemInfo{}
+func (instance impl) GetSystemInfo() common.SystemInfo {
+	info := common.SystemInfo{}
 	info.Name = instance.configInfoMap[common.AppName]
 	info.Domain = instance.configInfoMap[common.AppDomain]
 	info.Logo = instance.configInfoMap[common.AppLogo]

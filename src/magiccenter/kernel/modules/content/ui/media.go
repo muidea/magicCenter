@@ -8,7 +8,6 @@ import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"magiccenter/kernel/modules/content/bll"
 	"magiccenter/system"
 	"net/http"
@@ -169,19 +168,15 @@ func DeleteMediaHandler(w http.ResponseWriter, r *http.Request) {
 func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("AjaxCatalogHandler")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	user, found := session.GetOption(authID)
+	user, found := session.GetAccount()
 	if !found {
 		panic("unexpected, must login system first.")
 	}
 
 	result := common.Result{}
 
+	configuration := system.GetConfiguration()
 	for true {
 		err := r.ParseMultipartForm(0)
 		if err != nil {
@@ -199,8 +194,8 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 
 		name := r.FormValue("media-name")
 
-		staticPath, _ := configuration.GetOption(configuration.StaticPath)
-		uploadPath, _ := configuration.GetOption(configuration.UploadPath)
+		staticPath, _ := configuration.GetOption(common.StaticPath)
+		uploadPath, _ := configuration.GetOption(common.UploadPath)
 		filePath := path.Join(staticPath, uploadPath, time.Now().Format("20060102150405"))
 
 		url, fileType, err := util.MultipartFormFile(r, "media-url", filePath)
@@ -224,7 +219,7 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveMedia(id, name, url, fileType, desc, user.(model.UserDetail).ID, catalogs) {
+		if !bll.SaveMedia(id, name, url, fileType, desc, user.ID, catalogs) {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

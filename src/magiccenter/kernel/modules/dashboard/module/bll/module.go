@@ -3,7 +3,7 @@ package bll
 import (
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/kernel/modules/dashboard/modulemanage/dal"
+	"magiccenter/kernel/modules/dashboard/module/dal"
 	"magiccenter/system"
 )
 
@@ -13,7 +13,7 @@ func queryAllModuleInternal(helper common.DBHelper) []model.Module {
 	modules := dal.QueryAllModule(helper)
 
 	modulehub := system.GetModuleHub()
-	sysModule := module.QueryAllModule()
+	sysModule := modulehub.QueryAllModule()
 
 	for _, sysMod := range sysModule {
 		if sysMod.Type() == common.KERNEL {

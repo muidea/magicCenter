@@ -6,8 +6,8 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
-	"magiccenter/kernel/modules/dashboard/modulemanage/bll"
+	"magiccenter/kernel/modules/dashboard/module/bll"
+	"magiccenter/system"
 	"net/http"
 	"strings"
 )
@@ -35,9 +35,10 @@ func ModuleManageViewHandler(w http.ResponseWriter, r *http.Request) {
 		panic("parse files failed")
 	}
 
+	configuration := system.GetConfiguration()
 	view := ModuleManageView{}
 	view.Modules = bll.QueryAllModules()
-	view.DefaultModule, _ = configuration.GetOption(configuration.SysDefaultModule)
+	view.DefaultModule, _ = configuration.GetOption(common.SysDefaultModule)
 
 	t.Execute(w, view)
 }
@@ -58,10 +59,11 @@ func AjaxModuleActionHandler(w http.ResponseWriter, r *http.Request) {
 		enableModuleList := r.FormValue("enable-list")
 		defaultModule := r.FormValue("default-module")
 
+		configuration := system.GetConfiguration()
 		moduleIds := strings.Split(enableModuleList, ",")
 		_, ok := bll.EnableModules(moduleIds)
 		if ok {
-			ok = configuration.SetOption(configuration.SysDefaultModule, defaultModule)
+			ok = configuration.SetOption(common.SysDefaultModule, defaultModule)
 		} else {
 			result.ErrCode = 1
 			result.Reason = "启动Moule失败"

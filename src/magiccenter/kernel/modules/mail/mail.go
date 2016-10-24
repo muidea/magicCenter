@@ -4,7 +4,6 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/bll"
-	"magiccenter/configuration"
 	"magiccenter/system"
 
 	"muidea.com/util"
@@ -106,6 +105,7 @@ func postMails(postBox *bll.PostBox) {
 }
 
 func postMail(to, subject, body string) bool {
+	configuration := system.GetConfiguration()
 	systemInfo := configuration.GetSystemInfo()
 
 	err := util.SendMail(systemInfo.MailAccount, systemInfo.MailPassword, systemInfo.MailServer, to, subject, body, "html")

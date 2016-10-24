@@ -3,7 +3,8 @@ package ui
 import (
 	"html/template"
 	"log"
-	"magiccenter/configuration"
+	"magiccenter/common"
+	"magiccenter/system"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ const passwordMark = "********"
 
 // SystemSettingView 系统设置视图
 type SystemSettingView struct {
-	SystemInfo configuration.SystemInfo
+	SystemInfo common.SystemInfo
 }
 
 // SystemSettingViewHandler 系统设置视图处理器
@@ -27,6 +28,7 @@ func SystemSettingViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := SystemSettingView{}
+	configuration := system.GetConfiguration()
 	view.SystemInfo = configuration.GetSystemInfo()
 	view.SystemInfo.MailPassword = passwordMark
 

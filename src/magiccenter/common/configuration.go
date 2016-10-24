@@ -32,9 +32,22 @@ const (
 	UploadPath = "@system_uploadPath"
 )
 
+// SystemInfo 系统信息
+type SystemInfo struct {
+	Name         string
+	Logo         string
+	Domain       string
+	MailServer   string
+	MailAccount  string
+	MailPassword string
+}
+
 // Configuration 配置信息
 type Configuration interface {
 	LoadConfig()
 	GetOption(name string) (string, bool)
 	SetOption(name, value string) bool
+
+	GetSystemInfo() SystemInfo
+	UpdateSystemInfo(info SystemInfo) bool
 }

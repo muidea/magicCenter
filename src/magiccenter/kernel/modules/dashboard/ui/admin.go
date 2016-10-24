@@ -15,7 +15,6 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/system"
 	"net/http"
@@ -40,13 +39,8 @@ type VerifyAuthResult struct {
 func AdminViewHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("adminViewHandler")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	user, found := session.GetOption(authID)
+	user, found := session.GetAccount()
 	if !found {
 		panic("unexpected, must login system first.")
 	}
@@ -60,8 +54,8 @@ func AdminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := AdminView{}
-	view.User.ID = user.(model.UserDetail).ID
-	view.User.Name = user.(model.UserDetail).Name
+	view.User.ID = user.ID
+	view.User.Name = user.Name
 	t.Execute(w, view)
 }
 
@@ -71,13 +65,8 @@ func LoginViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	_, found = session.GetOption(authID)
+	_, found := session.GetAccount()
 	if found {
 		http.Redirect(w, r, "/admin/", http.StatusFound)
 	}
@@ -95,11 +84,6 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("VerifyAuthActionHandler")
 
 	result := VerifyAuthResult{}
-
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
 
 	for {
 		err := r.ParseForm()
@@ -136,7 +120,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		session := system.GetSession(w, r)
-		session.SetOption(authID, user)
+		session.SetAccount(user)
 
 		result.ErrCode = 0
 		result.Reason = "登陆成功"
@@ -155,13 +139,8 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("logoutActionHandler")
 
-	authID, found := configuration.GetOption(configuration.AuthorithID)
-	if !found {
-		panic("unexpected, can't fetch authorith id")
-	}
-
 	session := system.GetSession(w, r)
-	session.RemoveOption(authID)
+	session.ClearAccount()
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }

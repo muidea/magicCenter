@@ -5,9 +5,9 @@ import (
 	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
 	"magiccenter/kernel/modules/dashboard"
-	"magiccenter/kernel/modules/dashboard/contentmanage"
-	"magiccenter/kernel/modules/dashboard/modulemanage"
-	"magiccenter/kernel/modules/dashboard/systemsetting"
+	contentmanage "magiccenter/kernel/modules/dashboard/content"
+	modulemanage "magiccenter/kernel/modules/dashboard/module"
+	systemsetting "magiccenter/kernel/modules/dashboard/system"
 	"magiccenter/kernel/modules/mail"
 )
 

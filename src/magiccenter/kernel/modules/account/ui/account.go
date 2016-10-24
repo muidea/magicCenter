@@ -8,8 +8,8 @@ import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"magiccenter/kernel/modules/account/bll"
+	"magiccenter/system"
 	"net/http"
 	"strconv"
 
@@ -151,6 +151,7 @@ func DeleteUserActionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendVerifyMail(user, email, id string) {
+	configuration := system.GetConfiguration()
 	systemInfo := configuration.GetSystemInfo()
 
 	subject := "MagicCenter账号验证"
