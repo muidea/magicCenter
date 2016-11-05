@@ -5,6 +5,7 @@ import (
 	"magiccenter/system/dbhelper"
 	"magiccenter/system/modulehub"
 	"magiccenter/system/router"
+	"magiccenter/system/session"
 	"martini"
 	"net/http"
 )
@@ -32,7 +33,7 @@ func GetDBHelper() (common.DBHelper, error) {
 
 // GetSession 获取当前Session
 func GetSession(w http.ResponseWriter, r *http.Request) common.Session {
-	return nil
+	return session.GetSession(w, r)
 }
 
 // GetAuthority 获取当前Authority
@@ -46,7 +47,9 @@ func GetConfiguration() common.Configuration {
 }
 
 // BindStatic 绑定静态资源路径
-func BindStatic(path string) {
+func BindStatic() {
+	path := "template"
+	path, _ = configurationImpl.GetOption(common.ResourcePath)
 	instanceFrame.Use(martini.Static(path))
 }
 
@@ -61,15 +64,20 @@ func Initialize(loader common.ModuleLoader, auth common.Authority, configuration
 	authImpl = auth
 	configurationImpl = configuration
 
+	configurationImpl.LoadConfig()
+
 	loader.LoadAllModules()
 
 	allModules := moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
+		baseURL := m.URL()
 		routes := m.Routes()
 		for _, rt := range routes {
-			routerImpl.AddRoute(rt)
+			routerImpl.AddRoute(baseURL, rt)
 		}
 	}
+
+	BindStatic()
 
 	BindAuthVerify(auth)
 
@@ -81,9 +89,10 @@ func Uninitialize() {
 
 	allModules := moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
+		baseURL := m.URL()
 		routes := m.Routes()
 		for _, rt := range routes {
-			routerImpl.RemoveRoute(rt)
+			routerImpl.RemoveRoute(baseURL, rt)
 		}
 	}
 

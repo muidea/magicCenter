@@ -4,6 +4,8 @@ import "magiccenter/common/model"
 
 // Session 会话
 type Session interface {
+	ID() string
+
 	GetOption(key string) (interface{}, bool)
 	SetOption(key string, value interface{})
 	RemoveOption(key string)
@@ -12,4 +14,6 @@ type Session interface {
 	GetAccount() (model.UserDetail, bool)
 	SetAccount(user model.UserDetail)
 	ClearAccount()
+
+	OptionKey() []string
 }

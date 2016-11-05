@@ -1,5 +1,11 @@
 package configuration
 
+/*
+实现common.Configuration接口
+
+应用端通过System获取接口对象
+*/
+
 import (
 	"log"
 	"magiccenter/common"
@@ -12,14 +18,14 @@ type impl struct {
 
 // CreateConfiguration 创建Configuration
 func CreateConfiguration() common.Configuration {
-	impl := impl{}
+	impl := &impl{}
 	impl.configInfoMap = map[string]string{}
 
-	return &impl
+	return impl
 }
 
 // LoadConfig 加载系统配置信息
-func (instance impl) LoadConfig() {
+func (instance *impl) LoadConfig() {
 	log.Println("configuration initialize ...")
 
 	keys := []string{common.AppName, common.AppDomain, common.AppLogo, common.MailServer, common.MailAccount, common.MailPassword, common.SysDefaultModule}
@@ -32,7 +38,7 @@ func (instance impl) LoadConfig() {
 }
 
 // UpdateSystemInfo 更新系统信息
-func (instance impl) UpdateSystemInfo(info common.SystemInfo) bool {
+func (instance *impl) UpdateSystemInfo(info common.SystemInfo) bool {
 	configs := map[string]string{}
 	configs[common.AppName] = info.Name
 	configs[common.AppDomain] = info.Domain
@@ -52,7 +58,7 @@ func (instance impl) UpdateSystemInfo(info common.SystemInfo) bool {
 }
 
 // GetSystemInfo 获取系统信息
-func (instance impl) GetSystemInfo() common.SystemInfo {
+func (instance *impl) GetSystemInfo() common.SystemInfo {
 	info := common.SystemInfo{}
 	info.Name = instance.configInfoMap[common.AppName]
 	info.Domain = instance.configInfoMap[common.AppDomain]
@@ -65,7 +71,7 @@ func (instance impl) GetSystemInfo() common.SystemInfo {
 }
 
 // GetOption 获取指定的配置项
-func (instance impl) GetOption(name string) (string, bool) {
+func (instance *impl) GetOption(name string) (string, bool) {
 	value, found := instance.configInfoMap[name]
 	if !found {
 		return bll.GetConfiguration(name)
@@ -75,7 +81,7 @@ func (instance impl) GetOption(name string) (string, bool) {
 }
 
 // SetOption 设置指定配置项
-func (instance impl) SetOption(name, value string) bool {
+func (instance *impl) SetOption(name, value string) bool {
 	// 如果值没有变化则直接返回成功
 	oldValue, found := instance.configInfoMap[name]
 	if found && oldValue == value {

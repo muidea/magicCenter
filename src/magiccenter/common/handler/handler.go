@@ -1,14 +1,16 @@
 package handler
 
+/*
+提供基础的Handler实现
+1、操作不支持
+2、静态页面访问
+*/
+
 import (
 	"encoding/json"
 	"html/template"
 	"magiccenter/common"
-	"magiccenter/configuration"
 	"net/http"
-	"path"
-
-	utilPath "muidea.com/path"
 )
 
 // Result 处理结果
@@ -35,14 +37,7 @@ func HTMLViewHandler(w http.ResponseWriter, r *http.Request, htmlfile string) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	// 如果指定的页面不存在，这里返回404页面
-	staticPath, _ := configuration.GetOption(configuration.StaticPath)
-	fullPath := path.Join(staticPath, htmlfile)
-	if !utilPath.PathExist(fullPath) {
-		fullPath = path.Join(staticPath, "404.html")
-	}
-
-	t, err := template.ParseFiles(fullPath)
+	t, err := template.ParseFiles(htmlfile)
 	if err != nil {
 		panic("parse files failed")
 	}

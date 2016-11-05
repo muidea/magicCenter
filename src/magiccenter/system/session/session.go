@@ -1,80 +1,88 @@
 package session
 
 import (
+	"magiccenter/common/model"
 	"time"
 )
 
 const (
-	MAX_TIME_OUT = 10
+	maxTimeOut = 10
 )
 
-func init() {
-	initialize()
-}
-
-type Session struct {
+type impl struct {
 	id      string // session id
 	context map[string]interface{}
 }
 
-func (this *Session) Id() string {
-	return this.id
+func (s *impl) ID() string {
+	return s.id
 }
 
-func (this *Session) refresh() {
-	this.context["$$refreshTime"] = time.Now()
+func (s *impl) SetOption(key string, value interface{}) {
+	s.context[key] = value
+
+	s.save()
 }
 
-func (this *Session) timeOut() bool {
-	preTime, found := this.context["$$refreshTime"]
+func (s *impl) GetOption(key string) (interface{}, bool) {
+	value, found := s.context[key]
+
+	return value, found
+}
+
+func (s *impl) RemoveOption(key string) {
+	delete(s.context, key)
+
+	s.save()
+}
+
+func (s *impl) GetAccount() (model.UserDetail, bool) {
+	account := model.UserDetail{}
+	user, found := s.context["$$userAccount"]
+	if found {
+		account = user.(model.UserDetail)
+	}
+
+	return account, found
+}
+
+func (s *impl) SetAccount(user model.UserDetail) {
+	s.context["$$userAccount"] = user
+
+	s.save()
+}
+
+func (s *impl) ClearAccount() {
+	delete(s.context, "$$userAccount")
+
+	s.save()
+}
+
+func (s *impl) OptionKey() []string {
+	keys := []string{}
+	for key := range s.context {
+		keys = append(keys, key)
+	}
+
+	return keys
+}
+
+func (s *impl) refresh() {
+	s.context["$$refreshTime"] = time.Now()
+}
+
+func (s *impl) timeOut() bool {
+	preTime, found := s.context["$$refreshTime"]
 	if !found {
 		return true
 	}
-	
+
 	nowTime := time.Now()
 	elapse := nowTime.Sub(preTime.(time.Time)).Minutes()
-	
-	return elapse > MAX_TIME_OUT
+
+	return elapse > maxTimeOut
 }
 
-func (this *Session) AccessToken() string {
-	token := createUUID()
-
-	this.context["$$access_token"] = token
-	
-	return token
+func (s *impl) save() {
+	updateSession(s)
 }
-
-func (this *Session) ValidToken(token string) bool {
-	cur, found := this.context["$$access_token"]
-	if !found {
-		return false
-	}
-
-	return cur.(string) == token
-}
-
-func (this *Session) ReleaseAccessToken() {
-	delete(this.context, "$$access_token")
-}
-
-func (this *Session) SetOption(key string, value interface{}) {
-	this.context[key] = value
-}
-
-func (this *Session) GetOption(key string) (interface{}, bool) {
-	value, found := this.context[key]
-	
-	return value, found	
-}
-
-func (this *Session) RemoveOption(key string) {
-	delete(this.context, key)
-}
-
-func (this *Session) Save() {
-	updateSession(this)
-}
-
-
-

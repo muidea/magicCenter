@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Catalog Center</title>
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/resources/jquery/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/resources/jquery/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/resources/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/resources/admin/common/js/common.js"></script>
+    <script type="text/javascript" src="/resources/admin/content/js/catalog.js"></script>
+    <script type="text/javascript">
+        catalog.catalogInfo = {{.Catalogs}};
+        catalog.userInfo = {{.Users}};
+
+        $(document).ready(function() {
+            catalog.initialize();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid content-box" id="catalog-Content">
+        <div class="content-header">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="catalog-List active"><a href="#catalog-List">列表</a></li>
+                <li role="presentation" class="catalog-Edit"><a href="#catalog-Edit">编辑</a></li>
+            </ul>
+        </div>
+        <div class="content-content">
+            <div class="tab-content" id="catalog-List">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>分类名</th>
+                            <th>父类</th>
+                            <th>创建者</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5">
+                                <div class="clear"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <tr>
+                            <td><a href="#" title="title">Sit amet</a></td>
+                            <td><a href="#" title="title">Parent Catalog</a></td>
+                            <td>Donec tortor diam</td>
+                            <td>
+                                <a href="#" title="Edit"><img src="/resources/admin/images/pencil.png" alt="Edit" /></a>
+                                <a href="#" title="Delete"><img src="/resources/admin/images/cross.png" alt="Delete" /></a>
+                                <a href="#" title="Edit Meta"><img src="/resources/admin/images/hammer_screwdriver.png" alt="Edit Meta" /></a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-content" id="catalog-Edit">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                <form enctype="multipart/form-data" class="catalog-Form" action="/content/ajaxCatalog/" method="post">
+                    <div class="form-group">
+                        <label for="catalog-name">名称</label> <input class="form-control catalog-name" type="text" name="catalog-name" id="catalog-name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="catalog-parent">父类</label>
+                        <chckBox class="checkbox catalog-parent">
+                            <label><input type="checkbox"/> Check me out </label>
+                            <label><input type="checkbox"/> Check me out </label>
+                        </chckBox>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="catalog-id" name="catalog-id" class="catalog-id" value="-1" />
+                    </div>
+                    <button type="submit" class="btn btn-default">提交</button>
+                    <button type="button" class="btn btn-default reset">重填</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

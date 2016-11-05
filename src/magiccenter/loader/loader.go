@@ -19,7 +19,7 @@ func CreateLoader() common.ModuleLoader {
 }
 
 // LoadAllModules 加载所有Module
-func (instance impl) LoadAllModules() {
+func (instance *impl) LoadAllModules() {
 	kernelloader.LoadAllModules()
 	//externloader.LoadAllModules()
 }

@@ -30,7 +30,7 @@ func CreateModuleHub() common.ModuleHub {
 
 // QueryAllModule 查询所有的模块
 // 包含启用和未启用的
-func (instance impl) QueryAllModule() []common.Module {
+func (instance *impl) QueryAllModule() []common.Module {
 	modules := []common.Module{}
 
 	for _, m := range instance.moduleIDMap {
@@ -41,7 +41,7 @@ func (instance impl) QueryAllModule() []common.Module {
 }
 
 // GetAllModuleGroups 获取所有的模块分组
-func (instance impl) GetAllModuleGroups() []string {
+func (instance *impl) GetAllModuleGroups() []string {
 	allGroups := []string{}
 	for _, m := range instance.moduleIDMap {
 		g := m.Group()
@@ -61,7 +61,7 @@ func (instance impl) GetAllModuleGroups() []string {
 }
 
 // GetModulesByGroup 获取指定分组的所有模块
-func (instance impl) GetModulesByGroup(group string) []common.Module {
+func (instance *impl) GetModulesByGroup(group string) []common.Module {
 	modules := []common.Module{}
 	for _, m := range instance.moduleIDMap {
 		g := m.Group()
@@ -75,28 +75,28 @@ func (instance impl) GetModulesByGroup(group string) []common.Module {
 }
 
 // FindModule 根据Module ID查找指定模块
-func (instance impl) FindModule(id string) (common.Module, bool) {
+func (instance *impl) FindModule(id string) (common.Module, bool) {
 	m, found := instance.moduleIDMap[id]
 
 	return m, found
 }
 
 // RegisterModule 在系统中注册模块
-func (instance impl) RegisterModule(m common.Module) {
+func (instance *impl) RegisterModule(m common.Module) {
 	log.Printf("register module, id:%s, name:%s", m.ID(), m.Name())
 
 	instance.moduleIDMap[m.ID()] = m
 }
 
 // UnregisterModule 在系统中取消注册模块
-func (instance impl) UnregisterModule(id string) {
+func (instance *impl) UnregisterModule(id string) {
 	log.Printf("unregister module, id:%s", id)
 
 	delete(instance.moduleIDMap, id)
 }
 
 // StartupAllModules 启动全部模块
-func (instance impl) StartupAllModules() {
+func (instance *impl) StartupAllModules() {
 	log.Println("StartupAllModules all modules")
 
 	for _, m := range instance.moduleIDMap {
@@ -106,7 +106,7 @@ func (instance impl) StartupAllModules() {
 }
 
 // CleanupAllModules 清除全部模块
-func (instance impl) CleanupAllModules() {
+func (instance *impl) CleanupAllModules() {
 	for _, m := range instance.moduleIDMap {
 		m.Cleanup()
 	}

@@ -18,7 +18,7 @@ const Name = "Magic SystemSetting"
 const Description = "Magic 系统设置模块"
 
 // URL 模块Url
-const URL string = "admin"
+const URL string = "dashboard/system"
 
 type systemsetting struct {
 }

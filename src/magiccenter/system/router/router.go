@@ -52,7 +52,7 @@ func CreateRouter() common.Router {
 }
 
 // NewRoute 新建一个路由对象
-func (instance impl) NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route {
+func (instance *impl) NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route {
 	r := route{}
 	r.rType = rType
 	r.rPattern = rPattern
@@ -63,40 +63,42 @@ func (instance impl) NewRoute(rType, rPattern string, rHandler interface{}, rVer
 }
 
 // AddRoute 增加Route
-func (instance impl) AddRoute(rt common.Route) {
+func (instance *impl) AddRoute(baseURL string, rt common.Route) {
+	fullURL := util.JoinURL(baseURL, rt.Pattern())
 	switch rt.Type() {
 	case common.GET:
-		instance.AddGetRoute(rt.Pattern(), rt.Handler(), rt.Verifier())
+		instance.AddGetRoute(fullURL, rt.Handler(), rt.Verifier())
 	case common.POST:
-		instance.AddPostRoute(rt.Pattern(), rt.Handler(), rt.Verifier())
+		instance.AddPostRoute(fullURL, rt.Handler(), rt.Verifier())
 	case common.DELETE:
-		instance.AddDeleteRoute(rt.Pattern(), rt.Handler(), rt.Verifier())
+		instance.AddDeleteRoute(fullURL, rt.Handler(), rt.Verifier())
 	case common.PUT:
-		instance.AddPutRoute(rt.Pattern(), rt.Handler(), rt.Verifier())
+		instance.AddPutRoute(fullURL, rt.Handler(), rt.Verifier())
 	}
 }
 
 // RemoveRoute 清除Route
-func (instance impl) RemoveRoute(rt common.Route) {
+func (instance *impl) RemoveRoute(baseURL string, rt common.Route) {
+	fullURL := util.JoinURL(baseURL, rt.Pattern())
 	switch rt.Type() {
 	case common.GET:
-		instance.RemoveGetRoute(rt.Pattern())
+		instance.RemoveGetRoute(fullURL)
 	case common.POST:
-		instance.RemovePostRoute(rt.Pattern())
+		instance.RemovePostRoute(fullURL)
 	case common.DELETE:
-		instance.RemoveDeleteRoute(rt.Pattern())
+		instance.RemoveDeleteRoute(fullURL)
 	case common.PUT:
-		instance.RemovePutRoute(rt.Pattern())
+		instance.RemovePutRoute(fullURL)
 	}
 }
 
 // Router 返回系统Router
-func (instance impl) Router() martini.Router {
+func (instance *impl) Router() martini.Router {
 	return instance.martiniRouter
 }
 
 // AddGetRoute 添加一条Get路由
-func (instance impl) AddGetRoute(pattern string, handler, verifier interface{}) {
+func (instance *impl) AddGetRoute(pattern string, handler, verifier interface{}) {
 	// 如果verifier为nil则表示不需要进行权限校验
 	// 所以在verifier为nil的情况下不需要校验verifier是否为func
 	if verifier != nil {
@@ -112,12 +114,12 @@ func (instance impl) AddGetRoute(pattern string, handler, verifier interface{}) 
 }
 
 // RemoveGetRoute 清除一条Get路由
-func (instance impl) RemoveGetRoute(pattern string) {
+func (instance *impl) RemoveGetRoute(pattern string) {
 	delete(instance.routerVerifier, pattern)
 }
 
 // AddPutRoute 添加一条Put路由
-func (instance impl) AddPutRoute(pattern string, handler, verifier interface{}) {
+func (instance *impl) AddPutRoute(pattern string, handler, verifier interface{}) {
 	// 如果verifier为nil则表示不需要进行权限校验
 	// 所以在verifier为nil的情况下不需要校验verifier是否为func
 	if verifier != nil {
@@ -133,12 +135,12 @@ func (instance impl) AddPutRoute(pattern string, handler, verifier interface{}) 
 }
 
 // RemovePutRoute 清除一条Put路由
-func (instance impl) RemovePutRoute(pattern string) {
+func (instance *impl) RemovePutRoute(pattern string) {
 	delete(instance.routerVerifier, pattern)
 }
 
 // AddPostRoute 添加一条Post路由
-func (instance impl) AddPostRoute(pattern string, handler, verifier interface{}) {
+func (instance *impl) AddPostRoute(pattern string, handler, verifier interface{}) {
 	// 如果verifier为nil则表示不需要进行权限校验
 	// 所以在verifier为nil的情况下不需要校验verifier是否为func
 	if verifier != nil {
@@ -154,12 +156,12 @@ func (instance impl) AddPostRoute(pattern string, handler, verifier interface{})
 }
 
 // RemovePostRoute 清除一条Post路由
-func (instance impl) RemovePostRoute(pattern string) {
+func (instance *impl) RemovePostRoute(pattern string) {
 	delete(instance.routerVerifier, pattern)
 }
 
 // AddDeleteRoute 添加一条Delete路由
-func (instance impl) AddDeleteRoute(pattern string, handler, verifier interface{}) {
+func (instance *impl) AddDeleteRoute(pattern string, handler, verifier interface{}) {
 	// 如果verifier为nil则表示不需要进行权限校验
 	// 所以在verifier为nil的情况下不需要校验verifier是否为func
 	if verifier != nil {
@@ -175,19 +177,19 @@ func (instance impl) AddDeleteRoute(pattern string, handler, verifier interface{
 }
 
 // RemoveDeleteRoute 清除一条Delete路由
-func (instance impl) RemoveDeleteRoute(pattern string) {
+func (instance *impl) RemoveDeleteRoute(pattern string) {
 	delete(instance.routerVerifier, pattern)
 }
 
 // Dispatch 分发一次请求
-func (instance impl) Dispatch(res http.ResponseWriter, req *http.Request) {
+func (instance *impl) Dispatch(res http.ResponseWriter, req *http.Request) {
 
 }
 
 // VerifyAuthority 校验路由权限
-func (instance impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
+func (instance *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
 	verifiter, found := instance.routerVerifier[req.URL.Path]
-	if !found {
+	if !found || verifiter == nil {
 		// 找不到verifier,说明不需要进权限校验，返回校验通过
 		return true
 	}
@@ -200,12 +202,12 @@ func (instance impl) VerifyAuthority(res http.ResponseWriter, req *http.Request)
 }
 
 // AddAuthVerifier 添加一个路由的权限校验器
-func (instance impl) AddAuthVerifier(pattern string, verifier interface{}) {
+func (instance *impl) AddAuthVerifier(pattern string, verifier interface{}) {
 	util.ValidateFunc(verifier)
 	instance.routerVerifier[pattern] = verifier
 }
 
 // RemoveAuthVerifier 清除一个路由的权限校验器
-func (instance impl) RemoveAuthVerifier(pattern string) {
+func (instance *impl) RemoveAuthVerifier(pattern string) {
 	delete(instance.routerVerifier, pattern)
 }

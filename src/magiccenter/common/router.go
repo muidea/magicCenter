@@ -20,9 +20,9 @@ type Router interface {
 	// 新建Route
 	NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) Route
 	// 增加路由
-	AddRoute(rt Route)
+	AddRoute(baseURL string, rt Route)
 	// 清除路由
-	RemoveRoute(rt Route)
+	RemoveRoute(baseURL string, rt Route)
 
 	// 增加Get路由
 	AddGetRoute(pattern string, handler, verifier interface{})

@@ -26,7 +26,7 @@ const (
 	StaticPath = "@system_staticPath"
 
 	// ResourcePath 应用资源路径
-	ResourcePath = "@system_staticPath"
+	ResourcePath = "@system_resourcePath"
 
 	// UploadPath 上传文件保存路径
 	UploadPath = "@system_uploadPath"
