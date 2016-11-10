@@ -193,8 +193,8 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 
 		name := r.FormValue("media-name")
 
-		staticPath := system.GetStaticPath()
-		filePath := path.Join(staticPath, time.Now().Format("20060102150405"))
+		uploadPath := system.GetUploadPath()
+		filePath := path.Join(uploadPath, time.Now().Format("20060102150405"))
 
 		url, fileType, err := util.MultipartFormFile(r, "media-url", filePath)
 		if err != nil {

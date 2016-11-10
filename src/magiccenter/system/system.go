@@ -47,14 +47,19 @@ func GetConfiguration() common.Configuration {
 	return configurationImpl
 }
 
-// GetHTMLPath 绑定静态资源路径
+// GetHTMLPath 获取指定HTML页面的路径
 func GetHTMLPath(fileName string) string {
 	return path.Join("template/html", fileName)
 }
 
-// GetStaticPath 绑定静态资源路径
+// GetStaticPath 获取静态资源存放路径
 func GetStaticPath() string {
-	return "static"
+	return "template/static"
+}
+
+// GetUploadPath 获取上传文件存放路径
+func GetUploadPath() string {
+	return "upload"
 }
 
 // bindResourcePath 绑定资源路径
