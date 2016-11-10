@@ -32,7 +32,7 @@ const Name = "Magic ContentManage"
 const Description = "Magic 内容管理模块"
 
 // URL 模块Url
-const URL string = "dashboard/content"
+const URL string = "/dashboard/content"
 
 type contentmanage struct {
 }

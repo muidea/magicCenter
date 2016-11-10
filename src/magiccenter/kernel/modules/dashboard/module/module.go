@@ -18,7 +18,7 @@ const Name = "Magic ModuleManage"
 const Description = "Magic 模块管理模块"
 
 // URL 模块Url
-const URL string = "dashboard/module"
+const URL string = "/dashboard/module"
 
 type modulemanage struct {
 }

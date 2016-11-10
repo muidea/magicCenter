@@ -18,7 +18,7 @@ const Name = "Magic SystemSetting"
 const Description = "Magic 系统设置模块"
 
 // URL 模块Url
-const URL string = "dashboard/system"
+const URL string = "/dashboard/system"
 
 type systemsetting struct {
 }
@@ -70,7 +70,7 @@ func (instance *systemsetting) Routes() []common.Route {
 
 	routes := []common.Route{
 		// 管理视图
-		router.NewRoute(common.GET, "systemsetting/", ui.SystemSettingViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "/", ui.SystemSettingViewHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

@@ -32,9 +32,9 @@ func (instance *impl) LoadConfig() {
 
 	instance.configInfoMap = bll.GetConfigurations(keys)
 
-	instance.configInfoMap[common.StaticPath] = "static"
-	instance.configInfoMap[common.ResourcePath] = "template"
-	instance.configInfoMap[common.UploadPath] = "upload"
+	//instance.configInfoMap[common.StaticPath] = "static"
+	//instance.configInfoMap[common.ResourcePath] = "template"
+	//instance.configInfoMap[common.UploadPath] = "upload"
 }
 
 // UpdateSystemInfo 更新系统信息

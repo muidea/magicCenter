@@ -176,7 +176,6 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 
 	result := common.Result{}
 
-	configuration := system.GetConfiguration()
 	for true {
 		err := r.ParseMultipartForm(0)
 		if err != nil {
@@ -194,9 +193,8 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 
 		name := r.FormValue("media-name")
 
-		staticPath, _ := configuration.GetOption(common.StaticPath)
-		uploadPath, _ := configuration.GetOption(common.UploadPath)
-		filePath := path.Join(staticPath, uploadPath, time.Now().Format("20060102150405"))
+		staticPath := system.GetStaticPath()
+		filePath := path.Join(staticPath, time.Now().Format("20060102150405"))
 
 		url, fileType, err := util.MultipartFormFile(r, "media-url", filePath)
 		if err != nil {

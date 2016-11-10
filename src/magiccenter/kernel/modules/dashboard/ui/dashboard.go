@@ -20,10 +20,10 @@ import (
 	"net/http"
 )
 
-// AdminView 管理页面视图
+// DashboardView 管理页面视图
 // 后台管理主页面信息
 // 包含当前登陆的用户信息
-type AdminView struct {
+type DashboardView struct {
 	User model.User
 }
 
@@ -48,12 +48,13 @@ func DashboardViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles("template/html/dashboard/index.html")
+	htmlFile := system.GetHTMLPath("kernel/dashboard/index.html")
+	t, err := template.ParseFiles(htmlFile)
 	if err != nil {
-		panic("parse file failed")
+		panic("parse files failed")
 	}
 
-	view := AdminView{}
+	view := DashboardView{}
 	view.User.ID = user.ID
 	view.User.Name = user.Name
 	t.Execute(w, view)
@@ -69,9 +70,11 @@ func LoginViewHandler(w http.ResponseWriter, r *http.Request) {
 	_, found := session.GetAccount()
 	if found {
 		http.Redirect(w, r, "/dashboard/", http.StatusFound)
+		return
 	}
 
-	t, err := template.ParseFiles("template/html/dashboard/login.html")
+	htmlFile := system.GetHTMLPath("kernel/dashboard/login.html")
+	t, err := template.ParseFiles(htmlFile)
 	if err != nil {
 		panic("parse files failed")
 	}

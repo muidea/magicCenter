@@ -18,7 +18,7 @@ const Name = "Magic Dashboard"
 const Description = "Magic Dashboard模块"
 
 // URL 模块Url
-const URL string = "/system/dashboard"
+const URL string = "/dashboard"
 
 type dashboard struct {
 }
@@ -69,11 +69,13 @@ func (instance *dashboard) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
-		// 管理视图
+		// Dashboard主页面
 		router.NewRoute(common.GET, "/", ui.DashboardViewHandler, auth.AdminAuthVerify()),
-
+		// 登陆页面
 		router.NewRoute(common.GET, "login/", ui.LoginViewHandler, nil),
+		// 登陆校验
 		router.NewRoute(common.POST, "verify/", ui.VerifyAuthActionHandler, nil),
+		// 登出校验
 		router.NewRoute(common.GET, "logout/", ui.LogoutActionHandler, auth.AdminAuthVerify()),
 	}
 

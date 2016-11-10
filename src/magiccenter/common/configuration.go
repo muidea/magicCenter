@@ -23,13 +23,13 @@ const (
 	SysDefaultModule = "@system_defaultModule"
 
 	// StaticPath 静态资源路径
-	StaticPath = "@system_staticPath"
+	//StaticPath = "@system_staticPath"
 
 	// ResourcePath 应用资源路径
-	ResourcePath = "@system_resourcePath"
+	//ResourcePath = "@system_resourcePath"
 
 	// UploadPath 上传文件保存路径
-	UploadPath = "@system_uploadPath"
+	//UploadPath = "@system_uploadPath"
 )
 
 // SystemInfo 系统信息

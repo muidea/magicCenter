@@ -8,6 +8,7 @@ import (
 	"magiccenter/system/session"
 	"martini"
 	"net/http"
+	"path"
 )
 
 var routerImpl = router.CreateRouter()
@@ -46,15 +47,24 @@ func GetConfiguration() common.Configuration {
 	return configurationImpl
 }
 
-// BindStatic 绑定静态资源路径
-func BindStatic() {
-	path := "template"
-	path, _ = configurationImpl.GetOption(common.ResourcePath)
+// GetHTMLPath 绑定静态资源路径
+func GetHTMLPath(fileName string) string {
+	return path.Join("template/html", fileName)
+}
+
+// GetStaticPath 绑定静态资源路径
+func GetStaticPath() string {
+	return "static"
+}
+
+// bindResourcePath 绑定资源路径
+func bindResourcePath() {
+	path := "template/resources"
 	instanceFrame.Use(martini.Static(path))
 }
 
-// BindAuthVerify 绑定权限校验器
-func BindAuthVerify(auth common.Authority) {
+// bindAuthVerify 绑定权限校验器
+func bindAuthVerify(auth common.Authority) {
 	instanceFrame.Use(auth.Authority())
 }
 
@@ -77,9 +87,9 @@ func Initialize(loader common.ModuleLoader, auth common.Authority, configuration
 		}
 	}
 
-	BindStatic()
+	bindResourcePath()
 
-	BindAuthVerify(auth)
+	bindAuthVerify(auth)
 
 	moduleHubImpl.StartupAllModules()
 }
