@@ -2,8 +2,10 @@ package systemsetting
 
 import (
 	"magiccenter/common"
+	commonhandler "magiccenter/common/handler"
 	"magiccenter/kernel/modules/dashboard/system/ui"
 	"magiccenter/system"
+	"net/http"
 
 	"muidea.com/util"
 )
@@ -69,6 +71,7 @@ func (instance *systemsetting) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
+		router.NewRoute(common.GET, "/", viewHandler, auth.AdminAuthVerify()),
 		// 管理视图
 		router.NewRoute(common.GET, "/", ui.SystemSettingViewHandler, auth.AdminAuthVerify()),
 	}
@@ -94,4 +97,8 @@ func (instance *systemsetting) Invoke(param interface{}, result interface{}) boo
 	}
 
 	return false
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/system/system.html")
 }

@@ -84,7 +84,7 @@ func (instance *contentmanage) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
-		router.NewRoute(common.GET, "view/", viewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "/", viewHandler, auth.AdminAuthVerify()),
 
 		// Content Restfull API接口
 		// 获取指定Module的视图信息
@@ -145,5 +145,5 @@ func (instance *contentmanage) Invoke(param interface{}, result interface{}) boo
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
-	commonhandler.HTMLViewHandler(w, r, "template/html/admin/module/content.html")
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/content/content.html")
 }

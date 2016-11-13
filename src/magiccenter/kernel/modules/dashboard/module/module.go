@@ -2,8 +2,10 @@ package modulemanage
 
 import (
 	"magiccenter/common"
+	commonhandler "magiccenter/common/handler"
 	"magiccenter/kernel/modules/dashboard/module/ui"
 	"magiccenter/system"
+	"net/http"
 
 	"muidea.com/util"
 )
@@ -69,6 +71,8 @@ func (instance *modulemanage) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
+		router.NewRoute(common.GET, "/", viewHandler, auth.AdminAuthVerify()),
+
 		// 模块设置视图
 		router.NewRoute(common.GET, "moduleview/", ui.ModuleManageViewHandler, auth.AdminAuthVerify()),
 		// 模块设置处理器
@@ -98,4 +102,8 @@ func (instance *modulemanage) Invoke(param interface{}, result interface{}) bool
 	}
 
 	return false
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/module/module.html")
 }

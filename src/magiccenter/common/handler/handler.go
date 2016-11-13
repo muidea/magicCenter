@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"magiccenter/common"
+	"magiccenter/system"
 	"net/http"
 )
 
@@ -37,7 +38,8 @@ func HTMLViewHandler(w http.ResponseWriter, r *http.Request, htmlfile string) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles(htmlfile)
+	htmlFile := system.GetHTMLPath(htmlfile)
+	t, err := template.ParseFiles(htmlFile)
 	if err != nil {
 		panic("parse files failed")
 	}
