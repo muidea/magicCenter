@@ -18,7 +18,7 @@ const Name = "Magic Content"
 const Description = "Magic 内容管理模块"
 
 // URL 模块Url
-const URL string = "content"
+const URL string = "/content"
 
 type content struct {
 }

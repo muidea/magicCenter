@@ -20,7 +20,7 @@ const Name = "Magic Account"
 const Description = "Magic 账号管理模块"
 
 // URL 模块Url
-const URL string = "account"
+const URL string = "/account"
 
 type account struct {
 }

@@ -7,6 +7,7 @@ import (
 	"magiccenter/common"
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/bll"
+	"magiccenter/system"
 	"net/http"
 	"strconv"
 
@@ -36,7 +37,8 @@ func ManageGroupViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/html")
 	w.Header().Set("charset", "utf-8")
 
-	t, err := template.ParseFiles("template/html/admin/account/group.html")
+	htmlFile := system.GetHTMLPath("kernel/modules/account/group.html")
+	t, err := template.ParseFiles(htmlFile)
 	if err != nil {
 		panic("parse files failed")
 	}
