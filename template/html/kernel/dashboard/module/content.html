@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Content Center</title>
+    <link rel="stylesheet" href="/common/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/common/jquery/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/common/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/common/jquery/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/common/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/common/js/common.js"></script>
+    <script type="text/javascript" src="/kernel/dashboard/module/js/content.js"></script>
+    <script type="text/javascript">
+        content.moduleList = {{.Modules}};
+        $(document).ready(function() {
+            content.initialize();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid content-box" id="module-Content">
+        <div class="content-header">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="module-List active"><a href="#module-List">列表</a></li>
+                <li role="presentation" class="content-List"><a href="#content-List">管理</a></li>
+            </ul>
+        </div>
+        <div class="content-content">
+            <div class="tab-content" id="module-List">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>模块名</th>
+                            <th>功能介绍</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">
+                                <div class="clear"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <tr class="blog alt-row">
+                            <td>博客</td>
+                            <td>博客功能</td>
+                            <td>
+                                <a href="#">内容管理</a>
+                            </td>
+                        </tr>
+                        <tr class="shop">
+                            <td>网店</td>
+                            <td>网店功能</td>
+                            <td>
+                                <a href="#">内容管理</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-content" id="content-List">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="block-List">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>功能块</th>
+                                <th>条目数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="block">
+                                <td>导航栏</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="block-Form">
+                    <form class="block-Form" action="/admin/system/ajaxBlockItem/" method="post">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <checkbox class="default-shop article-List">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>文章</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </checkbox>
+                                </div>
+                                <div class="col-md-4">
+                                    <checkbox class="default-shop catalog-List">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>分类</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </checkbox>
+                                </div>
+                                <div class="col-md-4">
+                                    <checkbox class="default-shop link-List">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>链接</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="checkbox" name="default-shop" value="1"> <span>设为默认</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </checkbox>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <input type="hidden" class="form-control block-owner" name="block-owner" value="" />
+                                <input type="hidden" class="form-control block-id" name="block-id" value="-1" />
+                                <button class="btn btn-default button" type="button">提交</button>
+                                <button type="button" class="btn btn-default reset">重填</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
