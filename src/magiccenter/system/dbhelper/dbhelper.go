@@ -7,7 +7,7 @@ import (
 )
 
 type impl struct {
-	dao *dao.Dao
+	dao dao.Dao
 }
 
 // NewHelper 创建数据助手
