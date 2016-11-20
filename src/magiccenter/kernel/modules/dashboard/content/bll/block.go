@@ -4,7 +4,6 @@ package bll
 管理一个模块的Block
 
 对于一个Module来说，拥有的Block时固定的，定义了一个Module时就确定了其拥有的Block
-
 */
 
 import (
