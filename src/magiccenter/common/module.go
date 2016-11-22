@@ -19,6 +19,8 @@ type Module interface {
 	Type() int
 	// URL 模块Url，每个模块都对应唯一的Url,不带'/'
 	URL() string
+	// 状态
+	Status() int
 
 	// EndPoint 模块提供的Rest api支持
 	EndPoint() EndPoint

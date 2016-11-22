@@ -63,6 +63,10 @@ func (instance *static) URL() string {
 	return URL
 }
 
+func (instance *static) Status() int {
+	return 0
+}
+
 func (instance *static) EndPoint() common.EndPoint {
 	return nil
 }

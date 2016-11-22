@@ -59,6 +59,10 @@ func (instance *cache) URL() string {
 	return URL
 }
 
+func (instance *cache) Status() int {
+	return 0
+}
+
 func (instance *cache) EndPoint() common.EndPoint {
 	return nil
 }

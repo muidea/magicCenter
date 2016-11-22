@@ -61,6 +61,10 @@ func (instance *account) URL() string {
 	return URL
 }
 
+func (instance *account) Status() int {
+	return 0
+}
+
 func (instance *account) EndPoint() common.EndPoint {
 	return nil
 }

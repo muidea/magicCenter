@@ -3,7 +3,7 @@ package bll
 import (
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/kernel/modules/dashboard/module/dal"
+	"magiccenter/kernel/api/dal"
 	"magiccenter/system"
 )
 
@@ -28,7 +28,7 @@ func queryAllModuleInternal(helper common.DBHelper) []model.Module {
 			mod.Name = sysMod.Name()
 			mod.Description = sysMod.Description()
 			mod.URL = sysMod.URL()
-			mod.EnableFlag = 0
+			mod.Status = 0
 
 			modules = append(modules, mod)
 		}
@@ -70,13 +70,13 @@ func EnableModules(enableList []string) ([]model.Module, bool) {
 		}
 
 		if found {
-			if m.EnableFlag == 0 {
-				m.EnableFlag = 1
+			if m.Status == 0 {
+				m.Status = 1
 				_, ok = dal.SaveModule(helper, m)
 			}
 		} else {
-			if m.EnableFlag == 1 {
-				m.EnableFlag = 0
+			if m.Status == 1 {
+				m.Status = 0
 				_, ok = dal.SaveModule(helper, m)
 			}
 		}
@@ -117,7 +117,7 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 		m.Id = instance.ID()
 		m.Name = instance.Name()
 		m.Description = instance.Description()
-		m.EnableFlag = 0
+		m.Status = 0
 		m, found = dal.SaveModule(helper, m)
 	}
 
@@ -125,7 +125,7 @@ func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
-		detail.EnableFlag = m.EnableFlag
+		detail.Status = m.Status
 		detail.Blocks = dal.QueryBlocks(helper, id)
 
 		rts := instance.Routes()
@@ -161,7 +161,7 @@ func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayo
 		m.Id = instance.ID()
 		m.Name = instance.Name()
 		m.Description = instance.Description()
-		m.EnableFlag = 0
+		m.Status = 0
 		m, found = dal.SaveModule(helper, m)
 	}
 
@@ -169,7 +169,7 @@ func AddModuleBlock(name, tag string, style int, owner string) (model.ModuleLayo
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
-		detail.EnableFlag = m.EnableFlag
+		detail.Status = m.Status
 		detail.Blocks = dal.QueryBlocks(helper, owner)
 
 		rts := instance.Routes()
@@ -205,7 +205,7 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 		m.Id = instance.ID()
 		m.Name = instance.Name()
 		m.Description = instance.Description()
-		m.EnableFlag = 0
+		m.Status = 0
 		m, found = dal.SaveModule(helper, m)
 	}
 
@@ -213,7 +213,7 @@ func RemoveModuleBlock(id int, owner string) (model.ModuleLayout, bool) {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
-		detail.EnableFlag = m.EnableFlag
+		detail.Status = m.Status
 		detail.Blocks = dal.QueryBlocks(helper, owner)
 
 		rts := instance.Routes()
@@ -254,7 +254,7 @@ func SavePageBlock(owner, url string, blocks []int) (model.ModuleLayout, bool) {
 		m.Id = instance.ID()
 		m.Name = instance.Name()
 		m.Description = instance.Description()
-		m.EnableFlag = 0
+		m.Status = 0
 		m, found = dal.SaveModule(helper, m)
 	}
 
@@ -262,7 +262,7 @@ func SavePageBlock(owner, url string, blocks []int) (model.ModuleLayout, bool) {
 		detail.Id = m.Id
 		detail.Name = m.Name
 		detail.Description = m.Description
-		detail.EnableFlag = m.EnableFlag
+		detail.Status = m.Status
 		detail.Blocks = dal.QueryBlocks(helper, owner)
 
 		rts := instance.Routes()

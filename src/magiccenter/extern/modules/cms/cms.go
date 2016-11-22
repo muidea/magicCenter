@@ -59,6 +59,10 @@ func (c *cms) URL() string {
 	return URL
 }
 
+func (c *cms) Status() int {
+	return 0
+}
+
 func (c *cms) EndPoint() common.EndPoint {
 	return nil
 }

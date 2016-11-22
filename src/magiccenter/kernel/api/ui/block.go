@@ -5,7 +5,7 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/kernel/modules/dashboard/content/bll"
+	"magiccenter/kernel/api/bll"
 	"net/http"
 	"strconv"
 

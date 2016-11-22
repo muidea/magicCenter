@@ -59,6 +59,10 @@ func (instance *content) URL() string {
 	return URL
 }
 
+func (instance *content) Status() int {
+	return 0
+}
+
 func (instance *content) EndPoint() common.EndPoint {
 	return nil
 }

@@ -2,7 +2,7 @@ package bll
 
 import (
 	"magiccenter/common/model"
-	"magiccenter/kernel/modules/dashboard/content/dal"
+	"magiccenter/kernel/api/dal"
 	"magiccenter/system"
 )
 

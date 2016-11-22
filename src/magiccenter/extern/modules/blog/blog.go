@@ -59,6 +59,10 @@ func (b *blog) URL() string {
 	return URL
 }
 
+func (b *blog) Status() int {
+	return 0
+}
+
 func (b *blog) EndPoint() common.EndPoint {
 	return nil
 }

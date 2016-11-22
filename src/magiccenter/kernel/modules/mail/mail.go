@@ -60,6 +60,10 @@ func (instance *mail) URL() string {
 	return URL
 }
 
+func (instance *mail) Status() int {
+	return 0
+}
+
 func (instance *mail) EndPoint() common.EndPoint {
 	return nil
 }

@@ -1,9 +1,12 @@
 package dashboard
 
 import (
+	"log"
 	"magiccenter/common"
-	"magiccenter/kernel/modules/dashboard/ui"
+	commonhandler "magiccenter/common/handler"
+	"magiccenter/kernel/dashboard/ui"
 	"magiccenter/system"
+	"net/http"
 
 	"muidea.com/util"
 )
@@ -59,6 +62,10 @@ func (instance *dashboard) URL() string {
 	return URL
 }
 
+func (instance *dashboard) Status() int {
+	return 0
+}
+
 func (instance *dashboard) EndPoint() common.EndPoint {
 	return nil
 }
@@ -77,6 +84,11 @@ func (instance *dashboard) Routes() []common.Route {
 		router.NewRoute(common.POST, "verify/", ui.VerifyAuthActionHandler, nil),
 		// 登出校验
 		router.NewRoute(common.GET, "logout/", ui.LogoutActionHandler, auth.AdminAuthVerify()),
+
+		router.NewRoute(common.GET, "module/", moduleViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "content/", contentViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "authority/", authorityViewHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.GET, "system/", systemViewHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes
@@ -100,4 +112,24 @@ func (instance *dashboard) Invoke(param interface{}, result interface{}) bool {
 	}
 
 	return false
+}
+
+func moduleViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("dashboard module viewHandler")
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/module.html")
+}
+
+func contentViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("dashboard content viewHandler")
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/content.html")
+}
+
+func authorityViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("dashboard authority viewHandler")
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/authority.html")
+}
+
+func systemViewHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("dashboard system viewHandler")
+	commonhandler.HTMLViewHandler(w, r, "kernel/dashboard/system.html")
 }

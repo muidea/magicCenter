@@ -1,13 +1,11 @@
 package loader
 
 import (
+	api "magiccenter/kernel/api"
+	"magiccenter/kernel/dashboard"
 	"magiccenter/kernel/modules/account"
 	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
-	"magiccenter/kernel/modules/dashboard"
-	contentmanage "magiccenter/kernel/modules/dashboard/content"
-	modulemanage "magiccenter/kernel/modules/dashboard/module"
-	systemsetting "magiccenter/kernel/modules/dashboard/system"
 	"magiccenter/kernel/modules/mail"
 )
 
@@ -20,13 +18,9 @@ func LoadAllModules() {
 
 	dashboard.LoadModule()
 
-	systemsetting.LoadModule()
-
 	account.LoadModule()
 
 	content.LoadModule()
 
-	contentmanage.LoadModule()
-
-	modulemanage.LoadModule()
+	api.LoadModule()
 }
