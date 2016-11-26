@@ -6,8 +6,8 @@ import (
 	"magiccenter/system"
 )
 
-// QueryAllUserList 查询全部用户列表
-func QueryAllUserList() []model.User {
+// QueryAllUser 查询全部用户列表
+func QueryAllUser() []model.User {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -17,8 +17,8 @@ func QueryAllUserList() []model.User {
 	return dal.QueryAllUserList(helper)
 }
 
-// QueryAllUser 查询全部用户
-func QueryAllUser() []model.UserDetail {
+// QueryAllUserDetail 查询全部用户
+func QueryAllUserDetail() []model.UserDetail {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")

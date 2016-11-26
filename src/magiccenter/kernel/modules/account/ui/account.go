@@ -47,7 +47,7 @@ func ManageUserViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := ManageUserView{}
-	view.Users = bll.QueryAllUser()
+	view.Users = bll.QueryAllUserDetail()
 	view.Groups = bll.QueryAllGroup()
 
 	t.Execute(w, view)
@@ -58,7 +58,7 @@ func QueryAllUserActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("queryAllUserActionHandler")
 
 	result := AllUserList{}
-	result.Users = bll.QueryAllUser()
+	result.Users = bll.QueryAllUserDetail()
 
 	b, err := json.Marshal(result)
 	if err != nil {

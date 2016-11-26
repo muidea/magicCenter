@@ -150,12 +150,22 @@ func (instance *account) Invoke(param interface{}, result interface{}) bool {
 			if request != nil {
 				response := result.(*commonbll.QueryAllUserResponse)
 				response.Result.ErrCode = 0
-				response.Users = bll.QueryAllUserList()
+				response.Users = bll.QueryAllUser()
 
 				return true
 			}
 		}
+	case *commonbll.QueryAllGroupRequest:
+		{
+			request := param.(*commonbll.QueryAllGroupRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryAllGroupResponse)
+				response.Result.ErrCode = 0
+				response.Groups = bll.QueryAllGroup()
 
+				return true
+			}
+		}
 	}
 
 	return false

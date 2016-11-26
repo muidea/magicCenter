@@ -46,6 +46,16 @@ type QueryAllUserResponse struct {
 	Users  []commonmodel.User
 }
 
+// QueryAllGroupRequest 查询所有分组
+type QueryAllGroupRequest struct {
+}
+
+// QueryAllGroupResponse 查询所有分组响应
+type QueryAllGroupResponse struct {
+	Result common.Result
+	Groups []commonmodel.Group
+}
+
 // IsAdministrator 用户是否是管理员
 func IsAdministrator(user commonmodel.UserDetail) bool {
 	moduleHub := system.GetModuleHub()
@@ -87,8 +97,8 @@ func QueryUserDetail(id int) (commonmodel.UserDetail, bool) {
 	return response.User, false
 }
 
-// QueryAllUserList 查询所有用户
-func QueryAllUserList() []commonmodel.User {
+// QueryAllUser 查询所有用户
+func QueryAllUser() ([]commonmodel.User, bool) {
 	moduleHub := system.GetModuleHub()
 	accountModule, found := moduleHub.FindModule(AccountModuleID)
 	if !found {
@@ -99,8 +109,26 @@ func QueryAllUserList() []commonmodel.User {
 	response := QueryAllUserResponse{}
 	result := accountModule.Invoke(&request, &response)
 	if result && response.Result.Success() {
-		return response.Users
+		return response.Users, true
 	}
 
-	return response.Users
+	return response.Users, false
+}
+
+// QueryAllGroup 查询所有分组
+func QueryAllGroup() ([]commonmodel.Group, bool) {
+	moduleHub := system.GetModuleHub()
+	accountModule, found := moduleHub.FindModule(AccountModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QueryAllGroupRequest{}
+	response := QueryAllGroupResponse{}
+	result := accountModule.Invoke(&request, &response)
+	if result && response.Result.Success() {
+		return response.Groups, true
+	}
+
+	return response.Groups, false
 }

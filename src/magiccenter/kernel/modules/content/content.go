@@ -2,6 +2,9 @@ package content
 
 import (
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
+	commonmodel "magiccenter/common/model"
+	"magiccenter/kernel/modules/content/bll"
 	"magiccenter/kernel/modules/content/ui"
 	"magiccenter/system"
 
@@ -136,6 +139,73 @@ func (instance *content) Invoke(param interface{}, result interface{}) bool {
 	util.ValidataPtr(param)
 	if result != nil {
 		util.ValidataPtr(result)
+	}
+	switch param.(type) {
+	case *commonbll.QueryContentMetaRequest:
+		{
+			request := param.(*commonbll.QueryContentMetaRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryContentMetaResponse)
+				articleMeta := commonmodel.ContentMeta{Subject: commonmodel.ARTICLE, Description: "文章", URL: "conent/article/"}
+				response.ContentMetas = append(response.ContentMetas, articleMeta)
+
+				catalogMeta := commonmodel.ContentMeta{Subject: commonmodel.CATALOG, Description: "分类", URL: "conent/catalog/"}
+				response.ContentMetas = append(response.ContentMetas, catalogMeta)
+
+				linkMeta := commonmodel.ContentMeta{Subject: commonmodel.LINK, Description: "链接", URL: "conent/link/"}
+				response.ContentMetas = append(response.ContentMetas, linkMeta)
+
+				mediaMeta := commonmodel.ContentMeta{Subject: commonmodel.MEDIA, Description: "文件", URL: "conent/media/"}
+				response.ContentMetas = append(response.ContentMetas, mediaMeta)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QueryContentArticleRequest:
+		{
+			request := param.(*commonbll.QueryContentArticleRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryContentArticleResponse)
+				response.Articles = bll.QueryAllArticleSummary()
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QueryContentCatalogRequest:
+		{
+			request := param.(*commonbll.QueryContentCatalogRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryContentCatalogResponse)
+				response.Catalogs = bll.QueryAllCatalog()
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QueryContentLinkRequest:
+		{
+			request := param.(*commonbll.QueryContentLinkRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryContentLinkResponse)
+				response.Links = bll.QueryAllLink()
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QueryContentMediaRequest:
+		{
+			request := param.(*commonbll.QueryContentMediaRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryContentMediaResponse)
+				response.Medias = bll.QueryAllMedia()
+				return true
+			}
+
+			return false
+		}
 	}
 
 	return false

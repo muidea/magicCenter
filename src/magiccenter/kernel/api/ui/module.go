@@ -6,8 +6,8 @@ import (
 	"magiccenter/common"
 	"magiccenter/common/model"
 	"magiccenter/kernel/api/bll"
-	"magiccenter/system"
 	"net/http"
+	"strconv"
 
 	"muidea.com/util"
 )
@@ -24,11 +24,11 @@ type ModuleBlock struct {
 	BlockList []model.Block
 }
 
-// ModuleContent 模块内容
-type ModuleContent struct {
+// BlockContent 功能块内容
+type BlockContent struct {
 	common.Result
-	Module      model.Module
-	ContentList []model.Item
+	Block    model.Block
+	ItemList []model.Item
 }
 
 // ModuleAuthorityGroup 模块管理组
@@ -45,20 +45,6 @@ func GetModuleListActionHandler(w http.ResponseWriter, r *http.Request) {
 	result := ModuleList{}
 
 	result.ModuleList = bll.QueryAllModules()
-
-	modulehub := system.GetModuleHub()
-	modules := modulehub.QueryAllModule()
-	for _, m := range modules {
-		mod := model.Module{}
-		mod.ID = m.ID()
-		mod.Name = m.Name()
-		mod.Description = m.Description()
-		mod.URL = m.URL()
-		mod.Type = m.Type()
-		mod.Status = m.Status()
-
-		result.ModuleList = append(result.ModuleList, mod)
-	}
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -79,23 +65,17 @@ func GetModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
 		id, found := params["id"]
 		if !found {
 			result.ErrCode = 1
-			result.Reason = "无效请求数据"
+			result.Reason = "非法请求数据"
 			break
 		}
 
-		modulehub := system.GetModuleHub()
-		mod, found := modulehub.FindModule(id)
-		if found {
-			result.ErrCode = 0
-			result.Module.ID = mod.ID()
-			result.Module.Name = mod.Name()
-			result.Module.Description = mod.Description()
-			result.Module.URL = mod.URL()
-			result.Module.Type = mod.Type()
-			result.Module.Status = mod.Status()
-		} else {
+		result.Module, found = bll.QueryModule(id)
+		if !found {
 			result.ErrCode = 1
-			result.Reason = "无效请求数据"
+			result.Reason = "无效请求参数"
+		} else {
+			result.ErrCode = 0
+			result.BlockList = bll.QueryModuleBlocks(id)
 		}
 
 		break
@@ -109,12 +89,38 @@ func GetModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-// GetModuleContentActionHandler 获取Module Content信息
-func GetModuleContentActionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("GetModuleContentActionHandler")
+// GetBlockItemActionHandler 获取Module Content信息
+func GetBlockItemActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("GetBlockItemActionHandler")
 
-	result := ModuleContent{}
+	result := BlockContent{}
 
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		id, found := params["id"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "非法请求数据"
+			break
+		}
+
+		aid, err := strconv.Atoi(id)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "非法请求参数"
+		}
+
+		result.Block, found = bll.GetModuleBlock(aid)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求参数"
+		} else {
+			result.ItemList = bll.GetBlockItems(aid)
+			result.ErrCode = 0
+		}
+
+		break
+	}
 	b, err := json.Marshal(result)
 	if err != nil {
 		panic("json.Marshal, failed, err:" + err.Error())

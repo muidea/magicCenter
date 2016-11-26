@@ -53,8 +53,8 @@ func ManageMediaViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	view := ManageMediaView{}
 	view.Medias = bll.QueryAllMedia()
-	view.Catalogs = bll.QueryAllCatalogList()
-	view.Users = commonbll.QueryAllUserList()
+	view.Catalogs = bll.QueryAllCatalog()
+	view.Users, _ = commonbll.QueryAllUser()
 
 	t.Execute(w, view)
 }

@@ -23,12 +23,12 @@ func queryAllModuleInternal(helper common.DBHelper) []model.Module {
 
 		mod, found := dal.QueryModule(helper, sysMod.ID())
 		if !found {
-			mod = model.Module{}
 			mod.ID = sysMod.ID()
 			mod.Name = sysMod.Name()
 			mod.Description = sysMod.Description()
 			mod.URL = sysMod.URL()
-			mod.Status = 0
+			mod.Type = sysMod.Type()
+			mod.Status = sysMod.Status()
 
 			modules = append(modules, mod)
 		}
@@ -46,6 +46,23 @@ func QueryAllModules() []model.Module {
 	defer helper.Release()
 
 	return queryAllModuleInternal(helper)
+}
+
+// QueryModule 查询指定Module
+func QueryModule(id string) (model.Module, bool) {
+	mod := model.Module{}
+	modulehub := system.GetModuleHub()
+	sysMod, found := modulehub.FindModule(id)
+	if found {
+		mod.ID = sysMod.ID()
+		mod.Name = sysMod.Name()
+		mod.Description = sysMod.Description()
+		mod.URL = sysMod.URL()
+		mod.Type = sysMod.Type()
+		mod.Status = sysMod.Status()
+	}
+
+	return mod, found
 }
 
 // EnableModules 启动模块

@@ -6,7 +6,6 @@ import (
 	"log"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"magiccenter/configuration"
 	"net/http"
 )
 
@@ -142,16 +141,6 @@ func MaintainViewHandler(res http.ResponseWriter, req *http.Request) {
 
 	view := MaintainView{}
 
-	title, found := configuration.GetOption(blogTitleID)
-	if found {
-		view.Title = title
-	}
-
-	description, found := configuration.GetOption(blogDescriptionID)
-	if found {
-		view.Description = description
-	}
-
 	t, err := template.ParseFiles("template/html/modules/blog/maintain.html")
 	if err != nil {
 		panic("ParseFiles failed, err:" + err.Error())
@@ -175,11 +164,6 @@ func MaintainActionHandler(res http.ResponseWriter, req *http.Request) {
 			result.Reason = "无效请求数据"
 			break
 		}
-
-		title := req.FormValue("blog-title")
-		description := req.FormValue("blog-description")
-		configuration.SetOption(blogTitleID, title)
-		configuration.SetOption(blogDescriptionID, description)
 
 		result.ErrCode = 0
 		result.Reason = "更新成功"

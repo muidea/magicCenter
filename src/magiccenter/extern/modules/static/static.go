@@ -1,16 +1,14 @@
 package static
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
 
 // ID Static模块ID
-const ID = "f17133ec-63f0-4b46-0000-e6ca1af6fe4e"
+const ID = "e9a778e8-1098-4d48-80fc-811782fe2798"
 
 // Name Static模块名称
 const Name = "Magic Static"
@@ -19,7 +17,7 @@ const Name = "Magic Static"
 const Description = "Magic 静态文件管理"
 
 // URL Static模块Url
-const URL string = "static"
+const URL string = "/static"
 
 type static struct {
 }
@@ -32,7 +30,8 @@ func LoadModule() {
 		instance = &static{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 // ID Static ID
@@ -73,6 +72,9 @@ func (instance *static) EndPoint() common.EndPoint {
 
 // Route Static 路由信息
 func (instance *static) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		router.NewRoute(common.GET, "/static/**", viewArticleHandler, nil),
 		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),

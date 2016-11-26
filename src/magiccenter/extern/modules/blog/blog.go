@@ -1,10 +1,8 @@
 package blog
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -32,7 +30,8 @@ func LoadModule() {
 		instance = &blog{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (b *blog) ID() string {
@@ -68,6 +67,9 @@ func (b *blog) EndPoint() common.EndPoint {
 }
 
 func (b *blog) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		router.NewRoute(common.GET, "/", indexHandler, nil),
 		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),

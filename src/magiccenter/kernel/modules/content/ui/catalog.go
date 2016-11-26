@@ -50,7 +50,7 @@ func ManageCatalogViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageCatalogView{}
 	view.Catalogs = bll.QueryAllCatalogDetail()
-	view.Users = commonbll.QueryAllUserList()
+	view.Users, _ = commonbll.QueryAllUser()
 
 	t.Execute(w, view)
 }

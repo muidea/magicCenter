@@ -1,100 +1,134 @@
 package bll
 
 import (
-	"magiccenter/common"
 	commonmodel "magiccenter/common/model"
 	"magiccenter/system"
 )
 
 // ContentModuleID ID
-const ContentModuleID = "ffe1c37f-4fea-4a03-a7c3-55a331f5995f"
+const ContentModuleID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
 
-// QueryModuleBlockRequest 查询指定Module拥有的功能块列表请求
-type QueryModuleBlockRequest struct {
-	ID string
+// QueryContentMetaRequest 查询内容元数据请求
+type QueryContentMetaRequest struct {
 }
 
-// QueryModuleBlockResponse 查询指定Module拥有的功能块列表响应
-type QueryModuleBlockResponse struct {
-	Blocks []commonmodel.Block
+// QueryContentMetaResponse 查询内容元数据响应
+type QueryContentMetaResponse struct {
+	ContentMetas []commonmodel.ContentMeta
 }
 
-// QueryModulePageRequest 查询指定Module的页面请求
-type QueryModulePageRequest struct {
-	ID  string
-	URL string
+// QueryContentArticleRequest 查询文章列表请求
+type QueryContentArticleRequest struct {
 }
 
-// QueryModulePageResponse 查询指定Module的页面响应
-type QueryModulePageResponse struct {
-	Result common.Result
-	Page   []commonmodel.Page
+// QueryContentArticleResponse 查询文章列表响应
+type QueryContentArticleResponse struct {
+	Articles []commonmodel.ArticleSummary
 }
 
-// QueryBlockItemRequest 查询指定Block拥有的条目请求
-type QueryBlockItemRequest struct {
-	ID int
+// QueryContentCatalogRequest 查询分类列表请求
+type QueryContentCatalogRequest struct {
 }
 
-// QueryBlockItemResponse 查询指定Block拥有的条目响应
-type QueryBlockItemResponse struct {
-	Result common.Result
-	Items  []commonmodel.Item
+// QueryContentCatalogResponse 查询分类列表响应
+type QueryContentCatalogResponse struct {
+	Catalogs []commonmodel.Catalog
 }
 
-// QueryModuleBlock 查询指定Module的功能块
-func QueryModuleBlock(id string) ([]commonmodel.Block, bool) {
+// QueryContentLinkRequest 查询链接列表请求
+type QueryContentLinkRequest struct {
+}
+
+// QueryContentLinkResponse 查询链接列表响应
+type QueryContentLinkResponse struct {
+	Links []commonmodel.Link
+}
+
+// QueryContentMediaRequest 查询文件列表请求
+type QueryContentMediaRequest struct {
+}
+
+// QueryContentMediaResponse 查询文件列表响应
+type QueryContentMediaResponse struct {
+	Medias []commonmodel.MediaDetail
+}
+
+// QueryContentMetas 查询内容元数据
+func QueryContentMetas() ([]commonmodel.ContentMeta, bool) {
 	moduleHub := system.GetModuleHub()
 	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}
 
-	request := QueryModuleBlockRequest{}
-	request.ID = id
+	request := QueryContentMetaRequest{}
 
-	response := QueryModuleBlockResponse{}
+	response := QueryContentMetaResponse{}
 	result := contentModule.Invoke(&request, &response)
 
-	return response.Blocks, result
+	return response.ContentMetas, result
 }
 
-// QueryModulePage 查询指定Module的页面
-func QueryModulePage(id string) ([]commonmodel.Page, bool) {
+// QueryContentArticles 查询文章列表
+func QueryContentArticles() ([]commonmodel.ArticleSummary, bool) {
 	moduleHub := system.GetModuleHub()
 	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}
 
-	request := QueryModulePageRequest{}
-	request.ID = id
+	request := QueryContentArticleRequest{}
 
-	response := QueryModulePageResponse{}
+	response := QueryContentArticleResponse{}
 	result := contentModule.Invoke(&request, &response)
-	if result {
-		result = response.Result.Success()
-	}
 
-	return response.Page, result
+	return response.Articles, result
 }
 
-// QueryBlockItem 查询指定Block拥有的Items
-func QueryBlockItem(id int) ([]commonmodel.Item, bool) {
+// QueryContentCatalogs 查询分类列表
+func QueryContentCatalogs() ([]commonmodel.Catalog, bool) {
 	moduleHub := system.GetModuleHub()
 	contentModule, found := moduleHub.FindModule(ContentModuleID)
 	if !found {
 		panic("can't find account module")
 	}
 
-	request := QueryBlockItemRequest{}
-	request.ID = id
+	request := QueryContentCatalogRequest{}
 
-	response := QueryBlockItemResponse{}
+	response := QueryContentCatalogResponse{}
 	result := contentModule.Invoke(&request, &response)
-	if result {
-		result = response.Result.Success()
+
+	return response.Catalogs, result
+}
+
+// QueryContentLinks 查询链接列表
+func QueryContentLinks() ([]commonmodel.Link, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
 	}
 
-	return response.Items, result
+	request := QueryContentLinkRequest{}
+
+	response := QueryContentLinkResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Links, result
+}
+
+// QueryContentMedias 查询文件列表
+func QueryContentMedias() ([]commonmodel.MediaDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QueryContentMediaRequest{}
+
+	response := QueryContentMediaResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Medias, result
 }

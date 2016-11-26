@@ -73,14 +73,36 @@ func (instance *api) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
+		//=============================模块信息=====================================
 		// 获取Module列表
 		router.NewRoute(common.GET, "module/", ui.GetModuleListActionHandler, auth.AdminAuthVerify()),
-		// 获取ModuleBlock
+		// 获取Module 定义的功能块
 		router.NewRoute(common.GET, "module/block/", ui.GetModuleBlockActionHandler, auth.AdminAuthVerify()),
-		// 获取ModuleContent
-		router.NewRoute(common.GET, "module/content/", ui.GetModuleContentActionHandler, auth.AdminAuthVerify()),
-		// 获取ModuleContent
+		// 获取Module 指定功能块包含的内容
+		router.NewRoute(common.GET, "module/block/item/", ui.GetBlockItemActionHandler, auth.AdminAuthVerify()),
+		// 获取Module 定义的授权分组
 		router.NewRoute(common.GET, "module/authority/", ui.GetModuleAuthorityGroupActionHandler, auth.AdminAuthVerify()),
+
+		//=============================内容信息=====================================
+		// 获取内容元数据列表
+		router.NewRoute(common.GET, "content/", ui.GetContentMetadataListActionHandler, auth.AdminAuthVerify()),
+		// 获取文章信息
+		router.NewRoute(common.GET, "content/article/", ui.GetContentArticleActionHandler, auth.AdminAuthVerify()),
+		// 获取分类信息
+		router.NewRoute(common.GET, "content/catalog/", ui.GetContentCatalogActionHandler, auth.AdminAuthVerify()),
+		// 获取链接
+		router.NewRoute(common.GET, "content/link/", ui.GetContentLinkActionHandler, auth.AdminAuthVerify()),
+		// 获取文件信息
+		router.NewRoute(common.GET, "content/media/", ui.GetContentMediaActionHandler, auth.AdminAuthVerify()),
+
+		//=============================账号信息=====================================
+		// 获取User列表
+		router.NewRoute(common.GET, "account/user/", ui.GetUserListActionHandler, auth.AdminAuthVerify()),
+		// 获取Group列表
+		router.NewRoute(common.GET, "account/group/", ui.GetGroupListActionHandler, auth.AdminAuthVerify()),
+
+		// 获取系统信息
+		router.NewRoute(common.GET, "system/", ui.GetSystemInfoActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

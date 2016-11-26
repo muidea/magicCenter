@@ -1,10 +1,8 @@
 package cms
 
 import (
-	"magiccenter/auth"
 	"magiccenter/common"
-	"magiccenter/module"
-	"magiccenter/router"
+	"magiccenter/system"
 
 	"muidea.com/util"
 )
@@ -32,7 +30,8 @@ func LoadModule() {
 		instance = &cms{}
 	}
 
-	module.RegisterModule(instance)
+	modulehub := system.GetModuleHub()
+	modulehub.RegisterModule(instance)
 }
 
 func (c *cms) ID() string {
@@ -68,6 +67,9 @@ func (c *cms) EndPoint() common.EndPoint {
 }
 
 func (c *cms) Routes() []common.Route {
+	router := system.GetRouter()
+	auth := system.GetAuthority()
+
 	routes := []common.Route{
 		router.NewRoute(common.GET, "/", indexHandler, nil),
 		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),
