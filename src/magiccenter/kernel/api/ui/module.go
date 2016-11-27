@@ -134,6 +134,31 @@ func GetModuleAuthorityGroupActionHandler(w http.ResponseWriter, r *http.Request
 	log.Print("GetModuleAuthorityGroupActionHandler")
 
 	result := ModuleAuthorityGroup{}
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		id, found := params["id"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "非法请求数据"
+			break
+		}
+
+		result.Module, found = bll.QueryModule(id)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求参数"
+		} else {
+			result.GroupList, found = bll.GetModuleAuthGroup(id)
+			if !found {
+				result.ErrCode = 1
+				result.Reason = "无效请求参数"
+			} else {
+				result.ErrCode = 0
+			}
+		}
+
+		break
+	}
 
 	b, err := json.Marshal(result)
 	if err != nil {

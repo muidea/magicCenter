@@ -66,6 +66,12 @@ func (b *blog) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (b *blog) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 func (b *blog) Routes() []common.Route {
 	router := system.GetRouter()
 	auth := system.GetAuthority()

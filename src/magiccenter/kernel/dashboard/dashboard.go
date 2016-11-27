@@ -70,6 +70,12 @@ func (instance *dashboard) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *dashboard) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route 路由信息
 func (instance *dashboard) Routes() []common.Route {
 	router := system.GetRouter()

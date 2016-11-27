@@ -67,6 +67,12 @@ func (instance *api) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *api) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route 路由信息
 func (instance *api) Routes() []common.Route {
 	router := system.GetRouter()

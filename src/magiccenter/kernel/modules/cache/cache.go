@@ -67,6 +67,12 @@ func (instance *cache) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *cache) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route Cache 路由信息
 func (instance *cache) Routes() []common.Route {
 	routes := []common.Route{}

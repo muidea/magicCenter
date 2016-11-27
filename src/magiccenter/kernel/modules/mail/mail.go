@@ -68,6 +68,12 @@ func (instance *mail) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *mail) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route Mail 路由信息
 func (instance *mail) Routes() []common.Route {
 	routes := []common.Route{}

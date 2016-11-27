@@ -66,6 +66,12 @@ func (c *cms) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (c *cms) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 func (c *cms) Routes() []common.Route {
 	router := system.GetRouter()
 	auth := system.GetAuthority()

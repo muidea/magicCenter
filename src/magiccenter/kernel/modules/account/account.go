@@ -69,6 +69,12 @@ func (instance *account) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *account) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route Account 路由信息
 func (instance *account) Routes() []common.Route {
 	router := system.GetRouter()

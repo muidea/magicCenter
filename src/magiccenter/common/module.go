@@ -17,13 +17,16 @@ type Module interface {
 	Description() string
 	Group() string
 	Type() int
-	// URL 模块Url，每个模块都对应唯一的Url,不带'/'
+	// URL 模块Url，每个模块都对应唯一的Url
 	URL() string
 	// 状态
 	Status() int
 
 	// EndPoint 模块提供的Rest api支持
 	EndPoint() EndPoint
+
+	// AuthGroups 授权组信息
+	AuthGroups() []AuthGroup
 
 	// Routes 模块支持的路由信息
 	Routes() []Route

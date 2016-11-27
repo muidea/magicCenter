@@ -70,6 +70,12 @@ func (instance *static) EndPoint() common.EndPoint {
 	return nil
 }
 
+func (instance *static) AuthGroups() []common.AuthGroup {
+	groups := []common.AuthGroup{}
+
+	return groups
+}
+
 // Route Static 路由信息
 func (instance *static) Routes() []common.Route {
 	router := system.GetRouter()
