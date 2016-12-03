@@ -102,8 +102,15 @@ func (instance *api) Routes() []common.Route {
 		router.NewRoute(common.GET, "content/media/", ui.GetContentMediaActionHandler, auth.AdminAuthVerify()),
 
 		//=============================账号信息=====================================
-		// 获取User列表
-		router.NewRoute(common.GET, "account/user/", ui.GetUserListActionHandler, auth.AdminAuthVerify()),
+		// 获取User信息
+		router.NewRoute(common.GET, "account/user/", ui.GetUserActionHandler, auth.AdminAuthVerify()),
+		// 新建User
+		router.NewRoute(common.POST, "account/user/", ui.PostUserActionHandler, auth.AdminAuthVerify()),
+		// 更新User
+		router.NewRoute(common.PUT, "account/user/", ui.PutUserActionHandler, auth.AdminAuthVerify()),
+		// 删除User
+		router.NewRoute(common.DELETE, "account/user/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
+
 		// 获取Group列表
 		router.NewRoute(common.GET, "account/group/", ui.GetGroupListActionHandler, auth.AdminAuthVerify()),
 

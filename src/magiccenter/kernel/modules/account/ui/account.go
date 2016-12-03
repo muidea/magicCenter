@@ -20,19 +20,12 @@ import (
 func VerifyAdminUser(request *commonbll.VerifyAdministratorRequest, response *commonbll.VerifyAdministratorResponse) bool {
 	response.Result.ErrCode = 1
 
-	user, found := bll.QueryUserByID(request.ID)
-	if !found {
-		return false
-	}
-
-	groups := user.Groups
-	for _, gid := range groups {
-		group, found := bll.QueryGroupByID(gid)
-		if found && group.AdminGroup() {
-			response.Result.ErrCode = 0
-			break
+	/*
+		user, found := bll.QueryUserByID(request.ID)
+		if !found {
+			return false
 		}
-	}
+	*/
 
 	return true
 }
@@ -277,21 +270,6 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		account := r.FormValue("account-account")
 		email := r.FormValue("account-email")
-		groups := r.MultipartForm.Value["account-group"]
-		groupList := []int{}
-		for _, g := range groups {
-			gid, err := strconv.Atoi(g)
-			if err != nil {
-				log.Printf("parse group id failed, group:%s", g)
-
-				result.ErrCode = 1
-				result.Reason = "无效请求数据"
-				break
-			}
-
-			groupList = append(groupList, gid)
-		}
-
 		usr, found := bll.QueryUserByID(uid)
 		if found {
 			changeFlag := false
@@ -301,8 +279,6 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 				usr.Status = model.DEACTIVE
 				changeFlag = true
 			}
-			usr.Groups = groupList
-
 			_, ok := bll.UpdateUser(usr)
 			if !ok {
 				result.ErrCode = 1

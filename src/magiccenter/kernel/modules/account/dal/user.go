@@ -4,14 +4,7 @@ import (
 	"fmt"
 	"magiccenter/common"
 	"magiccenter/common/model"
-	"strconv"
-	"strings"
 )
-
-type tempPair struct {
-	user   model.UserDetail
-	groups string
-}
 
 //QueryAllUserList 查询全部用户列表
 func QueryAllUserList(helper common.DBHelper) []model.User {
@@ -32,32 +25,12 @@ func QueryAllUserList(helper common.DBHelper) []model.User {
 //QueryAllUser 查询全部用户信息
 func QueryAllUser(helper common.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user")
+	sql := fmt.Sprintf("select id, account, nickname, email, status from user")
 	helper.Query(sql)
-
-	tmpPairList := []tempPair{}
 	for helper.Next() {
-		groups := ""
 		user := model.UserDetail{}
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
-
-		tmp := tempPair{}
-		tmp.user = user
-		tmp.groups = groups
-
-		tmpPairList = append(tmpPairList, tmp)
-	}
-
-	for _, tmp := range tmpPairList {
-		groupArray := strings.Split(tmp.groups, ",")
-		for _, g := range groupArray {
-			gid, err := strconv.Atoi(g)
-			if err == nil {
-				tmp.user.Groups = append(tmp.user.Groups, gid)
-			}
-		}
-
-		userList = append(userList, tmp.user)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &user.Status)
+		userList = append(userList, user)
 	}
 
 	return userList
@@ -67,24 +40,13 @@ func QueryAllUser(helper common.DBHelper) []model.UserDetail {
 func QueryUserByAccount(helper common.DBHelper, account string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s'", account)
+	sql := fmt.Sprintf("select id, account, nickname, email, status from user where account='%s'", account)
 	helper.Query(sql)
 
-	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &user.Status)
 		result = true
-	}
-
-	if result {
-		groupArray := strings.Split(groups, ",")
-		for _, g := range groupArray {
-			gid, err := strconv.Atoi(g)
-			if err == nil {
-				user.Groups = append(user.Groups, gid)
-			}
-		}
 	}
 
 	return user, result
@@ -94,24 +56,13 @@ func QueryUserByAccount(helper common.DBHelper, account string) (model.UserDetai
 func VerifyUserByAccount(helper common.DBHelper, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id,account,nickname,email, `group`, status from user where account='%s' and password='%s'", account, password)
+	sql := fmt.Sprintf("select id, account, nickname, email, status from user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
 
-	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &user.Status)
 		result = true
-	}
-
-	if result {
-		groupArray := strings.Split(groups, ",")
-		for _, g := range groupArray {
-			gid, err := strconv.Atoi(g)
-			if err == nil {
-				user.Groups = append(user.Groups, gid)
-			}
-		}
 	}
 
 	return user, result
@@ -121,24 +72,13 @@ func VerifyUserByAccount(helper common.DBHelper, account, password string) (mode
 func QueryUserByID(helper common.DBHelper, id int) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where id=%d", id)
+	sql := fmt.Sprintf("select id, account, nickname, email, status from user where id=%d", id)
 	helper.Query(sql)
 
-	groups := ""
 	result := false
 	if helper.Next() {
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
+		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &user.Status)
 		result = true
-	}
-
-	if result {
-		groupArray := strings.Split(groups, ",")
-		for _, g := range groupArray {
-			gid, err := strconv.Atoi(g)
-			if err == nil {
-				user.Groups = append(user.Groups, gid)
-			}
-		}
 	}
 
 	return user, result
@@ -162,7 +102,7 @@ func DeleteUserByAccount(helper common.DBHelper, account, password string) bool 
 func CreateUser(helper common.DBHelper, account, email string) (model.User, bool) {
 	user := model.User{}
 	// insert
-	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", account, "", "", email, "", 0)
+	sql := fmt.Sprintf("insert into user(account, password, nickname, email, status) values ('%s', '%s', '%s', '%s', %d)", account, "", "", email, 0)
 	_, result := helper.Execute(sql)
 	if result {
 		sql = fmt.Sprintf("select id from user where account='%s' and email='%s'", account, email)
@@ -183,14 +123,8 @@ func CreateUser(helper common.DBHelper, account, email string) (model.User, bool
 
 // SaveUser 保存用户信息
 func SaveUser(helper common.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
-	groups := ""
-	for _, g := range user.Groups {
-		groups = fmt.Sprintf("%s%d,", groups, g)
-	}
-	groups = groups[0 : len(groups)-1]
-
 	// modify
-	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.ID)
+	sql := fmt.Sprintf("update user set nickname='%s', email='%s', status=%d where id =%d", user.Name, user.Email, user.Status, user.ID)
 	_, result := helper.Execute(sql)
 
 	return user, result
@@ -198,49 +132,9 @@ func SaveUser(helper common.DBHelper, user model.UserDetail) (model.UserDetail, 
 
 // SaveUserWithPassword 保存用户信息
 func SaveUserWithPassword(helper common.DBHelper, user model.UserDetail, password string) bool {
-	groups := ""
-	for _, g := range user.Groups {
-		groups = fmt.Sprintf("%s%d,", groups, g)
-	}
-	groups = groups[0 : len(groups)-1]
-
 	// modify
-	sql := fmt.Sprintf("update user set password='%s', nickname='%s', email='%s', `group`='%s', status=%d where id =%d", password, user.Name, user.Email, groups, user.Status, user.ID)
+	sql := fmt.Sprintf("update user set password='%s', nickname='%s', email='%s', status=%d where id =%d", password, user.Name, user.Email, user.Status, user.ID)
 	_, result := helper.Execute(sql)
 
 	return result
-}
-
-// QueryUserByGroup 查询指定分组下的用户信息
-func QueryUserByGroup(helper common.DBHelper, id int) []model.UserDetail {
-	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id,account,nickname,email,`group`, status from user where `group` like '%d' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d' union select id,account,nickname,email,`group`, status from user where `group` like '%d,%%' union select id,account,nickname,email,`group`, status from user where `group` like '%%,%d,%%'", id, id, id, id)
-	helper.Query(sql)
-
-	tmpPairList := []tempPair{}
-	for helper.Next() {
-		groups := ""
-		user := model.UserDetail{}
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status)
-
-		tmp := tempPair{}
-		tmp.user = user
-		tmp.groups = groups
-
-		tmpPairList = append(tmpPairList, tmp)
-	}
-
-	for _, tmp := range tmpPairList {
-		groupArray := strings.Split(tmp.groups, ",")
-		for _, g := range groupArray {
-			gid, err := strconv.Atoi(g)
-			if err == nil {
-				tmp.user.Groups = append(tmp.user.Groups, gid)
-			}
-		}
-
-		userList = append(userList, tmp.user)
-	}
-
-	return userList
 }

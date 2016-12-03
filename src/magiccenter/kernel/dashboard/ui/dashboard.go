@@ -107,14 +107,7 @@ func VerifyAuthActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		isAdmin := false
-		for _, gid := range user.Groups {
-			group, found := bll.QueryGroupByID(gid)
-			if found && group.AdminGroup() {
-				isAdmin = true
-			}
-		}
-
+		isAdmin := true
 		if !isAdmin {
 			result.ErrCode = 1
 			result.Reason = "无效账号"

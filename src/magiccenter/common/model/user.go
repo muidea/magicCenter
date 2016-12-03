@@ -29,6 +29,4 @@ type UserDetail struct {
 	Email string
 	// Status 用户状态，预留字段，暂时没有用到
 	Status int
-	// Groups 用户所属分组
-	Groups []int
 }
