@@ -68,7 +68,7 @@ func VerifyAccountViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else if result.User.Status == model.DEACTIVE {
 		result.User.Status = model.ACTIVE
-		bll.SaveUser(result.User)
+		bll.UpdateUser(result.User)
 		commonbll.RemoveCache(id)
 
 		http.Redirect(w, r, "/account/userProfile/", http.StatusFound)

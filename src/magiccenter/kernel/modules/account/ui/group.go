@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	"magiccenter/common/model"
 	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/system"
@@ -13,6 +14,61 @@ import (
 
 	"muidea.com/util"
 )
+
+// QueryAllGroup 查询所有分组
+func QueryAllGroup(request *commonbll.QueryAllGroupRequest, response *commonbll.QueryAllGroupResponse) bool {
+	response.Result.ErrCode = 0
+	response.Groups = bll.QueryAllGroup()
+
+	return true
+}
+
+// QueryGroups 查询指定分组
+func QueryGroups(request *commonbll.QueryGroupsRequest, response *commonbll.QueryGroupsResponse) bool {
+	response.Result.ErrCode = 0
+	response.Groups = bll.QueryGroups(request.Ids)
+
+	return true
+}
+
+// CreateGroup 新建分组
+func CreateGroup(request *commonbll.CreateGroupRequest, response *commonbll.CreateGroupResponse) bool {
+	response.Result.ErrCode = 0
+	ret := false
+	response.Group, ret = bll.CreateGroup(request.Name, request.Description)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "新建分组失败"
+	}
+
+	return true
+}
+
+// UpdateGroup 更新分组
+func UpdateGroup(request *commonbll.UpdateGroupRequest, response *commonbll.UpdateGroupResponse) bool {
+	response.Result.ErrCode = 0
+	ret := false
+	response.Group, ret = bll.SaveGroup(request.Group)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "更新分组失败"
+	}
+
+	return true
+}
+
+// DeleteGroup 更新分组
+func DeleteGroup(request *commonbll.DeleteGroupRequest, response *commonbll.DeleteGroupResponse) bool {
+	response.Result.ErrCode = 0
+	ret := false
+	ret = bll.DeleteGroup(request.ID)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "删除分组失败"
+	}
+
+	return true
+}
 
 // ManageGroupView 分组管理视图
 type ManageGroupView struct {
@@ -177,7 +233,11 @@ func SaveGroupActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		ok := bll.SaveGroup(gid, name, desc)
+		group := model.Group{}
+		group.ID = gid
+		group.Name = name
+		group.Description = desc
+		_, ok := bll.SaveGroup(group)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "保存分组失败"

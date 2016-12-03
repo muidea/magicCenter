@@ -21,6 +21,8 @@ func GetModuleAuthGroup(id string) ([]model.Group, bool) {
 
 			groups = append(groups, g)
 		}
+
+		return groups, true
 	}
 
 	return groups, false

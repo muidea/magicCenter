@@ -3,7 +3,6 @@ package account
 import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
-	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/system"
 
@@ -134,42 +133,89 @@ func (instance *account) Invoke(param interface{}, result interface{}) bool {
 	case *commonbll.VerifyAdministratorRequest:
 		{
 			request := param.(*commonbll.VerifyAdministratorRequest)
-			if request != nil {
-				response := result.(*commonbll.VerifyAdministratorResponse)
-				response.Result.ErrCode = 1
-
-				groups := request.User.Groups
-				for _, gid := range groups {
-					group, found := bll.QueryGroupByID(gid)
-					if found && group.AdminGroup() {
-						response.Result.ErrCode = 0
-						break
-					}
-				}
-
-				return true
+			response := result.(*commonbll.VerifyAdministratorResponse)
+			if request != nil && response != nil {
+				return ui.VerifyAdminUser(request, response)
+			}
+		}
+	case *commonbll.QueryUserDetailRequest:
+		{
+			request := param.(*commonbll.QueryUserDetailRequest)
+			response := result.(*commonbll.QueryUserDetailResponse)
+			if request != nil && response != nil {
+				return ui.QueryUserDetail(request, response)
 			}
 		}
 	case *commonbll.QueryAllUserRequest:
 		{
 			request := param.(*commonbll.QueryAllUserRequest)
-			if request != nil {
-				response := result.(*commonbll.QueryAllUserResponse)
-				response.Result.ErrCode = 0
-				response.Users = bll.QueryAllUser()
-
-				return true
+			response := result.(*commonbll.QueryAllUserResponse)
+			if request != nil && response != nil {
+				return ui.QueryAllUser(request, response)
+			}
+		}
+	case *commonbll.CreateUserRequest:
+		{
+			request := param.(*commonbll.CreateUserRequest)
+			response := result.(*commonbll.CreateUserResponse)
+			if request != nil && response != nil {
+				return ui.CreateUser(request, response)
+			}
+		}
+	case *commonbll.UpdateUserRequest:
+		{
+			request := param.(*commonbll.UpdateUserRequest)
+			response := result.(*commonbll.UpdateUserResponse)
+			if request != nil && response != nil {
+				return ui.UpdateUser(request, response)
+			}
+		}
+	case *commonbll.DeleteUserRequest:
+		{
+			request := param.(*commonbll.DeleteUserRequest)
+			response := result.(*commonbll.DeleteUserResponse)
+			if request != nil && response != nil {
+				return ui.DeleteUser(request, response)
 			}
 		}
 	case *commonbll.QueryAllGroupRequest:
 		{
 			request := param.(*commonbll.QueryAllGroupRequest)
-			if request != nil {
-				response := result.(*commonbll.QueryAllGroupResponse)
-				response.Result.ErrCode = 0
-				response.Groups = bll.QueryAllGroup()
-
-				return true
+			response := result.(*commonbll.QueryAllGroupResponse)
+			if request != nil && response != nil {
+				return ui.QueryAllGroup(request, response)
+			}
+		}
+	case *commonbll.QueryGroupsRequest:
+		{
+			request := param.(*commonbll.QueryGroupsRequest)
+			response := result.(*commonbll.QueryGroupsResponse)
+			if request != nil && response != nil {
+				return ui.QueryGroups(request, response)
+			}
+		}
+	case *commonbll.CreateGroupRequest:
+		{
+			request := param.(*commonbll.CreateGroupRequest)
+			response := result.(*commonbll.CreateGroupResponse)
+			if request != nil && response != nil {
+				return ui.CreateGroup(request, response)
+			}
+		}
+	case *commonbll.UpdateGroupRequest:
+		{
+			request := param.(*commonbll.UpdateGroupRequest)
+			response := result.(*commonbll.UpdateGroupResponse)
+			if request != nil && response != nil {
+				return ui.UpdateGroup(request, response)
+			}
+		}
+	case *commonbll.DeleteGroupRequest:
+		{
+			request := param.(*commonbll.DeleteGroupRequest)
+			response := result.(*commonbll.DeleteGroupResponse)
+			if request != nil && response != nil {
+				return ui.DeleteGroup(request, response)
 			}
 		}
 	}

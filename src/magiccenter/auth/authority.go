@@ -36,7 +36,7 @@ func (intance *impl) AdminAuthVerify() martini.Handler {
 		session := system.GetSession(res, req)
 		user, found := session.GetAccount()
 		if found {
-			result = commonbll.IsAdministrator(user)
+			result = commonbll.IsAdministrator(user.ID)
 		}
 
 		return result

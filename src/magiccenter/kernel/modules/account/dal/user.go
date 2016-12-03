@@ -159,22 +159,30 @@ func DeleteUserByAccount(helper common.DBHelper, account, password string) bool 
 }
 
 // CreateUser 创建新用户，根据用户信息和密码
-func CreateUser(helper common.DBHelper, user model.UserDetail) bool {
-	groups := ""
-	for _, g := range user.Groups {
-		groups = fmt.Sprintf("%s%d,", groups, g)
-	}
-	groups = groups[0 : len(groups)-1]
-
+func CreateUser(helper common.DBHelper, account, email string) (model.User, bool) {
+	user := model.User{}
 	// insert
-	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", user.Account, "", user.Name, user.Email, groups, user.Status)
+	sql := fmt.Sprintf("insert into user(account,password,nickname,email,`group`,status) values ('%s', '%s', '%s', '%s', '%s', %d)", account, "", "", email, "", 0)
 	_, result := helper.Execute(sql)
+	if result {
+		sql = fmt.Sprintf("select id from user where account='%s' and email='%s'", account, email)
+		helper.Query(sql)
 
-	return result
+		result = false
+		if helper.Next() {
+			helper.GetValue(&user.ID)
+
+			user.Name = account
+
+			result = true
+		}
+	}
+
+	return user, result
 }
 
 // SaveUser 保存用户信息
-func SaveUser(helper common.DBHelper, user model.UserDetail) bool {
+func SaveUser(helper common.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
 	groups := ""
 	for _, g := range user.Groups {
 		groups = fmt.Sprintf("%s%d,", groups, g)
@@ -185,7 +193,7 @@ func SaveUser(helper common.DBHelper, user model.UserDetail) bool {
 	sql := fmt.Sprintf("update user set nickname='%s', email='%s', `group`='%s', status=%d where id =%d", user.Name, user.Email, groups, user.Status, user.ID)
 	_, result := helper.Execute(sql)
 
-	return result
+	return user, result
 }
 
 // SaveUserWithPassword 保存用户信息

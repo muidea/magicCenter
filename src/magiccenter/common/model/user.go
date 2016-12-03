@@ -15,7 +15,7 @@ const (
 type User struct {
 	//ID 用户ID,唯一标示该用户
 	ID int
-	// Name 用户名称，允许用户修改也允许重名
+	// Name 用户名称，允许用户修改也允许重名, 如果没有修改，则显示成账号
 	Name string
 }
 

@@ -16,6 +16,90 @@ import (
 	"muidea.com/util"
 )
 
+// VerifyAdminUser 校验用户是否是管理员
+func VerifyAdminUser(request *commonbll.VerifyAdministratorRequest, response *commonbll.VerifyAdministratorResponse) bool {
+	response.Result.ErrCode = 1
+
+	user, found := bll.QueryUserByID(request.ID)
+	if !found {
+		return false
+	}
+
+	groups := user.Groups
+	for _, gid := range groups {
+		group, found := bll.QueryGroupByID(gid)
+		if found && group.AdminGroup() {
+			response.Result.ErrCode = 0
+			break
+		}
+	}
+
+	return true
+}
+
+// QueryAllUser 查询所有用户
+func QueryAllUser(request *commonbll.QueryAllUserRequest, response *commonbll.QueryAllUserResponse) bool {
+	response.Result.ErrCode = 0
+	response.Users = bll.QueryAllUser()
+
+	return true
+}
+
+// QueryUserDetail 查询指定用户
+func QueryUserDetail(request *commonbll.QueryUserDetailRequest, response *commonbll.QueryUserDetailResponse) bool {
+	response.Result.ErrCode = 0
+
+	ret := false
+	response.User, ret = bll.QueryUserByID(request.ID)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "指定用户不存在"
+	}
+
+	return true
+}
+
+// CreateUser 新建用户
+func CreateUser(request *commonbll.CreateUserRequest, response *commonbll.CreateUserResponse) bool {
+	response.Result.ErrCode = 0
+
+	ret := false
+	response.User, ret = bll.CreateUser(request.Account, request.EMail)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "新建用户失败"
+	}
+
+	return true
+}
+
+// UpdateUser 新建用户
+func UpdateUser(request *commonbll.UpdateUserRequest, response *commonbll.UpdateUserResponse) bool {
+	response.Result.ErrCode = 0
+
+	ret := false
+	response.User, ret = bll.UpdateUser(request.User)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "新建用户失败"
+	}
+
+	return true
+}
+
+// DeleteUser 删除用户
+func DeleteUser(request *commonbll.DeleteUserRequest, response *commonbll.DeleteUserResponse) bool {
+	response.Result.ErrCode = 0
+
+	ret := bll.DeleteUser(request.ID)
+	if !ret {
+		response.Result.ErrCode = 1
+		response.Result.Reason = "删除用户失败"
+	}
+
+	return true
+}
+
 // ManageUserView 用户管理视图数据
 type ManageUserView struct {
 	Users  []model.UserDetail
@@ -219,7 +303,7 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			usr.Groups = groupList
 
-			ok := bll.SaveUser(usr)
+			_, ok := bll.UpdateUser(usr)
 			if !ok {
 				result.ErrCode = 1
 				result.Reason = "保存账号信息失败"
@@ -236,7 +320,7 @@ func SaveAccountActionHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			// 新建账号
-			ok := bll.CreateUser(account, email, model.NEW, groupList)
+			_, ok := bll.CreateUser(account, email)
 			if !ok {
 				result.ErrCode = 1
 				result.Reason = "创建账号失败"

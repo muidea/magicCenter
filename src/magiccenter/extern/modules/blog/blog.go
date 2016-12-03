@@ -17,7 +17,7 @@ const Name = "Magic Blog"
 const Description = "Magic 博客"
 
 // URL Blog Module URL
-const URL = "blog"
+const URL = "/blog"
 
 type blog struct {
 }

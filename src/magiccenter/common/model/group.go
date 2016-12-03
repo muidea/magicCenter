@@ -1,10 +1,10 @@
 package model
 
 const (
-	// AdminGroup 管理员组
-	AdminGroup = iota
 	// CommonGroup 普通组
-	CommonGroup
+	CommonGroup = iota
+	// AdminGroup 管理员组
+	AdminGroup
 )
 
 // Group 分组信息

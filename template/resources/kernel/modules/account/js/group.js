@@ -70,9 +70,9 @@ group.constructGroupItem = function(groupInfo) {
 
     var typeInfoTd = document.createElement("td");
     if (groupInfo.Type == 0) {
-        typeInfoTd.innerHTML = "管理员组";
-    } else {
         typeInfoTd.innerHTML = "普通组";
+    } else {
+        typeInfoTd.innerHTML = "管理员组";
     }
     tr.appendChild(typeInfoTd);
 

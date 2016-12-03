@@ -72,8 +72,19 @@ func DeleteUser(id int) bool {
 	return dal.DeleteUser(helper, id)
 }
 
-// SaveUser 保存用户
-func SaveUser(user model.UserDetail) bool {
+// CreateUser 创建新用户
+func CreateUser(account, email string) (model.User, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.CreateUser(helper, account, email)
+}
+
+// UpdateUser 更新指定用户
+func UpdateUser(user model.UserDetail) (model.UserDetail, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -81,25 +92,6 @@ func SaveUser(user model.UserDetail) bool {
 	defer helper.Release()
 
 	return dal.SaveUser(helper, user)
-}
-
-// CreateUser 创建新用户
-func CreateUser(account, email string, status int, groups []int) bool {
-	helper, err := system.GetDBHelper()
-	if err != nil {
-		panic("construct helper failed")
-	}
-	defer helper.Release()
-
-	user := model.UserDetail{}
-
-	user.Account = account
-	user.Name = ""
-	user.Email = email
-	user.Status = status
-	user.Groups = groups
-
-	return dal.CreateUser(helper, user)
 }
 
 // UpdateUserWithPassword 跟新用户信息
