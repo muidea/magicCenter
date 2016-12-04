@@ -36,7 +36,18 @@ func (intance *impl) AdminAuthVerify() martini.Handler {
 		session := system.GetSession(res, req)
 		user, found := session.GetAccount()
 		if found {
-			result = commonbll.IsAdministrator(user.ID)
+			gids, found := commonbll.QueryAuthGroup(user.ID)
+			if found {
+				groups, found := commonbll.QueryGroups(gids)
+				if found {
+					for _, group := range groups {
+						if group.AdminGroup() {
+							result = true
+							break
+						}
+					}
+				}
+			}
 		}
 
 		return result

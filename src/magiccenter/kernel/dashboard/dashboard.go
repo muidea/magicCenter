@@ -3,6 +3,7 @@ package dashboard
 import (
 	"log"
 	"magiccenter/common"
+	commonbll "magiccenter/common/bll"
 	commonhandler "magiccenter/common/handler"
 	"magiccenter/kernel/dashboard/ui"
 	"magiccenter/system"
@@ -23,7 +24,11 @@ const Description = "Magic Dashboard模块"
 // URL 模块Url
 const URL string = "/dashboard"
 
+// 授权分组属性Key，用于读取和存储授权分组信息
+const authGroupKey = "f67123ea-6fe0-5e46-1234-e6ca1af6fe4e_authGroupKey"
+
 type dashboard struct {
+	authGroup []common.AuthGroup
 }
 
 var instance *dashboard
@@ -71,9 +76,7 @@ func (instance *dashboard) EndPoint() common.EndPoint {
 }
 
 func (instance *dashboard) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
-
-	return groups
+	return instance.authGroup
 }
 
 // Route 路由信息
@@ -102,6 +105,32 @@ func (instance *dashboard) Routes() []common.Route {
 
 // Startup 启动模块
 func (instance *dashboard) Startup() bool {
+	configuration := system.GetConfiguration()
+	value, found := configuration.GetOption(authGroupKey)
+	if found {
+		// fetch data from database
+		ids, ok := util.Str2IntArray(value)
+		if ok {
+			groups, ok := commonbll.QueryGroups(ids)
+			if ok {
+				for _, g := range groups {
+					instance.authGroup = append(instance.authGroup, common.CreateAuthGroup(g.Name, g.Description, g.Type, g.ID))
+				}
+			}
+		}
+	} else {
+		ids := []int{}
+		adminGroup, ok := commonbll.CreateGroup("管理员组", "管理员组，拥有最大的管理权限")
+		adminGroup.Type = 1
+		adminGroup, ok = commonbll.UpdateGroup(adminGroup)
+		if ok {
+			ids = append(ids, adminGroup.ID)
+			instance.authGroup = append(instance.authGroup, common.CreateAuthGroup(adminGroup.Name, adminGroup.Description, adminGroup.Type, adminGroup.ID))
+		}
+
+		configuration.SetOption(authGroupKey, util.IntArray2Str(ids))
+	}
+
 	return true
 }
 

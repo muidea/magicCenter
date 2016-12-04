@@ -130,14 +130,6 @@ func (instance *account) Invoke(param interface{}, result interface{}) bool {
 	}
 
 	switch param.(type) {
-	case *commonbll.VerifyAdministratorRequest:
-		{
-			request := param.(*commonbll.VerifyAdministratorRequest)
-			response := result.(*commonbll.VerifyAdministratorResponse)
-			if request != nil && response != nil {
-				return ui.VerifyAdminUser(request, response)
-			}
-		}
 	case *commonbll.QueryUserDetailRequest:
 		{
 			request := param.(*commonbll.QueryUserDetailRequest)

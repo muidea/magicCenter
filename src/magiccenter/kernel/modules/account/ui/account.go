@@ -16,20 +16,6 @@ import (
 	"muidea.com/util"
 )
 
-// VerifyAdminUser 校验用户是否是管理员
-func VerifyAdminUser(request *commonbll.VerifyAdministratorRequest, response *commonbll.VerifyAdministratorResponse) bool {
-	response.Result.ErrCode = 1
-
-	/*
-		user, found := bll.QueryUserByID(request.ID)
-		if !found {
-			return false
-		}
-	*/
-
-	return true
-}
-
 // QueryAllUser 查询所有用户
 func QueryAllUser(request *commonbll.QueryAllUserRequest, response *commonbll.QueryAllUserResponse) bool {
 	response.Result.ErrCode = 0

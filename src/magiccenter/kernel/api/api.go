@@ -111,8 +111,11 @@ func (instance *api) Routes() []common.Route {
 		// 删除User
 		router.NewRoute(common.DELETE, "account/user/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
 
-		// 获取Group列表
-		router.NewRoute(common.GET, "account/group/", ui.GetGroupListActionHandler, auth.AdminAuthVerify()),
+		// 获取Group信息
+		router.NewRoute(common.GET, "account/group/", ui.GetGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.POST, "account/group/", ui.PostGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.PUT, "account/group/", ui.PutGroupActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.DELETE, "account/group/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
 
 		// 获取系统信息
 		router.NewRoute(common.GET, "system/", ui.GetSystemInfoActionHandler, auth.AdminAuthVerify()),

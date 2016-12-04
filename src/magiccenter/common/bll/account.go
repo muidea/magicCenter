@@ -15,36 +15,6 @@ import (
 // AccountModuleID Account 模块ID
 const AccountModuleID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
 
-// VerifyAdministratorRequest 校验用户是否是管理员
-type VerifyAdministratorRequest struct {
-	ID int
-}
-
-// VerifyAdministratorResponse 校验结果
-type VerifyAdministratorResponse struct {
-	Result common.Result
-}
-
-// IsAdministrator 用户是否是管理员
-func IsAdministrator(id int) bool {
-	moduleHub := system.GetModuleHub()
-	accountModule, found := moduleHub.FindModule(AccountModuleID)
-	if !found {
-		panic("can't find account module")
-	}
-
-	request := VerifyAdministratorRequest{ID: id}
-
-	response := VerifyAdministratorResponse{}
-	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
-		// 如果执行成功，并且返回结果也成功，则说明该用户是管理员
-		return true
-	}
-
-	return false
-}
-
 // QueryUserDetailRequest 查询指定用户请求
 type QueryUserDetailRequest struct {
 	ID int

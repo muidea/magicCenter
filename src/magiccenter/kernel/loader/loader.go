@@ -4,6 +4,7 @@ import (
 	api "magiccenter/kernel/api"
 	"magiccenter/kernel/dashboard"
 	"magiccenter/kernel/modules/account"
+	"magiccenter/kernel/modules/authority"
 	"magiccenter/kernel/modules/cache"
 	"magiccenter/kernel/modules/content"
 	"magiccenter/kernel/modules/mail"
@@ -21,6 +22,8 @@ func LoadAllModules() {
 	account.LoadModule()
 
 	content.LoadModule()
+
+	authority.LoadModule()
 
 	api.LoadModule()
 }
