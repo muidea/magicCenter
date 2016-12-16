@@ -42,22 +42,27 @@ func DeleteArticle(id int) bool {
 	return dal.DeleteArticle(helper, id)
 }
 
-// SaveArticle 保存文章
-func SaveArticle(id int, title, content string, uID int, catalogs []int) bool {
+// CreateArticle 新建文章
+func CreateArticle(title, content string, uID int, catalogs []int) (model.ArticleSummary, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	article := model.Article{}
-	article.ID = id
-	article.Title = title
-	article.Content = content
-	article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-	article.Author = uID
-	article.Catalog = catalogs
+	createDate := time.Now().Format("2006-01-02 15:04:05")
+	return dal.CreateArticle(helper, title, content, catalogs, uID, createDate)
+}
 
+// SaveArticle 保存文章
+func SaveArticle(article model.Article) (model.ArticleSummary, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 	return dal.SaveArticle(helper, article)
 }
 

@@ -99,6 +99,11 @@ func PostUserActionHandler(w http.ResponseWriter, r *http.Request) {
 
 		account := r.FormValue("user-account")
 		email := r.FormValue("user-email")
+		if len(account) == 0 || len(email) == 0 {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "无效参数"
+			break
+		}
 
 		ret := false
 		result.User, ret = commonbll.CreateUser(account, email)

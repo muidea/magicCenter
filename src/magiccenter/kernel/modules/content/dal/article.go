@@ -117,34 +117,28 @@ func DeleteArticle(helper common.DBHelper, id int) bool {
 	return result
 }
 
-// SaveArticle 保存文章
-func SaveArticle(helper common.DBHelper, article model.Article) bool {
-	sql := fmt.Sprintf(`select id from article where id=%d`, article.ID)
-	helper.Query(sql)
+// CreateArticle 保存文章
+func CreateArticle(helper common.DBHelper, title, content string, catalogs []int, author int, createDate string) (model.ArticleSummary, bool) {
+	article := model.ArticleSummary{}
+	article.Title = title
+	article.Author = author
+	article.Catalog = catalogs
+	article.CreateDate = createDate
 
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
+	// insert
+	sql := fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, title, content, author, createDate)
+	num, result := helper.Execute(sql)
+	if num != 1 || !result {
+		return article, false
 	}
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, article.Title, article.Content, article.Author, article.CreateDate)
-		_, result = helper.Execute(sql)
-		sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, article.Title, article.Author, article.CreateDate)
+	sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, title, author, createDate)
 
-		helper.Query(sql)
-		result = false
-		if helper.Next() {
-			helper.GetValue(&article.ID)
-			result = true
-		}
-	} else {
-		// modify
-		sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Title, article.Content, article.Author, article.CreateDate, article.ID)
-		_, result = helper.Execute(sql)
+	helper.Query(sql)
+	result = false
+	if helper.Next() {
+		helper.GetValue(&article.ID)
+		result = true
 	}
 
 	if result {
@@ -156,5 +150,38 @@ func SaveArticle(helper common.DBHelper, article model.Article) bool {
 		result = resdal.SaveResource(helper, res)
 	}
 
-	return result
+	return article, result
+}
+
+// SaveArticle 保存文章
+func SaveArticle(helper common.DBHelper, article model.Article) (model.ArticleSummary, bool) {
+	sql := fmt.Sprintf(`select id from article where id=%d`, article.ID)
+	helper.Query(sql)
+
+	summary := model.ArticleSummary{ID: article.ID, Title: article.Title, CreateDate: article.CreateDate, Catalog: article.Catalog, Author: article.Author}
+	result := false
+	if helper.Next() {
+		var id = 0
+		helper.GetValue(&id)
+		result = true
+	}
+
+	if !result {
+		return summary, false
+	}
+
+	// modify
+	sql = fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Title, article.Content, article.Author, article.CreateDate, article.ID)
+	_, result = helper.Execute(sql)
+
+	if result {
+		res := resdal.CreateSimpleRes(article.ID, model.ARTICLE, article.Title)
+		for _, c := range article.Catalog {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
+	}
+
+	return summary, result
 }

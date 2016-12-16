@@ -206,7 +206,15 @@ func AjaxArticleHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveArticle(aid, title, content, user.ID, catalogs) {
+		article := model.Article{}
+		article.ID = aid
+		article.Title = title
+		article.Content = content
+		article.Author = user.ID
+		article.Catalog = catalogs
+
+		_, ret := bll.SaveArticle(article)
+		if !ret {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

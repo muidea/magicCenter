@@ -80,6 +80,12 @@ func CreateUser(account, email string) (model.User, bool) {
 	}
 	defer helper.Release()
 
+	_, found := dal.QueryUserByAccount(helper, account)
+	if found {
+		// 如果该用户已经存在则不允许重复创建
+		return model.User{}, false
+	}
+
 	return dal.CreateUser(helper, account, email)
 }
 

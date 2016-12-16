@@ -9,12 +9,17 @@ import (
 //QueryAllUserList 查询全部用户列表
 func QueryAllUserList(helper common.DBHelper) []model.User {
 	userList := []model.User{}
-	sql := fmt.Sprintf("select id,nickname from user")
+	sql := fmt.Sprintf("select id, account,nickname from user")
 	helper.Query(sql)
 
 	for helper.Next() {
 		user := model.User{}
-		helper.GetValue(&user.ID, &user.Name)
+		account := ""
+		helper.GetValue(&user.ID, &account, &user.Name)
+		if len(user.Name) == 0 {
+			// 如果没有设置NickName则用账号名
+			user.Name = account
+		}
 
 		userList = append(userList, user)
 	}

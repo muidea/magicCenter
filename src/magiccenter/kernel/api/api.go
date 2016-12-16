@@ -2,6 +2,7 @@ package api
 
 import (
 	"magiccenter/common"
+	commonhandler "magiccenter/common/handler"
 	"magiccenter/kernel/api/ui"
 	"magiccenter/system"
 
@@ -94,6 +95,13 @@ func (instance *api) Routes() []common.Route {
 		router.NewRoute(common.GET, "content/", ui.GetContentMetadataListActionHandler, auth.AdminAuthVerify()),
 		// 获取文章信息
 		router.NewRoute(common.GET, "content/article/", ui.GetContentArticleActionHandler, auth.AdminAuthVerify()),
+		// 新增文章信息
+		router.NewRoute(common.POST, "content/article/", ui.PostContentArticleActionHandler, auth.AdminAuthVerify()),
+		// 更新文章信息
+		router.NewRoute(common.PUT, "content/article/", ui.PutContentArticleActionHandler, auth.AdminAuthVerify()),
+		// 删除文章
+		router.NewRoute(common.DELETE, "content/article/", ui.DeleteContentArticleActionHandler, auth.AdminAuthVerify()),
+
 		// 获取分类信息
 		router.NewRoute(common.GET, "content/catalog/", ui.GetContentCatalogActionHandler, auth.AdminAuthVerify()),
 		// 获取链接
@@ -113,12 +121,21 @@ func (instance *api) Routes() []common.Route {
 
 		// 获取Group信息
 		router.NewRoute(common.GET, "account/group/", ui.GetGroupActionHandler, auth.AdminAuthVerify()),
+		// 新建Group
 		router.NewRoute(common.POST, "account/group/", ui.PostGroupActionHandler, auth.AdminAuthVerify()),
+		// 更新Group
 		router.NewRoute(common.PUT, "account/group/", ui.PutGroupActionHandler, auth.AdminAuthVerify()),
+		// 删除Group
 		router.NewRoute(common.DELETE, "account/group/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
 
+		//=============================系统信息=====================================
 		// 获取系统信息
 		router.NewRoute(common.GET, "system/", ui.GetSystemInfoActionHandler, auth.AdminAuthVerify()),
+		// 更新系统信息
+		router.NewRoute(common.PUT, "system/", ui.PutSystemInfoActionHandler, auth.AdminAuthVerify()),
+		// 不支持Post和Delete
+		router.NewRoute(common.POST, "system/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.DELETE, "system/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

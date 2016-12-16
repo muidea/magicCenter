@@ -179,6 +179,50 @@ func (instance *content) Invoke(param interface{}, result interface{}) bool {
 
 			return false
 		}
+	case *commonbll.QuerySingleArticleRequest:
+		{
+			request := param.(*commonbll.QuerySingleArticleRequest)
+			if request != nil {
+				response := result.(*commonbll.QuerySingleArticleResponse)
+				response.Article, response.Found = bll.QueryArticleByID(request.ID)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.CreateArticleRequest:
+		{
+			request := param.(*commonbll.CreateArticleRequest)
+			if request != nil {
+				response := result.(*commonbll.CreateArticleResponse)
+				response.Article, response.Result = bll.CreateArticle(request.Title, request.Content, request.Creater, request.Catalog)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.UpdateArticleRequest:
+		{
+			request := param.(*commonbll.UpdateArticleRequest)
+			if request != nil {
+				response := result.(*commonbll.UpdateArticleResponse)
+				response.Article, response.Result = bll.SaveArticle(request.Article)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.DeleteArticleRequest:
+		{
+			request := param.(*commonbll.DeleteArticleRequest)
+			if request != nil {
+				response := result.(*commonbll.DeleteArticleResponse)
+				response.Result = bll.DeleteArticle(request.ID)
+				return true
+			}
+
+			return false
+		}
 	case *commonbll.QueryContentCatalogRequest:
 		{
 			request := param.(*commonbll.QueryContentCatalogRequest)
