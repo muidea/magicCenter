@@ -3,9 +3,10 @@ package router
 import (
 	"log"
 	"magiccenter/common"
-	"martini"
 	"net/http"
 	"reflect"
+
+	"github.com/go-martini/martini"
 
 	"muidea.com/util"
 )

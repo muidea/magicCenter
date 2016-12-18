@@ -11,8 +11,9 @@ package common
 */
 
 import (
-	"martini"
 	"net/http"
+
+	"github.com/go-martini/martini"
 )
 
 // Router 路由器对象

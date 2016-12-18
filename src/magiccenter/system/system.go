@@ -6,9 +6,10 @@ import (
 	"magiccenter/system/modulehub"
 	"magiccenter/system/router"
 	"magiccenter/system/session"
-	"martini"
 	"net/http"
 	"path"
+
+	"github.com/go-martini/martini"
 )
 
 var routerImpl = router.CreateRouter()

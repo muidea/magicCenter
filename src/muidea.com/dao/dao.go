@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"martini"
 
+	"github.com/go-martini/martini"
 	_ "github.com/go-sql-driver/mysql" //引入Mysql驱动
 )
 

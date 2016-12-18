@@ -1,6 +1,6 @@
 package common
 
-import "martini"
+import "github.com/go-martini/martini"
 
 // Authority 鉴权
 type Authority interface {

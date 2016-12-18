@@ -12,8 +12,9 @@ import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
 	"magiccenter/system"
-	"martini"
 	"net/http"
+
+	"github.com/go-martini/martini"
 )
 
 // AuthorithID 登陆会话鉴权ID
