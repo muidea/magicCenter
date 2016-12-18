@@ -104,10 +104,30 @@ func (instance *api) Routes() []common.Route {
 
 		// 获取分类信息
 		router.NewRoute(common.GET, "content/catalog/", ui.GetContentCatalogActionHandler, auth.AdminAuthVerify()),
+		// 新增分类信息
+		router.NewRoute(common.POST, "content/catalog/", ui.PostContentCatalogActionHandler, auth.AdminAuthVerify()),
+		// 更新呢分类信息
+		router.NewRoute(common.PUT, "content/catalog/", ui.PutContentCatalogActionHandler, auth.AdminAuthVerify()),
+		// 删除分类信息
+		router.NewRoute(common.DELETE, "content/catalog/", ui.DeleteContentCatalogActionHandler, auth.AdminAuthVerify()),
+
 		// 获取链接
 		router.NewRoute(common.GET, "content/link/", ui.GetContentLinkActionHandler, auth.AdminAuthVerify()),
+		// 新增链接
+		router.NewRoute(common.POST, "content/link/", ui.PostContentLinkActionHandler, auth.AdminAuthVerify()),
+		// 更新链接
+		router.NewRoute(common.PUT, "content/link/", ui.PutContentLinkActionHandler, auth.AdminAuthVerify()),
+		// 删除链接
+		router.NewRoute(common.DELETE, "content/link/", ui.DeleteContentLinkActionHandler, auth.AdminAuthVerify()),
+
 		// 获取文件信息
 		router.NewRoute(common.GET, "content/media/", ui.GetContentMediaActionHandler, auth.AdminAuthVerify()),
+		// 新增文件信息
+		router.NewRoute(common.POST, "content/media/", ui.PostContentMediaActionHandler, auth.AdminAuthVerify()),
+		// 更新文件信息
+		router.NewRoute(common.PUT, "content/media/", ui.PutContentMediaActionHandler, auth.AdminAuthVerify()),
+		// 删除文件信息
+		router.NewRoute(common.DELETE, "content/media/", ui.DeleteContentMediaActionHandler, auth.AdminAuthVerify()),
 
 		//=============================账号信息=====================================
 		// 获取User信息

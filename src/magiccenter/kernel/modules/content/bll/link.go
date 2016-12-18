@@ -61,21 +61,24 @@ func QueryLinkByRang(begin, offset int) []model.Link {
 	return dal.QueryLinkByRang(helper, begin, offset)
 }
 
-// SaveLink 保存Link
-func SaveLink(id int, name, url, logo string, uID int, catalogs []int) bool {
+// CreateLink 新建Link
+func CreateLink(name, url, logo string, uID int, catalogs []int) (model.Link, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	link := model.Link{}
-	link.ID = id
-	link.Name = name
-	link.URL = url
-	link.Logo = logo
-	link.Creater = uID
-	link.Catalog = catalogs
+	return dal.CreateLink(helper, name, url, logo, uID, catalogs)
+}
 
-	return dal.SaveLink(helper, link)
+// SaveLink 保存Link
+func SaveLink(lnk model.Link) (model.Link, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.SaveLink(helper, lnk)
 }

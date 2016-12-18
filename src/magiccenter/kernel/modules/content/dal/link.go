@@ -114,44 +114,52 @@ func DeleteLinkByID(helper common.DBHelper, id int) bool {
 	return result
 }
 
-// SaveLink 保存Link
-func SaveLink(helper common.DBHelper, link model.Link) bool {
-	sql := fmt.Sprintf(`select id from link where id=%d`, link.ID)
-	helper.Query(sql)
+// CreateLink 新建Link
+func CreateLink(helper common.DBHelper, name, url, logo string, uID int, catalogs []int) (model.Link, bool) {
+	lnk := model.Link{}
+	lnk.Name = name
+	lnk.URL = url
+	lnk.Logo = logo
+	lnk.Catalog = catalogs
+	lnk.Creater = uID
+	// insert
+	sql := fmt.Sprintf(`insert into link (name,url,logo,creater) values ('%s','%s','%s', %d)`, lnk.Name, lnk.URL, lnk.Logo, lnk.Creater)
+	_, result := helper.Execute(sql)
+	if result {
+		sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, lnk.Name, lnk.URL, lnk.Creater)
 
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
-	}
-
-	if !result {
-		// insert
-		sql = fmt.Sprintf(`insert into link (name,url,logo,creater) values ('%s','%s','%s', %d)`, link.Name, link.URL, link.Logo, link.Creater)
-		_, result = helper.Execute(sql)
-		if result {
-			sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, link.Name, link.URL, link.Creater)
-
-			helper.Query(sql)
-			if helper.Next() {
-				helper.GetValue(&link.ID)
-			}
+		helper.Query(sql)
+		if helper.Next() {
+			helper.GetValue(&lnk.ID)
 		}
-	} else {
-		// modify
-		sql = fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', creater=%d where id=%d`, link.Name, link.URL, link.Logo, link.Creater, link.ID)
-		_, result = helper.Execute(sql)
 	}
 
 	if result {
-		res := resdal.CreateSimpleRes(link.ID, model.LINK, link.Name)
-		for _, c := range link.Catalog {
+		res := resdal.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name)
+		for _, c := range lnk.Catalog {
 			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
 			res.AppendRelative(ca)
 		}
 		result = resdal.SaveResource(helper, res)
 	}
 
-	return result
+	return lnk, result
+}
+
+// SaveLink 保存Link
+func SaveLink(helper common.DBHelper, lnk model.Link) (model.Link, bool) {
+	// modify
+	sql := fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.Creater, lnk.ID)
+	num, result := helper.Execute(sql)
+
+	if result && num == 1 {
+		res := resdal.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name)
+		for _, c := range lnk.Catalog {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
+	}
+
+	return lnk, result
 }

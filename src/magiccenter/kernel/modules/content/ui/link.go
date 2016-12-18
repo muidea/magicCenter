@@ -182,13 +182,6 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		id, err := strconv.Atoi(r.FormValue("link-id"))
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		name := r.FormValue("link-name")
 		url := r.FormValue("link-url")
 		logo := r.FormValue("link-logo")
@@ -205,7 +198,8 @@ func AjaxLinkHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveLink(id, name, url, logo, user.ID, catalogs) {
+		_, ret := bll.CreateLink(name, url, logo, user.ID, catalogs)
+		if !ret {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

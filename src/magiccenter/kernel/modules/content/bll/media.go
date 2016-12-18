@@ -61,22 +61,24 @@ func QueryMediaByRang(begin, offset int) []model.MediaDetail {
 	return dal.QueryMediaByRang(helper, begin, offset)
 }
 
-// SaveMedia 保存图像
-func SaveMedia(id int, name, url, mediaType, desc string, uID int, catalogs []int) bool {
+// CreateMedia 新建图像
+func CreateMedia(name, url, mediaType, desc string, uID int, catalogs []int) (model.MediaDetail, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	media := model.MediaDetail{}
-	media.ID = id
-	media.Name = name
-	media.URL = url
-	media.Type = mediaType
-	media.Desc = desc
-	media.Creater = uID
-	media.Catalog = catalogs
+	return dal.CreateMedia(helper, name, url, mediaType, desc, uID, catalogs)
+}
+
+// SaveMedia 保存图像
+func SaveMedia(media model.MediaDetail) (model.MediaDetail, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
 
 	return dal.SaveMedia(helper, media)
 }

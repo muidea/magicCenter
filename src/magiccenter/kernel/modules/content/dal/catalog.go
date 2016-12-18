@@ -118,8 +118,39 @@ func DeleteCatalog(helper common.DBHelper, id int) bool {
 	return result
 }
 
+// CreateCatalog 新建分类
+func CreateCatalog(helper common.DBHelper, name string, parent []int, creater int) (model.CatalogDetail, bool) {
+	catalog := model.CatalogDetail{}
+	catalog.Name = name
+	catalog.Parent = parent
+	catalog.Creater = creater
+
+	// insert
+	sql := fmt.Sprintf(`insert into catalog (name,creater) values ('%s',%d)`, catalog.Name, catalog.Creater)
+	num, result := helper.Execute(sql)
+
+	if num == 1 && result {
+		sql = fmt.Sprintf(`select id from catalog where name='%s' and creater=%d`, catalog.Name, catalog.Creater)
+		helper.Query(sql)
+		if helper.Next() {
+			helper.GetValue(&catalog.ID)
+		}
+	}
+
+	if result {
+		res := resdal.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name)
+		for _, c := range catalog.Parent {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
+	}
+
+	return catalog, result
+}
+
 // SaveCatalog 保存分类
-func SaveCatalog(helper common.DBHelper, catalog model.CatalogDetail) bool {
+func SaveCatalog(helper common.DBHelper, catalog model.CatalogDetail) (model.CatalogDetail, bool) {
 	sql := fmt.Sprintf(`select id from catalog where id=%d`, catalog.ID)
 	helper.Query(sql)
 
@@ -130,19 +161,7 @@ func SaveCatalog(helper common.DBHelper, catalog model.CatalogDetail) bool {
 		result = true
 	}
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf(`insert into catalog (name,creater) values ('%s',%d)`, catalog.Name, catalog.Creater)
-		_, result = helper.Execute(sql)
-
-		if result {
-			sql = fmt.Sprintf(`select id from catalog where name='%s' and creater=%d`, catalog.Name, catalog.Creater)
-			helper.Query(sql)
-			if helper.Next() {
-				helper.GetValue(&catalog.ID)
-			}
-		}
-	} else {
+	if result {
 		// modify
 		sql = fmt.Sprintf(`update catalog set name ='%s', creater =%d where id=%d`, catalog.Name, catalog.Creater, catalog.ID)
 		_, result = helper.Execute(sql)
@@ -157,5 +176,5 @@ func SaveCatalog(helper common.DBHelper, catalog model.CatalogDetail) bool {
 		result = resdal.SaveResource(helper, res)
 	}
 
-	return result
+	return catalog, result
 }

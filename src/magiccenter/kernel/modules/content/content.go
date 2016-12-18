@@ -168,11 +168,11 @@ func (instance *content) Invoke(param interface{}, result interface{}) bool {
 
 			return false
 		}
-	case *commonbll.QueryContentArticleRequest:
+	case *commonbll.QueryContentArticleListRequest:
 		{
-			request := param.(*commonbll.QueryContentArticleRequest)
+			request := param.(*commonbll.QueryContentArticleListRequest)
 			if request != nil {
-				response := result.(*commonbll.QueryContentArticleResponse)
+				response := result.(*commonbll.QueryContentArticleListResponse)
 				response.Articles = bll.QueryAllArticleSummary()
 				return true
 			}
@@ -223,12 +223,56 @@ func (instance *content) Invoke(param interface{}, result interface{}) bool {
 
 			return false
 		}
-	case *commonbll.QueryContentCatalogRequest:
+	case *commonbll.QueryContentCatalogListRequest:
 		{
-			request := param.(*commonbll.QueryContentCatalogRequest)
+			request := param.(*commonbll.QueryContentCatalogListRequest)
 			if request != nil {
-				response := result.(*commonbll.QueryContentCatalogResponse)
+				response := result.(*commonbll.QueryContentCatalogListResponse)
 				response.Catalogs = bll.QueryAllCatalog()
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QuerySingleCatalogRequest:
+		{
+			request := param.(*commonbll.QuerySingleCatalogRequest)
+			if request != nil {
+				response := result.(*commonbll.QuerySingleCatalogResponse)
+				response.Catalog, response.Found = bll.QueryCatalogByID(request.ID)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.CreateCatalogRequest:
+		{
+			request := param.(*commonbll.CreateCatalogRequest)
+			if request != nil {
+				response := result.(*commonbll.CreateCatalogResponse)
+				response.Catalog, response.Result = bll.CreateCatalog(request.Name, request.Creater, request.Parent)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.UpdateCatalogRequest:
+		{
+			request := param.(*commonbll.UpdateCatalogRequest)
+			if request != nil {
+				response := result.(*commonbll.UpdateCatalogResponse)
+				response.Catalog, response.Result = bll.UpdateCatalog(request.Catalog)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.DeleteCatalogRequest:
+		{
+			request := param.(*commonbll.DeleteCatalogRequest)
+			if request != nil {
+				response := result.(*commonbll.DeleteCatalogResponse)
+				response.Result = bll.DeleteCatalog(request.ID)
 				return true
 			}
 
@@ -245,12 +289,100 @@ func (instance *content) Invoke(param interface{}, result interface{}) bool {
 
 			return false
 		}
+	case *commonbll.QuerySingleLinkRequest:
+		{
+			request := param.(*commonbll.QuerySingleLinkRequest)
+			if request != nil {
+				response := result.(*commonbll.QuerySingleLinkResponse)
+				response.Link, response.Found = bll.QueryLinkByID(request.ID)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.CreateLinkRequest:
+		{
+			request := param.(*commonbll.CreateLinkRequest)
+			if request != nil {
+				response := result.(*commonbll.CreateLinkResponse)
+				response.Link, response.Result = bll.CreateLink(request.Name, request.URL, request.Logo, request.Creater, request.Catalog)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.UpdateLinkRequest:
+		{
+			request := param.(*commonbll.UpdateLinkRequest)
+			if request != nil {
+				response := result.(*commonbll.UpdateLinkResponse)
+				response.Link, response.Result = bll.SaveLink(request.Link)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.DeleteLinkRequest:
+		{
+			request := param.(*commonbll.DeleteLinkRequest)
+			if request != nil {
+				response := result.(*commonbll.DeleteLinkResponse)
+				response.Result = bll.DeleteLinkByID(request.ID)
+				return true
+			}
+
+			return false
+		}
 	case *commonbll.QueryContentMediaRequest:
 		{
 			request := param.(*commonbll.QueryContentMediaRequest)
 			if request != nil {
 				response := result.(*commonbll.QueryContentMediaResponse)
 				response.Medias = bll.QueryAllMedia()
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.QuerySingleMediaRequest:
+		{
+			request := param.(*commonbll.QuerySingleMediaRequest)
+			if request != nil {
+				response := result.(*commonbll.QuerySingleMediaResponse)
+				response.Media, response.Found = bll.QueryMediaByID(request.ID)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.CreateMediaRequest:
+		{
+			request := param.(*commonbll.CreateMediaRequest)
+			if request != nil {
+				response := result.(*commonbll.CreateMediaResponse)
+				response.Media, response.Result = bll.CreateMedia(request.Name, request.URL, request.Type, request.Desc, request.Creater, request.Catalog)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.UpdateMediaRequest:
+		{
+			request := param.(*commonbll.UpdateMediaRequest)
+			if request != nil {
+				response := result.(*commonbll.UpdateMediaResponse)
+				response.Media, response.Result = bll.SaveMedia(request.Media)
+				return true
+			}
+
+			return false
+		}
+	case *commonbll.DeleteMediaRequest:
+		{
+			request := param.(*commonbll.DeleteMediaRequest)
+			if request != nil {
+				response := result.(*commonbll.DeleteMediaResponse)
+				response.Result = bll.DeleteMediaByID(request.ID)
 				return true
 			}
 

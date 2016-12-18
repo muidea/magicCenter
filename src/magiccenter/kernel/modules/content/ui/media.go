@@ -184,13 +184,6 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		id, err := strconv.Atoi(r.FormValue("media-id"))
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
-
 		name := r.FormValue("media-name")
 
 		uploadPath := system.GetUploadPath()
@@ -217,7 +210,9 @@ func AjaxMediaHandler(w http.ResponseWriter, r *http.Request) {
 			catalogs = append(catalogs, cid)
 		}
 
-		if !bll.SaveMedia(id, name, url, fileType, desc, user.ID, catalogs) {
+		_, ret := bll.CreateMedia(name, url, fileType, desc, user.ID, catalogs)
+
+		if !ret {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

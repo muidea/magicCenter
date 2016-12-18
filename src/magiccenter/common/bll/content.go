@@ -33,12 +33,14 @@ func QueryContentMetas() ([]commonmodel.ContentMeta, bool) {
 	return response.ContentMetas, result
 }
 
-// QueryContentArticleRequest 查询文章列表请求
-type QueryContentArticleRequest struct {
+//===========================Article====================================
+
+// QueryContentArticleListRequest 查询文章列表请求
+type QueryContentArticleListRequest struct {
 }
 
-// QueryContentArticleResponse 查询文章列表响应
-type QueryContentArticleResponse struct {
+// QueryContentArticleListResponse 查询文章列表响应
+type QueryContentArticleListResponse struct {
 	Articles []commonmodel.ArticleSummary
 }
 
@@ -50,9 +52,9 @@ func QueryContentArticles() ([]commonmodel.ArticleSummary, bool) {
 		panic("can't find account module")
 	}
 
-	request := QueryContentArticleRequest{}
+	request := QueryContentArticleListRequest{}
 
-	response := QueryContentArticleResponse{}
+	response := QueryContentArticleListResponse{}
 	result := contentModule.Invoke(&request, &response)
 
 	return response.Articles, result
@@ -169,12 +171,14 @@ func DeleteArticle(id int) bool {
 	return response.Result && result
 }
 
-// QueryContentCatalogRequest 查询分类列表请求
-type QueryContentCatalogRequest struct {
+//===========================Catalog====================================
+
+// QueryContentCatalogListRequest 查询分类列表请求
+type QueryContentCatalogListRequest struct {
 }
 
-// QueryContentCatalogResponse 查询分类列表响应
-type QueryContentCatalogResponse struct {
+// QueryContentCatalogListResponse 查询分类列表响应
+type QueryContentCatalogListResponse struct {
 	Catalogs []commonmodel.Catalog
 }
 
@@ -186,12 +190,117 @@ func QueryContentCatalogs() ([]commonmodel.Catalog, bool) {
 		panic("can't find account module")
 	}
 
-	request := QueryContentCatalogRequest{}
+	request := QueryContentCatalogListRequest{}
 
-	response := QueryContentCatalogResponse{}
+	response := QueryContentCatalogListResponse{}
 	result := contentModule.Invoke(&request, &response)
 
 	return response.Catalogs, result
+}
+
+// QuerySingleCatalogRequest 查询分类列表请求
+type QuerySingleCatalogRequest struct {
+	ID int
+}
+
+// QuerySingleCatalogResponse 查询分类列表响应
+type QuerySingleCatalogResponse struct {
+	Found   bool
+	Catalog commonmodel.CatalogDetail
+}
+
+// QuerySingleCatalog 查询指定分类
+func QuerySingleCatalog(id int) (commonmodel.CatalogDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QuerySingleCatalogRequest{ID: id}
+	response := QuerySingleCatalogResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Catalog, result && response.Found
+}
+
+// CreateCatalogRequest 新建分类请求
+type CreateCatalogRequest struct {
+	Name    string
+	Parent  []int
+	Creater int
+}
+
+// CreateCatalogResponse 新建分类响应
+type CreateCatalogResponse struct {
+	Result  bool
+	Catalog commonmodel.CatalogDetail
+}
+
+// CreateCatalog 新建分类
+func CreateCatalog(name string, parent []int, creater int) (commonmodel.CatalogDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := CreateCatalogRequest{Name: name, Parent: parent, Creater: creater}
+	response := CreateCatalogResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Catalog, result && response.Result
+}
+
+// UpdateCatalogRequest 更新分类请求
+type UpdateCatalogRequest struct {
+	Catalog commonmodel.CatalogDetail
+}
+
+// UpdateCatalogResponse 更新分类响应
+type UpdateCatalogResponse struct {
+	Result  bool
+	Catalog commonmodel.CatalogDetail
+}
+
+// UpdateCatalog 新建分类
+func UpdateCatalog(catalog commonmodel.CatalogDetail) (commonmodel.CatalogDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := UpdateCatalogRequest{Catalog: catalog}
+	response := UpdateCatalogResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Catalog, result && response.Result
+}
+
+// DeleteCatalogRequest 删除分类请求
+type DeleteCatalogRequest struct {
+	ID int
+}
+
+// DeleteCatalogResponse 删除分类响应
+type DeleteCatalogResponse struct {
+	Result bool
+}
+
+// DeleteCatalog 删除分类
+func DeleteCatalog(id int) bool {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := DeleteCatalogRequest{ID: id}
+	response := DeleteCatalogResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return result && response.Result
 }
 
 // QueryContentLinkRequest 查询链接列表请求
@@ -219,16 +328,127 @@ func QueryContentLinks() ([]commonmodel.Link, bool) {
 	return response.Links, result
 }
 
-// QueryContentMediaRequest 查询文件列表请求
+// QuerySingleLinkRequest 查询单个link
+type QuerySingleLinkRequest struct {
+	ID int
+}
+
+// QuerySingleLinkResponse 查询单个响应
+type QuerySingleLinkResponse struct {
+	Found bool
+	Link  commonmodel.Link
+}
+
+// QuerySingleLink 查询单个Link
+func QuerySingleLink(id int) (commonmodel.Link, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QuerySingleLinkRequest{ID: id}
+
+	response := QuerySingleLinkResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Link, result && response.Found
+}
+
+// CreateLinkRequest 新建link
+type CreateLinkRequest struct {
+	Name    string
+	URL     string
+	Logo    string
+	Catalog []int
+	Creater int
+}
+
+// CreateLinkResponse 新建响应
+type CreateLinkResponse struct {
+	Result bool
+	Link   commonmodel.Link
+}
+
+// CreateLink 新建Link
+func CreateLink(name, url, logo string, catalog []int, creater int) (commonmodel.Link, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := CreateLinkRequest{Name: name, URL: url, Logo: logo, Catalog: catalog, Creater: creater}
+
+	response := CreateLinkResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Link, result && response.Result
+}
+
+// UpdateLinkRequest 更新link
+type UpdateLinkRequest struct {
+	Link commonmodel.Link
+}
+
+// UpdateLinkResponse 更新响应
+type UpdateLinkResponse struct {
+	Result bool
+	Link   commonmodel.Link
+}
+
+// UpdateLink 更新Link
+func UpdateLink(lnk commonmodel.Link) (commonmodel.Link, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := UpdateLinkRequest{Link: lnk}
+
+	response := UpdateLinkResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Link, result && response.Result
+}
+
+// DeleteLinkRequest 删除link
+type DeleteLinkRequest struct {
+	ID int
+}
+
+// DeleteLinkResponse 删除响应
+type DeleteLinkResponse struct {
+	Result bool
+}
+
+// DeleteLink 删除Link
+func DeleteLink(id int) bool {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := DeleteLinkRequest{ID: id}
+	response := DeleteLinkResponse{}
+
+	result := contentModule.Invoke(&request, &response)
+
+	return result && response.Result
+}
+
+// QueryContentMediaRequest 查询链接列表请求
 type QueryContentMediaRequest struct {
 }
 
-// QueryContentMediaResponse 查询文件列表响应
+// QueryContentMediaResponse 查询链接列表响应
 type QueryContentMediaResponse struct {
 	Medias []commonmodel.MediaDetail
 }
 
-// QueryContentMedias 查询文件列表
+// QueryContentMedias 查询链接列表
 func QueryContentMedias() ([]commonmodel.MediaDetail, bool) {
 	moduleHub := system.GetModuleHub()
 	contentModule, found := moduleHub.FindModule(ContentModuleID)
@@ -242,4 +462,116 @@ func QueryContentMedias() ([]commonmodel.MediaDetail, bool) {
 	result := contentModule.Invoke(&request, &response)
 
 	return response.Medias, result
+}
+
+// QuerySingleMediaRequest 查询单个link
+type QuerySingleMediaRequest struct {
+	ID int
+}
+
+// QuerySingleMediaResponse 查询单个响应
+type QuerySingleMediaResponse struct {
+	Found bool
+	Media commonmodel.MediaDetail
+}
+
+// QuerySingleMedia 查询单个Media
+func QuerySingleMedia(id int) (commonmodel.MediaDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QuerySingleMediaRequest{ID: id}
+
+	response := QuerySingleMediaResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Media, result && response.Found
+}
+
+// CreateMediaRequest 新建link
+type CreateMediaRequest struct {
+	Name    string
+	URL     string
+	Type    string
+	Desc    string
+	Catalog []int
+	Creater int
+}
+
+// CreateMediaResponse 新建响应
+type CreateMediaResponse struct {
+	Result bool
+	Media  commonmodel.MediaDetail
+}
+
+// CreateMedia 新建Media
+func CreateMedia(name, url, typeName, desc string, catalog []int, creater int) (commonmodel.MediaDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := CreateMediaRequest{Name: name, URL: url, Type: typeName, Desc: desc, Catalog: catalog, Creater: creater}
+
+	response := CreateMediaResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Media, result && response.Result
+}
+
+// UpdateMediaRequest 更新link
+type UpdateMediaRequest struct {
+	Media commonmodel.MediaDetail
+}
+
+// UpdateMediaResponse 更新响应
+type UpdateMediaResponse struct {
+	Result bool
+	Media  commonmodel.MediaDetail
+}
+
+// UpdateMedia 更新Media
+func UpdateMedia(lnk commonmodel.MediaDetail) (commonmodel.MediaDetail, bool) {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := UpdateMediaRequest{Media: lnk}
+
+	response := UpdateMediaResponse{}
+	result := contentModule.Invoke(&request, &response)
+
+	return response.Media, result && response.Result
+}
+
+// DeleteMediaRequest 删除link
+type DeleteMediaRequest struct {
+	ID int
+}
+
+// DeleteMediaResponse 删除响应
+type DeleteMediaResponse struct {
+	Result bool
+}
+
+// DeleteMedia 删除Media
+func DeleteMedia(id int) bool {
+	moduleHub := system.GetModuleHub()
+	contentModule, found := moduleHub.FindModule(ContentModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := DeleteMediaRequest{ID: id}
+	response := DeleteMediaResponse{}
+
+	result := contentModule.Invoke(&request, &response)
+
+	return result && response.Result
 }

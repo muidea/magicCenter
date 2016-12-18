@@ -205,7 +205,14 @@ func AjaxCatalogHandler(w http.ResponseWriter, r *http.Request) {
 			parents = append(parents, pid)
 		}
 
-		if !bll.SaveCatalog(aid, name, user.ID, parents) {
+		catalog := model.CatalogDetail{}
+		catalog.ID = aid
+		catalog.Name = name
+		catalog.Creater = user.ID
+		catalog.Parent = parents
+
+		_, ret := bll.UpdateCatalog(catalog)
+		if !ret {
 			result.ErrCode = 1
 			result.Reason = "保存失败"
 			break

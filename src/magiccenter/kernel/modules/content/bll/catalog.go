@@ -73,19 +73,24 @@ func DeleteCatalog(id int) bool {
 	return dal.DeleteCatalog(helper, id)
 }
 
-// SaveCatalog 保存分类
-func SaveCatalog(id int, name string, uID int, parents []int) bool {
+// CreateCatalog 新建分类
+func CreateCatalog(name string, uID int, parents []int) (model.CatalogDetail, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	catalog := model.CatalogDetail{}
-	catalog.ID = id
-	catalog.Name = name
-	catalog.Creater = uID
-	catalog.Parent = parents
+	return dal.CreateCatalog(helper, name, parents, uID)
+}
+
+// UpdateCatalog 更新分类
+func UpdateCatalog(catalog model.CatalogDetail) (model.CatalogDetail, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
 
 	return dal.SaveCatalog(helper, catalog)
 }

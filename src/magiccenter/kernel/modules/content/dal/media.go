@@ -115,34 +115,29 @@ func DeleteMediaByID(helper common.DBHelper, id int) bool {
 	return result
 }
 
-// SaveMedia 保存图像
-func SaveMedia(helper common.DBHelper, media model.MediaDetail) bool {
-	sql := fmt.Sprintf(`select id from media where id=%d`, media.ID)
-	helper.Query(sql)
+// CreateMedia 新建文件
+func CreateMedia(helper common.DBHelper, name, url, mediaType, desc string, uID int, catalogs []int) (model.MediaDetail, bool) {
+	media := model.MediaDetail{}
+	media.Name = name
+	media.URL = url
+	media.Type = mediaType
+	media.Desc = desc
+	media.Creater = uID
+	media.Catalog = catalogs
 
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
+	// insert
+	sql := fmt.Sprintf(`insert into media (name,url, type, description,creater) values ('%s','%s','%s','%s',%d)`, media.Name, media.URL, media.Type, media.Desc, media.Creater)
+	num, result := helper.Execute(sql)
+	if num != 1 || !result {
+		return media, false
 	}
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf(`insert into media (name,url, type, description,creater) values ('%s','%s','%s','%s',%d)`, media.Name, media.URL, media.Type, media.Desc, media.Creater)
-		_, result = helper.Execute(sql)
-		sql = fmt.Sprintf(`select id from media where url= '%s' and creater=%d`, media.URL, media.Creater)
-
-		helper.Query(sql)
-		result = false
-		if helper.Next() {
-			helper.GetValue(&media.ID)
-			result = true
-		}
-	} else {
-		// modify
-		sql = fmt.Sprintf(`update media set name='%s', url ='%s', description='%s', creater=%d where id=%d`, media.Name, media.URL, media.Desc, media.Creater, media.ID)
-		_, result = helper.Execute(sql)
+	sql = fmt.Sprintf(`select id from media where url= '%s' and creater=%d`, media.URL, media.Creater)
+	helper.Query(sql)
+	result = false
+	if helper.Next() {
+		helper.GetValue(&media.ID)
+		result = true
 	}
 
 	if result {
@@ -154,5 +149,26 @@ func SaveMedia(helper common.DBHelper, media model.MediaDetail) bool {
 		result = resdal.SaveResource(helper, res)
 	}
 
-	return result
+	return media, result
+}
+
+// SaveMedia 保存文件
+func SaveMedia(helper common.DBHelper, media model.MediaDetail) (model.MediaDetail, bool) {
+	// modify
+	sql := fmt.Sprintf(`update media set name='%s', url ='%s', description='%s', creater=%d where id=%d`, media.Name, media.URL, media.Desc, media.Creater, media.ID)
+	num, result := helper.Execute(sql)
+	if num != 1 || !result {
+		return media, false
+	}
+
+	if result {
+		res := resdal.CreateSimpleRes(media.ID, model.MEDIA, media.Name)
+		for _, c := range media.Catalog {
+			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			res.AppendRelative(ca)
+		}
+		result = resdal.SaveResource(helper, res)
+	}
+
+	return media, result
 }
