@@ -13,14 +13,8 @@
     <script type="text/javascript" src="/common/js/common.js"></script>
     <script type="text/javascript" src="/kernel/modules/account/js/account.js"></script>
     <script type="text/javascript">
-        account.userInfos = {
-            {.Users
-            }
-        };
-        account.groupInfos = {
-            {.Groups
-            }
-        };
+        account.userInfos = {{.Users}};
+        account.groupInfos = {{.Groups}};
         $(document).ready(function() {
             account.initialize();
         });
