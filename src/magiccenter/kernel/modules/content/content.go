@@ -82,49 +82,14 @@ func (instance *content) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
-		// 管理Article视图
+		// Article管理视图
 		router.NewRoute(common.GET, "manageArticleView/", ui.ManageArticleViewHandler, auth.AdminAuthVerify()),
-		// 查询全部ArticleSummary
-		router.NewRoute(common.GET, "queryAllArticleSummary/", ui.QueryAllArticleSummaryHandler, auth.AdminAuthVerify()),
-		// 查询指定Article
-		router.NewRoute(common.GET, "queryArticle/", ui.QueryArticleHandler, auth.AdminAuthVerify()),
-		// 删除指定Article
-		router.NewRoute(common.GET, "deleteArticle/", ui.DeleteArticleHandler, auth.AdminAuthVerify()),
-		// 保存文章
-		router.NewRoute(common.POST, "ajaxArticle/", ui.AjaxArticleHandler, auth.AdminAuthVerify()),
-
 		// Catalog管理视图
 		router.NewRoute(common.GET, "manageCatalogView/", ui.ManageCatalogViewHandler, auth.AdminAuthVerify()),
-		// 查询全部Catalog
-		router.NewRoute(common.GET, "queryAllCatalog/", ui.QueryAllCatalogHandler, auth.AdminAuthVerify()),
-		// 查询指定Catalog
-		router.NewRoute(common.GET, "queryCatalog/", ui.QueryCatalogHandler, auth.AdminAuthVerify()),
-		// 删除指定Catalog
-		router.NewRoute(common.GET, "deleteCatalog/", ui.DeleteCatalogHandler, auth.AdminAuthVerify()),
-		// 保存Catalog
-		router.NewRoute(common.POST, "ajaxCatalog/", ui.AjaxCatalogHandler, auth.AdminAuthVerify()),
-
 		// Link管理视图
 		router.NewRoute(common.GET, "manageLinkView/", ui.ManageLinkViewHandler, auth.AdminAuthVerify()),
-		// 查询全部Link
-		router.NewRoute(common.GET, "queryAllLink/", ui.QueryAllLinkHandler, auth.AdminAuthVerify()),
-		// 查询指定Link
-		router.NewRoute(common.GET, "queryLink/", ui.QueryLinkHandler, auth.AdminAuthVerify()),
-		// 删除指定Link
-		router.NewRoute(common.GET, "deleteLink/", ui.DeleteLinkHandler, auth.AdminAuthVerify()),
-		// 保存Link
-		router.NewRoute(common.POST, "ajaxLink/", ui.AjaxLinkHandler, auth.AdminAuthVerify()),
-
 		// Media管理视图
 		router.NewRoute(common.GET, "manageMediaView/", ui.ManageMediaViewHandler, auth.AdminAuthVerify()),
-		// 查询全部Media
-		router.NewRoute(common.GET, "queryAllMedia/", ui.QueryAllMediaHandler, auth.AdminAuthVerify()),
-		// 查询指定Media
-		router.NewRoute(common.GET, "queryMedia/", ui.QueryMediaHandler, auth.AdminAuthVerify()),
-		// 删除指定Media
-		router.NewRoute(common.GET, "deleteMedia/", ui.DeleteMediaHandler, auth.AdminAuthVerify()),
-		// 保存Media
-		router.NewRoute(common.POST, "ajaxMedia/", ui.AjaxMediaHandler, auth.AdminAuthVerify()),
 	}
 
 	return routes

@@ -164,7 +164,7 @@ media.constructMediaItem = function(img) {
     var createrValue = "-";
     for (var ii = 0; ii < media.userInfo.length;) {
         var user = media.userInfo[ii++];
-        if (user.ID == lnk.Creater) {
+        if (user.ID == img.Creater) {
             createrValue = user.Name;
             break;
         }
@@ -176,7 +176,7 @@ media.constructMediaItem = function(img) {
     var editLink = document.createElement("a");
     editLink.setAttribute("class", "edit");
     editLink.setAttribute("href", "#editMedia");
-    editLink.setAttribute("onclick", "media.editMedia('/content/queryMedia/?id=" + lnk.ID + "'); return false;");
+    editLink.setAttribute("onclick", "media.editMedia('/content/queryMedia/?id=" + img.ID + "'); return false;");
     var editUrl = document.createElement("img");
     editUrl.setAttribute("src", "/common/images/pencil.png");
     editUrl.setAttribute("alt", "Edit");
@@ -186,11 +186,11 @@ media.constructMediaItem = function(img) {
     var deleteLink = document.createElement("a");
     deleteLink.setAttribute("class", "delete");
     deleteLink.setAttribute("href", "#deleteMedia");
-    deleteLink.setAttribute("onclick", "media.deleteMedia('/content/deleteMedia/?id=" + lnk.ID + "'); return false;");
+    deleteLink.setAttribute("onclick", "media.deleteMedia('/content/deleteMedia/?id=" + img.ID + "'); return false;");
     var deleteUrl = document.createElement("img");
     deleteUrl.setAttribute("src", "/common/images/cross.png");
     deleteUrl.setAttribute("alt", "Delete");
-    deleteMedia.appendChild(deleteUrl);
+    deleteLink.appendChild(deleteUrl);
     editTd.appendChild(deleteLink);
 
     tr.appendChild(editTd);

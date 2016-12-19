@@ -7,7 +7,6 @@ package bll
 */
 
 import (
-	"magiccenter/common"
 	commonmodel "magiccenter/common/model"
 	"magiccenter/system"
 )
@@ -22,7 +21,7 @@ type QueryUserDetailRequest struct {
 
 // QueryUserDetailResponse 查询指定用户结果
 type QueryUserDetailResponse struct {
-	Result common.Result
+	Result bool
 	User   commonmodel.UserDetail
 }
 
@@ -39,7 +38,7 @@ func QueryUserDetail(id int) (commonmodel.UserDetail, bool) {
 
 	response := QueryUserDetailResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return response.User, true
 	}
 
@@ -52,8 +51,7 @@ type QueryAllUserRequest struct {
 
 // QueryAllUserResponse 查询所有用户响应
 type QueryAllUserResponse struct {
-	Result common.Result
-	Users  []commonmodel.User
+	Users []commonmodel.User
 }
 
 // QueryAllUser 查询所有用户
@@ -67,7 +65,7 @@ func QueryAllUser() ([]commonmodel.User, bool) {
 	request := QueryAllUserRequest{}
 	response := QueryAllUserResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result {
 		return response.Users, true
 	}
 
@@ -82,7 +80,7 @@ type CreateUserRequest struct {
 
 // CreateUserResponse 新建用户响应
 type CreateUserResponse struct {
-	Result common.Result
+	Result bool
 	User   commonmodel.User
 }
 
@@ -97,7 +95,7 @@ func CreateUser(account, email string) (commonmodel.User, bool) {
 	request := CreateUserRequest{Account: account, EMail: email}
 	response := CreateUserResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return response.User, true
 	}
 
@@ -111,7 +109,7 @@ type UpdateUserRequest struct {
 
 // UpdateUserResponse 更新用户信息响应
 type UpdateUserResponse struct {
-	Result common.Result
+	Result bool
 	User   commonmodel.UserDetail
 }
 
@@ -126,7 +124,7 @@ func UpdateUser(user commonmodel.UserDetail) (commonmodel.UserDetail, bool) {
 	request := UpdateUserRequest{User: user}
 	response := UpdateUserResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return response.User, true
 	}
 
@@ -140,7 +138,7 @@ type DeleteUserRequest struct {
 
 // DeleteUserResponse 删除用户响应
 type DeleteUserResponse struct {
-	Result common.Result
+	Result bool
 }
 
 // DeleteUser 删除指定用户
@@ -154,7 +152,7 @@ func DeleteUser(id int) bool {
 	request := DeleteUserRequest{ID: id}
 	response := DeleteUserResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return true
 	}
 
@@ -167,7 +165,6 @@ type QueryAllGroupRequest struct {
 
 // QueryAllGroupResponse 查询所有分组响应
 type QueryAllGroupResponse struct {
-	Result common.Result
 	Groups []commonmodel.Group
 }
 
@@ -182,7 +179,7 @@ func QueryAllGroup() ([]commonmodel.Group, bool) {
 	request := QueryAllGroupRequest{}
 	response := QueryAllGroupResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result {
 		return response.Groups, true
 	}
 
@@ -196,7 +193,6 @@ type QueryGroupsRequest struct {
 
 // QueryGroupsResponse 查询指定分组响应
 type QueryGroupsResponse struct {
-	Result common.Result
 	Groups []commonmodel.Group
 }
 
@@ -211,7 +207,7 @@ func QueryGroups(ids []int) ([]commonmodel.Group, bool) {
 	request := QueryGroupsRequest{Ids: ids}
 	response := QueryGroupsResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result {
 		return response.Groups, true
 	}
 
@@ -226,7 +222,7 @@ type CreateGroupRequest struct {
 
 // CreateGroupResponse 新建分组响应
 type CreateGroupResponse struct {
-	Result common.Result
+	Result bool
 	Group  commonmodel.Group
 }
 
@@ -241,7 +237,7 @@ func CreateGroup(name, description string) (commonmodel.Group, bool) {
 	request := CreateGroupRequest{Name: name, Description: description}
 	response := CreateGroupResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return response.Group, true
 	}
 
@@ -255,7 +251,7 @@ type UpdateGroupRequest struct {
 
 // UpdateGroupResponse 更新分组信息响应
 type UpdateGroupResponse struct {
-	Result common.Result
+	Result bool
 	Group  commonmodel.Group
 }
 
@@ -270,7 +266,7 @@ func UpdateGroup(group commonmodel.Group) (commonmodel.Group, bool) {
 	request := UpdateGroupRequest{Group: group}
 	response := UpdateGroupResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return response.Group, true
 	}
 
@@ -284,7 +280,7 @@ type DeleteGroupRequest struct {
 
 // DeleteGroupResponse 删除指定分组响应
 type DeleteGroupResponse struct {
-	Result common.Result
+	Result bool
 }
 
 // DeleteGroup 更新指定分组
@@ -298,7 +294,7 @@ func DeleteGroup(id int) bool {
 	request := DeleteGroupRequest{ID: id}
 	response := DeleteGroupResponse{}
 	result := accountModule.Invoke(&request, &response)
-	if result && response.Result.Success() {
+	if result && response.Result {
 		return true
 	}
 
