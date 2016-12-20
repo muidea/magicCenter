@@ -58,23 +58,16 @@ $(document).ready(function() {
     $("#account-Content .account-Form button.reset").click(function() {
         $("#account-Edit .account-Form .account-account").val("");
         $("#account-Edit .account-Form .account-email").val("");
-        $("#account-Edit .account-Form .account-group").prop("checked", false);
         $("#account-Edit .account-Form .account-id").val("-1");
     });
 });
 
 account.initialize = function() {
     account.fillAccountListView();
-
-    account.fillGroupListView();
 };
 
 account.getAccountListView = function() {
     return $("#account-List table");
-};
-
-account.getGroupListView = function() {
-    return $("#account-Edit .account-Form .account-group");
 };
 
 account.constructAccountItem = function(userInfo) {
@@ -87,25 +80,6 @@ account.constructAccountItem = function(userInfo) {
     var emailTd = document.createElement("td");
     emailTd.innerHTML = userInfo.Email;
     tr.appendChild(emailTd);
-
-    var groupTd = document.createElement("td");
-    var groups = "";
-    for (var ii = 0; ii < userInfo.Groups.length;) {
-        var gid = userInfo.Groups[ii++];
-        for (var jj = 0; jj < account.groupInfos.length;) {
-            var group = account.groupInfos[jj++];
-            if (group.ID == gid) {
-                groups += group.Name;
-
-                if (ii < userInfo.Groups.length) {
-                    groups += ",";
-                }
-                break;
-            }
-        }
-    }
-    groupTd.innerHTML = groups;
-    tr.appendChild(groupTd);
 
     var statusTd = document.createElement("td");
     switch (userInfo.Status) {
@@ -154,6 +128,7 @@ account.constructAccountItem = function(userInfo) {
 
 account.fillAccountListView = function() {
     var userListView = account.getAccountListView();
+    console.log(account.userInfos);
 
     $(userListView).find("tbody tr").remove();
     for (var ii = 0; ii < account.userInfos.length; ++ii) {
@@ -168,35 +143,6 @@ account.fillAccountListView = function() {
     $("#account-Edit .account-Form .account-group").prop("checked", false);
     $("#account-Edit .account-Form .account-id").val("-1");
 };
-
-account.constructGroupItem = function(group) {
-    var label = document.createElement("label");
-
-    var chk = document.createElement("input");
-    chk.setAttribute("type", "checkbox");
-    chk.setAttribute("name", "account-group");
-    chk.setAttribute("class", "account-group");
-    chk.setAttribute("value", group.ID);
-    label.appendChild(chk);
-
-    var span = document.createElement("span");
-    span.innerHTML = group.Name;
-    label.appendChild(span);
-    label.setAttribute("class", "text-center");
-
-    return label;
-};
-
-account.fillGroupListView = function() {
-    var groupListView = account.getGroupListView();
-
-    $(groupListView).find("label").remove();
-    for (var ii = 0; ii < account.groupInfos.length; ++ii) {
-        var cur = account.groupInfos[ii];
-        var label = account.constructGroupItem(cur);
-        $(groupListView).append(label);
-    }
-}
 
 account.refreshAccount = function() {
     $.get("/account/queryAllUser/", {}, function(result) {
@@ -217,12 +163,6 @@ account.editAccount = function(editUrl) {
         $("#account-Edit .account-Form .account-account").val(result.User.Account);
         $("#account-Edit .account-Form .account-email").val(result.User.Email);
         $("#account-Edit .account-Form .account-id").val(result.User.ID);
-
-        var groupListView = account.getGroupListView();
-        for (var ii = 0; ii < result.User.Groups.length; ++ii) {
-            var gid = result.User.Groups[ii];
-            $(groupListView).find("input ").filter("[value=" + gid + "]").prop("checked", true);
-        }
 
         $("#account-Content .content-header .nav .account-Edit").find("a").trigger("click");
     }, "json");

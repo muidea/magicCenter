@@ -11,8 +11,7 @@ import (
 
 // ManageUserView 用户管理视图数据
 type ManageUserView struct {
-	Users  []model.UserDetail
-	Groups []model.Group
+	Users []model.UserDetail
 }
 
 // ManageUserViewHandler 用户管理视图处理器
@@ -30,7 +29,6 @@ func ManageUserViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	view := ManageUserView{}
 	view.Users = bll.QueryAllUserDetail()
-	view.Groups = bll.QueryAllGroup()
 
 	t.Execute(w, view)
 }
