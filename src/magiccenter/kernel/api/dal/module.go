@@ -19,12 +19,12 @@ func DeleteModule(helper common.DBHelper, id string) {
 // QueryModule 查询指定Module
 func QueryModule(helper common.DBHelper, id string) (model.Module, bool) {
 	m := model.Module{}
-	sql := fmt.Sprintf("select id, name, description, uri, status from module where id='%s'", id)
+	sql := fmt.Sprintf("select id, name, description, uri, type, status from module where id='%s'", id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.Status)
+		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.Type, &m.Status)
 		result = true
 	}
 
@@ -35,12 +35,12 @@ func QueryModule(helper common.DBHelper, id string) (model.Module, bool) {
 func QueryAllModule(helper common.DBHelper) []model.Module {
 	moduleList := []model.Module{}
 
-	sql := fmt.Sprintf("select id, name, description, uri, status from module")
+	sql := fmt.Sprintf("select id, name, description, uri, type, status from module")
 	helper.Query(sql)
 
 	for helper.Next() {
 		m := model.Module{}
-		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.Status)
+		helper.GetValue(&m.ID, &m.Name, &m.Description, &m.URL, &m.Type, &m.Status)
 
 		moduleList = append(moduleList, m)
 	}
@@ -53,10 +53,10 @@ func SaveModule(helper common.DBHelper, m model.Module) (model.Module, bool) {
 	result := false
 	_, found := QueryModule(helper, m.ID)
 	if found {
-		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', status =%d where Id='%s'", m.Name, m.Description, m.URL, m.Status, m.ID)
+		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', type =%d, status =%d where Id='%s'", m.Name, m.Description, m.URL, m.Type, m.Status, m.ID)
 		_, result = helper.Execute(sql)
 	} else {
-		sql := fmt.Sprintf("insert into module(id, name, description, uri, status) values ('%s','%s','%s','%s',%d)", m.ID, m.Name, m.Description, m.URL, m.Status)
+		sql := fmt.Sprintf("insert into module(id, name, description, uri, type, status) values ('%s','%s','%s','%s',%d,%d)", m.ID, m.Name, m.Description, m.URL, m.Type, m.Status)
 		_, result = helper.Execute(sql)
 	}
 

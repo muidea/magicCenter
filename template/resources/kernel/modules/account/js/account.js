@@ -51,7 +51,6 @@ $(document).ready(function() {
                 return;
             }
             $("#account-Content .account-Form .account-account").parent().addClass("has-error");
-            console.log(result);
         }, "json");
     });
 
@@ -128,8 +127,6 @@ account.constructAccountItem = function(userInfo) {
 
 account.fillAccountListView = function() {
     var userListView = account.getAccountListView();
-    console.log(account.userInfos);
-
     $(userListView).find("tbody tr").remove();
     for (var ii = 0; ii < account.userInfos.length; ++ii) {
         var userInfo = account.userInfos[ii];
