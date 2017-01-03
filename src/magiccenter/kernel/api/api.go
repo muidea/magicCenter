@@ -80,19 +80,14 @@ func (instance *api) Routes() []common.Route {
 	auth := system.GetAuthority()
 
 	routes := []common.Route{
-		//=============================模块信息=====================================
-		// 获取Module列表
-		router.NewRoute(common.GET, "module/", ui.GetModuleListActionHandler, auth.AdminAuthVerify()),
-		// 获取Module 定义的功能块
-		router.NewRoute(common.GET, "module/block/", ui.GetModuleBlockActionHandler, auth.AdminAuthVerify()),
-		// 获取Module 指定功能块包含的内容
-		router.NewRoute(common.GET, "module/block/item/", ui.GetBlockItemActionHandler, auth.AdminAuthVerify()),
-		// 获取Module 定义的授权分组
-		router.NewRoute(common.GET, "module/authority/", ui.GetModuleAuthorityGroupActionHandler, auth.AdminAuthVerify()),
-
 		//=============================内容信息=====================================
 		// 获取内容元数据列表
 		router.NewRoute(common.GET, "content/", ui.GetContentMetadataListActionHandler, auth.AdminAuthVerify()),
+		// 不支持Post,Put和Delete
+		router.NewRoute(common.POST, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.PUT, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.DELETE, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+
 		// 获取文章信息
 		router.NewRoute(common.GET, "content/article/", ui.GetContentArticleActionHandler, auth.AdminAuthVerify()),
 		// 新增文章信息
@@ -130,6 +125,13 @@ func (instance *api) Routes() []common.Route {
 		router.NewRoute(common.DELETE, "content/media/", ui.DeleteContentMediaActionHandler, auth.AdminAuthVerify()),
 
 		//=============================账号信息=====================================
+		// 获取内容元数据列表
+		router.NewRoute(common.GET, "account/", ui.GetAccountMetadataListActionHandler, auth.AdminAuthVerify()),
+		// 不支持Post,Put和Delete
+		router.NewRoute(common.POST, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.PUT, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+		router.NewRoute(common.DELETE, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
+
 		// 获取User信息
 		router.NewRoute(common.GET, "account/user/", ui.GetUserActionHandler, auth.AdminAuthVerify()),
 		// 新建User
@@ -147,6 +149,37 @@ func (instance *api) Routes() []common.Route {
 		router.NewRoute(common.PUT, "account/group/", ui.PutGroupActionHandler, auth.AdminAuthVerify()),
 		// 删除Group
 		router.NewRoute(common.DELETE, "account/group/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
+
+		//=============================模块信息=====================================
+		// 获取Module列表
+		router.NewRoute(common.GET, "module/", ui.GetModuleActionHandler, auth.AdminAuthVerify()),
+		// 新建Module
+		router.NewRoute(common.POST, "module/", ui.PostModuleActionHandler, auth.AdminAuthVerify()),
+		// 更新Module
+		router.NewRoute(common.PUT, "module/", ui.PutModuleActionHandler, auth.AdminAuthVerify()),
+		// 删除Module
+		router.NewRoute(common.DELETE, "module/", ui.DeleteModuleActionHandler, auth.AdminAuthVerify()),
+
+		// 获取Module 定义的功能块
+		router.NewRoute(common.GET, "module/block/", ui.GetModuleBlockActionHandler, auth.AdminAuthVerify()),
+		// 新建功能块
+		router.NewRoute(common.POST, "module/block/", ui.PostModuleBlockActionHandler, auth.AdminAuthVerify()),
+		// 更新功能块
+		router.NewRoute(common.PUT, "module/block/", ui.PutModuleBlockActionHandler, auth.AdminAuthVerify()),
+		// 删除功能块
+		router.NewRoute(common.DELETE, "module/block/", ui.DeleteModuleBlockActionHandler, auth.AdminAuthVerify()),
+
+		// 获取Module 指定功能块包含的内容
+		router.NewRoute(common.GET, "module/block/item/", ui.GetBlockItemActionHandler, auth.AdminAuthVerify()),
+		// 新建内容
+		router.NewRoute(common.POST, "module/block/item/", ui.PostBlockItemActionHandler, auth.AdminAuthVerify()),
+		// 更新内容
+		router.NewRoute(common.PUT, "module/block/item/", ui.PutBlockItemActionHandler, auth.AdminAuthVerify()),
+		// 删除内容
+		router.NewRoute(common.DELETE, "module/block/item/", ui.DeleteBlockItemActionHandler, auth.AdminAuthVerify()),
+
+		// 获取Module 定义的授权分组
+		router.NewRoute(common.GET, "module/authority/", ui.GetModuleAuthorityGroupActionHandler, auth.AdminAuthVerify()),
 
 		//=============================系统信息=====================================
 		// 获取系统信息

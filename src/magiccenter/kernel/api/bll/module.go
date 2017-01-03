@@ -65,54 +65,26 @@ func QueryModule(id string) (model.Module, bool) {
 	return mod, found
 }
 
-// EnableModules 启动模块
-func EnableModules(enableList []string) ([]model.Module, bool) {
+// CreateModule 新建Module
+func CreateModule(id, name, description, url string, mType, mStatus int) (model.Module, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	helper.BeginTransaction()
+	return dal.CreateModule(helper, id, name, description, url, mType, mStatus)
+}
 
-	ok := true
-	modules := queryAllModuleInternal(helper)
-	for _, m := range modules {
-		found := false
-		for _, id := range enableList {
-			if m.ID == id {
-				found = true
-				break
-			}
-		}
-
-		if found {
-			if m.Status == 0 {
-				m.Status = 1
-				_, ok = dal.SaveModule(helper, m)
-			}
-		} else {
-			if m.Status == 1 {
-				m.Status = 0
-				_, ok = dal.SaveModule(helper, m)
-			}
-		}
-
-		if !ok {
-			break
-		}
+// UpdateModule 更新Module
+func UpdateModule(m model.Module) (model.Module, bool) {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
 	}
+	defer helper.Release()
 
-	moduleList := []model.Module{}
-	if ok {
-		helper.Commit()
-
-		moduleList = dal.QueryAllModule(helper)
-	} else {
-		helper.Rollback()
-	}
-
-	return moduleList, ok
+	return dal.SaveModule(helper, m)
 }
 
 /*

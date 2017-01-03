@@ -3,6 +3,7 @@ package account
 import (
 	"magiccenter/common"
 	commonbll "magiccenter/common/bll"
+	commonmodel "magiccenter/common/model"
 	"magiccenter/kernel/modules/account/bll"
 	"magiccenter/kernel/modules/account/ui"
 	"magiccenter/system"
@@ -109,6 +110,20 @@ func (instance *account) Invoke(param interface{}, result interface{}) bool {
 	}
 
 	switch param.(type) {
+	case *commonbll.QueryAccountMetaRequest:
+		{
+			request := param.(*commonbll.QueryAccountMetaRequest)
+			if request != nil {
+				response := result.(*commonbll.QueryAccountMetaResponse)
+				userMeta := commonmodel.AccountMeta{Subject: commonmodel.USER, Description: "账号", URL: "account/user/"}
+				response.AccountMetas = append(response.AccountMetas, userMeta)
+
+				groupMeta := commonmodel.AccountMeta{Subject: commonmodel.GROUP, Description: "分组", URL: "account/group/"}
+				response.AccountMetas = append(response.AccountMetas, groupMeta)
+				return true
+			}
+			return false
+		}
 	case *commonbll.QueryUserDetailRequest:
 		{
 			request := param.(*commonbll.QueryUserDetailRequest)

@@ -48,16 +48,29 @@ func QueryAllModule(helper common.DBHelper) []model.Module {
 	return moduleList
 }
 
+// CreateModule 新建Module
+func CreateModule(helper common.DBHelper, id, name, description, url string, mType, mStatus int) (model.Module, bool) {
+	result := false
+	m := model.Module{}
+
+	_, found := QueryModule(helper, id)
+	if !found {
+		sql := fmt.Sprintf("insert into module(id, name, description, uri, type, status) values ('%s','%s','%s','%s',%d,%d)", id, name, description, url, mType, mStatus)
+		num, ret := helper.Execute(sql)
+		result = (num == 1 && ret)
+	}
+
+	return m, result
+}
+
 // SaveModule 保存Module
 func SaveModule(helper common.DBHelper, m model.Module) (model.Module, bool) {
 	result := false
 	_, found := QueryModule(helper, m.ID)
 	if found {
 		sql := fmt.Sprintf("update module set name ='%s', description ='%s', uri='%s', type =%d, status =%d where Id='%s'", m.Name, m.Description, m.URL, m.Type, m.Status, m.ID)
-		_, result = helper.Execute(sql)
-	} else {
-		sql := fmt.Sprintf("insert into module(id, name, description, uri, type, status) values ('%s','%s','%s','%s',%d,%d)", m.ID, m.Name, m.Description, m.URL, m.Type, m.Status)
-		_, result = helper.Execute(sql)
+		num, ret := helper.Execute(sql)
+		result = (num == 1 && ret)
 	}
 
 	return m, result

@@ -13,6 +13,33 @@ import (
 	"muidea.com/util"
 )
 
+// AccountMetaList 元数据列表
+type AccountMetaList struct {
+	common.Result
+	AccountMetaList []commonmodel.AccountMeta
+}
+
+// GetAccountMetadataListActionHandler 获取Account元数据列表
+func GetAccountMetadataListActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("GetAccountMetadataListActionHandler")
+
+	result := AccountMetaList{}
+	found := false
+	result.AccountMetaList, found = commonbll.QueryAccountMetas()
+	if found {
+		result.ErrCode = 0
+	} else {
+		result.ErrCode = 1
+		result.Reason = "查询失败"
+	}
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
 // UserList 用户列表
 type UserList struct {
 	common.Result

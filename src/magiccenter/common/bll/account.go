@@ -14,6 +14,31 @@ import (
 // AccountModuleID Account 模块ID
 const AccountModuleID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
 
+// QueryAccountMetaRequest 查询Account元数据请求
+type QueryAccountMetaRequest struct {
+}
+
+// QueryAccountMetaResponse 查询Account元数据响应
+type QueryAccountMetaResponse struct {
+	AccountMetas []commonmodel.AccountMeta
+}
+
+// QueryAccountMetas 查询Account元数据
+func QueryAccountMetas() ([]commonmodel.AccountMeta, bool) {
+	moduleHub := system.GetModuleHub()
+	accountModule, found := moduleHub.FindModule(AccountModuleID)
+	if !found {
+		panic("can't find account module")
+	}
+
+	request := QueryAccountMetaRequest{}
+
+	response := QueryAccountMetaResponse{}
+	result := accountModule.Invoke(&request, &response)
+
+	return response.AccountMetas, result
+}
+
 // QueryUserDetailRequest 查询指定用户请求
 type QueryUserDetailRequest struct {
 	ID int
