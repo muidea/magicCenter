@@ -79,28 +79,123 @@ func PostModuleActionHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
+		id := r.FormValue("module-id")
 		name := r.FormValue("module-name")
 		description := r.FormValue("module-description")
 		url := r.FormValue("module-url")
 		mType := r.FormValue("module-type")
-		
-		mStatus := r.FormValue("module-status")
-		if len(account) == 0 || len(email) == 0 {
+		typeValue, err := strconv.Atoi(mType)
+		if err != nil {
 			result.Result.ErrCode = 1
-			result.Result.Reason = "无效参数"
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		mStatus := r.FormValue("module-status")
+		statusValue, err := strconv.Atoi(mStatus)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
 			break
 		}
 
 		ret := false
-		result.User, ret = commonbll.CreateUser(account, email)
+		result.Module, ret = bll.CreateModule(id, name, description, url, typeValue, statusValue)
 		if !ret {
 			result.Result.ErrCode = 1
-			result.Result.Reason = "创建用户失败"
+			result.Result.Reason = "创建Module失败"
 			break
 		}
 
 		result.Result.ErrCode = 0
 		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// PutModuleActionHandler 更新Module
+func PutModuleActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("PutModuleActionHandler")
+	result := SingleModule{}
+	for true {
+		err := r.ParseForm()
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		id := r.FormValue("module-id")
+		name := r.FormValue("module-name")
+		description := r.FormValue("module-description")
+		url := r.FormValue("module-url")
+		mType := r.FormValue("module-type")
+		typeValue, err := strconv.Atoi(mType)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		mStatus := r.FormValue("module-status")
+		statusValue, err := strconv.Atoi(mStatus)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		ret := false
+		m := model.Module{ID: id, Name: name, Description: description, URL: url, Type: typeValue, Status: statusValue}
+		result.Module, ret = bll.UpdateModule(m)
+		if !ret {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "更新Module失败"
+			break
+		}
+
+		result.Result.ErrCode = 0
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// DeleteModuleActionHandler 删除指定Module
+func DeleteModuleActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("DeleteModuleActionHandler")
+
+	params := util.SplitParam(r.URL.RawQuery)
+
+	result := common.Result{}
+	mid, found := params["id"]
+	if found {
+		for true {
+			found := false
+			found = bll.DeleteModule(mid)
+			if found {
+				result.ErrCode = 0
+			} else {
+				result.ErrCode = 1
+				result.Reason = "非法参数"
+			}
+
+			break
+		}
+	} else {
+		result.ErrCode = 1
+		result.Reason = "无效参数"
 	}
 
 	b, err := json.Marshal(result)

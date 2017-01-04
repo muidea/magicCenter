@@ -87,6 +87,17 @@ func UpdateModule(m model.Module) (model.Module, bool) {
 	return dal.SaveModule(helper, m)
 }
 
+// DeleteModule 删除Module
+func DeleteModule(id string) bool {
+	helper, err := system.GetDBHelper()
+	if err != nil {
+		panic("construct helper failed")
+	}
+	defer helper.Release()
+
+	return dal.DeleteModule(helper, id)
+}
+
 /*
 func QueryModuleDetail(id string) (model.ModuleLayout, bool) {
 	helper, err := dbhelper.NewHelper()

@@ -7,13 +7,18 @@ import (
 )
 
 // DeleteModule 删除指定Module
-func DeleteModule(helper common.DBHelper, id string) {
+func DeleteModule(helper common.DBHelper, id string) bool {
+	result := false
 	sql := fmt.Sprintf("delete from module where id='%s'", id)
 	num, ret := helper.Execute(sql)
 	if num == 1 && ret {
 		sql = fmt.Sprintf("delete from block where owner='%s'", id)
 		helper.Execute(sql)
+
+		result = true
 	}
+
+	return result
 }
 
 // QueryModule 查询指定Module
