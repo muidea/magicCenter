@@ -248,6 +248,150 @@ func GetModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
+// SingleModuleBlock 模块功能块
+type SingleModuleBlock struct {
+	common.Result
+	Block model.Block
+}
+
+// PostModuleBlockActionHandler 新增Module 功能块信息
+func PostModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("PostModuleBlockActionHandler")
+
+	result := SingleModuleBlock{}
+
+	for true {
+		err := r.ParseForm()
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		name := r.FormValue("block-name")
+		tag := r.FormValue("block-tag")
+		style := r.FormValue("block-style")
+		sValue, err := strconv.Atoi(style)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		owner := r.FormValue("block-owner")
+
+		ret := false
+		result.Block, ret = bll.InsertModuleBlock(name, tag, sValue, owner)
+		if !ret {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "新增功能块失败"
+			break
+		}
+
+		result.Result.ErrCode = 0
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// PutModuleBlockActionHandler 更新Module 功能块信息
+func PutModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("PostModuleBlockActionHandler")
+
+	result := SingleModuleBlock{}
+
+	for true {
+		err := r.ParseForm()
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+
+		id := r.FormValue("block-id")
+		sID, err := strconv.Atoi(id)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+		name := r.FormValue("block-name")
+		tag := r.FormValue("block-tag")
+		style := r.FormValue("block-style")
+		sValue, err := strconv.Atoi(style)
+		if err != nil {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "非法参数"
+			break
+		}
+		owner := r.FormValue("block-owner")
+
+		ret := false
+		block := model.Block{}
+		block.ID = sID
+		block.Name = name
+		block.Tag = tag
+		block.Style = sValue
+		block.Owner = owner
+		result.Block, ret = bll.UpdateModuleBlock(block)
+		if !ret {
+			result.Result.ErrCode = 1
+			result.Result.Reason = "更新功能块失败"
+			break
+		}
+
+		result.Result.ErrCode = 0
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+// DeleteModuleBlockActionHandler 删除Module 功能块信息
+func DeleteModuleBlockActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("GetModuleBlockActionHandler")
+
+	result := common.Result{}
+
+	params := util.SplitParam(r.URL.RawQuery)
+	for true {
+		id, found := params["id"]
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "非法请求数据"
+			break
+		}
+
+		result.Module, found = bll.DeleteModuleBlock(id)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "无效请求参数"
+		} else {
+			result.ErrCode = 0
+		}
+
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
 // BlockContent 功能块内容
 type BlockContent struct {
 	common.Result

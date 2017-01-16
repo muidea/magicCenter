@@ -7,17 +7,22 @@ import (
 )
 
 // InsertBlock 新建一条Block
-func InsertBlock(helper common.DBHelper, block model.Block) (model.Block, bool) {
+func InsertBlock(helper common.DBHelper, name, tag string, style int, owner string) (model.Block, bool) {
 	ret := false
 
-	sql := fmt.Sprintf("insert into block (name, tag, style, owner) values('%s','%s', %d, '%s')", block.Name, block.Tag, block.Style, block.Owner)
+	block := model.Block{}
+	sql := fmt.Sprintf("insert into block (name, tag, style, owner) values('%s','%s', %d, '%s')", name, tag, style, owner)
 	num, ret := helper.Execute(sql)
 	if num == 1 && ret {
 		ret = false
-		sql = fmt.Sprintf("select id from block where name='%s' and owner='%s'", block.Name, block.Owner)
+		sql = fmt.Sprintf("select id from block where name='%s' and owner='%s'", name, owner)
 		helper.Query(sql)
 		if helper.Next() {
 			helper.GetValue(&block.ID)
+			block.Name = name
+			block.Tag = tag
+			block.Style = style
+			block.Owner = owner
 			ret = true
 		}
 	}
@@ -26,13 +31,13 @@ func InsertBlock(helper common.DBHelper, block model.Block) (model.Block, bool) 
 }
 
 // UpdateBlock 更新一条Block
-func UpdateBlock(helper common.DBHelper, block model.Block) bool {
+func UpdateBlock(helper common.DBHelper, block model.Block) (model.Block, bool) {
 	ret := false
 
 	sql := fmt.Sprintf("update block set name ='%s', tag = '%s', style= %d where id = %d", block.Name, block.Tag, block.Style, block.ID)
 	num, ret := helper.Execute(sql)
 
-	return num == 1 && ret
+	return block, num == 1 && ret
 }
 
 // DeleteBlock 删除一条Block记录
@@ -57,9 +62,9 @@ func QueryBlock(helper common.DBHelper, id int) (model.Block, bool) {
 	return block, ret
 }
 
-// QueryBlockDetail 查询一条BlockDetail
-func QueryBlockDetail(helper common.DBHelper, id int) (model.BlockDetail, bool) {
-	block := model.BlockDetail{}
+// QueryBlockContent 查询一条BlockContent
+func QueryBlockContent(helper common.DBHelper, id int) (model.BlockContent, bool) {
+	block := model.BlockContent{}
 	ret := false
 
 	sql := fmt.Sprintf("select id, name, tag, style, owner from block where id=%d", id)
@@ -67,7 +72,7 @@ func QueryBlockDetail(helper common.DBHelper, id int) (model.BlockDetail, bool) 
 	if helper.Next() {
 		helper.GetValue(&block.ID, &block.Name, &block.Tag, &block.Style, &block.Owner)
 
-		block.Items = QueryItems(helper, block.ID)
+		block.Content = QueryItems(helper, block.ID)
 		ret = true
 	}
 
@@ -90,14 +95,14 @@ func QueryBlocks(helper common.DBHelper, owner string) []model.Block {
 	return blockList
 }
 
-// QueryBlockDetails 查询指定类型Block的详情
-func QueryBlockDetails(helper common.DBHelper, owner string) []model.BlockDetail {
-	blockList := []model.BlockDetail{}
+// QueryBlockContents 查询指定类型Block的详情
+func QueryBlockContents(helper common.DBHelper, owner string) []model.BlockContent {
+	blockList := []model.BlockContent{}
 	sql := fmt.Sprintf("select id, name, tag, style, owner from block where owner='%s'", owner)
 	helper.Query(sql)
 
 	for helper.Next() {
-		b := model.BlockDetail{}
+		b := model.BlockContent{}
 		helper.GetValue(&b.ID, &b.Name, &b.Tag, &b.Style, &b.Owner)
 
 		blockList = append(blockList, b)
@@ -105,8 +110,7 @@ func QueryBlockDetails(helper common.DBHelper, owner string) []model.BlockDetail
 
 	// TODO 这里如果直接取可能会存在问题
 	for _, b := range blockList {
-		//b := &blockList[i]
-		b.Items = QueryItems(helper, b.ID)
+		b.Content = QueryItems(helper, b.ID)
 	}
 
 	return blockList

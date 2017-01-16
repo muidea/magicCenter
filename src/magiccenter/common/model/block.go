@@ -27,8 +27,8 @@ type Block struct {
 	Owner string
 }
 
-// BlockDetail Block 详情
-type BlockDetail struct {
+// BlockContent Block 详情
+type BlockContent struct {
 	Block
-	Items []Item
+	Content []Item
 }

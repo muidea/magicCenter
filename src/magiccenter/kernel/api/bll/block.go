@@ -23,26 +23,26 @@ func GetModuleBlock(id int) (model.Block, bool) {
 	return dal.QueryBlock(helper, id)
 }
 
-// GetModuleBlockDetail 查询指定Module拥有的Block
-func GetModuleBlockDetail(id int) (model.BlockDetail, bool) {
+// GetModuleBlockContent 查询指定Module拥有的Block
+func GetModuleBlockContent(id int) (model.BlockContent, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.QueryBlockDetail(helper, id)
+	return dal.QueryBlockContent(helper, id)
 }
 
-// AppendModuleBlock 增加一个Module的Block
-func AppendModuleBlock(block model.Block) (model.Block, bool) {
+// InsertModuleBlock 增加一个Module的Block
+func InsertModuleBlock(name, tag string, style int, owner string) (model.Block, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.InsertBlock(helper, block)
+	return dal.InsertBlock(helper, name, tag, style, owner)
 }
 
 // DeleteModuleBlock 删除一个Module的Block
@@ -57,7 +57,7 @@ func DeleteModuleBlock(id int) bool {
 }
 
 // UpdateModuleBlock 更新指定的Block
-func UpdateModuleBlock(block model.Block) bool {
+func UpdateModuleBlock(block model.Block) (model.Block, bool) {
 	helper, err := system.GetDBHelper()
 	if err != nil {
 		panic("construct helper failed")
