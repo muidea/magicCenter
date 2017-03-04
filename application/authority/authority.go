@@ -1,4 +1,4 @@
-package auth
+package authority
 
 /*
 鉴权

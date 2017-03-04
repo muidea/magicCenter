@@ -2,7 +2,8 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/common"
+
+	"muidea.com/magiccenter/application/common"
 )
 
 //SetOption 保存配置项

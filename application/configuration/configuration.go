@@ -8,8 +8,10 @@ package configuration
 
 import (
 	"log"
-	"magiccenter/common"
-	"magiccenter/configuration/bll"
+
+	"muidea.com/magiccenter/application/configuration/bll"
+
+	"muidea.com/magiccenter/application/common"
 )
 
 type impl struct {
