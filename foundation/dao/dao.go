@@ -3,9 +3,7 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
-	"github.com/go-martini/martini"
 	_ "github.com/go-sql-driver/mysql" //引入Mysql驱动
 )
 
@@ -31,10 +29,6 @@ type impl struct {
 func Fetch(user string, password string, address string, dbName string) (Dao, error) {
 	connectStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", user, password, address, dbName)
 
-	if martini.Env != martini.Prod {
-		log.Print(connectStr)
-	}
-
 	dao := &impl{dbHandle: nil, dbTx: nil, rowsHandle: nil}
 	db, err := sql.Open("mysql", connectStr)
 	if err != nil {
@@ -47,10 +41,6 @@ func Fetch(user string, password string, address string, dbName string) (Dao, er
 }
 
 func (impl *impl) Release() {
-	if martini.Env != martini.Prod {
-		log.Print("close database connection")
-	}
-
 	if impl.rowsHandle != nil {
 		impl.rowsHandle.Close()
 	}
@@ -64,10 +54,6 @@ func (impl *impl) Release() {
 }
 
 func (impl *impl) BeginTransaction() {
-	if martini.Env != martini.Prod {
-		log.Print("Begin Transaction")
-	}
-
 	tx, err := impl.dbHandle.Begin()
 	if err != nil {
 		panic("begin transaction exception, err:" + err.Error())
@@ -77,10 +63,6 @@ func (impl *impl) BeginTransaction() {
 }
 
 func (impl *impl) Commit() {
-	if martini.Env != martini.Prod {
-		log.Print("Commit Transaction")
-	}
-
 	if impl.dbTx == nil {
 		panic("dbTx is nil")
 	}
@@ -96,10 +78,6 @@ func (impl *impl) Commit() {
 }
 
 func (impl *impl) Rollback() {
-	if martini.Env != martini.Prod {
-		log.Print("Rollback Transaction")
-	}
-
 	if impl.dbTx == nil {
 		panic("dbTx is nil")
 	}
@@ -118,10 +96,6 @@ func (impl *impl) Query(sql string) {
 
 	if impl.dbHandle == nil {
 		panic("dbHanlde is nil")
-	}
-
-	if martini.Env != martini.Prod {
-		log.Print("query:" + sql)
 	}
 
 	rows, err := impl.dbHandle.Query(sql)
@@ -159,10 +133,6 @@ func (impl *impl) GetField(value ...interface{}) {
 func (impl *impl) Execute(sql string) (int64, bool) {
 	if impl.dbHandle == nil {
 		panic("dbHandle is nil")
-	}
-
-	if martini.Env != martini.Prod {
-		log.Print("exec:" + sql)
 	}
 
 	result, err := impl.dbHandle.Exec(sql)

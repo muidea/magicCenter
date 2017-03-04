@@ -1,15 +1,15 @@
 package main
- 
+
 import (
-    "log"
-    "magiccenter/application"
+	"log"
+
+	"muidea.com/magiccenter/application"
 )
- 
+
 func main() {
 	log.Println("MagicCenter V1.0")
-	
-	app := application.AppInstance()
-	
-	app.Run()	
-}
 
+	app := application.AppInstance()
+
+	app.Run()
+}

@@ -1,11 +1,13 @@
 package application
 
 import (
-	"magiccenter/auth"
-	"magiccenter/configuration"
-	"magiccenter/loader"
-	"magiccenter/system"
 	"os"
+
+	"muidea.com/magiccenter/application/configuration"
+	"muidea.com/magiccenter/application/loader"
+	"muidea.com/magiccenter/application/system"
+
+	"muidea.com/magiccenter/application/auth"
 )
 
 var serverPort = "8888"

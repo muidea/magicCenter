@@ -1,16 +1,48 @@
 package system
 
 import (
-	"magiccenter/common"
-	"magiccenter/system/dbhelper"
-	"magiccenter/system/modulehub"
-	"magiccenter/system/router"
-	"magiccenter/system/session"
 	"net/http"
 	"path"
 
+	"muidea.com/magiccenter/application/system/dbhelper"
+	"muidea.com/magiccenter/application/system/modulehub"
+	"muidea.com/magiccenter/application/system/router"
+	"muidea.com/magiccenter/application/system/session"
+
+	"muidea.com/magiccenter/application/common"
+
 	"github.com/go-martini/martini"
 )
+
+// System MagicCenter系统
+type System interface {
+	// Router 路由器
+	Router() common.Router, error
+	// ModuleHub 模块管理器
+	ModuleHub() commmon.ModuleHub, error
+	// Configuration 配置管理器
+	Configuration() common.Configuration, error
+	// DBHelper 数据库管理器
+	DBHelper() common.DBHelper, error
+	// Session 当前Session
+	Session(w http.ResponseWriter, r *http.Request) common.Session
+	// Authority 权限校验器
+	Authority(w http.ResponseWriter, r *http.Request) common.Authority
+}
+
+// NewSystem 新建System对象
+func NewSystem() System {
+	i := &impl{}
+
+	return i
+}
+
+type impl struct {
+	routerImpl common.Router
+	moduleHubImpl common.ModuleHub
+	configurationImpl common.Configuration
+	authImpl comon.Authority
+}
 
 var routerImpl = router.CreateRouter()
 var moduleHubImpl = modulehub.CreateModuleHub()
@@ -19,48 +51,33 @@ var authImpl common.Authority
 var configurationImpl common.Configuration
 
 // GetRouter 获取系统的Router
-func GetRouter() common.Router {
+func (i *impl)Router() common.Router {
 	return routerImpl
 }
 
 // GetModuleHub 获取系统的ModuleHub
-func GetModuleHub() common.ModuleHub {
+func (i *impl)ModuleHub() common.ModuleHub {
 	return moduleHubImpl
 }
 
 // GetDBHelper 获取系统的数据库访问助手
-func GetDBHelper() (common.DBHelper, error) {
+func (i *impl)DBHelper() (common.DBHelper, error) {
 	return dbhelper.NewHelper()
 }
 
 // GetSession 获取当前Session
-func GetSession(w http.ResponseWriter, r *http.Request) common.Session {
+func (i *impl)Session(w http.ResponseWriter, r *http.Request) common.Session {
 	return session.GetSession(w, r)
 }
 
 // GetAuthority 获取当前Authority
-func GetAuthority() common.Authority {
+func (i *impl)Authority() common.Authority {
 	return authImpl
 }
 
 // GetConfiguration 获取当前Configuration
-func GetConfiguration() common.Configuration {
+func (i *impl)Configuration() common.Configuration {
 	return configurationImpl
-}
-
-// GetHTMLPath 获取指定HTML页面的路径
-func GetHTMLPath(fileName string) string {
-	return path.Join("template/html", fileName)
-}
-
-// GetStaticPath 获取静态资源存放路径
-func GetStaticPath() string {
-	return "template/static"
-}
-
-// GetUploadPath 获取上传文件存放路径
-func GetUploadPath() string {
-	return "upload"
 }
 
 // bindResourcePath 绑定资源路径
