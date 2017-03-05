@@ -17,6 +17,8 @@ type System interface {
 	ModuleHub() ModuleHub
 	// Configuration 配置管理器
 	Configuration() Configuration
+	// Authority 权限管理器
+	Authority() Authority
 
 	// Session 当前Session
 	Session(w http.ResponseWriter, r *http.Request) Session

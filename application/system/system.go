@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/system/authority"
 	"muidea.com/magicCenter/application/system/modulehub"
 	"muidea.com/magicCenter/application/system/router"
 	"muidea.com/magicCenter/application/system/session"
@@ -16,6 +17,8 @@ type impl struct {
 	configurationImpl common.Configuration
 	routerImpl        common.Router
 	moduleHubImpl     common.ModuleHub
+	authorityImpl     common.Authority
+	sessionRegistry   common.SessionRegistry
 	instanceFrame     *martini.Martini
 }
 
@@ -26,6 +29,8 @@ func NewSystem(loader common.ModuleLoader, configuration common.Configuration) c
 		configurationImpl: configuration,
 		routerImpl:        router.CreateRouter(),
 		moduleHubImpl:     modulehub.CreateModuleHub(),
+		authorityImpl:     authority.CreateAuthority(),
+		sessionRegistry:   session.CreateSessionRegistry(),
 		instanceFrame:     martini.New()}
 
 	return i
@@ -54,6 +59,8 @@ func (i *impl) Run() {
 
 	i.instanceFrame.Use(martini.Logger())
 	i.instanceFrame.Use(martini.Recovery())
+	i.instanceFrame.Use(authority.Authority(i))
+
 	i.instanceFrame.MapTo(martiniRouter, (*martini.Routes)(nil))
 	i.instanceFrame.Action(martiniRouter.Handle)
 
@@ -65,15 +72,16 @@ func (i *impl) Run() {
 }
 
 func (i *impl) ShutDown() error {
-	/* 退出时不需要做路由清理操作
-	allModules := i.moduleHubImpl.QueryAllModule()
-	for _, m := range allModules {
-		baseURL := m.URL()
-		routes := m.Routes()
-		for _, rt := range routes {
-			routerImpl.RemoveRoute(baseURL, rt)
+	/*
+		退出时不需要做路由清理操作
+		allModules := i.moduleHubImpl.QueryAllModule()
+		for _, m := range allModules {
+			baseURL := m.URL()
+			routes := m.Routes()
+			for _, rt := range routes {
+				routerImpl.RemoveRoute(baseURL, rt)
+			}
 		}
-	}
 	*/
 
 	i.moduleHubImpl.CleanupAllModules()
@@ -95,7 +103,11 @@ func (i *impl) Configuration() common.Configuration {
 	return i.configurationImpl
 }
 
+func (i *impl) Authority() common.Authority {
+	return i.authorityImpl
+}
+
 // GetSession 获取当前Session
 func (i *impl) Session(w http.ResponseWriter, r *http.Request) common.Session {
-	return session.GetSession(w, r)
+	return i.sessionRegistry.GetSession(w, r)
 }

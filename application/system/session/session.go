@@ -3,6 +3,7 @@ package session
 import (
 	"time"
 
+	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 )
 
@@ -10,34 +11,35 @@ const (
 	maxTimeOut = 10
 )
 
-type impl struct {
-	id      string // session id
-	context map[string]interface{}
+type sessionImpl struct {
+	id       string // session id
+	context  map[string]interface{}
+	registry common.SessionRegistry
 }
 
-func (s *impl) ID() string {
+func (s *sessionImpl) ID() string {
 	return s.id
 }
 
-func (s *impl) SetOption(key string, value interface{}) {
+func (s *sessionImpl) SetOption(key string, value interface{}) {
 	s.context[key] = value
 
 	s.save()
 }
 
-func (s *impl) GetOption(key string) (interface{}, bool) {
+func (s *sessionImpl) GetOption(key string) (interface{}, bool) {
 	value, found := s.context[key]
 
 	return value, found
 }
 
-func (s *impl) RemoveOption(key string) {
+func (s *sessionImpl) RemoveOption(key string) {
 	delete(s.context, key)
 
 	s.save()
 }
 
-func (s *impl) GetAccount() (model.UserDetail, bool) {
+func (s *sessionImpl) GetAccount() (model.UserDetail, bool) {
 	account := model.UserDetail{}
 	user, found := s.context["$$userAccount"]
 	if found {
@@ -47,19 +49,19 @@ func (s *impl) GetAccount() (model.UserDetail, bool) {
 	return account, found
 }
 
-func (s *impl) SetAccount(user model.UserDetail) {
+func (s *sessionImpl) SetAccount(user model.UserDetail) {
 	s.context["$$userAccount"] = user
 
 	s.save()
 }
 
-func (s *impl) ClearAccount() {
+func (s *sessionImpl) ClearAccount() {
 	delete(s.context, "$$userAccount")
 
 	s.save()
 }
 
-func (s *impl) OptionKey() []string {
+func (s *sessionImpl) OptionKey() []string {
 	keys := []string{}
 	for key := range s.context {
 		keys = append(keys, key)
@@ -68,11 +70,11 @@ func (s *impl) OptionKey() []string {
 	return keys
 }
 
-func (s *impl) refresh() {
+func (s *sessionImpl) refresh() {
 	s.context["$$refreshTime"] = time.Now()
 }
 
-func (s *impl) timeOut() bool {
+func (s *sessionImpl) timeOut() bool {
 	preTime, found := s.context["$$refreshTime"]
 	if !found {
 		return true
@@ -84,6 +86,6 @@ func (s *impl) timeOut() bool {
 	return elapse > maxTimeOut
 }
 
-func (s *impl) save() {
-	updateSession(s)
+func (s *sessionImpl) save() {
+	s.registry.UpdateSession(s)
 }
