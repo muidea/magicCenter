@@ -2,11 +2,11 @@ package session
 
 import (
 	"log"
-	"magiccenter/common"
 	"net/http"
 	"time"
 
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 var sessionCookieID = "session_id"

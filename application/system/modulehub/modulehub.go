@@ -11,7 +11,8 @@ package modulehub
 
 import (
 	"log"
-	"magiccenter/common"
+
+	"muidea.com/magicCenter/application/common"
 )
 
 // impl ModuleHub 实现

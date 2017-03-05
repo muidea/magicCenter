@@ -1,8 +1,9 @@
 package session
 
 import (
-	"magiccenter/common/model"
 	"time"
+
+	"muidea.com/magicCenter/application/common/model"
 )
 
 const (

@@ -1,11 +1,11 @@
 package loader
 
-import "magiccenter/common"
-
 import (
-	externloader "magiccenter/extern/loader"
-	kernelloader "magiccenter/kernel/loader"
+	"muidea.com/magiccenter/application/common"
 )
+
+//	externloader "muidea.com/magiccenter/application/module/extern/loader"
+//	kernelloader "muidea.com/magiccenter/application/module/kernel/loader"
 
 // Impl ModuleLoader
 type impl struct {
@@ -20,6 +20,6 @@ func CreateLoader() common.ModuleLoader {
 
 // LoadAllModules 加载所有Module
 func (instance *impl) LoadAllModules() {
-	kernelloader.LoadAllModules()
-	externloader.LoadAllModules()
+	//kernelloader.LoadAllModules()
+	// externloader.LoadAllModules()
 }

@@ -19,7 +19,7 @@ type impl struct {
 }
 
 // CreateConfiguration 创建Configuration
-func CreateConfiguration() common.Configuration {
+func CreateConfiguration(dbhelper common.DBHelper) common.Configuration {
 	impl := &impl{}
 	impl.configInfoMap = map[string]string{}
 

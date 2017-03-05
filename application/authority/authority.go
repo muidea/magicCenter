@@ -9,10 +9,9 @@ package authority
 */
 import (
 	"log"
-	"magiccenter/common"
-	commonbll "magiccenter/common/bll"
-	"magiccenter/system"
 	"net/http"
+
+	"muidea.com/magicCenter/application/common"
 
 	"github.com/go-martini/martini"
 )
@@ -37,18 +36,20 @@ func (intance *impl) AdminAuthVerify() martini.Handler {
 		session := system.GetSession(res, req)
 		user, found := session.GetAccount()
 		if found {
-			gids, found := commonbll.QueryAuthGroup(user.ID)
-			if found {
-				groups, found := commonbll.QueryGroups(gids)
+			/*
+				gids, found := commonbll.QueryAuthGroup(user.ID)
 				if found {
-					for _, group := range groups {
-						if group.AdminGroup() {
-							result = true
-							break
+					groups, found := commonbll.QueryGroups(gids)
+					if found {
+						for _, group := range groups {
+							if group.AdminGroup() {
+								result = true
+								break
+							}
 						}
 					}
 				}
-			}
+			*/
 		}
 
 		return result

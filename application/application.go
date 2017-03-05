@@ -4,10 +4,8 @@ import (
 	"os"
 
 	"muidea.com/magiccenter/application/configuration"
-	"muidea.com/magiccenter/application/loader"
+	"muidea.com/magiccenter/application/module/loader"
 	"muidea.com/magiccenter/application/system"
-
-	"muidea.com/magiccenter/application/auth"
 )
 
 var serverPort = "8888"

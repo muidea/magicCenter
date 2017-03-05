@@ -2,13 +2,13 @@ package router
 
 import (
 	"log"
-	"magiccenter/common"
 	"net/http"
 	"reflect"
 
-	"github.com/go-martini/martini"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/foundation/util"
 
-	"muidea.com/util"
+	"github.com/go-martini/martini"
 )
 
 type route struct {

@@ -14,7 +14,7 @@ import (
 	"github.com/go-martini/martini"
 )
 
-// System MagicCenter系统
+// System MagicCenter系统接口
 type System interface {
 	// Router 路由器
 	Router() common.Router, error

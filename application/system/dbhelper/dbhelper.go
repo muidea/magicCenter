@@ -1,9 +1,9 @@
 package dbhelper
 
 import (
-	"magiccenter/common"
+	"muidea.com/magiccenter/application/common"
 
-	"muidea.com/dao"
+	"muidea.com/magiccenter/foundation/dao"
 )
 
 type impl struct {
