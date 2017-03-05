@@ -1,6 +1,11 @@
 package common
 
-import "magiccenter/common/model"
+import "muidea.com/magicCenter/application/common/model"
+
+/*
+Session 对象
+用于管理客户的Session对象
+*/
 
 // Session 会话
 type Session interface {

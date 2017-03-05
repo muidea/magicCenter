@@ -3,9 +3,9 @@ package application
 import (
 	"os"
 
-	"muidea.com/magiccenter/application/configuration"
-	"muidea.com/magiccenter/application/module/loader"
-	"muidea.com/magiccenter/application/system"
+	"muidea.com/magicCenter/application/configuration"
+	"muidea.com/magicCenter/application/module/loader"
+	"muidea.com/magicCenter/application/system"
 )
 
 var serverPort = "8888"
@@ -31,20 +31,16 @@ func AppInstance() Application {
 	return app
 }
 
-func (instance application) construct() {
+func (instance *application) construct() {
 	os.Setenv("PORT", serverPort)
 }
 
-func (instance application) Run() {
+func (instance *application) Run() {
 	loader := loader.CreateLoader()
-
-	authority := auth.CreateAuthority()
-
 	configuration := configuration.CreateConfiguration()
 
-	system.Initialize(loader, authority, configuration)
-
-	system.Run()
-
-	system.Uninitialize()
+	sys := system.NewSystem(loader, configuration)
+	sys.StartUp()
+	sys.Run()
+	sys.ShutDown()
 }

@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"muidea.com/util"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 /*

@@ -9,9 +9,9 @@ package handler
 import (
 	"encoding/json"
 	"html/template"
-	"magiccenter/common"
-	"magiccenter/system"
 	"net/http"
+
+	"muidea.com/magicCenter/application/common"
 )
 
 // Result 处理结果

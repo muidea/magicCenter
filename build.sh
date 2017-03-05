@@ -1,5 +1,3 @@
 #/bin/sh
 
-go build magiccenter
-
-
+go build muidea.com/magicCenter/cmd/magicCenter

@@ -1,9 +1,10 @@
 package dbhelper
 
 import (
-	"muidea.com/magiccenter/application/common"
+	"log"
 
-	"muidea.com/magiccenter/foundation/dao"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/foundation/dao"
 )
 
 type impl struct {
@@ -16,6 +17,7 @@ func NewHelper() (common.DBHelper, error) {
 
 	dao, err := dao.Fetch("root", "rootkit", "localhost:3306", "magiccenter_db")
 	if err != nil {
+		log.Print("fetch database failed, err:" + err.Error())
 		return nil, err
 	}
 

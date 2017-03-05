@@ -1,9 +1,6 @@
 package bll
 
-import (
-	"magiccenter/common"
-	"magiccenter/system"
-)
+import "muidea.com/magicCenter/application/common"
 
 // AuthorityModuleID 模块ID
 const AuthorityModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"

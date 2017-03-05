@@ -1,14 +1,11 @@
 package orm
 
-import (
-	"muidea.com/dao"
-)
-
+import "muidea.com/magicCenter/foundation/dao"
 
 type commandData struct {
-	action commandAction	// 做什么
-	dao *dao.Dao
-	value  DBObject	// 操作对象
+	action commandAction // 做什么
+	dao    *dao.Dao
+	value  DBObject // 操作对象
 	result chan<- interface{}
 }
 
@@ -29,19 +26,17 @@ type findResult struct {
 
 type ormManager chan commandData
 
-
 var instance ormManager = nil
 
 func initialize() {
-	
+
 	instance = make(ormManager)
-	
+
 	go instance.run()
 }
 
+func (instance ormManager) query(dao *dao.Dao, obj DBObject) bool {
 
-func (instance ormManager) query(dao *dao.Dao,obj DBObject) bool {
-	
 	reply := make(chan interface{})
 	instance <- commandData{action: find, dao: dao, value: obj, result: reply}
 
@@ -49,8 +44,8 @@ func (instance ormManager) query(dao *dao.Dao,obj DBObject) bool {
 	return result
 }
 
-func (instance ormManager) insert(dao *dao.Dao,obj DBObject) bool {
-	
+func (instance ormManager) insert(dao *dao.Dao, obj DBObject) bool {
+
 	reply := make(chan interface{})
 	instance <- commandData{action: insert, dao: dao, value: obj, result: reply}
 
@@ -58,8 +53,8 @@ func (instance ormManager) insert(dao *dao.Dao,obj DBObject) bool {
 	return result
 }
 
-func (instance ormManager) update(dao *dao.Dao,obj DBObject) bool {
-	
+func (instance ormManager) update(dao *dao.Dao, obj DBObject) bool {
+
 	reply := make(chan interface{})
 	instance <- commandData{action: update, dao: dao, value: obj, result: reply}
 
@@ -67,11 +62,10 @@ func (instance ormManager) update(dao *dao.Dao,obj DBObject) bool {
 	return result
 }
 
-func (instance ormManager) remove(dao *dao.Dao,obj DBObject) {
-	
+func (instance ormManager) remove(dao *dao.Dao, obj DBObject) {
+
 	instance <- commandData{action: remove, dao: dao, value: obj}
 }
-
 
 func (instance ormManager) run() {
 	for command := range instance {

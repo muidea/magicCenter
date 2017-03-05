@@ -18,6 +18,7 @@ import (
 
 // Router 路由器对象
 type Router interface {
+
 	// 新建Route
 	NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) Route
 	// 增加路由

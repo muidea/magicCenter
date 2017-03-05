@@ -2,125 +2,71 @@ package system
 
 import (
 	"net/http"
-	"path"
 
-	"muidea.com/magiccenter/application/system/dbhelper"
-	"muidea.com/magiccenter/application/system/modulehub"
-	"muidea.com/magiccenter/application/system/router"
-	"muidea.com/magiccenter/application/system/session"
-
-	"muidea.com/magiccenter/application/common"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/system/modulehub"
+	"muidea.com/magicCenter/application/system/router"
+	"muidea.com/magicCenter/application/system/session"
 
 	"github.com/go-martini/martini"
 )
 
-// System MagicCenter系统接口
-type System interface {
-	// Router 路由器
-	Router() common.Router, error
-	// ModuleHub 模块管理器
-	ModuleHub() commmon.ModuleHub, error
-	// Configuration 配置管理器
-	Configuration() common.Configuration, error
-	// DBHelper 数据库管理器
-	DBHelper() common.DBHelper, error
-	// Session 当前Session
-	Session(w http.ResponseWriter, r *http.Request) common.Session
-	// Authority 权限校验器
-	Authority(w http.ResponseWriter, r *http.Request) common.Authority
+type impl struct {
+	loaderImpl        common.ModuleLoader
+	configurationImpl common.Configuration
+	routerImpl        common.Router
+	moduleHubImpl     common.ModuleHub
+	instanceFrame     *martini.Martini
 }
 
 // NewSystem 新建System对象
-func NewSystem() System {
-	i := &impl{}
+func NewSystem(loader common.ModuleLoader, configuration common.Configuration) common.System {
+	i := &impl{
+		loaderImpl:        loader,
+		configurationImpl: configuration,
+		routerImpl:        router.CreateRouter(),
+		moduleHubImpl:     modulehub.CreateModuleHub(),
+		instanceFrame:     martini.New()}
 
 	return i
 }
 
-type impl struct {
-	routerImpl common.Router
-	moduleHubImpl common.ModuleHub
-	configurationImpl common.Configuration
-	authImpl comon.Authority
-}
+func (i *impl) StartUp() error {
+	i.configurationImpl.LoadConfig()
 
-var routerImpl = router.CreateRouter()
-var moduleHubImpl = modulehub.CreateModuleHub()
-var instanceFrame *martini.Martini
-var authImpl common.Authority
-var configurationImpl common.Configuration
+	i.loaderImpl.LoadAllModules()
 
-// GetRouter 获取系统的Router
-func (i *impl)Router() common.Router {
-	return routerImpl
-}
-
-// GetModuleHub 获取系统的ModuleHub
-func (i *impl)ModuleHub() common.ModuleHub {
-	return moduleHubImpl
-}
-
-// GetDBHelper 获取系统的数据库访问助手
-func (i *impl)DBHelper() (common.DBHelper, error) {
-	return dbhelper.NewHelper()
-}
-
-// GetSession 获取当前Session
-func (i *impl)Session(w http.ResponseWriter, r *http.Request) common.Session {
-	return session.GetSession(w, r)
-}
-
-// GetAuthority 获取当前Authority
-func (i *impl)Authority() common.Authority {
-	return authImpl
-}
-
-// GetConfiguration 获取当前Configuration
-func (i *impl)Configuration() common.Configuration {
-	return configurationImpl
-}
-
-// bindResourcePath 绑定资源路径
-func bindResourcePath() {
-	path := "template/resources"
-	instanceFrame.Use(martini.Static(path))
-}
-
-// bindAuthVerify 绑定权限校验器
-func bindAuthVerify(auth common.Authority) {
-	instanceFrame.Use(auth.Authority())
-}
-
-// Initialize 初始化
-func Initialize(loader common.ModuleLoader, auth common.Authority, configuration common.Configuration) {
-	instanceFrame = martini.New()
-	authImpl = auth
-	configurationImpl = configuration
-
-	configurationImpl.LoadConfig()
-
-	loader.LoadAllModules()
-
-	allModules := moduleHubImpl.QueryAllModule()
+	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
 		baseURL := m.URL()
 		routes := m.Routes()
 		for _, rt := range routes {
-			routerImpl.AddRoute(baseURL, rt)
+			i.routerImpl.AddRoute(baseURL, rt)
 		}
 	}
 
-	bindResourcePath()
-
-	bindAuthVerify(auth)
-
-	moduleHubImpl.StartupAllModules()
+	i.moduleHubImpl.StartupAllModules()
+	return nil
 }
 
-// Uninitialize 反初始化
-func Uninitialize() {
+func (i *impl) Run() {
+	martiniRouter := i.routerImpl.Router()
 
-	allModules := moduleHubImpl.QueryAllModule()
+	i.instanceFrame.Use(martini.Logger())
+	i.instanceFrame.Use(martini.Recovery())
+	i.instanceFrame.MapTo(martiniRouter, (*martini.Routes)(nil))
+	i.instanceFrame.Action(martiniRouter.Handle)
+
+	instance := martini.ClassicMartini{}
+	instance.Martini = i.instanceFrame
+	instance.Router = martiniRouter
+
+	instance.Run()
+}
+
+func (i *impl) ShutDown() error {
+	/* 退出时不需要做路由清理操作
+	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
 		baseURL := m.URL()
 		routes := m.Routes()
@@ -128,22 +74,28 @@ func Uninitialize() {
 			routerImpl.RemoveRoute(baseURL, rt)
 		}
 	}
+	*/
 
-	moduleHubImpl.CleanupAllModules()
+	i.moduleHubImpl.CleanupAllModules()
+	return nil
 }
 
-// Run 开始运行
-func Run() {
-	martiniRouter := routerImpl.Router()
+// GetRouter 获取系统的Router
+func (i *impl) Router() common.Router {
+	return i.routerImpl
+}
 
-	instanceFrame.Use(martini.Logger())
-	instanceFrame.Use(martini.Recovery())
-	instanceFrame.MapTo(martiniRouter, (*martini.Routes)(nil))
-	instanceFrame.Action(martiniRouter.Handle)
+// GetModuleHub 获取系统的ModuleHub
+func (i *impl) ModuleHub() common.ModuleHub {
+	return i.moduleHubImpl
+}
 
-	instance := martini.ClassicMartini{}
-	instance.Martini = instanceFrame
-	instance.Router = martiniRouter
+// GetConfiguration 获取当前Configuration
+func (i *impl) Configuration() common.Configuration {
+	return i.configurationImpl
+}
 
-	instance.Run()
+// GetSession 获取当前Session
+func (i *impl) Session(w http.ResponseWriter, r *http.Request) common.Session {
+	return session.GetSession(w, r)
 }

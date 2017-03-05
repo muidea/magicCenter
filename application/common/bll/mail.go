@@ -1,7 +1,5 @@
 package bll
 
-import "magiccenter/system"
-
 /*
  Package bll 邮件辅助，提供发送邮件功能
 */

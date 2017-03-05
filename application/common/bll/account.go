@@ -7,8 +7,7 @@ package bll
 */
 
 import (
-	commonmodel "magiccenter/common/model"
-	"magiccenter/system"
+	commonmodel "muidea.com/magicCenter/application/common/model"
 )
 
 // AccountModuleID Account 模块ID

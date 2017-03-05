@@ -9,9 +9,8 @@ package configuration
 import (
 	"log"
 
-	"muidea.com/magiccenter/application/configuration/bll"
-
-	"muidea.com/magiccenter/application/common"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/configuration/bll"
 )
 
 type impl struct {
@@ -19,7 +18,7 @@ type impl struct {
 }
 
 // CreateConfiguration 创建Configuration
-func CreateConfiguration(dbhelper common.DBHelper) common.Configuration {
+func CreateConfiguration() common.Configuration {
 	impl := &impl{}
 	impl.configInfoMap = map[string]string{}
 
@@ -33,10 +32,6 @@ func (instance *impl) LoadConfig() {
 	keys := []string{common.AppName, common.AppDomain, common.AppLogo, common.MailServer, common.MailAccount, common.MailPassword, common.SysDefaultModule}
 
 	instance.configInfoMap = bll.GetConfigurations(keys)
-
-	//instance.configInfoMap[common.StaticPath] = "static"
-	//instance.configInfoMap[common.ResourcePath] = "template"
-	//instance.configInfoMap[common.UploadPath] = "upload"
 }
 
 // UpdateSystemInfo 更新系统信息

@@ -1,8 +1,6 @@
 package loader
 
-import (
-	"muidea.com/magiccenter/application/common"
-)
+import "muidea.com/magicCenter/application/common"
 
 //	externloader "muidea.com/magiccenter/application/module/extern/loader"
 //	kernelloader "muidea.com/magiccenter/application/module/kernel/loader"

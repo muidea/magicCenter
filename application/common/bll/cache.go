@@ -1,7 +1,5 @@
 package bll
 
-import "magiccenter/system"
-
 /*
 提供临时缓存功能，允许临时保存指定时效的数据
 */
