@@ -1,6 +1,10 @@
-package common
+package service
 
-import "net/http"
+import (
+	"net/http"
+
+	"muidea.com/magicCenter/application/common"
+)
 
 // System MagicCenter系统接口
 type System interface {
@@ -21,5 +25,5 @@ type System interface {
 	Authority() Authority
 
 	// Session 当前Session
-	Session(w http.ResponseWriter, r *http.Request) Session
+	Session(w http.ResponseWriter, r *http.Request) common.Session
 }

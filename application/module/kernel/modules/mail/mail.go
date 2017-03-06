@@ -2,11 +2,11 @@ package mail
 
 import (
 	"log"
-	"magiccenter/common"
-	"magiccenter/common/bll"
-	"magiccenter/system"
 
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
+	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // ID Mail模块ID
@@ -22,17 +22,18 @@ const Description = "Magic 邮件模块"
 const URL string = "mail"
 
 type mail struct {
+	system service.System
 }
 
 var instance *mail
 
 // LoadModule 加载Mail模块
-func LoadModule() {
+func LoadModule(sys service.System) {
 	if instance == nil {
-		instance = &mail{}
+		instance = &mail{system: sys}
 	}
 
-	modulehub := system.GetModuleHub()
+	modulehub := sys.ModuleHub()
 	modulehub.RegisterModule(instance)
 }
 
@@ -98,27 +99,31 @@ func (instance *mail) Invoke(param interface{}, result interface{}) bool {
 		util.ValidataPtr(result)
 	}
 
-	postBox := param.(*bll.PostBox)
-	if postBox == nil {
-		log.Print("illegal param")
-		return false
-	}
+	/*
+		postBox := param.(*bll.PostBox)
+		if postBox == nil {
+			log.Print("illegal param")
+			return false
+		}
 
-	go postMails(postBox)
+		go instance.postMails(postBox)
+	*/
 	return true
 }
 
-func postMails(postBox *bll.PostBox) {
+/*
+func (instance *mail) postMails(postBox *bll.PostBox) {
 	for _, user := range postBox.UserList {
-		postMail(user, postBox.Subject, postBox.Content)
+		instance.postMail(user, postBox.Subject, postBox.Content)
 	}
 }
+*/
 
-func postMail(to, subject, body string) bool {
-	configuration := system.GetConfiguration()
+func (instance *mail) postMail(to, subject, body string) bool {
+	configuration := instance.system.Configuration()
 	systemInfo := configuration.GetSystemInfo()
 
-	err := util.SendMail(systemInfo.MailAccount, systemInfo.MailPassword, systemInfo.MailServer, to, subject, body, "html")
+	err := net.SendMail(systemInfo.MailAccount, systemInfo.MailPassword, systemInfo.MailServer, to, subject, body, "html")
 	if err != nil {
 		log.Printf("sendMail fail, err:%s", err.Error())
 		return false

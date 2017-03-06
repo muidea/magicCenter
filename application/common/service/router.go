@@ -1,4 +1,4 @@
-package common
+package service
 
 /*
 路由器
@@ -13,6 +13,8 @@ package common
 import (
 	"net/http"
 
+	"muidea.com/magicCenter/application/common"
+
 	"github.com/go-martini/martini"
 )
 
@@ -20,11 +22,11 @@ import (
 type Router interface {
 
 	// 新建Route
-	NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) Route
+	NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route
 	// 增加路由
-	AddRoute(baseURL string, rt Route)
+	AddRoute(baseURL string, rt common.Route)
 	// 清除路由
-	RemoveRoute(baseURL string, rt Route)
+	RemoveRoute(baseURL string, rt common.Route)
 
 	// 增加Get路由
 	AddGetRoute(pattern string, handler, verifier interface{})

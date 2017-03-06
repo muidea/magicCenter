@@ -3,7 +3,7 @@ package authority
 /*
 鉴权
 
-实现common.Authority接口，提供管理员鉴权处理器和登陆鉴权处理器，返回martini的鉴权handler
+实现service.Authority接口，提供管理员鉴权处理器和登陆鉴权处理器，返回martini的鉴权handler
 
 应用端通过System获取接口对象
 */
@@ -11,14 +11,14 @@ import (
 	"log"
 	"net/http"
 
-	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 
 	"github.com/go-martini/martini"
 )
 
 // Authority 权限校验处理器
 // 用于在路由过程中进行权限校验
-func Authority(sys common.System) martini.Handler {
+func Authority(sys service.System) martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request, c martini.Context, log *log.Logger) {
 		authority := sys.Authority()
 		if authority.Verify(res, req) {
@@ -31,7 +31,7 @@ func Authority(sys common.System) martini.Handler {
 }
 
 // CreateAuthority 创建Authority
-func CreateAuthority() common.Authority {
+func CreateAuthority() service.Authority {
 	impl := &impl{}
 
 	return impl

@@ -1,4 +1,5 @@
-package common
+package service
+
 
 const (
 	// AppName 应用名称

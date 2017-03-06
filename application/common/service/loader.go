@@ -1,6 +1,7 @@
-package common
+package service
+
 
 // ModuleLoader Module加载器
 type ModuleLoader interface {
-	LoadAllModules()
+	LoadAllModules(sys System)
 }

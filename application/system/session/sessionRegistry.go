@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/foundation/util"
 )
 
@@ -24,7 +25,7 @@ type sessionRegistryImpl struct {
 }
 
 // CreateSessionRegistry 创建Session仓库
-func CreateSessionRegistry() common.SessionRegistry {
+func CreateSessionRegistry() service.SessionRegistry {
 	impl := sessionRegistryImpl{}
 	impl.commandChan = make(commandChanImpl)
 	go impl.commandChan.run()

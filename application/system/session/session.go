@@ -3,8 +3,8 @@ package session
 import (
 	"time"
 
-	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/common/service"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 type sessionImpl struct {
 	id       string // session id
 	context  map[string]interface{}
-	registry common.SessionRegistry
+	registry service.SessionRegistry
 }
 
 func (s *sessionImpl) ID() string {

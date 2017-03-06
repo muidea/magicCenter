@@ -1,7 +1,7 @@
 package configuration
 
 /*
-实现common.Configuration接口
+实现service.Configuration接口
 
 应用端通过System获取接口对象
 */
@@ -9,7 +9,7 @@ package configuration
 import (
 	"log"
 
-	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/application/configuration/bll"
 )
 
@@ -18,7 +18,7 @@ type impl struct {
 }
 
 // CreateConfiguration 创建Configuration
-func CreateConfiguration() common.Configuration {
+func CreateConfiguration() service.Configuration {
 	impl := &impl{}
 	impl.configInfoMap = map[string]string{}
 
@@ -29,40 +29,40 @@ func CreateConfiguration() common.Configuration {
 func (instance *impl) LoadConfig() {
 	log.Println("configuration initialize ...")
 
-	keys := []string{common.AppName, common.AppDomain, common.AppLogo, common.MailServer, common.MailAccount, common.MailPassword, common.SysDefaultModule}
+	keys := []string{service.AppName, service.AppDomain, service.AppLogo, service.MailServer, service.MailAccount, service.MailPassword, service.SysDefaultModule}
 
 	instance.configInfoMap = bll.GetConfigurations(keys)
 }
 
 // UpdateSystemInfo 更新系统信息
-func (instance *impl) UpdateSystemInfo(info common.SystemInfo) bool {
+func (instance *impl) UpdateSystemInfo(info service.SystemInfo) bool {
 	configs := map[string]string{}
-	configs[common.AppName] = info.Name
-	configs[common.AppDomain] = info.Domain
-	configs[common.AppLogo] = info.Logo
-	configs[common.MailServer] = info.MailServer
-	configs[common.MailAccount] = info.MailAccount
-	configs[common.MailPassword] = info.MailPassword
+	configs[service.AppName] = info.Name
+	configs[service.AppDomain] = info.Domain
+	configs[service.AppLogo] = info.Logo
+	configs[service.MailServer] = info.MailServer
+	configs[service.MailAccount] = info.MailAccount
+	configs[service.MailPassword] = info.MailPassword
 
-	instance.configInfoMap[common.AppName] = info.Name
-	instance.configInfoMap[common.AppDomain] = info.Domain
-	instance.configInfoMap[common.AppLogo] = info.Logo
-	instance.configInfoMap[common.MailServer] = info.MailServer
-	instance.configInfoMap[common.MailAccount] = info.MailAccount
-	instance.configInfoMap[common.MailPassword] = info.MailPassword
+	instance.configInfoMap[service.AppName] = info.Name
+	instance.configInfoMap[service.AppDomain] = info.Domain
+	instance.configInfoMap[service.AppLogo] = info.Logo
+	instance.configInfoMap[service.MailServer] = info.MailServer
+	instance.configInfoMap[service.MailAccount] = info.MailAccount
+	instance.configInfoMap[service.MailPassword] = info.MailPassword
 
 	return bll.UpdateConfigurations(configs)
 }
 
 // GetSystemInfo 获取系统信息
-func (instance *impl) GetSystemInfo() common.SystemInfo {
-	info := common.SystemInfo{}
-	info.Name = instance.configInfoMap[common.AppName]
-	info.Domain = instance.configInfoMap[common.AppDomain]
-	info.Logo = instance.configInfoMap[common.AppLogo]
-	info.MailServer = instance.configInfoMap[common.MailServer]
-	info.MailAccount = instance.configInfoMap[common.MailAccount]
-	info.MailPassword = instance.configInfoMap[common.MailPassword]
+func (instance *impl) GetSystemInfo() service.SystemInfo {
+	info := service.SystemInfo{}
+	info.Name = instance.configInfoMap[service.AppName]
+	info.Domain = instance.configInfoMap[service.AppDomain]
+	info.Logo = instance.configInfoMap[service.AppLogo]
+	info.MailServer = instance.configInfoMap[service.MailServer]
+	info.MailAccount = instance.configInfoMap[service.MailAccount]
+	info.MailPassword = instance.configInfoMap[service.MailPassword]
 
 	return info
 }

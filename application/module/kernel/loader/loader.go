@@ -1,29 +1,22 @@
 package loader
 
 import (
-	api "magiccenter/kernel/api"
-	"magiccenter/kernel/dashboard"
-	"magiccenter/kernel/modules/account"
-	"magiccenter/kernel/modules/authority"
-	"magiccenter/kernel/modules/cache"
-	"magiccenter/kernel/modules/content"
-	"magiccenter/kernel/modules/mail"
+	"muidea.com/magicCenter/application/common/service"
+	"muidea.com/magicCenter/application/module/kernel/modules/mail"
 )
 
 // LoadAllModules 加载所有模块
-func LoadAllModules() {
+func LoadAllModules(sys service.System) {
 
-	mail.LoadModule()
+	mail.LoadModule(sys)
 
-	cache.LoadModule()
+	//cache.LoadModule()
 
-	dashboard.LoadModule()
+	//dashboard.LoadModule()
 
-	account.LoadModule()
+	//account.LoadModule()
 
-	content.LoadModule()
+	//content.LoadModule()
 
-	authority.LoadModule()
-
-	api.LoadModule()
+	//authority.LoadModule()
 }

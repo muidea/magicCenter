@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/foundation/util"
 
 	"github.com/go-martini/martini"
@@ -44,7 +45,7 @@ func (r *route) Verifier() interface{} {
 }
 
 // CreateRouter 新建Router
-func CreateRouter() common.Router {
+func CreateRouter() service.Router {
 	impl := impl{}
 	impl.martiniRouter = martini.NewRouter()
 	impl.routerVerifier = make(map[string]interface{})

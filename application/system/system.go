@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/application/system/authority"
 	"muidea.com/magicCenter/application/system/modulehub"
 	"muidea.com/magicCenter/application/system/router"
@@ -13,17 +14,17 @@ import (
 )
 
 type impl struct {
-	loaderImpl          common.ModuleLoader
-	configurationImpl   common.Configuration
-	routerImpl          common.Router
-	moduleHubImpl       common.ModuleHub
-	authorityImpl       common.Authority
-	sessionRegistryImpl common.SessionRegistry
+	loaderImpl          service.ModuleLoader
+	configurationImpl   service.Configuration
+	routerImpl          service.Router
+	moduleHubImpl       service.ModuleHub
+	authorityImpl       service.Authority
+	sessionRegistryImpl service.SessionRegistry
 	instanceFrameImpl   *martini.Martini
 }
 
 // NewSystem 新建System对象
-func NewSystem(loader common.ModuleLoader, configuration common.Configuration) common.System {
+func NewSystem(loader service.ModuleLoader, configuration service.Configuration) service.System {
 	i := &impl{
 		loaderImpl:          loader,
 		configurationImpl:   configuration,
@@ -39,7 +40,7 @@ func NewSystem(loader common.ModuleLoader, configuration common.Configuration) c
 func (i *impl) StartUp() error {
 	i.configurationImpl.LoadConfig()
 
-	i.loaderImpl.LoadAllModules()
+	i.loaderImpl.LoadAllModules(i)
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
@@ -89,21 +90,21 @@ func (i *impl) ShutDown() error {
 }
 
 // GetRouter 获取系统的Router
-func (i *impl) Router() common.Router {
+func (i *impl) Router() service.Router {
 	return i.routerImpl
 }
 
 // GetModuleHub 获取系统的ModuleHub
-func (i *impl) ModuleHub() common.ModuleHub {
+func (i *impl) ModuleHub() service.ModuleHub {
 	return i.moduleHubImpl
 }
 
 // GetConfiguration 获取当前Configuration
-func (i *impl) Configuration() common.Configuration {
+func (i *impl) Configuration() service.Configuration {
 	return i.configurationImpl
 }
 
-func (i *impl) Authority() common.Authority {
+func (i *impl) Authority() service.Authority {
 	return i.authorityImpl
 }
 

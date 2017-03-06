@@ -1,4 +1,4 @@
-package common
+package service
 
 // DBHelper 数据访问助手
 type DBHelper interface {

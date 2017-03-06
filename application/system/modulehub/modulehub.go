@@ -13,6 +13,7 @@ import (
 	"log"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/service"
 )
 
 // impl ModuleHub 实现
@@ -22,7 +23,7 @@ type impl struct {
 }
 
 // CreateModuleHub 创建ModuleHub
-func CreateModuleHub() common.ModuleHub {
+func CreateModuleHub() service.ModuleHub {
 	impl := impl{}
 	impl.moduleIDMap = map[string]common.Module{}
 
