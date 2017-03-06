@@ -40,15 +40,17 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	cookie, err := r.Cookie(sessionCookieID)
 	if err != nil {
 		log.Printf("can't find cookie,create new session, err:" + err.Error())
-		userSession = sm.createSession()
+		id := createUUID()
+		userSession = sm.CreateSession(id)
 	} else {
-		cur, found := sm.commandChan.find(cookie.Value)
+		cur, found := sm.FindSession(cookie.Value)
 		if !found {
 			log.Printf("invalid cookie,create new session, cookieValue:%s", cookie.Value)
-			userSession = sm.createSession()
+			id := createUUID()
+			userSession = sm.CreateSession(id)
 		} else {
 			log.Print("find exist ession from cookie")
-			userSession = &cur
+			userSession = cur
 		}
 	}
 
@@ -57,6 +59,22 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	http.SetCookie(w, &sessionCookie)
 
 	return userSession
+}
+
+// CreateSession 新建Session
+func (sm *sessionRegistryImpl) CreateSession(sessionID string) common.Session {
+	session := sessionImpl{id: sessionID, context: make(map[string]interface{})}
+
+	session.refresh()
+
+	sm.commandChan.insert(session)
+
+	return &session
+}
+
+func (sm *sessionRegistryImpl) FindSession(sessionID string) (common.Session, bool) {
+	session, found := sm.commandChan.find(sessionID)
+	return &session, found
 }
 
 // UpdateSession 更新Session
@@ -71,16 +89,6 @@ func (sm *sessionRegistryImpl) UpdateSession(session common.Session) bool {
 	}
 
 	return sm.commandChan.update(cur)
-}
-
-func (sm *sessionRegistryImpl) createSession() common.Session {
-	session := sessionImpl{id: createUUID(), context: make(map[string]interface{})}
-
-	session.refresh()
-
-	sm.commandChan.insert(session)
-
-	return &session
 }
 
 func (sm *sessionRegistryImpl) checkTimer() {

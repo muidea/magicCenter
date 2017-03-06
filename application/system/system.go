@@ -13,25 +13,25 @@ import (
 )
 
 type impl struct {
-	loaderImpl        common.ModuleLoader
-	configurationImpl common.Configuration
-	routerImpl        common.Router
-	moduleHubImpl     common.ModuleHub
-	authorityImpl     common.Authority
-	sessionRegistry   common.SessionRegistry
-	instanceFrame     *martini.Martini
+	loaderImpl          common.ModuleLoader
+	configurationImpl   common.Configuration
+	routerImpl          common.Router
+	moduleHubImpl       common.ModuleHub
+	authorityImpl       common.Authority
+	sessionRegistryImpl common.SessionRegistry
+	instanceFrameImpl   *martini.Martini
 }
 
 // NewSystem 新建System对象
 func NewSystem(loader common.ModuleLoader, configuration common.Configuration) common.System {
 	i := &impl{
-		loaderImpl:        loader,
-		configurationImpl: configuration,
-		routerImpl:        router.CreateRouter(),
-		moduleHubImpl:     modulehub.CreateModuleHub(),
-		authorityImpl:     authority.CreateAuthority(),
-		sessionRegistry:   session.CreateSessionRegistry(),
-		instanceFrame:     martini.New()}
+		loaderImpl:          loader,
+		configurationImpl:   configuration,
+		routerImpl:          router.CreateRouter(),
+		moduleHubImpl:       modulehub.CreateModuleHub(),
+		authorityImpl:       authority.CreateAuthority(),
+		sessionRegistryImpl: session.CreateSessionRegistry(),
+		instanceFrameImpl:   martini.New()}
 
 	return i
 }
@@ -57,15 +57,15 @@ func (i *impl) StartUp() error {
 func (i *impl) Run() {
 	martiniRouter := i.routerImpl.Router()
 
-	i.instanceFrame.Use(martini.Logger())
-	i.instanceFrame.Use(martini.Recovery())
-	i.instanceFrame.Use(authority.Authority(i))
+	i.instanceFrameImpl.Use(martini.Logger())
+	i.instanceFrameImpl.Use(martini.Recovery())
+	i.instanceFrameImpl.Use(authority.Authority(i))
 
-	i.instanceFrame.MapTo(martiniRouter, (*martini.Routes)(nil))
-	i.instanceFrame.Action(martiniRouter.Handle)
+	i.instanceFrameImpl.MapTo(martiniRouter, (*martini.Routes)(nil))
+	i.instanceFrameImpl.Action(martiniRouter.Handle)
 
 	instance := martini.ClassicMartini{}
-	instance.Martini = i.instanceFrame
+	instance.Martini = i.instanceFrameImpl
 	instance.Router = martiniRouter
 
 	instance.Run()
@@ -109,5 +109,5 @@ func (i *impl) Authority() common.Authority {
 
 // GetSession 获取当前Session
 func (i *impl) Session(w http.ResponseWriter, r *http.Request) common.Session {
-	return i.sessionRegistry.GetSession(w, r)
+	return i.sessionRegistryImpl.GetSession(w, r)
 }
