@@ -3,7 +3,6 @@ package router
 import (
 	"log"
 	"net/http"
-	"reflect"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/service"
@@ -13,10 +12,9 @@ import (
 )
 
 type route struct {
-	rType     string
-	rPattern  string
-	rHandler  interface{}
-	rVerifier interface{}
+	rType    string
+	rPattern string
+	rHandler interface{}
 }
 
 // impl 路由器实现
@@ -40,26 +38,20 @@ func (r *route) Handler() interface{} {
 	return r.rHandler
 }
 
-func (r *route) Verifier() interface{} {
-	return r.rVerifier
-}
-
 // CreateRouter 新建Router
 func CreateRouter() service.Router {
 	impl := impl{}
 	impl.martiniRouter = martini.NewRouter()
-	impl.routerVerifier = make(map[string]interface{})
 
 	return &impl
 }
 
 // NewRoute 新建一个路由对象
-func (instance *impl) NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route {
+func (instance *impl) NewRoute(rType, rPattern string, rHandler interface{}) common.Route {
 	r := route{}
 	r.rType = rType
 	r.rPattern = rPattern
 	r.rHandler = rHandler
-	r.rVerifier = rVerifier
 
 	return &r
 }
@@ -69,13 +61,13 @@ func (instance *impl) AddRoute(baseURL string, rt common.Route) {
 	fullURL := util.JoinURL(baseURL, rt.Pattern())
 	switch rt.Type() {
 	case common.GET:
-		instance.AddGetRoute(fullURL, rt.Handler(), rt.Verifier())
+		instance.AddGetRoute(fullURL, rt.Handler())
 	case common.POST:
-		instance.AddPostRoute(fullURL, rt.Handler(), rt.Verifier())
+		instance.AddPostRoute(fullURL, rt.Handler())
 	case common.DELETE:
-		instance.AddDeleteRoute(fullURL, rt.Handler(), rt.Verifier())
+		instance.AddDeleteRoute(fullURL, rt.Handler())
 	case common.PUT:
-		instance.AddPutRoute(fullURL, rt.Handler(), rt.Verifier())
+		instance.AddPutRoute(fullURL, rt.Handler())
 	}
 }
 
@@ -100,14 +92,7 @@ func (instance *impl) Router() martini.Router {
 }
 
 // AddGetRoute 添加一条Get路由
-func (instance *impl) AddGetRoute(pattern string, handler, verifier interface{}) {
-	// 如果verifier为nil则表示不需要进行权限校验
-	// 所以在verifier为nil的情况下不需要校验verifier是否为func
-	if verifier != nil {
-		util.ValidateFunc(verifier)
-		instance.routerVerifier[pattern] = verifier
-	}
-
+func (instance *impl) AddGetRoute(pattern string, handler interface{}) {
 	if martini.Env != martini.Prod {
 		log.Printf("[get]:%s", pattern)
 	}
@@ -121,14 +106,7 @@ func (instance *impl) RemoveGetRoute(pattern string) {
 }
 
 // AddPutRoute 添加一条Put路由
-func (instance *impl) AddPutRoute(pattern string, handler, verifier interface{}) {
-	// 如果verifier为nil则表示不需要进行权限校验
-	// 所以在verifier为nil的情况下不需要校验verifier是否为func
-	if verifier != nil {
-		util.ValidateFunc(verifier)
-		instance.routerVerifier[pattern] = verifier
-	}
-
+func (instance *impl) AddPutRoute(pattern string, handler interface{}) {
 	if martini.Env != martini.Prod {
 		log.Printf("[put]:%s", pattern)
 	}
@@ -142,14 +120,7 @@ func (instance *impl) RemovePutRoute(pattern string) {
 }
 
 // AddPostRoute 添加一条Post路由
-func (instance *impl) AddPostRoute(pattern string, handler, verifier interface{}) {
-	// 如果verifier为nil则表示不需要进行权限校验
-	// 所以在verifier为nil的情况下不需要校验verifier是否为func
-	if verifier != nil {
-		util.ValidateFunc(verifier)
-		instance.routerVerifier[pattern] = verifier
-	}
-
+func (instance *impl) AddPostRoute(pattern string, handler interface{}) {
 	if martini.Env != martini.Prod {
 		log.Printf("[post]:%s", pattern)
 	}
@@ -163,14 +134,7 @@ func (instance *impl) RemovePostRoute(pattern string) {
 }
 
 // AddDeleteRoute 添加一条Delete路由
-func (instance *impl) AddDeleteRoute(pattern string, handler, verifier interface{}) {
-	// 如果verifier为nil则表示不需要进行权限校验
-	// 所以在verifier为nil的情况下不需要校验verifier是否为func
-	if verifier != nil {
-		util.ValidateFunc(verifier)
-		instance.routerVerifier[pattern] = verifier
-	}
-
+func (instance *impl) AddDeleteRoute(pattern string, handler interface{}) {
 	if martini.Env != martini.Prod {
 		log.Printf("[delete]:%s", pattern)
 	}
@@ -186,30 +150,4 @@ func (instance *impl) RemoveDeleteRoute(pattern string) {
 // Dispatch 分发一次请求
 func (instance *impl) Dispatch(res http.ResponseWriter, req *http.Request) {
 
-}
-
-// VerifyAuthority 校验路由权限
-func (instance *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
-	verifiter, found := instance.routerVerifier[req.URL.Path]
-	if !found || verifiter == nil {
-		// 找不到verifier,说明不需要进权限校验，返回校验通过
-		return true
-	}
-
-	in := make([]reflect.Value, 2)
-	in[0] = reflect.ValueOf(res)
-	in[1] = reflect.ValueOf(req)
-	value := reflect.ValueOf(verifiter).Call(in)[0]
-	return value.Bool()
-}
-
-// AddAuthVerifier 添加一个路由的权限校验器
-func (instance *impl) AddAuthVerifier(pattern string, verifier interface{}) {
-	util.ValidateFunc(verifier)
-	instance.routerVerifier[pattern] = verifier
-}
-
-// RemoveAuthVerifier 清除一个路由的权限校验器
-func (instance *impl) RemoveAuthVerifier(pattern string) {
-	delete(instance.routerVerifier, pattern)
 }

@@ -22,11 +22,11 @@ type Module interface {
 	// 状态
 	Status() int
 
-	// EndPoint 模块提供的Rest api支持
-	EndPoint() EndPoint
-
 	// AuthGroups 授权组信息
 	AuthGroups() []AuthGroup
+
+	// EndPoint 模块提供的Rest api支持
+	EndPoint() EndPoint
 
 	// Routes 模块支持的路由信息
 	Routes() []Route

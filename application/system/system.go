@@ -60,7 +60,7 @@ func (i *impl) Run() {
 
 	i.instanceFrameImpl.Use(martini.Logger())
 	i.instanceFrameImpl.Use(martini.Recovery())
-	i.instanceFrameImpl.Use(authority.Authority(i))
+	i.instanceFrameImpl.Use(authority.Authority(i.authorityImpl))
 
 	i.instanceFrameImpl.MapTo(martiniRouter, (*martini.Routes)(nil))
 	i.instanceFrameImpl.Action(martiniRouter.Handle)
@@ -89,11 +89,6 @@ func (i *impl) ShutDown() error {
 	return nil
 }
 
-// GetRouter 获取系统的Router
-func (i *impl) Router() service.Router {
-	return i.routerImpl
-}
-
 // GetModuleHub 获取系统的ModuleHub
 func (i *impl) ModuleHub() service.ModuleHub {
 	return i.moduleHubImpl
@@ -102,10 +97,6 @@ func (i *impl) ModuleHub() service.ModuleHub {
 // GetConfiguration 获取当前Configuration
 func (i *impl) Configuration() service.Configuration {
 	return i.configurationImpl
-}
-
-func (i *impl) Authority() service.Authority {
-	return i.authorityImpl
 }
 
 // GetSession 获取当前Session

@@ -22,26 +22,26 @@ import (
 type Router interface {
 
 	// 新建Route
-	NewRoute(rType, rPattern string, rHandler interface{}, rVerifier interface{}) common.Route
+	NewRoute(rType, rPattern string, rHandler interface{}) common.Route
 	// 增加路由
 	AddRoute(baseURL string, rt common.Route)
 	// 清除路由
 	RemoveRoute(baseURL string, rt common.Route)
 
 	// 增加Get路由
-	AddGetRoute(pattern string, handler, verifier interface{})
+	AddGetRoute(pattern string, handler interface{})
 	// 清除Get路由
 	RemoveGetRoute(pattern string)
 	// 增加Post路由
-	AddPostRoute(pattern string, handler, verifier interface{})
+	AddPostRoute(pattern string, handler interface{})
 	// 清除Post路由
 	RemovePostRoute(pattern string)
 	// 增加Delete路由
-	AddDeleteRoute(pattern string, handler, verifier interface{})
+	AddDeleteRoute(pattern string, handler interface{})
 	// 清除Delete路由
 	RemoveDeleteRoute(pattern string)
 	// 增加Put路由
-	AddPutRoute(pattern string, handler, verifier interface{})
+	AddPutRoute(pattern string, handler interface{})
 	// 清除Put路由
 	RemovePutRoute(pattern string)
 
@@ -50,6 +50,4 @@ type Router interface {
 
 	// 分发一条请求
 	Dispatch(res http.ResponseWriter, req *http.Request)
-	// 校验权限，无权限返回false，有权限返回true
-	VerifyAuthority(res http.ResponseWriter, req *http.Request) bool
 }

@@ -18,9 +18,8 @@ import (
 
 // Authority 权限校验处理器
 // 用于在路由过程中进行权限校验
-func Authority(sys service.System) martini.Handler {
+func Authority(authority service.Authority) martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request, c martini.Context, log *log.Logger) {
-		authority := sys.Authority()
 		if authority.Verify(res, req) {
 			// 拥有权限，继续执行
 			c.Next()

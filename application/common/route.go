@@ -16,6 +16,4 @@ type Route interface {
 	Pattern() string
 	// Handler 路由处理器
 	Handler() interface{}
-	// Verifier 权限校验器
-	Verifier() interface{}
 }
