@@ -57,7 +57,7 @@ func NewKernel(loader loader.ModuleLoader, configuration configuration.Configura
 }
 
 func (i *impl) StartUp() error {
-	i.loaderImpl.LoadAllModules()
+	i.loaderImpl.LoadAllModules(i.configurationImpl, i.moduleHubImpl)
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {

@@ -4,7 +4,9 @@ import (
 	"log"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/service"
+	"muidea.com/magicCenter/application/common/configuration"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/foundation/net"
 	"muidea.com/magicCenter/foundation/util"
 )
@@ -22,19 +24,25 @@ const Description = "Magic 邮件模块"
 const URL string = "mail"
 
 type mail struct {
-	system service.System
+	mailAccount  string
+	mailPassword string
+	mailServer   string
+	modulHub     modulehub.ModuleHub
 }
 
 var instance *mail
 
 // LoadModule 加载Mail模块
-func LoadModule(sys service.System) {
+func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
 	if instance == nil {
-		instance = &mail{system: sys}
+		account, _ := cfg.GetOption(model.MailAccount)
+		password, _ := cfg.GetOption(model.MailPassword)
+		server, _ := cfg.GetOption(model.MailServer)
+
+		instance = &mail{mailAccount: account, mailPassword: password, mailServer: server, modulHub: modHub}
 	}
 
-	modulehub := sys.ModuleHub()
-	modulehub.RegisterModule(instance)
+	modHub.RegisterModule(instance)
 }
 
 func (instance *mail) ID() string {
@@ -69,8 +77,8 @@ func (instance *mail) EndPoint() common.EndPoint {
 	return nil
 }
 
-func (instance *mail) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
+func (instance *mail) AuthGroups() []model.AuthGroup {
+	groups := []model.AuthGroup{}
 
 	return groups
 }
@@ -120,10 +128,7 @@ func (instance *mail) postMails(postBox *bll.PostBox) {
 */
 
 func (instance *mail) postMail(to, subject, body string) bool {
-	configuration := instance.system.Configuration()
-	systemInfo := configuration.GetSystemInfo()
-
-	err := net.SendMail(systemInfo.MailAccount, systemInfo.MailPassword, systemInfo.MailServer, to, subject, body, "html")
+	err := net.SendMail(instance.mailAccount, instance.mailPassword, instance.mailServer, to, subject, body, "html")
 	if err != nil {
 		log.Printf("sendMail fail, err:%s", err.Error())
 		return false
