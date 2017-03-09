@@ -27,8 +27,8 @@ type Module interface {
 	// AuthGroups 授权组信息
 	AuthGroups() []model.AuthGroup
 
-	// EndPoint 模块提供的Rest api支持
-	EndPoint() EndPoint
+	// EndPoint 模块提供访问接口
+	EndPoint() interface{}
 
 	// Routes 模块支持的路由信息
 	Routes() []Route
@@ -38,8 +38,4 @@ type Module interface {
 
 	// Cleanup 清除模块
 	Cleanup()
-
-	// Invoke 执行指定操作，实际由各个模块具体定义实现
-	// interface 返回结果
-	Invoke(param interface{}, result interface{}) bool
 }

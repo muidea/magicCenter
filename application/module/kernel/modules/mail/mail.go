@@ -8,7 +8,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // ID Mail模块ID
@@ -45,6 +44,22 @@ func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
 	modHub.RegisterModule(instance)
 }
 
+// SendMail 发送邮件
+func SendMail(modHub modulehub.ModuleHub, usrMail string, subject, content string) bool {
+	mailModule, found := modHub.FindModule(ID)
+	if !found {
+		panic("can't find mail module")
+	}
+
+	endPoint := mailModule.EndPoint()
+	switch endPoint.(type) {
+	case *mail:
+		return endPoint.(*mail).postMail(usrMail, subject, content)
+	}
+
+	return false
+}
+
 func (instance *mail) ID() string {
 	return ID
 }
@@ -73,8 +88,8 @@ func (instance *mail) Status() int {
 	return 0
 }
 
-func (instance *mail) EndPoint() common.EndPoint {
-	return nil
+func (instance *mail) EndPoint() interface{} {
+	return instance
 }
 
 func (instance *mail) AuthGroups() []model.AuthGroup {
@@ -99,33 +114,6 @@ func (instance *mail) Startup() bool {
 func (instance *mail) Cleanup() {
 
 }
-
-// Invoke 执行外部命令
-func (instance *mail) Invoke(param interface{}, result interface{}) bool {
-	util.ValidataPtr(param)
-	if result != nil {
-		util.ValidataPtr(result)
-	}
-
-	/*
-		postBox := param.(*bll.PostBox)
-		if postBox == nil {
-			log.Print("illegal param")
-			return false
-		}
-
-		go instance.postMails(postBox)
-	*/
-	return true
-}
-
-/*
-func (instance *mail) postMails(postBox *bll.PostBox) {
-	for _, user := range postBox.UserList {
-		instance.postMail(user, postBox.Subject, postBox.Content)
-	}
-}
-*/
 
 func (instance *mail) postMail(to, subject, body string) bool {
 	err := net.SendMail(instance.mailAccount, instance.mailPassword, instance.mailServer, to, subject, body, "html")
