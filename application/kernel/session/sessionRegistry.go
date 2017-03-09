@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/foundation/util"
 )
 
@@ -24,8 +23,14 @@ type sessionRegistryImpl struct {
 	commandChan commandChanImpl
 }
 
+// SessionRegistry 会话仓库
+type SessionRegistry interface {
+	GetSession(w http.ResponseWriter, r *http.Request) common.Session
+	UpdateSession(session common.Session) bool
+}
+
 // CreateSessionRegistry 创建Session仓库
-func CreateSessionRegistry() service.SessionRegistry {
+func CreateSessionRegistry() SessionRegistry {
 	impl := sessionRegistryImpl{}
 	impl.commandChan = make(commandChanImpl)
 	go impl.commandChan.run()
@@ -64,7 +69,7 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 
 // CreateSession 新建Session
 func (sm *sessionRegistryImpl) CreateSession(sessionID string) common.Session {
-	session := sessionImpl{id: sessionID, context: make(map[string]interface{})}
+	session := sessionImpl{id: sessionID, context: make(map[string]interface{}), registry: sm}
 
 	session.refresh()
 

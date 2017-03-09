@@ -1,5 +1,7 @@
 package common
 
+import "muidea.com/magicCenter/application/common/model"
+
 // 模块类型
 const (
 	// 内核模块，不能被禁用
@@ -23,7 +25,7 @@ type Module interface {
 	Status() int
 
 	// AuthGroups 授权组信息
-	AuthGroups() []AuthGroup
+	AuthGroups() []model.AuthGroup
 
 	// EndPoint 模块提供的Rest api支持
 	EndPoint() EndPoint

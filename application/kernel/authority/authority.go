@@ -11,14 +11,18 @@ import (
 	"log"
 	"net/http"
 
-	"muidea.com/magicCenter/application/common/service"
-
 	"github.com/go-martini/martini"
 )
 
-// Authority 权限校验处理器
+// Authority 权限控制服务
+// 控制系统各个模块的访问权限
+type Authority interface {
+	Verify(res http.ResponseWriter, req *http.Request) bool
+}
+
+// AuthorityHandler 权限校验处理器
 // 用于在路由过程中进行权限校验
-func Authority(authority service.Authority) martini.Handler {
+func AuthorityHandler(authority Authority) martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request, c martini.Context, log *log.Logger) {
 		if authority.Verify(res, req) {
 			// 拥有权限，继续执行
@@ -30,7 +34,7 @@ func Authority(authority service.Authority) martini.Handler {
 }
 
 // CreateAuthority 创建Authority
-func CreateAuthority() service.Authority {
+func CreateAuthority() Authority {
 	impl := &impl{}
 
 	return impl

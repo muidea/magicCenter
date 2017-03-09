@@ -3,16 +3,34 @@ package dbhelper
 import (
 	"log"
 
-	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/foundation/dao"
 )
+
+// DBHelper 数据访问助手
+type DBHelper interface {
+	BeginTransaction()
+
+	Commit()
+
+	Rollback()
+
+	Query(string)
+
+	Next() bool
+
+	GetValue(...interface{})
+
+	Execute(string) (int64, bool)
+
+	Release()
+}
 
 type impl struct {
 	dao dao.Dao
 }
 
 // NewHelper 创建数据助手
-func NewHelper() (service.DBHelper, error) {
+func NewHelper() (DBHelper, error) {
 	m := &impl{}
 
 	dao, err := dao.Fetch("root", "rootkit", "localhost:3306", "magiccenter_db")

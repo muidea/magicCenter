@@ -3,9 +3,9 @@ package application
 import (
 	"os"
 
-	"muidea.com/magicCenter/application/configuration"
+	"muidea.com/magicCenter/application/common/configuration"
+	"muidea.com/magicCenter/application/kernel"
 	"muidea.com/magicCenter/application/module/loader"
-	"muidea.com/magicCenter/application/system"
 )
 
 var serverPort = "8888"
@@ -39,7 +39,7 @@ func (instance *application) Run() {
 	loader := loader.CreateLoader()
 	configuration := configuration.CreateConfiguration()
 
-	sys := system.NewSystem(loader, configuration)
+	sys := kernel.NewKernel(loader, configuration)
 	sys.StartUp()
 	sys.Run()
 	sys.ShutDown()

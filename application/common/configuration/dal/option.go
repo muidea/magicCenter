@@ -3,11 +3,11 @@ package dal
 import (
 	"fmt"
 
-	"muidea.com/magicCenter/application/common/service"
+	"muidea.com/magicCenter/application/common/dbhelper"
 )
 
 //SetOption 保存配置项
-func SetOption(helper service.DBHelper, key, value string) bool {
+func SetOption(helper dbhelper.DBHelper, key, value string) bool {
 	sql := fmt.Sprintf("select id, value from `option` where `key`='%s'", key)
 	helper.Query(sql)
 
@@ -34,7 +34,7 @@ func SetOption(helper service.DBHelper, key, value string) bool {
 }
 
 // GetOption 获取配置项
-func GetOption(helper service.DBHelper, key string) (string, bool) {
+func GetOption(helper dbhelper.DBHelper, key string) (string, bool) {
 	sql := fmt.Sprintf("select value from `option` where `key`='%s'", key)
 	helper.Query(sql)
 

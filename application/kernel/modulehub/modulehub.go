@@ -13,8 +13,27 @@ import (
 	"log"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/service"
 )
+
+// ModuleHub 模块管理器
+type ModuleHub interface {
+	// 注册Module
+	RegisterModule(m common.Module)
+	// 注销Module
+	UnregisterModule(id string)
+	// 启动所有Module
+	StartupAllModules()
+	// 清理所有Module
+	CleanupAllModules()
+	// 查询全部Module
+	QueryAllModule() []common.Module
+	// 查询全部Module分组
+	GetAllModuleGroups() []string
+	// 查询指定分组的Module
+	GetModulesByGroup(group string) []common.Module
+	// 查询指定Module
+	FindModule(id string) (common.Module, bool)
+}
 
 // impl ModuleHub 实现
 type impl struct {
@@ -23,7 +42,7 @@ type impl struct {
 }
 
 // CreateModuleHub 创建ModuleHub
-func CreateModuleHub() service.ModuleHub {
+func CreateModuleHub() ModuleHub {
 	impl := impl{}
 	impl.moduleIDMap = map[string]common.Module{}
 

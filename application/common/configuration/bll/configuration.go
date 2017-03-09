@@ -1,8 +1,8 @@
 package bll
 
 import (
-	"muidea.com/magicCenter/application/configuration/dal"
-	"muidea.com/magicCenter/application/system/dbhelper"
+	"muidea.com/magicCenter/application/common/configuration/dal"
+	"muidea.com/magicCenter/application/common/dbhelper"
 )
 
 // UpdateConfigurations 更新配置集

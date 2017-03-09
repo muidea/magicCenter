@@ -5,11 +5,52 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/service"
 	"muidea.com/magicCenter/foundation/util"
 
 	"github.com/go-martini/martini"
 )
+
+// Router 路由器对象
+type Router interface {
+
+	// 新建Route
+	NewRoute(rType, rPattern string, rHandler interface{}) common.Route
+	// 增加路由
+	AddRoute(baseURL string, rt common.Route)
+	// 清除路由
+	RemoveRoute(baseURL string, rt common.Route)
+
+	// 增加Get路由
+	AddGetRoute(pattern string, handler interface{})
+	// 清除Get路由
+	RemoveGetRoute(pattern string)
+	// 增加Post路由
+	AddPostRoute(pattern string, handler interface{})
+	// 清除Post路由
+	RemovePostRoute(pattern string)
+	// 增加Delete路由
+	AddDeleteRoute(pattern string, handler interface{})
+	// 清除Delete路由
+	RemoveDeleteRoute(pattern string)
+	// 增加Put路由
+	AddPutRoute(pattern string, handler interface{})
+	// 清除Put路由
+	RemovePutRoute(pattern string)
+
+	// 返回Martini.Router对象
+	Router() martini.Router
+
+	// 分发一条请求
+	Dispatch(res http.ResponseWriter, req *http.Request)
+}
+
+// CreateRouter 新建Router
+func CreateRouter() Router {
+	impl := impl{}
+	impl.martiniRouter = martini.NewRouter()
+
+	return &impl
+}
 
 type route struct {
 	rType    string
@@ -36,14 +77,6 @@ func (r *route) Pattern() string {
 // Handler 路由处理器
 func (r *route) Handler() interface{} {
 	return r.rHandler
-}
-
-// CreateRouter 新建Router
-func CreateRouter() service.Router {
-	impl := impl{}
-	impl.martiniRouter = martini.NewRouter()
-
-	return &impl
 }
 
 // NewRoute 新建一个路由对象
