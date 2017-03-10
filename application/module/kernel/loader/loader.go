@@ -3,6 +3,7 @@ package loader
 import (
 	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/kernel/modulehub"
+	"muidea.com/magicCenter/application/module/kernel/modules/cache"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail"
 )
 
@@ -11,7 +12,7 @@ func LoadAllModules(configuration configuration.Configuration, modulHub modulehu
 
 	mail.LoadModule(configuration, modulHub)
 
-	//cache.LoadModule()
+	cache.LoadModule(configuration, modulHub)
 
 	//dashboard.LoadModule()
 

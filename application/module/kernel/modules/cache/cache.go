@@ -1,11 +1,11 @@
 package cache
 
 import (
-	"magiccenter/common"
-	commonbll "magiccenter/common/bll"
-	"magiccenter/system"
-
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/configuration"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/kernel/modulehub"
+	"muidea.com/magicCenter/application/module/kernel/modules/cache/memorycache"
 )
 
 // ID 模块ID
@@ -20,119 +20,124 @@ const Description = "Magic 缓存模块"
 // URL 模块Url
 const URL string = "cache"
 
-type cache struct {
+// LoadModule 加载Cache模块
+func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+	instance := &cacheModule{cache: memorycache.NewCache()}
+
+	modHub.RegisterModule(instance)
 }
 
-var instance *cache
-
-// LoadModule 加载Cache模块
-func LoadModule() {
-	if instance == nil {
-		instance = &cache{}
+// PutIn 存放数据
+func PutIn(modHub modulehub.ModuleHub, data interface{}, maxAge float64) string {
+	cacheModule, found := modHub.FindModule(ID)
+	if !found {
+		panic("can't find mail module")
 	}
 
-	modulehub := system.GetModuleHub()
-	modulehub.RegisterModule(instance)
+	endPoint := cacheModule.EndPoint().(Cache)
+
+	return endPoint.PutIn(data, maxAge)
 }
 
-func (instance *cache) ID() string {
+// FetchOut 取缓存数据
+func FetchOut(modHub modulehub.ModuleHub, id string) (interface{}, bool) {
+	cacheModule, found := modHub.FindModule(ID)
+	if !found {
+		panic("can't find mail module")
+	}
+
+	endPoint := cacheModule.EndPoint().(Cache)
+	return endPoint.FetchOut(id)
+}
+
+// Remove 清除指定的缓存数据
+func Remove(modHub modulehub.ModuleHub, id string) {
+	cacheModule, found := modHub.FindModule(ID)
+	if !found {
+		panic("can't find mail module")
+	}
+
+	endPoint := cacheModule.EndPoint().(Cache)
+	endPoint.Remove(id)
+}
+
+// ClearAll 清空全部缓存数据
+func ClearAll(modHub modulehub.ModuleHub) {
+	cacheModule, found := modHub.FindModule(ID)
+	if !found {
+		panic("can't find mail module")
+	}
+
+	endPoint := cacheModule.EndPoint().(Cache)
+	endPoint.ClearAll()
+}
+
+// Cache 对象，由于系统临时保存信息
+// Cache会返回一个string用于应用来获取临时保存的对象
+//  存放的对象是有生命周期的，超过设定的存放时间会被系统清除掉
+// maxAge 单位为minute
+type Cache interface {
+	PutIn(data interface{}, maxAge float64) string
+	FetchOut(id string) (interface{}, bool)
+	Remove(id string)
+	ClearAll()
+}
+
+type cacheModule struct {
+	cache Cache
+}
+
+func (instance *cacheModule) ID() string {
 	return ID
 }
 
-func (instance *cache) Name() string {
+func (instance *cacheModule) Name() string {
 	return Name
 }
 
-func (instance *cache) Description() string {
+func (instance *cacheModule) Description() string {
 	return Description
 }
 
-func (instance *cache) Group() string {
+func (instance *cacheModule) Group() string {
 	return "util"
 }
 
-func (instance *cache) Type() int {
+func (instance *cacheModule) Type() int {
 	return common.KERNEL
 }
 
-func (instance *cache) URL() string {
+func (instance *cacheModule) URL() string {
 	return URL
 }
 
-func (instance *cache) Status() int {
+func (instance *cacheModule) Status() int {
 	return 0
 }
 
-func (instance *cache) EndPoint() common.EndPoint {
-	return nil
+func (instance *cacheModule) EndPoint() interface{} {
+	return instance.cache
 }
 
-func (instance *cache) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
+func (instance *cacheModule) AuthGroups() []model.AuthGroup {
+	groups := []model.AuthGroup{}
 
 	return groups
 }
 
 // Route Cache 路由信息
-func (instance *cache) Routes() []common.Route {
+func (instance *cacheModule) Routes() []common.Route {
 	routes := []common.Route{}
 
 	return routes
 }
 
 // Startup 启动Cache模块
-func (instance *cache) Startup() bool {
-	return CreateCache(MemoryCache)
+func (instance *cacheModule) Startup() bool {
+	return true
 }
 
 // Cleanup 清除Cache模块
-func (instance *cache) Cleanup() {
-	cache, found := GetCache()
-	if found {
-		cache.Release()
-
-		DestroyCache()
-	}
-}
-
-// Invoke 执行外部命令
-func (instance *cache) Invoke(param interface{}, result interface{}) bool {
-	util.ValidataPtr(param)
-	if result != nil {
-		util.ValidataPtr(result)
-	}
-
-	cache, found := GetCache()
-	if !found {
-		return false
-	}
-
-	switch param.(type) {
-	case *commonbll.InCacheParam:
-		inBox := param.(*commonbll.InCacheParam)
-		if inBox != nil {
-			result.(*commonbll.InCacheResult).ID = cache.PutIn(inBox.Data, inBox.MaxAge)
-			return true
-		}
-	case *commonbll.OutCacheParam:
-		outBox := param.(*commonbll.OutCacheParam)
-		val := result.(*commonbll.OutCacheResult)
-		if outBox != nil {
-			val.Data, val.Found = cache.FetchOut(outBox.ID)
-			return true
-		}
-	case *commonbll.RemoveCacheParam:
-		removeBox := param.(*commonbll.RemoveCacheParam)
-		if removeBox != nil {
-			cache.Remove(removeBox.ID)
-			return true
-		}
-	case *commonbll.ClearAllCacheParam:
-		clearAllBox := param.(*commonbll.ClearAllCacheParam)
-		if clearAllBox != nil {
-			cache.ClearAll()
-			return true
-		}
-	}
-	return false
+func (instance *cacheModule) Cleanup() {
+	memorycache.DestroyCache(instance.cache)
 }

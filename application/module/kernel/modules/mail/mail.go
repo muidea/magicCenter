@@ -22,24 +22,12 @@ const Description = "Magic 邮件模块"
 // URL Mail模块Url
 const URL string = "mail"
 
-type mail struct {
-	mailAccount  string
-	mailPassword string
-	mailServer   string
-	modulHub     modulehub.ModuleHub
-}
-
-var instance *mail
-
 // LoadModule 加载Mail模块
 func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
-	if instance == nil {
-		account, _ := cfg.GetOption(model.MailAccount)
-		password, _ := cfg.GetOption(model.MailPassword)
-		server, _ := cfg.GetOption(model.MailServer)
-
-		instance = &mail{mailAccount: account, mailPassword: password, mailServer: server, modulHub: modHub}
-	}
+	account, _ := cfg.GetOption(model.MailAccount)
+	password, _ := cfg.GetOption(model.MailPassword)
+	server, _ := cfg.GetOption(model.MailServer)
+	instance := &mail{mailAccount: account, mailPassword: password, mailServer: server}
 
 	modHub.RegisterModule(instance)
 }
@@ -58,6 +46,12 @@ func SendMail(modHub modulehub.ModuleHub, usrMail string, subject, content strin
 	}
 
 	return false
+}
+
+type mail struct {
+	mailAccount  string
+	mailPassword string
+	mailServer   string
 }
 
 func (instance *mail) ID() string {

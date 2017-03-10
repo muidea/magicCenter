@@ -19,10 +19,6 @@ type Configuration interface {
 	SetOption(name, value string) bool
 }
 
-type impl struct {
-	configInfoMap map[string]string
-}
-
 // CreateConfiguration 创建Configuration
 func CreateConfiguration() Configuration {
 	impl := &impl{}
@@ -30,6 +26,10 @@ func CreateConfiguration() Configuration {
 
 	impl.loadConfig()
 	return impl
+}
+
+type impl struct {
+	configInfoMap map[string]string
 }
 
 // LoadConfig 加载系统配置信息
