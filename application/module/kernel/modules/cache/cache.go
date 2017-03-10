@@ -1,6 +1,10 @@
 package cache
 
 import (
+	"net/http"
+
+	"log"
+
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
@@ -18,7 +22,7 @@ const Name = "Magic Cache"
 const Description = "Magic 缓存模块"
 
 // URL 模块Url
-const URL string = "cache"
+const URL string = "/cache"
 
 // LoadModule 加载Cache模块
 func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
@@ -127,7 +131,11 @@ func (instance *cacheModule) AuthGroups() []model.AuthGroup {
 
 // Route Cache 路由信息
 func (instance *cacheModule) Routes() []common.Route {
-	routes := []common.Route{}
+	routes := []common.Route{
+		common.NewRoute(common.GET, "[a-zA-Z0-9]*/", getCacheActionHandler),
+		common.NewRoute(common.POST, "", postCacheActionHandler),
+		common.NewRoute(common.DELETE, "[a-zA-Z0-9]*/", deleteCacheActionHandler),
+	}
 
 	return routes
 }
@@ -140,4 +148,16 @@ func (instance *cacheModule) Startup() bool {
 // Cleanup 清除Cache模块
 func (instance *cacheModule) Cleanup() {
 	memorycache.DestroyCache(instance.cache)
+}
+
+func getCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("getCacheActionHandler")
+
+}
+
+func postCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+}
+
+func deleteCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print(r.URL.RawPath)
 }

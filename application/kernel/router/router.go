@@ -12,9 +12,6 @@ import (
 
 // Router 路由器对象
 type Router interface {
-
-	// 新建Route
-	NewRoute(rType, rPattern string, rHandler interface{}) common.Route
 	// 增加路由
 	AddRoute(baseURL string, rt common.Route)
 	// 清除路由
@@ -52,41 +49,10 @@ func CreateRouter() Router {
 	return &impl
 }
 
-type route struct {
-	rType    string
-	rPattern string
-	rHandler interface{}
-}
-
 // impl 路由器实现
 type impl struct {
 	martiniRouter  martini.Router
 	routerVerifier map[string]interface{}
-}
-
-// Type 路由行为GET/POST
-func (r *route) Type() string {
-	return r.rType
-}
-
-// Pattern 路由规则
-func (r *route) Pattern() string {
-	return r.rPattern
-}
-
-// Handler 路由处理器
-func (r *route) Handler() interface{} {
-	return r.rHandler
-}
-
-// NewRoute 新建一个路由对象
-func (instance *impl) NewRoute(rType, rPattern string, rHandler interface{}) common.Route {
-	r := route{}
-	r.rType = rType
-	r.rPattern = rPattern
-	r.rHandler = rHandler
-
-	return &r
 }
 
 // AddRoute 增加Route
