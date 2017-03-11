@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCenter/foundation/net"
 
 	"github.com/go-martini/martini"
 )
@@ -57,7 +57,7 @@ type impl struct {
 
 // AddRoute 增加Route
 func (instance *impl) AddRoute(baseURL string, rt common.Route) {
-	fullURL := util.JoinURL(baseURL, rt.Pattern())
+	fullURL := net.JoinURL(baseURL, rt.Pattern())
 	switch rt.Type() {
 	case common.GET:
 		instance.AddGetRoute(fullURL, rt.Handler())
@@ -72,7 +72,7 @@ func (instance *impl) AddRoute(baseURL string, rt common.Route) {
 
 // RemoveRoute 清除Route
 func (instance *impl) RemoveRoute(baseURL string, rt common.Route) {
-	fullURL := util.JoinURL(baseURL, rt.Pattern())
+	fullURL := net.JoinURL(baseURL, rt.Pattern())
 	switch rt.Type() {
 	case common.GET:
 		instance.RemoveGetRoute(fullURL)

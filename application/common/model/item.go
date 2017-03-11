@@ -1,11 +1,5 @@
 package model
 
-import (
-	"fmt"
-
-	"muidea.com/magicCenter/foundation/util"
-)
-
 /*
 Item 记录项
 ID:表示Item对象
@@ -18,11 +12,4 @@ type Item struct {
 	Rid   int
 	Rtype string
 	Owner int
-}
-
-// URL 返回资源对应的URL
-func (i Item) URL() string {
-	param := fmt.Sprintf("?id=%d", i.Rid)
-
-	return util.JoinURL(i.Rtype, param)
 }

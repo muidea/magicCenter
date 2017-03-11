@@ -1,15 +1,19 @@
 package cache
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"log"
+
+	"strconv"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/memorycache"
+	"muidea.com/magicCenter/foundation/net"
 )
 
 // ID 模块ID
@@ -132,9 +136,9 @@ func (instance *cacheModule) AuthGroups() []model.AuthGroup {
 // Route Cache 路由信息
 func (instance *cacheModule) Routes() []common.Route {
 	routes := []common.Route{
-		common.NewRoute(common.GET, "[a-zA-Z0-9]*/", getCacheActionHandler),
-		common.NewRoute(common.POST, "", postCacheActionHandler),
-		common.NewRoute(common.DELETE, "[a-zA-Z0-9]*/", deleteCacheActionHandler),
+		common.NewRoute(common.GET, "[a-zA-Z0-9]*/", instance.getCacheActionHandler),
+		common.NewRoute(common.POST, "", instance.postCacheActionHandler),
+		common.NewRoute(common.DELETE, "[a-zA-Z0-9]*/", instance.deleteCacheActionHandler),
 	}
 
 	return routes
@@ -150,14 +154,88 @@ func (instance *cacheModule) Cleanup() {
 	memorycache.DestroyCache(instance.cache)
 }
 
-func getCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+type cacheResult struct {
+	common.Result
+	Cache interface{}
+}
+
+func (instance *cacheModule) getCacheActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("getCacheActionHandler")
 
+	result := cacheResult{}
+	id, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	if ok {
+		obj, ok := instance.cache.FetchOut(id)
+		if ok {
+			result.Cache = obj
+			result.ErrCode = 0
+			result.Reason = "查询成功"
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
+	} else {
+		result.ErrCode = 1
+		result.Reason = "参数非法"
+	}
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
 }
 
-func postCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+func (instance *cacheModule) postCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("postCacheActionHandler")
+
+	result := cacheResult{}
+	for true {
+		err := r.ParseForm()
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "非法参数"
+			break
+		}
+
+		value := r.FormValue("cache-value")
+		age, err := strconv.Atoi(r.FormValue("cache-age"))
+		if err != nil {
+			age = 10
+		} else if age > 100.0 || age < 0 {
+			age = 10
+		}
+
+		result.Cache = instance.cache.PutIn(value, float64(age))
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
 }
 
-func deleteCacheActionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print(r.URL.RawPath)
+func (instance *cacheModule) deleteCacheActionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("deleteCacheActionHandler")
+
+	result := common.Result{}
+	id, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	if ok {
+		instance.cache.Remove(id)
+		result.ErrCode = 0
+		result.Reason = "清除成功"
+	} else {
+		result.ErrCode = 1
+		result.Reason = "参数非法"
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
 }
