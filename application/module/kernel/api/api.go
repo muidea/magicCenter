@@ -1,12 +1,11 @@
 package api
 
 import (
-	"magiccenter/common"
-	commonhandler "magiccenter/common/handler"
-	"magiccenter/kernel/api/ui"
-	"magiccenter/system"
-
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/configuration"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/kernel/modulehub"
+	"muidea.com/magicCenter/application/module/kernel/api/route"
 )
 
 // ID 模块ID
@@ -22,18 +21,17 @@ const Description = "Magic Dashboard API模块"
 const URL string = "/api"
 
 type api struct {
+	moduleHub modulehub.ModuleHub
+	routes    []common.Route
 }
 
-var instance *api
-
 // LoadModule 加载模块
-func LoadModule() {
-	if instance == nil {
-		instance = &api{}
-	}
+func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+	instance := &api{moduleHub: modHub, routes: []common.Route{}}
 
-	modulehub := system.GetModuleHub()
-	modulehub.RegisterModule(instance)
+	instance.routes = append(instance.routes, route.CreateGetArticleRoute(modHub))
+
+	modHub.RegisterModule(instance)
 }
 
 func (instance *api) ID() string {
@@ -64,134 +62,19 @@ func (instance *api) Status() int {
 	return 0
 }
 
-func (instance *api) EndPoint() common.EndPoint {
+func (instance *api) EndPoint() interface{} {
 	return nil
 }
 
-func (instance *api) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
+func (instance *api) AuthGroups() []model.AuthGroup {
+	groups := []model.AuthGroup{}
 
 	return groups
 }
 
 // Route 路由信息
 func (instance *api) Routes() []common.Route {
-	router := system.GetRouter()
-	auth := system.GetAuthority()
-
-	routes := []common.Route{
-		//=============================内容信息=====================================
-		// 获取内容元数据列表
-		router.NewRoute(common.GET, "content/", ui.GetContentMetadataListActionHandler, auth.AdminAuthVerify()),
-		// 不支持Post,Put和Delete
-		router.NewRoute(common.POST, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.PUT, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.DELETE, "content/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-
-		// 获取文章信息
-		router.NewRoute(common.GET, "content/article/", ui.GetContentArticleActionHandler, auth.AdminAuthVerify()),
-		// 新增文章信息
-		router.NewRoute(common.POST, "content/article/", ui.PostContentArticleActionHandler, auth.AdminAuthVerify()),
-		// 更新文章信息
-		router.NewRoute(common.PUT, "content/article/", ui.PutContentArticleActionHandler, auth.AdminAuthVerify()),
-		// 删除文章
-		router.NewRoute(common.DELETE, "content/article/", ui.DeleteContentArticleActionHandler, auth.AdminAuthVerify()),
-
-		// 获取分类信息
-		router.NewRoute(common.GET, "content/catalog/", ui.GetContentCatalogActionHandler, auth.AdminAuthVerify()),
-		// 新增分类信息
-		router.NewRoute(common.POST, "content/catalog/", ui.PostContentCatalogActionHandler, auth.AdminAuthVerify()),
-		// 更新呢分类信息
-		router.NewRoute(common.PUT, "content/catalog/", ui.PutContentCatalogActionHandler, auth.AdminAuthVerify()),
-		// 删除分类信息
-		router.NewRoute(common.DELETE, "content/catalog/", ui.DeleteContentCatalogActionHandler, auth.AdminAuthVerify()),
-
-		// 获取链接
-		router.NewRoute(common.GET, "content/link/", ui.GetContentLinkActionHandler, auth.AdminAuthVerify()),
-		// 新增链接
-		router.NewRoute(common.POST, "content/link/", ui.PostContentLinkActionHandler, auth.AdminAuthVerify()),
-		// 更新链接
-		router.NewRoute(common.PUT, "content/link/", ui.PutContentLinkActionHandler, auth.AdminAuthVerify()),
-		// 删除链接
-		router.NewRoute(common.DELETE, "content/link/", ui.DeleteContentLinkActionHandler, auth.AdminAuthVerify()),
-
-		// 获取文件信息
-		router.NewRoute(common.GET, "content/media/", ui.GetContentMediaActionHandler, auth.AdminAuthVerify()),
-		// 新增文件信息
-		router.NewRoute(common.POST, "content/media/", ui.PostContentMediaActionHandler, auth.AdminAuthVerify()),
-		// 更新文件信息
-		router.NewRoute(common.PUT, "content/media/", ui.PutContentMediaActionHandler, auth.AdminAuthVerify()),
-		// 删除文件信息
-		router.NewRoute(common.DELETE, "content/media/", ui.DeleteContentMediaActionHandler, auth.AdminAuthVerify()),
-
-		//=============================账号信息=====================================
-		// 获取内容元数据列表
-		router.NewRoute(common.GET, "account/", ui.GetAccountMetadataListActionHandler, auth.AdminAuthVerify()),
-		// 不支持Post,Put和Delete
-		router.NewRoute(common.POST, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.PUT, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.DELETE, "account/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-
-		// 获取User信息
-		router.NewRoute(common.GET, "account/user/", ui.GetUserActionHandler, auth.AdminAuthVerify()),
-		// 新建User
-		router.NewRoute(common.POST, "account/user/", ui.PostUserActionHandler, auth.AdminAuthVerify()),
-		// 更新User
-		router.NewRoute(common.PUT, "account/user/", ui.PutUserActionHandler, auth.AdminAuthVerify()),
-		// 删除User
-		router.NewRoute(common.DELETE, "account/user/", ui.DeleteUserActionHandler, auth.AdminAuthVerify()),
-
-		// 获取Group信息
-		router.NewRoute(common.GET, "account/group/", ui.GetGroupActionHandler, auth.AdminAuthVerify()),
-		// 新建Group
-		router.NewRoute(common.POST, "account/group/", ui.PostGroupActionHandler, auth.AdminAuthVerify()),
-		// 更新Group
-		router.NewRoute(common.PUT, "account/group/", ui.PutGroupActionHandler, auth.AdminAuthVerify()),
-		// 删除Group
-		router.NewRoute(common.DELETE, "account/group/", ui.DeleteGroupActionHandler, auth.AdminAuthVerify()),
-
-		//=============================模块信息=====================================
-		// 获取Module列表
-		router.NewRoute(common.GET, "module/", ui.GetModuleActionHandler, auth.AdminAuthVerify()),
-		// 新建Module
-		router.NewRoute(common.POST, "module/", ui.PostModuleActionHandler, auth.AdminAuthVerify()),
-		// 更新Module
-		router.NewRoute(common.PUT, "module/", ui.PutModuleActionHandler, auth.AdminAuthVerify()),
-		// 删除Module
-		router.NewRoute(common.DELETE, "module/", ui.DeleteModuleActionHandler, auth.AdminAuthVerify()),
-
-		// 获取Module 定义的功能块
-		router.NewRoute(common.GET, "module/block/", ui.GetModuleBlockActionHandler, auth.AdminAuthVerify()),
-		// 新建功能块
-		router.NewRoute(common.POST, "module/block/", ui.PostModuleBlockActionHandler, auth.AdminAuthVerify()),
-		// 更新功能块
-		router.NewRoute(common.PUT, "module/block/", ui.PutModuleBlockActionHandler, auth.AdminAuthVerify()),
-		// 删除功能块
-		router.NewRoute(common.DELETE, "module/block/", ui.DeleteModuleBlockActionHandler, auth.AdminAuthVerify()),
-
-		// 获取Module 指定功能块包含的内容
-		router.NewRoute(common.GET, "module/block/item/", ui.GetBlockItemActionHandler, auth.AdminAuthVerify()),
-		// 新建内容
-		router.NewRoute(common.POST, "module/block/item/", ui.PostBlockItemActionHandler, auth.AdminAuthVerify()),
-		// 更新内容
-		router.NewRoute(common.PUT, "module/block/item/", ui.PutBlockItemActionHandler, auth.AdminAuthVerify()),
-		// 删除内容
-		router.NewRoute(common.DELETE, "module/block/item/", ui.DeleteBlockItemActionHandler, auth.AdminAuthVerify()),
-
-		// 获取Module 定义的授权分组
-		router.NewRoute(common.GET, "module/authority/", ui.GetModuleAuthorityGroupActionHandler, auth.AdminAuthVerify()),
-
-		//=============================系统信息=====================================
-		// 获取系统信息
-		router.NewRoute(common.GET, "system/", ui.GetSystemInfoActionHandler, auth.AdminAuthVerify()),
-		// 更新系统信息
-		router.NewRoute(common.PUT, "system/", ui.PutSystemInfoActionHandler, auth.AdminAuthVerify()),
-		// 不支持Post和Delete
-		router.NewRoute(common.POST, "system/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.DELETE, "system/", commonhandler.NoSupportActionHandler, auth.AdminAuthVerify()),
-	}
-
-	return routes
+	return instance.routes
 }
 
 // Startup 启动模块
@@ -202,14 +85,4 @@ func (instance *api) Startup() bool {
 // Cleanup 清除模块
 func (instance *api) Cleanup() {
 
-}
-
-// Invoke 执行外部命令
-func (instance *api) Invoke(param interface{}, result interface{}) bool {
-	util.ValidataPtr(param)
-	if result != nil {
-		util.ValidataPtr(result)
-	}
-
-	return false
 }

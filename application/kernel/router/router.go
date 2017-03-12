@@ -51,8 +51,7 @@ func CreateRouter() Router {
 
 // impl 路由器实现
 type impl struct {
-	martiniRouter  martini.Router
-	routerVerifier map[string]interface{}
+	martiniRouter martini.Router
 }
 
 // AddRoute 增加Route
@@ -101,7 +100,6 @@ func (instance *impl) AddGetRoute(pattern string, handler interface{}) {
 
 // RemoveGetRoute 清除一条Get路由
 func (instance *impl) RemoveGetRoute(pattern string) {
-	delete(instance.routerVerifier, pattern)
 }
 
 // AddPutRoute 添加一条Put路由
@@ -115,7 +113,6 @@ func (instance *impl) AddPutRoute(pattern string, handler interface{}) {
 
 // RemovePutRoute 清除一条Put路由
 func (instance *impl) RemovePutRoute(pattern string) {
-	delete(instance.routerVerifier, pattern)
 }
 
 // AddPostRoute 添加一条Post路由
@@ -129,7 +126,6 @@ func (instance *impl) AddPostRoute(pattern string, handler interface{}) {
 
 // RemovePostRoute 清除一条Post路由
 func (instance *impl) RemovePostRoute(pattern string) {
-	delete(instance.routerVerifier, pattern)
 }
 
 // AddDeleteRoute 添加一条Delete路由
@@ -143,7 +139,6 @@ func (instance *impl) AddDeleteRoute(pattern string, handler interface{}) {
 
 // RemoveDeleteRoute 清除一条Delete路由
 func (instance *impl) RemoveDeleteRoute(pattern string) {
-	delete(instance.routerVerifier, pattern)
 }
 
 // Dispatch 分发一次请求

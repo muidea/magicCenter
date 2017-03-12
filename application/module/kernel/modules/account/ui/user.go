@@ -3,8 +3,9 @@ package ui
 import (
 	"html/template"
 	"log"
-	"magiccenter/common/model"
 	"net/http"
+
+	"muidea.com/magicCenter/application/common/model"
 )
 
 // UserProfileView 用户Profile视图

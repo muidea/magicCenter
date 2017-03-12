@@ -1,10 +1,9 @@
-package dal
+package resource
 
 import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // Resource 资源对象
@@ -16,8 +15,6 @@ type Resource interface {
 	RName() string
 	// RType 资源类型
 	RType() string
-	// URL 访问资源的URL
-	URL() string
 	// RRelative 关联的资源
 	Relative() []Resource
 	// AppendRelative 追加关联资源
@@ -25,7 +22,7 @@ type Resource interface {
 }
 
 // CreateSimpleRes 创建新的资源
-func CreateSimpleRes(rID int, rName, rType string) Resource {
+func CreateSimpleRes(rID int, rType, rName string) Resource {
 	res := &simpleRes{}
 	res.rid = rID
 	res.rtype = rType
@@ -55,13 +52,6 @@ func (s *simpleRes) RName() string {
 // RType 资源类型
 func (s *simpleRes) RType() string {
 	return s.rtype
-}
-
-// URL 资源路径
-func (s *simpleRes) URL() string {
-	param := fmt.Sprintf("id=%d", s.rid)
-
-	return util.JoinURL(s.rname, param)
 }
 
 // Relative 相关联的资源
@@ -151,8 +141,8 @@ func SaveResource(helper dbhelper.DBHelper, res Resource) bool {
 		sql = fmt.Sprintf(`update resource set name ='%s' where type='%s' and id=%d`, res.RName(), res.RType(), res.RId())
 	}
 
-	_, result = helper.Execute(sql)
-	if result {
+	num, result := helper.Execute(sql)
+	if result && num == 1 {
 		saveResourceRelative(helper, res)
 	}
 

@@ -1,9 +1,10 @@
 package dal
 
 import (
-	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestGroup(t *testing.T) {

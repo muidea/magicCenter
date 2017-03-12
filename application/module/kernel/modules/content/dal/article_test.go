@@ -2,9 +2,10 @@ package dal
 
 import (
 	"log"
-	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestArticle(t *testing.T) {
@@ -22,19 +23,13 @@ func TestArticle(t *testing.T) {
 	ar.CreateDate = "2016-08-08 00:00:00"
 	ar.Catalog = append(ar.Catalog, 8)
 
-	ret := SaveArticle(helper, ar)
+	summary, ret := SaveArticle(helper, ar)
 	if !ret {
 		t.Error("SaveArticle failed")
 		return
 	}
 
-	arSummarys := QueryArticleByCatalog(helper, 8)
-	if len(arSummarys) < 1 {
-		t.Error("QueryArticleByCatalog failed")
-		return
-	}
-
-	arInfo, found := QueryArticleByID(helper, arSummarys[0].ID)
+	arInfo, found := QueryArticleByID(helper, summary.ID)
 	if !found {
 		t.Error("QueryArticleByID failed")
 		return
@@ -46,19 +41,13 @@ func TestArticle(t *testing.T) {
 	}
 
 	arInfo.Content = "0987654321"
-	ret = SaveArticle(helper, arInfo)
+	summary, ret = SaveArticle(helper, arInfo)
 	if !ret {
 		t.Error("SaveArticle failed")
 		return
 	}
 
-	arSummarys = QueryArticleByCatalog(helper, 8)
-	if len(arSummarys) != 1 {
-		t.Error("QueryArticleByCatalog failed")
-		return
-	}
-
-	arSummarys = QueryAllArticleSummary(helper)
+	arSummarys := QueryAllArticleSummary(helper)
 	if len(arSummarys) < 1 {
 		t.Error("QueryAllArticleSummary failed")
 	}

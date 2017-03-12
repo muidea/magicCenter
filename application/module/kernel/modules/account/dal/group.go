@@ -2,14 +2,14 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/common"
-	"magiccenter/common/model"
 
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryAllGroup 查询所有的分组
-func QueryAllGroup(helper common.DBHelper) []model.Group {
+func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 	groupList := []model.Group{}
 	sql := fmt.Sprintf("select id, name, description, catalog from `group`")
 	helper.Query(sql)
@@ -25,7 +25,7 @@ func QueryAllGroup(helper common.DBHelper) []model.Group {
 }
 
 // QueryGroups 查询分组信息
-func QueryGroups(helper common.DBHelper, ids []int) []model.Group {
+func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 	groupList := []model.Group{}
 	sql := fmt.Sprintf("select id, name, description, catalog from `group` where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
@@ -41,7 +41,7 @@ func QueryGroups(helper common.DBHelper, ids []int) []model.Group {
 }
 
 // QueryGroupByID 查询指定分组
-func QueryGroupByID(helper common.DBHelper, id int) (model.Group, bool) {
+func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.Group, bool) {
 	group := model.Group{}
 	sql := fmt.Sprintf("select id, name, description,catalog from `group` where id=%d", id)
 	helper.Query(sql)
@@ -56,7 +56,7 @@ func QueryGroupByID(helper common.DBHelper, id int) (model.Group, bool) {
 }
 
 // QueryGroupByName 查询指定分组
-func QueryGroupByName(helper common.DBHelper, name string) (model.Group, bool) {
+func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool) {
 	group := model.Group{}
 	sql := fmt.Sprintf("select id, name, description, catalog from `group` where name='%s'", name)
 	helper.Query(sql)
@@ -71,15 +71,15 @@ func QueryGroupByName(helper common.DBHelper, name string) (model.Group, bool) {
 }
 
 // CreateGroup 新建分组
-func CreateGroup(helper common.DBHelper, name, description string) (model.Group, bool) {
+func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int) (model.Group, bool) {
 	group := model.Group{}
-	sql := fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", name, description, 0)
+	sql := fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", name, description, catalog)
 	_, result := helper.Execute(sql)
 	if !result {
 		return group, result
 	}
 
-	sql = fmt.Sprintf("select id from `group` where name='%s' and description='%s' and catalog=%d", name, description, 0)
+	sql = fmt.Sprintf("select id from `group` where name='%s' and description='%s' and catalog=%d", name, description, catalog)
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&group.ID)
@@ -95,7 +95,7 @@ func CreateGroup(helper common.DBHelper, name, description string) (model.Group,
 }
 
 // DeleteGroup 删除分组
-func DeleteGroup(helper common.DBHelper, id int) bool {
+func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf("delete from `group` where id =%d", id)
 	_, result := helper.Execute(sql)
 
@@ -103,7 +103,7 @@ func DeleteGroup(helper common.DBHelper, id int) bool {
 }
 
 // SaveGroup 保存分组
-func SaveGroup(helper common.DBHelper, group model.Group) (model.Group, bool) {
+func SaveGroup(helper dbhelper.DBHelper, group model.Group) (model.Group, bool) {
 	sql := fmt.Sprintf("select id from `group` where id=%d", group.ID)
 	helper.Query(sql)
 

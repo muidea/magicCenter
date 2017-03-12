@@ -2,9 +2,10 @@ package dal
 
 import (
 	"log"
-	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestCatalog(t *testing.T) {
@@ -20,19 +21,13 @@ func TestCatalog(t *testing.T) {
 	ca.Name = "testCatalog"
 	ca.Creater = 3
 	ca.Parent = append(ca.Parent, 10)
-	ret := SaveCatalog(helper, ca)
+	catalog, ret := SaveCatalog(helper, ca)
 	if !ret {
 		t.Error("SaveCatalog failed")
 		return
 	}
 
-	catalogs := QuerySubCatalog(helper, 10)
-	if len(catalogs) != 1 {
-		t.Error("QuerySubCatalog failed")
-		return
-	}
-
-	ca, found := QueryCatalogByID(helper, catalogs[0].ID)
+	ca, found := QueryCatalogByID(helper, catalog.ID)
 	if !found {
 		t.Error("QueryCatalogByID failed")
 	}
@@ -43,12 +38,12 @@ func TestCatalog(t *testing.T) {
 	ca.Parent = append(ca.Parent, 8)
 	ca.Parent = append(ca.Parent, 9)
 
-	ret = SaveCatalog(helper, ca)
+	catalog, ret = SaveCatalog(helper, ca)
 	if !ret {
 		t.Error("SaveCatalog failed")
 	}
 
-	ca, found = QueryCatalogByID(helper, ca.ID)
+	ca, found = QueryCatalogByID(helper, catalog.ID)
 	if !found {
 		t.Error("QueryCatalogByID failed")
 	}
@@ -62,7 +57,7 @@ func TestCatalog(t *testing.T) {
 		t.Error("DeleteCatalog failed")
 	}
 
-	catalogs = QueryAllCatalog(helper)
+	catalogs := QueryAllCatalog(helper)
 	if len(catalogs) != 3 {
 		t.Error("QueryAllCatalog failed")
 	}

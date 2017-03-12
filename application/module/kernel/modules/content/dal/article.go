@@ -2,13 +2,14 @@ package dal
 
 import (
 	"fmt"
-	"magiccenter/common"
-	"magiccenter/common/model"
-	resdal "magiccenter/resource/dal"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/common/resource"
 )
 
 // QueryAllArticleSummary 查询所有文章摘要
-func QueryAllArticleSummary(helper common.DBHelper) []model.ArticleSummary {
+func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.ArticleSummary {
 	articleSummaryList := []model.ArticleSummary{}
 	sql := fmt.Sprintf(`select id, title, author, createdate from article`)
 	helper.Query(sql)
@@ -20,58 +21,9 @@ func QueryAllArticleSummary(helper common.DBHelper) []model.ArticleSummary {
 		articleSummaryList = append(articleSummaryList, summary)
 	}
 
-	for index, _ := range articleSummaryList {
+	for index, value := range articleSummaryList {
 		summary := &articleSummaryList[index]
-		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
-		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
-		}
-	}
-
-	return articleSummaryList
-}
-
-// QueryArticleByCatalog 查询指定分类下的所有文章摘要
-func QueryArticleByCatalog(helper common.DBHelper, id int) []model.ArticleSummary {
-	articleSummaryList := []model.ArticleSummary{}
-	resList := resdal.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
-	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, title, author, createdate from article where id =%d`, r.RId())
-		helper.Query(sql)
-
-		if helper.Next() {
-			summary := model.ArticleSummary{}
-			helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
-
-			articleSummaryList = append(articleSummaryList, summary)
-		}
-	}
-
-	for _, summary := range articleSummaryList {
-		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
-		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
-		}
-	}
-
-	return articleSummaryList
-}
-
-// QueryArticleByRang 查询指定范围的文章摘要
-func QueryArticleByRang(helper common.DBHelper, begin int, offset int) []model.ArticleSummary {
-	articleSummaryList := []model.ArticleSummary{}
-	sql := fmt.Sprintf(`select id, title, author, createdate from article order by id where id >= %d limit %d`, begin, offset)
-	helper.Query(sql)
-
-	for helper.Next() {
-		summary := model.ArticleSummary{}
-		helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
-
-		articleSummaryList = append(articleSummaryList, summary)
-	}
-
-	for _, summary := range articleSummaryList {
-		ress := resdal.QueryRelativeResource(helper, summary.ID, model.ARTICLE)
+		ress := resource.QueryRelativeResource(helper, value.ID, model.ARTICLE)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
@@ -81,7 +33,7 @@ func QueryArticleByRang(helper common.DBHelper, begin int, offset int) []model.A
 }
 
 // QueryArticleByID 查询指定文章
-func QueryArticleByID(helper common.DBHelper, id int) (model.Article, bool) {
+func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.Article, bool) {
 	ar := model.Article{}
 
 	sql := fmt.Sprintf(`select id, title, content, author, createdate from article where id = %d`, id)
@@ -94,7 +46,7 @@ func QueryArticleByID(helper common.DBHelper, id int) (model.Article, bool) {
 	}
 
 	if result {
-		ress := resdal.QueryRelativeResource(helper, ar.ID, model.ARTICLE)
+		ress := resource.QueryRelativeResource(helper, ar.ID, model.ARTICLE)
 		for _, r := range ress {
 			ar.Catalog = append(ar.Catalog, r.RId())
 		}
@@ -103,22 +55,35 @@ func QueryArticleByID(helper common.DBHelper, id int) (model.Article, bool) {
 	return ar, result
 }
 
-// DeleteArticle 删除文章
-func DeleteArticle(helper common.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from article where id=%d`, id)
+// QueryArticleSummaryByCatalog 查询指定分类下的所有文章摘要
+func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.ArticleSummary {
+	articleSummaryList := []model.ArticleSummary{}
+	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
+	for _, r := range resList {
+		sql := fmt.Sprintf(`select id, title, author, createdate from article where id =%d`, r.RId())
+		helper.Query(sql)
 
-	num, result := helper.Execute(sql)
-	if num >= 1 && result {
-		// 删除资源时，名称时不用关注的，所以这里填“”好了
-		res := resdal.CreateSimpleRes(id, model.ARTICLE, "")
-		result = resdal.DeleteResource(helper, res)
+		if helper.Next() {
+			summary := model.ArticleSummary{}
+			helper.GetValue(&summary.ID, &summary.Title, &summary.Author, &summary.CreateDate)
+
+			articleSummaryList = append(articleSummaryList, summary)
+		}
 	}
 
-	return result
+	for index, value := range articleSummaryList {
+		summary := &articleSummaryList[index]
+		ress := resource.QueryRelativeResource(helper, value.ID, model.ARTICLE)
+		for _, r := range ress {
+			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+	}
+
+	return articleSummaryList
 }
 
 // CreateArticle 保存文章
-func CreateArticle(helper common.DBHelper, title, content string, catalogs []int, author int, createDate string) (model.ArticleSummary, bool) {
+func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, author int, createDate string) (model.ArticleSummary, bool) {
 	article := model.ArticleSummary{}
 	article.Title = title
 	article.Author = author
@@ -142,19 +107,19 @@ func CreateArticle(helper common.DBHelper, title, content string, catalogs []int
 	}
 
 	if result {
-		res := resdal.CreateSimpleRes(article.ID, model.ARTICLE, article.Title)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Title)
 		for _, c := range article.Catalog {
-			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
 			res.AppendRelative(ca)
 		}
-		result = resdal.SaveResource(helper, res)
+		result = resource.SaveResource(helper, res)
 	}
 
 	return article, result
 }
 
 // SaveArticle 保存文章
-func SaveArticle(helper common.DBHelper, article model.Article) (model.ArticleSummary, bool) {
+func SaveArticle(helper dbhelper.DBHelper, article model.Article) (model.ArticleSummary, bool) {
 	sql := fmt.Sprintf(`select id from article where id=%d`, article.ID)
 	helper.Query(sql)
 
@@ -175,13 +140,27 @@ func SaveArticle(helper common.DBHelper, article model.Article) (model.ArticleSu
 	_, result = helper.Execute(sql)
 
 	if result {
-		res := resdal.CreateSimpleRes(article.ID, model.ARTICLE, article.Title)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Title)
 		for _, c := range article.Catalog {
-			ca := resdal.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
 			res.AppendRelative(ca)
 		}
-		result = resdal.SaveResource(helper, res)
+		result = resource.SaveResource(helper, res)
 	}
 
 	return summary, result
+}
+
+// DeleteArticle 删除文章
+func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
+	sql := fmt.Sprintf(`delete from article where id=%d`, id)
+
+	num, result := helper.Execute(sql)
+	if num >= 1 && result {
+		// 删除资源时，名称时不用关注的，所以这里填“”好了
+		res := resource.CreateSimpleRes(id, model.ARTICLE, "")
+		result = resource.DeleteResource(helper, res)
+	}
+
+	return result
 }

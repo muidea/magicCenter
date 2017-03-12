@@ -2,9 +2,10 @@ package dal
 
 import (
 	"log"
-	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestMedia(t *testing.T) {
@@ -23,7 +24,7 @@ func TestMedia(t *testing.T) {
 	img.Creater = 10
 	img.Catalog = append(img.Catalog, 10)
 
-	ret := SaveMedia(helper, img)
+	img, ret := SaveMedia(helper, img)
 	if !ret {
 		t.Error("SaveMedia failed")
 		return
@@ -47,7 +48,7 @@ func TestMedia(t *testing.T) {
 	}
 
 	curImg.Desc = "tttt"
-	ret = SaveMedia(helper, curImg)
+	img, ret = SaveMedia(helper, curImg)
 	if !ret {
 		t.Error("SaveMedia failed")
 		return

@@ -3,10 +3,10 @@ package ui
 import (
 	"html/template"
 	"log"
-	"magiccenter/common/model"
-	"magiccenter/kernel/modules/account/bll"
-	"magiccenter/system"
 	"net/http"
+
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/account/bll"
 )
 
 // ManageGroupView 分组管理视图

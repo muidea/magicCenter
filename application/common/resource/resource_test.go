@@ -1,8 +1,9 @@
-package dal
+package resource
 
 import (
-	"magiccenter/system/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
 )
 
 func TestResource(t *testing.T) {

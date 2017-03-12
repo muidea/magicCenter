@@ -2,9 +2,10 @@ package dal
 
 import (
 	"log"
-	"magiccenter/common/model"
-	"magiccenter/util/dbhelper"
 	"testing"
+
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestLink(t *testing.T) {
@@ -23,7 +24,7 @@ func TestLink(t *testing.T) {
 	lnk.Creater = 10
 	lnk.Catalog = append(lnk.Catalog, 8)
 
-	ret := SaveLink(helper, lnk)
+	lnk, ret := SaveLink(helper, lnk)
 	if !ret {
 		t.Error("SaveLink failed")
 		return
@@ -47,7 +48,7 @@ func TestLink(t *testing.T) {
 	}
 
 	curLnk.Logo = "logo"
-	ret = SaveLink(helper, curLnk)
+	lnk, ret = SaveLink(helper, curLnk)
 	if !ret {
 		t.Error("SaveLink failed")
 		return
