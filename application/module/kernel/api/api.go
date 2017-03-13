@@ -1,10 +1,10 @@
 package api
 
 import (
+	"log"
+
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/module/kernel/api/route"
 )
 
@@ -21,16 +21,54 @@ const Description = "Magic Dashboard API模块"
 const URL string = "/api"
 
 type api struct {
-	moduleHub modulehub.ModuleHub
-	routes    []common.Route
+	moduleHub       common.ModuleHub
+	sessionRegistry common.SessionRegistry
+	routes          []common.Route
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
-	instance := &api{moduleHub: modHub, routes: []common.Route{}}
+func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
+	instance := &api{moduleHub: modHub, sessionRegistry: sessionRegistry, routes: []common.Route{}}
 
-	instance.routes = append(instance.routes, route.CreateGetArticleRoute(modHub))
+	rt, ok := route.CreateGetArticleRoute(modHub)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateGetArticleRoute failed")
+	}
 
+	rt, ok = route.CreateGetAllArticleRoute(modHub)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateGetAllArticleRoute failed")
+	}
+
+	rt, ok = route.CreateGetByCatalogArticleRoute(modHub)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateGetByCatalogArticleRoute failed")
+	}
+
+	rt, ok = route.CreateCreateArticleRoute(modHub, sessionRegistry)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateCreateArticleRoute failed")
+	}
+	rt, ok = route.CreateUpdateArticleRoute(modHub, sessionRegistry)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateUpdateArticleRoute failed")
+	}
+	rt, ok = route.CreateDestroyArticleRoute(modHub, sessionRegistry)
+	if ok {
+		instance.routes = append(instance.routes, rt)
+	} else {
+		log.Print("CreateDestroyArticleRoute failed")
+	}
 	modHub.RegisterModule(instance)
 }
 

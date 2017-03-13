@@ -2,14 +2,12 @@ package content
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/handler"
 )
 
 // ID 模块ID
-const ID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
+const ID = common.CotentModuleID
 
 // Name 模块名称
 const Name = "Magic Content"
@@ -26,7 +24,7 @@ type content struct {
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &content{contentHandler: handler.CreateContentHandler()}
 
 	modHub.RegisterModule(instance)

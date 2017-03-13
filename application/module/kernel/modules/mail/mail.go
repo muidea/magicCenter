@@ -4,9 +4,7 @@ import (
 	"log"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/foundation/net"
 )
 
@@ -23,7 +21,7 @@ const Description = "Magic 邮件模块"
 const URL string = "mail"
 
 // LoadModule 加载Mail模块
-func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	account, _ := cfg.GetOption(model.MailAccount)
 	password, _ := cfg.GetOption(model.MailPassword)
 	server, _ := cfg.GetOption(model.MailServer)
@@ -33,7 +31,7 @@ func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
 }
 
 // SendMail 发送邮件
-func SendMail(modHub modulehub.ModuleHub, usrMail string, subject, content string) bool {
+func SendMail(modHub common.ModuleHub, usrMail string, subject, content string) bool {
 	mailModule, found := modHub.FindModule(ID)
 	if !found {
 		panic("can't find mail module")

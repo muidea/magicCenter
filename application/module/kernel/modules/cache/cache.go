@@ -9,9 +9,7 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/memorycache"
 	"muidea.com/magicCenter/foundation/net"
 )
@@ -29,14 +27,14 @@ const Description = "Magic 缓存模块"
 const URL string = "/cache"
 
 // LoadModule 加载Cache模块
-func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &cacheModule{cache: memorycache.NewCache()}
 
 	modHub.RegisterModule(instance)
 }
 
 // PutIn 存放数据
-func PutIn(modHub modulehub.ModuleHub, data interface{}, maxAge float64) string {
+func PutIn(modHub common.ModuleHub, data interface{}, maxAge float64) string {
 	cacheModule, found := modHub.FindModule(ID)
 	if !found {
 		panic("can't find mail module")
@@ -48,7 +46,7 @@ func PutIn(modHub modulehub.ModuleHub, data interface{}, maxAge float64) string 
 }
 
 // FetchOut 取缓存数据
-func FetchOut(modHub modulehub.ModuleHub, id string) (interface{}, bool) {
+func FetchOut(modHub common.ModuleHub, id string) (interface{}, bool) {
 	cacheModule, found := modHub.FindModule(ID)
 	if !found {
 		panic("can't find mail module")
@@ -59,7 +57,7 @@ func FetchOut(modHub modulehub.ModuleHub, id string) (interface{}, bool) {
 }
 
 // Remove 清除指定的缓存数据
-func Remove(modHub modulehub.ModuleHub, id string) {
+func Remove(modHub common.ModuleHub, id string) {
 	cacheModule, found := modHub.FindModule(ID)
 	if !found {
 		panic("can't find mail module")
@@ -70,7 +68,7 @@ func Remove(modHub modulehub.ModuleHub, id string) {
 }
 
 // ClearAll 清空全部缓存数据
-func ClearAll(modHub modulehub.ModuleHub) {
+func ClearAll(modHub common.ModuleHub) {
 	cacheModule, found := modHub.FindModule(ID)
 	if !found {
 		panic("can't find mail module")

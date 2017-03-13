@@ -1,8 +1,7 @@
 package loader
 
 import (
-	"muidea.com/magicCenter/application/common/configuration"
-	"muidea.com/magicCenter/application/kernel/modulehub"
+	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/api"
 	"muidea.com/magicCenter/application/module/kernel/modules/account"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache"
@@ -11,13 +10,11 @@ import (
 )
 
 // LoadAllModules 加载所有模块
-func LoadAllModules(configuration configuration.Configuration, modulHub modulehub.ModuleHub) {
+func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, modulHub common.ModuleHub) {
 
 	mail.LoadModule(configuration, modulHub)
 
 	cache.LoadModule(configuration, modulHub)
-
-	api.LoadModule(configuration, modulHub)
 
 	//dashboard.LoadModule()
 
@@ -26,4 +23,7 @@ func LoadAllModules(configuration configuration.Configuration, modulHub modulehu
 	content.LoadModule(configuration, modulHub)
 
 	//authority.LoadModule()
+
+	// API 必须放在最后，否则找不到对应的Module
+	api.LoadModule(configuration, sessionRegistry, modulHub)
 }

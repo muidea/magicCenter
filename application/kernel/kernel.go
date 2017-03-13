@@ -4,12 +4,10 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
 	"muidea.com/magicCenter/application/kernel/session"
-	"muidea.com/magicCenter/application/module/loader"
 
 	"github.com/go-martini/martini"
 )
@@ -24,26 +22,23 @@ type Kernel interface {
 	ShutDown()
 
 	// ModuleHub 模块管理器
-	ModuleHub() modulehub.ModuleHub
+	ModuleHub() common.ModuleHub
 	// Configuration 配置管理器
-	Configuration() configuration.Configuration
-
-	// Session 当前Session
-	Session(w http.ResponseWriter, r *http.Request) common.Session
+	Configuration() common.Configuration
 }
 
 type impl struct {
-	loaderImpl          loader.ModuleLoader
-	configurationImpl   configuration.Configuration
+	loaderImpl          common.ModuleLoader
+	configurationImpl   common.Configuration
 	routerImpl          router.Router
-	moduleHubImpl       modulehub.ModuleHub
+	moduleHubImpl       common.ModuleHub
 	authorityImpl       authority.Authority
-	sessionRegistryImpl session.SessionRegistry
+	sessionRegistryImpl common.SessionRegistry
 	instanceFrameImpl   *martini.Martini
 }
 
 // NewKernel 新建Kernel对象
-func NewKernel(loader loader.ModuleLoader, configuration configuration.Configuration) Kernel {
+func NewKernel(loader common.ModuleLoader, configuration common.Configuration) Kernel {
 	i := &impl{
 		loaderImpl:          loader,
 		configurationImpl:   configuration,
@@ -57,7 +52,7 @@ func NewKernel(loader loader.ModuleLoader, configuration configuration.Configura
 }
 
 func (i *impl) StartUp() error {
-	i.loaderImpl.LoadAllModules(i.configurationImpl, i.moduleHubImpl)
+	i.loaderImpl.LoadAllModules(i.configurationImpl, i.sessionRegistryImpl, i.moduleHubImpl)
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
@@ -106,12 +101,12 @@ func (i *impl) ShutDown() {
 }
 
 // GetModuleHub 获取系统的ModuleHub
-func (i *impl) ModuleHub() modulehub.ModuleHub {
+func (i *impl) ModuleHub() common.ModuleHub {
 	return i.moduleHubImpl
 }
 
 // GetConfiguration 获取当前Configuration
-func (i *impl) Configuration() configuration.Configuration {
+func (i *impl) Configuration() common.Configuration {
 	return i.configurationImpl
 }
 

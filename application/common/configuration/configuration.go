@@ -9,18 +9,13 @@ package configuration
 import (
 	"log"
 
+	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/configuration/bll"
 	"muidea.com/magicCenter/application/common/model"
 )
 
-// Configuration 配置信息
-type Configuration interface {
-	GetOption(name string) (string, bool)
-	SetOption(name, value string) bool
-}
-
 // CreateConfiguration 创建Configuration
-func CreateConfiguration() Configuration {
+func CreateConfiguration() common.Configuration {
 	impl := &impl{}
 	impl.configInfoMap = map[string]string{}
 

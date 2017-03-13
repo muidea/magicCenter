@@ -2,9 +2,7 @@ package account
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/configuration"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/handler"
 )
 
@@ -21,7 +19,7 @@ const Description = "Magic 账号管理模块"
 const URL string = "/account"
 
 // LoadModule 加载模块
-func LoadModule(cfg configuration.Configuration, modHub modulehub.ModuleHub) {
+func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &account{accountHandler: handler.CreateAccountHandler()}
 
 	modHub.RegisterModule(instance)

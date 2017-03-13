@@ -1,6 +1,10 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
+import (
+	"net/http"
+
+	"muidea.com/magicCenter/application/common/model"
+)
 
 // Session 会话
 type Session interface {
@@ -16,4 +20,10 @@ type Session interface {
 	ClearAccount()
 
 	OptionKey() []string
+}
+
+// SessionRegistry 会话仓库
+type SessionRegistry interface {
+	GetSession(w http.ResponseWriter, r *http.Request) Session
+	UpdateSession(session Session) bool
 }

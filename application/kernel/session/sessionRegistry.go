@@ -23,14 +23,8 @@ type sessionRegistryImpl struct {
 	commandChan commandChanImpl
 }
 
-// SessionRegistry 会话仓库
-type SessionRegistry interface {
-	GetSession(w http.ResponseWriter, r *http.Request) common.Session
-	UpdateSession(session common.Session) bool
-}
-
 // CreateSessionRegistry 创建Session仓库
-func CreateSessionRegistry() SessionRegistry {
+func CreateSessionRegistry() common.SessionRegistry {
 	impl := sessionRegistryImpl{}
 	impl.commandChan = make(commandChanImpl)
 	go impl.commandChan.run()
