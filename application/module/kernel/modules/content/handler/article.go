@@ -10,23 +10,23 @@ type articleActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *articleActionHandler) getAllArticleSummary() []model.ArticleSummary {
+func (i *articleActionHandler) getAllArticleSummary() []model.Summary {
 	return dal.QueryAllArticleSummary(i.dbhelper)
 }
 
-func (i *articleActionHandler) findArticleByID(id int) (model.Article, bool) {
+func (i *articleActionHandler) findArticleByID(id int) (model.ArticleDetail, bool) {
 	return dal.QueryArticleByID(i.dbhelper, id)
 }
 
-func (i *articleActionHandler) findArticleByCatalog(catalog int) []model.ArticleSummary {
+func (i *articleActionHandler) findArticleByCatalog(catalog int) []model.Summary {
 	return dal.QueryArticleSummaryByCatalog(i.dbhelper, catalog)
 }
 
-func (i *articleActionHandler) createArticle(title, content, createDate string, catalog []int, author int) (model.ArticleSummary, bool) {
+func (i *articleActionHandler) createArticle(title, content, createDate string, catalog []int, author int) (model.Summary, bool) {
 	return dal.CreateArticle(i.dbhelper, title, content, catalog, author, createDate)
 }
 
-func (i *articleActionHandler) saveArticle(article model.Article) (model.ArticleSummary, bool) {
+func (i *articleActionHandler) saveArticle(article model.ArticleDetail) (model.Summary, bool) {
 	return dal.SaveArticle(i.dbhelper, article)
 }
 

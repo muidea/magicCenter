@@ -9,56 +9,39 @@ import (
 )
 
 // QueryAllCatalog 查询所有分类
-func QueryAllCatalog(helper dbhelper.DBHelper) []model.Catalog {
-	catalogList := []model.Catalog{}
+func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
+	summaryList := []model.Summary{}
 
 	sql := fmt.Sprintf(`select id, name from catalog`)
 	helper.Query(sql)
 
 	for helper.Next() {
-		c := model.Catalog{}
+		c := model.Summary{}
 		helper.GetValue(&c.ID, &c.Name)
 
-		catalogList = append(catalogList, c)
+		summaryList = append(summaryList, c)
 	}
 
-	return catalogList
-}
-
-// QueryAllCatalogDetail 查询所有分类详情
-func QueryAllCatalogDetail(helper dbhelper.DBHelper) []model.CatalogDetail {
-	catalogList := []model.CatalogDetail{}
-
-	sql := fmt.Sprintf(`select id, name, creater from catalog`)
-	helper.Query(sql)
-
-	for helper.Next() {
-		c := model.CatalogDetail{}
-		helper.GetValue(&c.ID, &c.Name, &c.Creater)
-
-		catalogList = append(catalogList, c)
-	}
-
-	for index, value := range catalogList {
-		cur := &catalogList[index]
+	for index, value := range summaryList {
+		summary := &summaryList[index]
 		ress := resource.QueryRelativeResource(helper, value.ID, model.CATALOG)
 		for _, r := range ress {
-			cur.Parent = append(cur.Parent, r.RId())
+			summary.Catalog = append(summary.Catalog, r.RId())
 		}
 	}
 
-	return catalogList
+	return summaryList
 }
 
 // QueryCatalogByID 查询指定分类
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}
-	sql := fmt.Sprintf(`select id, name, creater from catalog where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, creater from catalog where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Creater)
+		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.Author)
 		result = true
 	}
 
@@ -66,44 +49,35 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 		ress := resource.QueryRelativeResource(helper, id, model.CATALOG)
 
 		for _, r := range ress {
-			catalog.Parent = append(catalog.Parent, r.RId())
+			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
 	}
 
 	return catalog, result
 }
 
-// QueryAvalibleParentCatalog 查询可用的父类
-// 可用父类的判断规则是比指定分类ID小的就视为可用分类
-func QueryAvalibleParentCatalog(helper dbhelper.DBHelper, id int) []model.Catalog {
-	catalogList := []model.Catalog{}
-	sql := fmt.Sprintf(`select id, name from catalog where id < %d`, id)
-	helper.Query(sql)
-
-	for helper.Next() {
-		catalog := model.Catalog{}
-		helper.GetValue(&catalog.ID, &catalog.Name)
-
-		catalogList = append(catalogList, catalog)
-	}
-
-	return catalogList
-}
-
-// QuerySubCatalog 查询指定分类的子类
-func QuerySubCatalog(helper dbhelper.DBHelper, id int) []model.Catalog {
-	catalogList := []model.Catalog{}
+// QueryCatalogByParent 查询指定分类的子类
+func QueryCatalogByParent(helper dbhelper.DBHelper, id int) []model.Summary {
+	summaryList := []model.Summary{}
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		catalog := model.Catalog{}
+		catalog := model.Summary{}
 		catalog.ID = r.RId()
 		catalog.Name = r.RName()
 
-		catalogList = append(catalogList, catalog)
+		summaryList = append(summaryList, catalog)
 	}
 
-	return catalogList
+	for index, value := range summaryList {
+		summary := &summaryList[index]
+		ress := resource.QueryRelativeResource(helper, value.ID, model.CATALOG)
+		for _, r := range ress {
+			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+	}
+
+	return summaryList
 }
 
 // DeleteCatalog 删除指定类
@@ -120,12 +94,12 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateCatalog 新建分类
-func CreateCatalog(helper dbhelper.DBHelper, name string, parent []int, creater int) (model.Catalog, bool) {
-	catalog := model.Catalog{}
+func CreateCatalog(helper dbhelper.DBHelper, name, description string, parent []int, creater int) (model.Summary, bool) {
+	catalog := model.Summary{}
 	catalog.Name = name
 
 	// insert
-	sql := fmt.Sprintf(`insert into catalog (name,creater) values ('%s',%d)`, name, creater)
+	sql := fmt.Sprintf(`insert into catalog (name, description,creater) values ('%s','%s',%d)`, name, description, creater)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
@@ -149,31 +123,21 @@ func CreateCatalog(helper dbhelper.DBHelper, name string, parent []int, creater 
 }
 
 // SaveCatalog 保存分类
-func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Catalog, bool) {
-	sql := fmt.Sprintf(`select id from catalog where id=%d`, catalog.ID)
-	helper.Query(sql)
+func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Summary, bool) {
+	// modify
+	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.Author, catalog.ID)
+	num, result := helper.Execute(sql)
 
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
-	}
-
-	if result {
-		// modify
-		sql = fmt.Sprintf(`update catalog set name ='%s', creater =%d where id=%d`, catalog.Name, catalog.Creater, catalog.ID)
-		_, result = helper.Execute(sql)
-	}
-
-	if result {
+	if num == 1 && result {
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name)
-		for _, c := range catalog.Parent {
+		for _, c := range catalog.Catalog {
 			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
+	} else {
+		result = false
 	}
 
-	return model.Catalog{ID: catalog.ID, Name: catalog.Name}, result
+	return model.Summary{ID: catalog.ID, Name: catalog.Name, Catalog: catalog.Catalog}, result
 }

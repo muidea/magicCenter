@@ -18,13 +18,14 @@ func TestMedia(t *testing.T) {
 	defer helper.Release()
 
 	img := model.MediaDetail{}
+	img.ID = 32
 	img.Name = "test image"
 	img.URL = "test image url"
 	img.Desc = "test image descr"
-	img.Creater = 10
+	img.Author = 10
 	img.Catalog = append(img.Catalog, 10)
 
-	img, ret := SaveMedia(helper, img)
+	_, ret := SaveMedia(helper, img)
 	if !ret {
 		t.Error("SaveMedia failed")
 		return
@@ -48,7 +49,7 @@ func TestMedia(t *testing.T) {
 	}
 
 	curImg.Desc = "tttt"
-	img, ret = SaveMedia(helper, curImg)
+	_, ret = SaveMedia(helper, curImg)
 	if !ret {
 		t.Error("SaveMedia failed")
 		return

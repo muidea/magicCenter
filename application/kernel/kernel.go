@@ -60,6 +60,7 @@ func (i *impl) StartUp() error {
 	for _, m := range allModules {
 		baseURL := m.URL()
 		routes := m.Routes()
+		// if define routes trace something...
 		if len(routes) > 0 {
 			log.Printf("...............register %s's routes...............", m.Name())
 		}

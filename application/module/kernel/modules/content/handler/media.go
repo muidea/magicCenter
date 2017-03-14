@@ -10,7 +10,7 @@ type mediaActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *mediaActionHandler) getAllMedia() []model.MediaDetail {
+func (i *mediaActionHandler) getAllMedia() []model.Summary {
 	return dal.QueryAllMedia(i.dbhelper)
 }
 
@@ -18,15 +18,15 @@ func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
 	return dal.QueryMediaByID(i.dbhelper, id)
 }
 
-func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.MediaDetail {
+func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.Summary {
 	return dal.QueryMediaByCatalog(i.dbhelper, catalog)
 }
 
-func (i *mediaActionHandler) createMedia(name, url, desc string, catalog []int, author int) (model.MediaDetail, bool) {
+func (i *mediaActionHandler) createMedia(name, url, desc string, catalog []int, author int) (model.Summary, bool) {
 	return dal.CreateMedia(i.dbhelper, name, url, desc, author, catalog)
 }
 
-func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.MediaDetail, bool) {
+func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, bool) {
 	return dal.SaveMedia(i.dbhelper, media)
 }
 

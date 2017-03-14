@@ -17,14 +17,15 @@ func TestLink(t *testing.T) {
 	}
 	defer helper.Release()
 
-	lnk := model.Link{}
+	lnk := model.LinkDetail{}
+	lnk.ID = 13
 	lnk.Name = "test Link"
 	lnk.URL = "test url"
 	lnk.Logo = "test link logo"
-	lnk.Creater = 10
+	lnk.Author = 10
 	lnk.Catalog = append(lnk.Catalog, 8)
 
-	lnk, ret := SaveLink(helper, lnk)
+	_, ret := SaveLink(helper, lnk)
 	if !ret {
 		t.Error("SaveLink failed")
 		return
@@ -48,7 +49,7 @@ func TestLink(t *testing.T) {
 	}
 
 	curLnk.Logo = "logo"
-	lnk, ret = SaveLink(helper, curLnk)
+	_, ret = SaveLink(helper, curLnk)
 	if !ret {
 		t.Error("SaveLink failed")
 		return

@@ -10,23 +10,23 @@ type linkActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *linkActionHandler) getAllLink() []model.Link {
+func (i *linkActionHandler) getAllLink() []model.Summary {
 	return dal.QueryAllLink(i.dbhelper)
 }
 
-func (i *linkActionHandler) findLinkByID(id int) (model.Link, bool) {
+func (i *linkActionHandler) findLinkByID(id int) (model.LinkDetail, bool) {
 	return dal.QueryLinkByID(i.dbhelper, id)
 }
 
-func (i *linkActionHandler) findLinkByCatalog(catalog int) []model.Link {
+func (i *linkActionHandler) findLinkByCatalog(catalog int) []model.Summary {
 	return dal.QueryLinkByCatalog(i.dbhelper, catalog)
 }
 
-func (i *linkActionHandler) createLink(name, url, logo string, catalog []int, author int) (model.Link, bool) {
+func (i *linkActionHandler) createLink(name, url, logo string, catalog []int, author int) (model.Summary, bool) {
 	return dal.CreateLink(i.dbhelper, name, url, logo, author, catalog)
 }
 
-func (i *linkActionHandler) saveLink(link model.Link) (model.Link, bool) {
+func (i *linkActionHandler) saveLink(link model.LinkDetail) (model.Summary, bool) {
 	return dal.SaveLink(i.dbhelper, link)
 }
 

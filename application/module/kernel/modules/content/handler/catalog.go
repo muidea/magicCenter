@@ -10,7 +10,7 @@ type catalogActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *catalogActionHandler) getAllCatalog() []model.Catalog {
+func (i *catalogActionHandler) getAllCatalog() []model.Summary {
 	return dal.QueryAllCatalog(i.dbhelper)
 }
 
@@ -18,15 +18,15 @@ func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, boo
 	return dal.QueryCatalogByID(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) findCatalogByParent(id int) []model.Catalog {
+func (i *catalogActionHandler) findCatalogByParent(id int) []model.Summary {
 	return dal.QuerySubCatalog(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) createCatalog(name string, parent []int, author int) (model.Catalog, bool) {
+func (i *catalogActionHandler) createCatalog(name string, parent []int, author int) (model.Summary, bool) {
 	return dal.CreateCatalog(i.dbhelper, name, parent, author)
 }
 
-func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.Catalog, bool) {
+func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
 	return dal.SaveCatalog(i.dbhelper, catalog)
 }
 

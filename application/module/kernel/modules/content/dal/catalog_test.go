@@ -18,9 +18,10 @@ func TestCatalog(t *testing.T) {
 	defer helper.Release()
 
 	ca := model.CatalogDetail{}
+	ca.ID = 12
 	ca.Name = "testCatalog"
-	ca.Creater = 3
-	ca.Parent = append(ca.Parent, 10)
+	ca.Author = 3
+	ca.Catalog = append(ca.Catalog, 10)
 	catalog, ret := SaveCatalog(helper, ca)
 	if !ret {
 		t.Error("SaveCatalog failed")
@@ -31,12 +32,12 @@ func TestCatalog(t *testing.T) {
 	if !found {
 		t.Error("QueryCatalogByID failed")
 	}
-	if ca.Creater != 3 {
+	if ca.Author != 3 {
 		t.Error("QueryCatalogByID failed")
 	}
 
-	ca.Parent = append(ca.Parent, 8)
-	ca.Parent = append(ca.Parent, 9)
+	ca.Catalog = append(ca.Catalog, 8)
+	ca.Catalog = append(ca.Catalog, 9)
 
 	catalog, ret = SaveCatalog(helper, ca)
 	if !ret {
@@ -48,7 +49,7 @@ func TestCatalog(t *testing.T) {
 		t.Error("QueryCatalogByID failed")
 	}
 
-	if len(ca.Parent) != 3 {
+	if len(ca.Catalog) != 3 {
 		t.Error("QueryCatalogByID failed")
 	}
 
@@ -62,13 +63,8 @@ func TestCatalog(t *testing.T) {
 		t.Error("QueryAllCatalog failed")
 	}
 
-	catalogDetails := QueryAllCatalogDetail(helper)
+	catalogDetails := QueryAllCatalog(helper)
 	if len(catalogDetails) != 3 {
 		t.Error("QueryAllCatalogDetail")
-	}
-
-	catalogs = QueryAvalibleParentCatalog(helper, 10)
-	if len(catalogs) != 2 {
-		t.Error("QueryAvalibleParentCatalog failed")
 	}
 }
