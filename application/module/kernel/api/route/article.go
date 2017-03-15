@@ -123,7 +123,7 @@ type articleGetRoute struct {
 
 type articleGetResult struct {
 	common.Result
-	Article model.Article
+	Article model.ArticleDetail
 }
 
 func (i *articleGetRoute) Type() string {
@@ -182,7 +182,7 @@ type articleGetAllRoute struct {
 
 type articleGetAllResult struct {
 	common.Result
-	Article []model.ArticleSummary
+	Article []model.Summary
 }
 
 func (i *articleGetAllRoute) Type() string {
@@ -221,7 +221,7 @@ type articleGetByCatalogRoute struct {
 
 type articleGetByCatalogResult struct {
 	common.Result
-	Article []model.ArticleSummary
+	Article []model.Summary
 }
 
 func (i *articleGetByCatalogRoute) Type() string {
@@ -282,7 +282,7 @@ type articleCreateRoute struct {
 
 type articleCreateResult struct {
 	common.Result
-	Article model.ArticleSummary
+	Article model.Summary
 }
 
 func (i *articleCreateRoute) Type() string {
@@ -342,7 +342,7 @@ type articleUpdateRoute struct {
 
 type articleUpdateResult struct {
 	common.Result
-	Article model.ArticleSummary
+	Article model.Summary
 }
 
 func (i *articleUpdateRoute) Type() string {
@@ -384,9 +384,9 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		r.ParseForm()
-		article := model.Article{}
+		article := model.ArticleDetail{}
 		article.ID = id
-		article.Title = r.FormValue("article-title")
+		article.Name = r.FormValue("article-title")
 		article.Content = r.FormValue("article-content")
 		article.Catalog, _ = util.Str2IntArray(r.FormValue("article-catalog"))
 		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")

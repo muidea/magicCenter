@@ -123,7 +123,7 @@ type linkGetRoute struct {
 
 type linkGetResult struct {
 	common.Result
-	Link model.Link
+	Link model.LinkDetail
 }
 
 func (i *linkGetRoute) Type() string {
@@ -182,7 +182,7 @@ type linkGetAllRoute struct {
 
 type linkGetAllResult struct {
 	common.Result
-	Link []model.Link
+	Link []model.Summary
 }
 
 func (i *linkGetAllRoute) Type() string {
@@ -221,7 +221,7 @@ type linkGetByCatalogRoute struct {
 
 type linkGetByCatalogResult struct {
 	common.Result
-	Link []model.Link
+	Link []model.Summary
 }
 
 func (i *linkGetByCatalogRoute) Type() string {
@@ -282,7 +282,7 @@ type linkCreateRoute struct {
 
 type linkCreateResult struct {
 	common.Result
-	Link model.Link
+	Link model.Summary
 }
 
 func (i *linkCreateRoute) Type() string {
@@ -312,11 +312,12 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 
 		r.ParseForm()
 
-		title := r.FormValue("link-title")
-		content := r.FormValue("link-content")
+		name := r.FormValue("link-name")
+		url := r.FormValue("link-url")
+		logo := r.FormValue("link-logo")
 		catalogs, _ := util.Str2IntArray(r.FormValue("link-catalog"))
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		link, ok := i.contentHandler.CreateLink(title, content, createDate, catalogs, user.ID)
+		link, ok := i.contentHandler.CreateLink(name, url, logo, createDate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -342,7 +343,7 @@ type linkUpdateRoute struct {
 
 type linkUpdateResult struct {
 	common.Result
-	Link model.LinkSummary
+	Link model.Summary
 }
 
 func (i *linkUpdateRoute) Type() string {
@@ -384,10 +385,11 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		r.ParseForm()
-		link := model.Link{}
+		link := model.LinkDetail{}
 		link.ID = id
-		link.Title = r.FormValue("link-title")
-		link.Content = r.FormValue("link-content")
+		link.Name = r.FormValue("link-name")
+		link.URL = r.FormValue("link-url")
+		link.Logo = r.FormValue("link-logo")
 		link.Catalog, _ = util.Str2IntArray(r.FormValue("link-catalog"))
 		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		link.Author = user.ID

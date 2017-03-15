@@ -36,12 +36,12 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 // QueryCatalogByID 查询指定分类
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}
-	sql := fmt.Sprintf(`select id, name, description, creater from catalog where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, createdate, creater from catalog where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.Author)
+		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Author)
 		result = true
 	}
 
@@ -56,8 +56,8 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 	return catalog, result
 }
 
-// QueryCatalogByParent 查询指定分类的子类
-func QueryCatalogByParent(helper dbhelper.DBHelper, id int) []model.Summary {
+// QueryCatalogByCatalog 查询指定分类的子类
+func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 	summaryList := []model.Summary{}
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
@@ -94,12 +94,12 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateCatalog 新建分类
-func CreateCatalog(helper dbhelper.DBHelper, name, description string, parent []int, creater int) (model.Summary, bool) {
+func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate string, parent []int, creater int) (model.Summary, bool) {
 	catalog := model.Summary{}
 	catalog.Name = name
 
 	// insert
-	sql := fmt.Sprintf(`insert into catalog (name, description,creater) values ('%s','%s',%d)`, name, description, creater)
+	sql := fmt.Sprintf(`insert into catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createdate, creater)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
@@ -125,7 +125,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description string, parent []
 // SaveCatalog 保存分类
 func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.Author, catalog.ID)
+	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Author, catalog.ID)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {

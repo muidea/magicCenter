@@ -22,8 +22,8 @@ func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.Summary {
 	return dal.QueryMediaByCatalog(i.dbhelper, catalog)
 }
 
-func (i *mediaActionHandler) createMedia(name, url, desc string, catalog []int, author int) (model.Summary, bool) {
-	return dal.CreateMedia(i.dbhelper, name, url, desc, author, catalog)
+func (i *mediaActionHandler) createMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool) {
+	return dal.CreateMedia(i.dbhelper, name, url, desc, createdate, author, catalog)
 }
 
 func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, bool) {

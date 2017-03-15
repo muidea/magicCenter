@@ -15,8 +15,8 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
-// CreateGetArticleRoute 新建GetArticle Route
-func CreateGetArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetMediaRoute 新建GetMedia Route
+func CreateGetMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -25,15 +25,15 @@ func CreateGetArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleGetRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := mediaGetRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetAllArticleRoute 新建GetAllArticle Route
-func CreateGetAllArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetAllMediaRoute 新建GetAllMedia Route
+func CreateGetAllMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -42,15 +42,15 @@ func CreateGetAllArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := mediaGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetByCatalogArticleRoute 新建GetByCatalogArticleRoute Route
-func CreateGetByCatalogArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetByCatalogMediaRoute 新建GetByCatalogMediaRoute Route
+func CreateGetByCatalogMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -59,15 +59,15 @@ func CreateGetByCatalogArticleRoute(modHub common.ModuleHub) (common.Route, bool
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := mediaGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateCreateArticleRoute 新建CreateArticleRoute Route
-func CreateCreateArticleRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+// CreateCreateMediaRoute 新建CreateMediaRoute Route
+func CreateCreateMediaRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -76,15 +76,15 @@ func CreateCreateArticleRoute(modHub common.ModuleHub, sessionRegistry common.Se
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleCreateRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
+		i := mediaCreateRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateUpdateArticleRoute UpdateArticleRoute Route
-func CreateUpdateArticleRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+// CreateUpdateMediaRoute UpdateMediaRoute Route
+func CreateUpdateMediaRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -93,15 +93,15 @@ func CreateUpdateArticleRoute(modHub common.ModuleHub, sessionRegistry common.Se
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleUpdateRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
+		i := mediaUpdateRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateDestroyArticleRoute DestroyArticleRoute Route
-func CreateDestroyArticleRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+// CreateDestroyMediaRoute DestroyMediaRoute Route
+func CreateDestroyMediaRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -110,38 +110,38 @@ func CreateDestroyArticleRoute(modHub common.ModuleHub, sessionRegistry common.S
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleDestroyRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
+		i := mediaDestroyRoute{contentHandler: endPoint.(common.ContentHandler), sessionRegistry: sessionRegistry}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-type articleGetRoute struct {
+type mediaGetRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type articleGetResult struct {
+type mediaGetResult struct {
 	common.Result
-	Article model.Article
+	Media model.MediaDetail
 }
 
-func (i *articleGetRoute) Type() string {
+func (i *mediaGetRoute) Type() string {
 	return common.GET
 }
 
-func (i *articleGetRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+func (i *mediaGetRoute) Pattern() string {
+	return "content/media/[0-9]*/"
 }
 
-func (i *articleGetRoute) Handler() interface{} {
-	return i.getArticleHandler
+func (i *mediaGetRoute) Handler() interface{} {
+	return i.getMediaHandler
 }
 
-func (i *articleGetRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getArticleHandler")
+func (i *mediaGetRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getMediaHandler")
 
-	result := articleGetResult{}
+	result := mediaGetResult{}
 	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
 	for true {
 		if ok {
@@ -152,9 +152,9 @@ func (i *articleGetRoute) getArticleHandler(w http.ResponseWriter, r *http.Reque
 				break
 			}
 
-			article, ok := i.contentHandler.GetArticleByID(id)
+			media, ok := i.contentHandler.GetMediaByID(id)
 			if ok {
-				result.Article = article
+				result.Media = media
 				result.ErrCode = 0
 			} else {
 				result.ErrCode = 1
@@ -176,33 +176,33 @@ func (i *articleGetRoute) getArticleHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(b)
 }
 
-type articleGetAllRoute struct {
+type mediaGetAllRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type articleGetAllResult struct {
+type mediaGetAllResult struct {
 	common.Result
-	Article []model.ArticleSummary
+	Media []model.Summary
 }
 
-func (i *articleGetAllRoute) Type() string {
+func (i *mediaGetAllRoute) Type() string {
 	return common.GET
 }
 
-func (i *articleGetAllRoute) Pattern() string {
-	return "content/article/"
+func (i *mediaGetAllRoute) Pattern() string {
+	return "content/media/"
 }
 
-func (i *articleGetAllRoute) Handler() interface{} {
-	return i.getAllArticleHandler
+func (i *mediaGetAllRoute) Handler() interface{} {
+	return i.getAllMediaHandler
 }
 
-func (i *articleGetAllRoute) getAllArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getAllArticleHandler")
+func (i *mediaGetAllRoute) getAllMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getAllMediaHandler")
 
-	result := articleGetAllResult{}
+	result := mediaGetAllResult{}
 	for true {
-		result.Article = i.contentHandler.GetAllArticle()
+		result.Media = i.contentHandler.GetAllMedia()
 		result.ErrCode = 0
 		break
 	}
@@ -215,31 +215,31 @@ func (i *articleGetAllRoute) getAllArticleHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type articleGetByCatalogRoute struct {
+type mediaGetByCatalogRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type articleGetByCatalogResult struct {
+type mediaGetByCatalogResult struct {
 	common.Result
-	Article []model.ArticleSummary
+	Media []model.Summary
 }
 
-func (i *articleGetByCatalogRoute) Type() string {
+func (i *mediaGetByCatalogRoute) Type() string {
 	return common.GET
 }
 
-func (i *articleGetByCatalogRoute) Pattern() string {
-	return "content/article/?catalog=[0-9]*"
+func (i *mediaGetByCatalogRoute) Pattern() string {
+	return "content/media/?catalog=[0-9]*"
 }
 
-func (i *articleGetByCatalogRoute) Handler() interface{} {
-	return i.getByCatalogArticleHandler
+func (i *mediaGetByCatalogRoute) Handler() interface{} {
+	return i.getByCatalogMediaHandler
 }
 
-func (i *articleGetByCatalogRoute) getByCatalogArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByCatalogArticleHandler")
+func (i *mediaGetByCatalogRoute) getByCatalogMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getByCatalogMediaHandler")
 
-	result := articleGetByCatalogResult{}
+	result := mediaGetByCatalogResult{}
 	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
 	for true {
 		if ok {
@@ -257,7 +257,7 @@ func (i *articleGetByCatalogRoute) getByCatalogArticleHandler(w http.ResponseWri
 				break
 			}
 
-			result.Article = i.contentHandler.GetArticleByCatalog(id)
+			result.Media = i.contentHandler.GetMediaByCatalog(id)
 			result.ErrCode = 0
 			break
 		}
@@ -275,33 +275,33 @@ func (i *articleGetByCatalogRoute) getByCatalogArticleHandler(w http.ResponseWri
 	w.Write(b)
 }
 
-type articleCreateRoute struct {
+type mediaCreateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
 
-type articleCreateResult struct {
+type mediaCreateResult struct {
 	common.Result
-	Article model.ArticleSummary
+	Media model.Summary
 }
 
-func (i *articleCreateRoute) Type() string {
+func (i *mediaCreateRoute) Type() string {
 	return common.POST
 }
 
-func (i *articleCreateRoute) Pattern() string {
-	return "content/article/"
+func (i *mediaCreateRoute) Pattern() string {
+	return "content/media/"
 }
 
-func (i *articleCreateRoute) Handler() interface{} {
-	return i.createArticleHandler
+func (i *mediaCreateRoute) Handler() interface{} {
+	return i.createMediaHandler
 }
 
-func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createArticleHandler")
+func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("createMediaHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := articleCreateResult{}
+	result := mediaCreateResult{}
 	for true {
 		user, found := session.GetAccount()
 		if !found {
@@ -311,19 +311,19 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		r.ParseForm()
-
-		title := r.FormValue("article-title")
-		content := r.FormValue("article-content")
-		catalogs, _ := util.Str2IntArray(r.FormValue("article-catalog"))
+		name := r.FormValue("media-name")
+		url := r.FormValue("media-url")
+		desc := r.FormValue("media-desc")
+		catalogs, _ := util.Str2IntArray(r.FormValue("media-catalog"))
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		article, ok := i.contentHandler.CreateArticle(title, content, createDate, catalogs, user.ID)
+		media, ok := i.contentHandler.CreateMedia(name, url, desc, createDate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
 			break
 		}
 		result.ErrCode = 0
-		result.Article = article
+		result.Media = media
 		break
 	}
 
@@ -335,33 +335,33 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type articleUpdateRoute struct {
+type mediaUpdateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
 
-type articleUpdateResult struct {
+type mediaUpdateResult struct {
 	common.Result
-	Article model.ArticleSummary
+	Media model.Summary
 }
 
-func (i *articleUpdateRoute) Type() string {
+func (i *mediaUpdateRoute) Type() string {
 	return common.PUT
 }
 
-func (i *articleUpdateRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+func (i *mediaUpdateRoute) Pattern() string {
+	return "content/media/[0-9]*/"
 }
 
-func (i *articleUpdateRoute) Handler() interface{} {
-	return i.updateArticleHandler
+func (i *mediaUpdateRoute) Handler() interface{} {
+	return i.updateMediaHandler
 }
 
-func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateArticleHandler")
+func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("updateMediaHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := articleCreateResult{}
+	result := mediaCreateResult{}
 	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
 	for true {
 		if !ok {
@@ -384,21 +384,22 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		r.ParseForm()
-		article := model.Article{}
-		article.ID = id
-		article.Title = r.FormValue("article-title")
-		article.Content = r.FormValue("article-content")
-		article.Catalog, _ = util.Str2IntArray(r.FormValue("article-catalog"))
-		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		article.Author = user.ID
-		summmary, ok := i.contentHandler.SaveArticle(article)
+		media := model.MediaDetail{}
+		media.ID = id
+		media.Name = r.FormValue("media-name")
+		media.URL = r.FormValue("media-url")
+		media.Desc = r.FormValue("media-desc")
+		media.Catalog, _ = util.Str2IntArray(r.FormValue("media-catalog"))
+		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		media.Author = user.ID
+		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "更新失败"
 			break
 		}
 		result.ErrCode = 0
-		result.Article = summmary
+		result.Media = summmary
 		break
 	}
 
@@ -410,32 +411,32 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type articleDestroyRoute struct {
+type mediaDestroyRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
 
-type articleDestroyResult struct {
+type mediaDestroyResult struct {
 	common.Result
 }
 
-func (i *articleDestroyRoute) Type() string {
+func (i *mediaDestroyRoute) Type() string {
 	return common.DELETE
 }
 
-func (i *articleDestroyRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+func (i *mediaDestroyRoute) Pattern() string {
+	return "content/media/[0-9]*/"
 }
 
-func (i *articleDestroyRoute) Handler() interface{} {
-	return i.deleteArticleHandler
+func (i *mediaDestroyRoute) Handler() interface{} {
+	return i.deleteMediaHandler
 }
 
-func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteArticleHandler")
+func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("deleteMediaHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := articleCreateResult{}
+	result := mediaCreateResult{}
 	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
 	for true {
 		if !ok {
@@ -455,7 +456,7 @@ func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *htt
 			break
 		}
 
-		ok := i.contentHandler.DestroyArticle(id)
+		ok := i.contentHandler.DestroyMedia(id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "删除失败"

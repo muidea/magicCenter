@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
@@ -179,7 +180,7 @@ type catalogGetAllRoute struct {
 
 type catalogGetAllResult struct {
 	common.Result
-	Catalog []model.Catalog
+	Catalog []model.Summary
 }
 
 func (i *catalogGetAllRoute) Type() string {
@@ -212,29 +213,29 @@ func (i *catalogGetAllRoute) getAllCatalogHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type catalogGetByParentRoute struct {
+type catalogGetByCatalogRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type catalogGetByParentResult struct {
+type catalogGetByCatalogResult struct {
 	common.Result
-	Catalog []model.Catalog
+	Catalog []model.Summary
 }
 
-func (i *catalogGetByParentRoute) Type() string {
+func (i *catalogGetByCatalogRoute) Type() string {
 	return common.GET
 }
 
-func (i *catalogGetByParentRoute) Pattern() string {
+func (i *catalogGetByCatalogRoute) Pattern() string {
 	return "content/catalog/?parent=[0-9]*"
 }
 
-func (i *catalogGetByParentRoute) Handler() interface{} {
-	return i.getByParentCatalogHandler
+func (i *catalogGetByCatalogRoute) Handler() interface{} {
+	return i.getByCatalogHandler
 }
 
-func (i *catalogGetByParentRoute) getByParentCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByParentCatalogHandler")
+func (i *catalogGetByCatalogRoute) getByCatalogHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getByCatalogHandler")
 
 	result := catalogGetByCatalogResult{}
 	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
@@ -254,7 +255,7 @@ func (i *catalogGetByParentRoute) getByParentCatalogHandler(w http.ResponseWrite
 				break
 			}
 
-			result.Catalog = i.contentHandler.GetCatalogByParent(id)
+			result.Catalog = i.contentHandler.GetCatalogByCatalog(id)
 			result.ErrCode = 0
 			break
 		}
@@ -279,7 +280,7 @@ type catalogCreateRoute struct {
 
 type catalogCreateResult struct {
 	common.Result
-	Catalog model.Catalog
+	Catalog model.Summary
 }
 
 func (i *catalogCreateRoute) Type() string {
@@ -309,9 +310,11 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 
 		r.ParseForm()
 
-		title := r.FormValue("catalog-name")
-		parents, _ := util.Str2IntArray(r.FormValue("catalog-parent"))
-		catalog, ok := i.contentHandler.CreateCatalog(name, parents, user.ID)
+		name := r.FormValue("catalog-name")
+		description := r.FormValue("catalog-description")
+		createdate := time.Now().Format("2006-01-02 15:04:05")
+		catalogs, _ := util.Str2IntArray(r.FormValue("catalog-catalog"))
+		catalog, ok := i.contentHandler.CreateCatalog(name, description, createdate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -337,7 +340,7 @@ type catalogUpdateRoute struct {
 
 type catalogUpdateResult struct {
 	common.Result
-	Catalog model.Catalog
+	Catalog model.Summary
 }
 
 func (i *catalogUpdateRoute) Type() string {
@@ -382,8 +385,10 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		catalog := model.CatalogDetail{}
 		catalog.ID = id
 		catalog.Name = r.FormValue("catalog-name")
-		catalog.Parent, _ = util.Str2IntArray(r.FormValue("catalog-parent"))
-		catalog.Creater = user.ID
+		catalog.Description = r.FormValue("catalog-description")
+		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("catalog-catalog"))
+		catalog.Author = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {
 			result.ErrCode = 1

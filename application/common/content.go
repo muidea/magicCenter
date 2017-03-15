@@ -15,22 +15,22 @@ type ContentHandler interface {
 
 	GetAllCatalog() []model.Summary
 	GetCatalogByID(id int) (model.CatalogDetail, bool)
-	GetCatalogByParent(id int) []model.Summary
-	CreateCatalog(name string, parent []int, author int) (model.Summary, bool)
+	GetCatalogByCatalog(id int) []model.Summary
+	CreateCatalog(name, description, createdate string, catalog []int, author int) (model.Summary, bool)
 	SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool)
 	DestroyCatalog(id int) bool
 
 	GetAllLink() []model.Summary
 	GetLinkByID(id int) (model.LinkDetail, bool)
 	GetLinkByCatalog(catalog int) []model.Summary
-	CreateLink(name, url, logo string, catalog []int, author int) (model.Summary, bool)
+	CreateLink(name, url, logo, createdate string, catalog []int, author int) (model.Summary, bool)
 	SaveLink(link model.LinkDetail) (model.Summary, bool)
 	DestroyLink(id int) bool
 
 	GetAllMedia() []model.Summary
 	GetMediaByID(id int) (model.MediaDetail, bool)
 	GetMediaByCatalog(catalog int) []model.Summary
-	CreateMedia(name, url, desc string, catalog []int, author int) (model.MediaDetail, bool)
+	CreateMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 }

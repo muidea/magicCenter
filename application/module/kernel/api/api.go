@@ -1,8 +1,6 @@
 package api
 
 import (
-	"log"
-
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/api/route"
@@ -30,45 +28,78 @@ type api struct {
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
 	instance := &api{moduleHub: modHub, sessionRegistry: sessionRegistry, routes: []common.Route{}}
 
-	rt, ok := route.CreateGetArticleRoute(modHub)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateGetArticleRoute failed")
-	}
+	rt, _ := route.CreateGetArticleRoute(modHub)
+	instance.routes = append(instance.routes, rt)
 
-	rt, ok = route.CreateGetAllArticleRoute(modHub)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateGetAllArticleRoute failed")
-	}
+	rt, _ = route.CreateGetAllArticleRoute(modHub)
+	instance.routes = append(instance.routes, rt)
 
-	rt, ok = route.CreateGetByCatalogArticleRoute(modHub)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateGetByCatalogArticleRoute failed")
-	}
+	rt, _ = route.CreateGetByCatalogArticleRoute(modHub)
+	instance.routes = append(instance.routes, rt)
 
-	rt, ok = route.CreateCreateArticleRoute(modHub, sessionRegistry)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateCreateArticleRoute failed")
-	}
-	rt, ok = route.CreateUpdateArticleRoute(modHub, sessionRegistry)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateUpdateArticleRoute failed")
-	}
-	rt, ok = route.CreateDestroyArticleRoute(modHub, sessionRegistry)
-	if ok {
-		instance.routes = append(instance.routes, rt)
-	} else {
-		log.Print("CreateDestroyArticleRoute failed")
-	}
+	rt, _ = route.CreateCreateArticleRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateUpdateArticleRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateDestroyArticleRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetCatalogRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetAllCatalogRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetByCatalogCatalogRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateCreateCatalogRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateUpdateCatalogRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateDestroyCatalogRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetLinkRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetAllLinkRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetByCatalogLinkRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateCreateLinkRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateUpdateLinkRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateDestroyLinkRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetMediaRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetAllMediaRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateGetByCatalogMediaRoute(modHub)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateCreateMediaRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateUpdateMediaRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
+	rt, _ = route.CreateDestroyMediaRoute(modHub, sessionRegistry)
+	instance.routes = append(instance.routes, rt)
+
 	modHub.RegisterModule(instance)
 }
 

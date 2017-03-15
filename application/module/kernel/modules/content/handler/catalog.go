@@ -18,12 +18,12 @@ func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, boo
 	return dal.QueryCatalogByID(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) findCatalogByParent(id int) []model.Summary {
-	return dal.QuerySubCatalog(i.dbhelper, id)
+func (i *catalogActionHandler) findCatalogByCatalog(id int) []model.Summary {
+	return dal.QueryCatalogByCatalog(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) createCatalog(name string, parent []int, author int) (model.Summary, bool) {
-	return dal.CreateCatalog(i.dbhelper, name, parent, author)
+func (i *catalogActionHandler) createCatalog(name, description, createdate string, parent []int, author int) (model.Summary, bool) {
+	return dal.CreateCatalog(i.dbhelper, name, description, createdate, parent, author)
 }
 
 func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
