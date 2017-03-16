@@ -1,13 +1,12 @@
-package memorycache_test
+package cache
 
 import (
-	"magiccenter/kernel/modules/cache/memorycache"
 	"testing"
 	"time"
 )
 
 func TestMemoryCache(t *testing.T) {
-	cache := memorycache.NewCache()
+	cache := NewCache()
 	if nil == cache {
 		t.Error("create new memorycache failed")
 		return
@@ -52,6 +51,4 @@ func TestMemoryCache(t *testing.T) {
 	time.Sleep(10000)
 
 	cache.Release()
-
-	memorycache.DestroyCache(cache)
 }

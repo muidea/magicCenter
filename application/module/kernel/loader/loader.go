@@ -3,6 +3,7 @@ package loader
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/api"
+	"muidea.com/magicCenter/application/module/kernel/authority"
 	"muidea.com/magicCenter/application/module/kernel/modules/account"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache"
 	"muidea.com/magicCenter/application/module/kernel/modules/content"
@@ -22,7 +23,7 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 
 	content.LoadModule(configuration, modulHub)
 
-	//authority.LoadModule()
+	authority.LoadModule(configuration, sessionRegistry, modulHub)
 
 	// API 必须放在最后，否则找不到对应的Module
 	api.LoadModule(configuration, sessionRegistry, modulHub)

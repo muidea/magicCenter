@@ -13,8 +13,12 @@ const (
 )
 
 const (
+	// AuthorityModuleID 鉴权模块ID
+	AuthorityModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"
 	// CotentModuleID 内容管理模块ID
 	CotentModuleID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
+	// AccountModuleID 账号管理模块ID
+	AccountModuleID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
 )
 
 // Module 功能模块接口

@@ -7,7 +7,7 @@ import (
 )
 
 // ID 模块ID
-const ID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
+const ID = common.AccountModuleID
 
 // Name 模块名称
 const Name = "Magic Account"

@@ -10,7 +10,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/modules/cache/memorycache"
+	"muidea.com/magicCenter/foundation/cache"
 	"muidea.com/magicCenter/foundation/net"
 )
 
@@ -28,69 +28,13 @@ const URL string = "/cache"
 
 // LoadModule 加载Cache模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	instance := &cacheModule{cache: memorycache.NewCache()}
+	instance := &cacheModule{cache: cache.NewCache()}
 
 	modHub.RegisterModule(instance)
 }
 
-// PutIn 存放数据
-func PutIn(modHub common.ModuleHub, data interface{}, maxAge float64) string {
-	cacheModule, found := modHub.FindModule(ID)
-	if !found {
-		panic("can't find mail module")
-	}
-
-	endPoint := cacheModule.EndPoint().(Cache)
-
-	return endPoint.PutIn(data, maxAge)
-}
-
-// FetchOut 取缓存数据
-func FetchOut(modHub common.ModuleHub, id string) (interface{}, bool) {
-	cacheModule, found := modHub.FindModule(ID)
-	if !found {
-		panic("can't find mail module")
-	}
-
-	endPoint := cacheModule.EndPoint().(Cache)
-	return endPoint.FetchOut(id)
-}
-
-// Remove 清除指定的缓存数据
-func Remove(modHub common.ModuleHub, id string) {
-	cacheModule, found := modHub.FindModule(ID)
-	if !found {
-		panic("can't find mail module")
-	}
-
-	endPoint := cacheModule.EndPoint().(Cache)
-	endPoint.Remove(id)
-}
-
-// ClearAll 清空全部缓存数据
-func ClearAll(modHub common.ModuleHub) {
-	cacheModule, found := modHub.FindModule(ID)
-	if !found {
-		panic("can't find mail module")
-	}
-
-	endPoint := cacheModule.EndPoint().(Cache)
-	endPoint.ClearAll()
-}
-
-// Cache 对象，由于系统临时保存信息
-// Cache会返回一个string用于应用来获取临时保存的对象
-//  存放的对象是有生命周期的，超过设定的存放时间会被系统清除掉
-// maxAge 单位为minute
-type Cache interface {
-	PutIn(data interface{}, maxAge float64) string
-	FetchOut(id string) (interface{}, bool)
-	Remove(id string)
-	ClearAll()
-}
-
 type cacheModule struct {
-	cache Cache
+	cache cache.Cache
 }
 
 func (instance *cacheModule) ID() string {
@@ -149,7 +93,7 @@ func (instance *cacheModule) Startup() bool {
 
 // Cleanup 清除Cache模块
 func (instance *cacheModule) Cleanup() {
-	memorycache.DestroyCache(instance.cache)
+	instance.cache.Release()
 }
 
 type cacheResult struct {

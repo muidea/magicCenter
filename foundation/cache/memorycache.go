@@ -1,4 +1,4 @@
-package memorycache
+package cache
 
 import (
 	"strings"
@@ -6,6 +6,28 @@ import (
 
 	"muidea.com/magicCenter/foundation/util"
 )
+
+// MaxAgeValue 最大存放期限，无限期
+const MaxAgeValue = -1
+
+// Cache 缓存对象
+type Cache interface {
+	PutIn(data interface{}, maxAge float64) string
+	FetchOut(id string) (interface{}, bool)
+	Remove(id string)
+	ClearAll()
+	Release()
+}
+
+// NewCache 创建Cache对象
+func NewCache() Cache {
+	cache := make(MemoryCache)
+
+	go cache.run()
+	go cache.checkTimeOut()
+
+	return &cache
+}
 
 type commandAction int
 
@@ -54,27 +76,6 @@ type commandData struct {
 // MemoryCache 内存缓存
 type MemoryCache chan commandData
 
-// NewCache 创建Cache对象
-func NewCache() *MemoryCache {
-	cache := make(MemoryCache)
-
-	go cache.run()
-
-	go cache.checkTimeOut()
-
-	return &cache
-}
-
-// DestroyCache 销毁Cache对象
-func DestroyCache(cache interface{}) {
-	switch cache.(type) {
-	case *MemoryCache:
-		cache.(*MemoryCache).release()
-
-		close(*cache.(*MemoryCache))
-	}
-}
-
 // PutIn 投放数据，返回数据的唯一标示
 func (right *MemoryCache) PutIn(data interface{}, maxAge float64) string {
 
@@ -118,9 +119,11 @@ func (right *MemoryCache) ClearAll() {
 	*right <- commandData{action: clearAll}
 }
 
-// release 释放Cache
-func (right *MemoryCache) release() {
+// Release 释放Cache
+func (right *MemoryCache) Release() {
 	*right <- commandData{action: end}
+
+	close(*right)
 }
 
 func (right *MemoryCache) run() {
@@ -163,10 +166,12 @@ func (right *MemoryCache) run() {
 		case checkTimeOut:
 			// 检查每项数据是否超时，超时数据需要主动清除掉
 			for k, v := range _cacheData {
-				current := time.Now()
-				elapse := current.Sub(v.cacheTime).Minutes()
-				if elapse > v.maxAge {
-					delete(_cacheData, k)
+				if v.maxAge != MaxAgeValue {
+					current := time.Now()
+					elapse := current.Sub(v.cacheTime).Minutes()
+					if elapse > v.maxAge {
+						delete(_cacheData, k)
+					}
 				}
 			}
 		case end:
