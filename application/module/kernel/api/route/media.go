@@ -15,6 +15,30 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
+// AppendMediaRoute 追加User Route
+func AppendMediaRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
+
+	rt, _ := CreateGetMediaRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetAllMediaRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetByCatalogMediaRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateCreateMediaRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateUpdateMediaRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateDestroyMediaRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	return routes
+}
+
 // CreateGetMediaRoute 新建GetMedia Route
 func CreateGetMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)

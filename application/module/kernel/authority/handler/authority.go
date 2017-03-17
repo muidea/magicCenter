@@ -25,3 +25,7 @@ func (i *impl) LoginAccount(account, password string) (model.UserDetail, string,
 func (i *impl) LogoutAccount(authID string) bool {
 	return i.accountHandler.LogoutAccount(authID)
 }
+
+func (i *impl) IsLogin(authID string) bool {
+	return i.accountHandler.IsLogin(authID)
+}

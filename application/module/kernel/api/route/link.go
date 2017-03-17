@@ -15,6 +15,30 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
+// AppendLinkRoute 追加User Route
+func AppendLinkRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
+
+	rt, _ := CreateGetLinkRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetAllLinkRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetByCatalogLinkRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateCreateLinkRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateUpdateLinkRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateDestroyLinkRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	return routes
+}
+
 // CreateGetLinkRoute 新建GetLink Route
 func CreateGetLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)

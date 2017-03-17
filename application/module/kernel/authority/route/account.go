@@ -75,6 +75,13 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 	session := i.sessionRegistry.GetSession(w, r)
 	result := authorityLoginResult{}
 	for true {
+		_, found := session.GetAccount()
+		if found {
+			result.ErrCode = 1
+			result.Reason = "重复登陆"
+			break
+		}
+
 		err := r.ParseForm()
 		if err != nil {
 			result.ErrCode = 1
@@ -129,6 +136,7 @@ func (i *authorityAccountLogoutRoute) Handler() interface{} {
 func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("logoutHandler")
 
+	session := i.sessionRegistry.GetSession(w, r)
 	result := authorityLogoutResult{}
 	param := net.SplitParam(r.URL.Path)
 	for true {
@@ -145,6 +153,9 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 			result.Reason = "非法请求"
 			break
 		}
+
+		session.ClearAccount()
+
 		result.ErrCode = 0
 		break
 	}

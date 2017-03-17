@@ -47,3 +47,8 @@ func (i *accountActionHandler) LogoutAccount(authID string) bool {
 
 	return found
 }
+
+func (i *accountActionHandler) IsLogin(authID string) bool {
+	_, found := i.authCache.FetchOut(authID)
+	return found
+}

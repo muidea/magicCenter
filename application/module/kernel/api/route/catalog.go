@@ -13,6 +13,29 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
+// AppendCatalogRoute 追加User Route
+func AppendCatalogRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
+	rt, _ := CreateGetCatalogRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetAllCatalogRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetByCatalogCatalogRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateCreateCatalogRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateUpdateCatalogRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateDestroyCatalogRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	return routes
+}
+
 // CreateGetCatalogRoute 新建GetCatalog Route
 func CreateGetCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)

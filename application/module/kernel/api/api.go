@@ -27,78 +27,12 @@ type api struct {
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
 	instance := &api{moduleHub: modHub, sessionRegistry: sessionRegistry, routes: []common.Route{}}
-
-	rt, _ := route.CreateGetArticleRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetAllArticleRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetByCatalogArticleRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateCreateArticleRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateUpdateArticleRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateDestroyArticleRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetCatalogRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetAllCatalogRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetByCatalogCatalogRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateCreateCatalogRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateUpdateCatalogRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateDestroyCatalogRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetLinkRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetAllLinkRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetByCatalogLinkRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateCreateLinkRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateUpdateLinkRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateDestroyLinkRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetMediaRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetAllMediaRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateGetByCatalogMediaRoute(modHub)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateCreateMediaRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateUpdateMediaRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateDestroyMediaRoute(modHub, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
+	instance.routes = route.AppendArticleRoute(instance.routes, modHub, sessionRegistry)
+	instance.routes = route.AppendCatalogRoute(instance.routes, modHub, sessionRegistry)
+	instance.routes = route.AppendLinkRoute(instance.routes, modHub, sessionRegistry)
+	instance.routes = route.AppendMediaRoute(instance.routes, modHub, sessionRegistry)
+	instance.routes = route.AppendUserRoute(instance.routes, modHub)
+	instance.routes = route.AppendGroupRoute(instance.routes, modHub)
 
 	modHub.RegisterModule(instance)
 }

@@ -15,6 +15,29 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
+// AppendArticleRoute 追加User Route
+func AppendArticleRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
+	rt, _ := CreateGetArticleRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetAllArticleRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateGetByCatalogArticleRoute(modHub)
+	routes = append(routes, rt)
+
+	rt, _ = CreateCreateArticleRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateUpdateArticleRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateDestroyArticleRoute(modHub, sessionRegistry)
+	routes = append(routes, rt)
+
+	return routes
+}
+
 // CreateGetArticleRoute 新建GetArticle Route
 func CreateGetArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
