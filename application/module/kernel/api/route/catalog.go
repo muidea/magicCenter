@@ -15,13 +15,10 @@ import (
 
 // AppendCatalogRoute 追加User Route
 func AppendCatalogRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
-	rt, _ := CreateGetCatalogRoute(modHub)
+	rt, _ := CreateGetCatalogByIDRoute(modHub)
 	routes = append(routes, rt)
 
-	rt, _ = CreateGetAllCatalogRoute(modHub)
-	routes = append(routes, rt)
-
-	rt, _ = CreateGetByCatalogCatalogRoute(modHub)
+	rt, _ = CreateGetCatalogListRoute(modHub)
 	routes = append(routes, rt)
 
 	rt, _ = CreateCreateCatalogRoute(modHub, sessionRegistry)
@@ -36,8 +33,8 @@ func AppendCatalogRoute(routes []common.Route, modHub common.ModuleHub, sessionR
 	return routes
 }
 
-// CreateGetCatalogRoute 新建GetCatalog Route
-func CreateGetCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetCatalogByIDRoute 新建GetCatalog Route
+func CreateGetCatalogByIDRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -46,15 +43,15 @@ func CreateGetCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := catalogGetRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := catalogGetByIDRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetAllCatalogRoute 新建GetAllCatalog Route
-func CreateGetAllCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetCatalogListRoute 新建GetAllCatalog Route
+func CreateGetCatalogListRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -63,24 +60,7 @@ func CreateGetAllCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := catalogGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
-		return &i, true
-	}
-
-	return nil, false
-}
-
-// CreateGetByCatalogCatalogRoute 新建GetByCatalogCatalogRoute Route
-func CreateGetByCatalogCatalogRoute(modHub common.ModuleHub) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.CotentModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := catalogGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := catalogGetListRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
@@ -138,54 +118,48 @@ func CreateDestroyCatalogRoute(modHub common.ModuleHub, sessionRegistry common.S
 	return nil, false
 }
 
-type catalogGetRoute struct {
+type catalogGetByIDRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type catalogGetResult struct {
+type catalogGetByIDResult struct {
 	common.Result
 	Catalog model.CatalogDetail
 }
 
-func (i *catalogGetRoute) Type() string {
+func (i *catalogGetByIDRoute) Type() string {
 	return common.GET
 }
 
-func (i *catalogGetRoute) Pattern() string {
+func (i *catalogGetByIDRoute) Pattern() string {
 	return "content/catalog/[0-9]*/"
 }
 
-func (i *catalogGetRoute) Handler() interface{} {
+func (i *catalogGetByIDRoute) Handler() interface{} {
 	return i.getCatalogHandler
 }
 
-func (i *catalogGetRoute) getCatalogHandler(w http.ResponseWriter, r *http.Request) {
+func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getCatalogHandler")
 
-	result := catalogGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	result := catalogGetByIDResult{}
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			catalog, ok := i.contentHandler.GetCatalogByID(id)
-			if ok {
-				result.Catalog = catalog
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		catalog, ok := i.contentHandler.GetCatalogByID(id)
+		if ok {
+			result.Catalog = catalog
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
 		break
 	}
 
@@ -197,94 +171,48 @@ func (i *catalogGetRoute) getCatalogHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(b)
 }
 
-type catalogGetAllRoute struct {
+type catalogGetListRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type catalogGetAllResult struct {
+type catalogGetListResult struct {
 	common.Result
 	Catalog []model.Summary
 }
 
-func (i *catalogGetAllRoute) Type() string {
+func (i *catalogGetListRoute) Type() string {
 	return common.GET
 }
 
-func (i *catalogGetAllRoute) Pattern() string {
+func (i *catalogGetListRoute) Pattern() string {
 	return "content/catalog/"
 }
 
-func (i *catalogGetAllRoute) Handler() interface{} {
-	return i.getAllCatalogHandler
+func (i *catalogGetListRoute) Handler() interface{} {
+	return i.getCatalogListHandler
 }
 
-func (i *catalogGetAllRoute) getAllCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getAllCatalogHandler")
+func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getCatalogListHandler")
 
-	result := catalogGetAllResult{}
+	result := catalogGetListResult{}
 	for true {
-		result.Catalog = i.contentHandler.GetAllCatalog()
-		result.ErrCode = 0
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type catalogGetByCatalogRoute struct {
-	contentHandler common.ContentHandler
-}
-
-type catalogGetByCatalogResult struct {
-	common.Result
-	Catalog []model.Summary
-}
-
-func (i *catalogGetByCatalogRoute) Type() string {
-	return common.GET
-}
-
-func (i *catalogGetByCatalogRoute) Pattern() string {
-	return "content/catalog/?parent=[0-9]*"
-}
-
-func (i *catalogGetByCatalogRoute) Handler() interface{} {
-	return i.getByCatalogHandler
-}
-
-func (i *catalogGetByCatalogRoute) getByCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByCatalogHandler")
-
-	result := catalogGetByCatalogResult{}
-	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
-	for true {
-		if ok {
-			catalog, ok := params["catalog"]
-			if !ok {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			id, err := strconv.Atoi(catalog)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			result.Catalog = i.contentHandler.GetCatalogByCatalog(id)
+		catalog := r.URL.Query()["catalog"]
+		if len(catalog) < 1 {
+			result.Catalog = i.contentHandler.GetAllCatalog()
 			result.ErrCode = 0
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		id, err := strconv.Atoi(catalog[0])
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+
+		result.Catalog = i.contentHandler.GetCatalogByCatalog(id)
+		result.ErrCode = 0
 		break
 	}
 
@@ -383,13 +311,8 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := catalogCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -457,12 +380,8 @@ func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *htt
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := catalogCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1

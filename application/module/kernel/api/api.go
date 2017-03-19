@@ -10,10 +10,10 @@ import (
 const ID = "5fa671dc-ccb5-4005-8500-f0e45b13705b"
 
 // Name 模块名称
-const Name = "Magic Dashboard API"
+const Name = "Magic Reset API"
 
 // Description 模块描述信息
-const Description = "Magic Dashboard API模块"
+const Description = "Magic Reset API模块"
 
 // URL 模块Url
 const URL string = "/api"

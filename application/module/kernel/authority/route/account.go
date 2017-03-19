@@ -6,45 +6,22 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/net"
 )
 
 // CreateAccountLoginRoute 创建AccountLogin Route
-func CreateAccountLoginRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.AuthorityModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := authorityAccountLoginRoute{
-			authorityHandler: endPoint.(common.AuthorityHandler),
-			sessionRegistry:  sessionRegistry}
-		return &i, true
-	}
-
-	return nil, false
+func CreateAccountLoginRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := authorityAccountLoginRoute{
+		authorityHandler: authorityHandler,
+		sessionRegistry:  sessionRegistry}
+	return &i, true
 }
 
 // CreateAccountLogoutRoute 创建AccountLogout Route
-func CreateAccountLogoutRoute(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.AuthorityModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := authorityAccountLogoutRoute{
-			authorityHandler: endPoint.(common.AuthorityHandler),
-			sessionRegistry:  sessionRegistry}
-		return &i, true
-	}
-
-	return nil, false
+func CreateAccountLogoutRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := authorityAccountLogoutRoute{
+		authorityHandler: authorityHandler,
+		sessionRegistry:  sessionRegistry}
+	return &i, true
 }
 
 type authorityAccountLoginRoute struct {
@@ -126,7 +103,7 @@ func (i *authorityAccountLogoutRoute) Type() string {
 }
 
 func (i *authorityAccountLogoutRoute) Pattern() string {
-	return "/account/?token=[a-z0-9A-Z]*/"
+	return "/account/"
 }
 
 func (i *authorityAccountLogoutRoute) Handler() interface{} {
@@ -138,19 +115,18 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := authorityLogoutResult{}
-	param := net.SplitParam(r.URL.Path)
 	for true {
-		token, ok := param["token"]
-		if !ok {
+		token, ok := r.URL.Query()["token"]
+		if !ok || len(token) < 1 {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		ok = i.authorityHandler.LogoutAccount(token)
+		ok = i.authorityHandler.LogoutAccount(token[0])
 		if !ok {
 			result.ErrCode = 1
-			result.Reason = "非法请求"
+			result.Reason = "无效请求"
 			break
 		}
 

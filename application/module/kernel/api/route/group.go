@@ -142,29 +142,23 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 	log.Print("getGroupHandler")
 
 	result := groupGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			group, ok := i.accountHandler.FindGroupByID(id)
-			if ok {
-				result.Group = group
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		group, ok := i.accountHandler.FindGroupByID(id)
+		if ok {
+			result.Group = group
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
 		break
 	}
 
@@ -302,13 +296,8 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 	log.Print("saveGroupHandler")
 
 	result := groupCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -332,7 +321,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 		group := model.Group{ID: id, Name: name, Description: description, Type: catalog}
-		group, ok = i.accountHandler.SaveGroup(group)
+		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {
 			result.ErrCode = 1
@@ -377,13 +366,8 @@ func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.R
 	log.Print("destroyGroupHandler")
 
 	result := groupDestroyResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -391,7 +375,7 @@ func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		ok = i.accountHandler.DestroyGroup(id)
+		ok := i.accountHandler.DestroyGroup(id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "删除失败"

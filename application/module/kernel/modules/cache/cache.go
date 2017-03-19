@@ -105,20 +105,15 @@ func (instance *cacheModule) getCacheActionHandler(w http.ResponseWriter, r *htt
 	log.Println("getCacheActionHandler")
 
 	result := cacheResult{}
-	id, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, id := net.SplitResetAPI(r.URL.Path)
+	obj, ok := instance.cache.FetchOut(id)
 	if ok {
-		obj, ok := instance.cache.FetchOut(id)
-		if ok {
-			result.Cache = obj
-			result.ErrCode = 0
-			result.Reason = "查询成功"
-		} else {
-			result.ErrCode = 1
-			result.Reason = "对象不存在"
-		}
+		result.Cache = obj
+		result.ErrCode = 0
+		result.Reason = "查询成功"
 	} else {
 		result.ErrCode = 1
-		result.Reason = "参数非法"
+		result.Reason = "对象不存在"
 	}
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -162,17 +157,13 @@ func (instance *cacheModule) postCacheActionHandler(w http.ResponseWriter, r *ht
 
 func (instance *cacheModule) deleteCacheActionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteCacheActionHandler")
-
+	log.Print(r.URL.Path)
 	result := common.Result{}
-	id, _, ok := net.ParseRestAPIUrl(r.URL.Path)
-	if ok {
-		instance.cache.Remove(id)
-		result.ErrCode = 0
-		result.Reason = "清除成功"
-	} else {
-		result.ErrCode = 1
-		result.Reason = "参数非法"
-	}
+	_, id := net.SplitResetAPI(r.URL.Path)
+	log.Print(id)
+	instance.cache.Remove(id)
+	result.ErrCode = 0
+	result.Reason = "清除成功"
 
 	b, err := json.Marshal(result)
 	if err != nil {

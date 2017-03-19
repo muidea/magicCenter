@@ -18,13 +18,10 @@ import (
 // AppendMediaRoute 追加User Route
 func AppendMediaRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
 
-	rt, _ := CreateGetMediaRoute(modHub)
+	rt, _ := CreateGetMediaByIDRoute(modHub)
 	routes = append(routes, rt)
 
-	rt, _ = CreateGetAllMediaRoute(modHub)
-	routes = append(routes, rt)
-
-	rt, _ = CreateGetByCatalogMediaRoute(modHub)
+	rt, _ = CreateGetMediaListRoute(modHub)
 	routes = append(routes, rt)
 
 	rt, _ = CreateCreateMediaRoute(modHub, sessionRegistry)
@@ -39,8 +36,8 @@ func AppendMediaRoute(routes []common.Route, modHub common.ModuleHub, sessionReg
 	return routes
 }
 
-// CreateGetMediaRoute 新建GetMedia Route
-func CreateGetMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetMediaByIDRoute 新建GetMedia Route
+func CreateGetMediaByIDRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -49,15 +46,15 @@ func CreateGetMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := mediaGetRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := mediaGetByIDRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetAllMediaRoute 新建GetAllMedia Route
-func CreateGetAllMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetMediaListRoute 新建GetAllMedia Route
+func CreateGetMediaListRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -66,24 +63,7 @@ func CreateGetAllMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := mediaGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
-		return &i, true
-	}
-
-	return nil, false
-}
-
-// CreateGetByCatalogMediaRoute 新建GetByCatalogMediaRoute Route
-func CreateGetByCatalogMediaRoute(modHub common.ModuleHub) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.CotentModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := mediaGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := mediaGetListRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
@@ -141,54 +121,48 @@ func CreateDestroyMediaRoute(modHub common.ModuleHub, sessionRegistry common.Ses
 	return nil, false
 }
 
-type mediaGetRoute struct {
+type mediaGetByIDRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type mediaGetResult struct {
+type mediaGetByIDResult struct {
 	common.Result
 	Media model.MediaDetail
 }
 
-func (i *mediaGetRoute) Type() string {
+func (i *mediaGetByIDRoute) Type() string {
 	return common.GET
 }
 
-func (i *mediaGetRoute) Pattern() string {
+func (i *mediaGetByIDRoute) Pattern() string {
 	return "content/media/[0-9]*/"
 }
 
-func (i *mediaGetRoute) Handler() interface{} {
+func (i *mediaGetByIDRoute) Handler() interface{} {
 	return i.getMediaHandler
 }
 
-func (i *mediaGetRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
+func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getMediaHandler")
 
-	result := mediaGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	result := mediaGetByIDResult{}
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			media, ok := i.contentHandler.GetMediaByID(id)
-			if ok {
-				result.Media = media
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		media, ok := i.contentHandler.GetMediaByID(id)
+		if ok {
+			result.Media = media
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
 		break
 	}
 
@@ -200,94 +174,48 @@ func (i *mediaGetRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write(b)
 }
 
-type mediaGetAllRoute struct {
+type mediaGetListRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type mediaGetAllResult struct {
+type mediaGetListResult struct {
 	common.Result
 	Media []model.Summary
 }
 
-func (i *mediaGetAllRoute) Type() string {
+func (i *mediaGetListRoute) Type() string {
 	return common.GET
 }
 
-func (i *mediaGetAllRoute) Pattern() string {
+func (i *mediaGetListRoute) Pattern() string {
 	return "content/media/"
 }
 
-func (i *mediaGetAllRoute) Handler() interface{} {
-	return i.getAllMediaHandler
+func (i *mediaGetListRoute) Handler() interface{} {
+	return i.getMediaListHandler
 }
 
-func (i *mediaGetAllRoute) getAllMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getAllMediaHandler")
+func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getMediaListHandler")
 
-	result := mediaGetAllResult{}
+	result := mediaGetListResult{}
 	for true {
-		result.Media = i.contentHandler.GetAllMedia()
-		result.ErrCode = 0
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type mediaGetByCatalogRoute struct {
-	contentHandler common.ContentHandler
-}
-
-type mediaGetByCatalogResult struct {
-	common.Result
-	Media []model.Summary
-}
-
-func (i *mediaGetByCatalogRoute) Type() string {
-	return common.GET
-}
-
-func (i *mediaGetByCatalogRoute) Pattern() string {
-	return "content/media/?catalog=[0-9]*"
-}
-
-func (i *mediaGetByCatalogRoute) Handler() interface{} {
-	return i.getByCatalogMediaHandler
-}
-
-func (i *mediaGetByCatalogRoute) getByCatalogMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByCatalogMediaHandler")
-
-	result := mediaGetByCatalogResult{}
-	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
-	for true {
-		if ok {
-			catalog, ok := params["catalog"]
-			if !ok {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			id, err := strconv.Atoi(catalog)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			result.Media = i.contentHandler.GetMediaByCatalog(id)
+		catalog := r.URL.Query()["catalog"]
+		if len(catalog) < 1 {
+			result.Media = i.contentHandler.GetAllMedia()
 			result.ErrCode = 0
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		id, err := strconv.Atoi(catalog[0])
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+
+		result.Media = i.contentHandler.GetMediaByCatalog(id)
+		result.ErrCode = 0
 		break
 	}
 
@@ -386,13 +314,8 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := mediaCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -461,12 +384,8 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := mediaCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1

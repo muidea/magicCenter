@@ -18,13 +18,10 @@ import (
 // AppendLinkRoute 追加User Route
 func AppendLinkRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
 
-	rt, _ := CreateGetLinkRoute(modHub)
+	rt, _ := CreateGetLinkByIDRoute(modHub)
 	routes = append(routes, rt)
 
-	rt, _ = CreateGetAllLinkRoute(modHub)
-	routes = append(routes, rt)
-
-	rt, _ = CreateGetByCatalogLinkRoute(modHub)
+	rt, _ = CreateGetLinkListRoute(modHub)
 	routes = append(routes, rt)
 
 	rt, _ = CreateCreateLinkRoute(modHub, sessionRegistry)
@@ -39,8 +36,8 @@ func AppendLinkRoute(routes []common.Route, modHub common.ModuleHub, sessionRegi
 	return routes
 }
 
-// CreateGetLinkRoute 新建GetLink Route
-func CreateGetLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetLinkByIDRoute 新建GetLink Route
+func CreateGetLinkByIDRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -49,15 +46,15 @@ func CreateGetLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := linkGetRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := linkGetListRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetAllLinkRoute 新建GetAllLink Route
-func CreateGetAllLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetLinkListRoute 新建GetAllLink Route
+func CreateGetLinkListRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -66,24 +63,7 @@ func CreateGetAllLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := linkGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
-		return &i, true
-	}
-
-	return nil, false
-}
-
-// CreateGetByCatalogLinkRoute 新建GetByCatalogLinkRoute Route
-func CreateGetByCatalogLinkRoute(modHub common.ModuleHub) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.CotentModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := linkGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := linkGetListRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
@@ -141,50 +121,47 @@ func CreateDestroyLinkRoute(modHub common.ModuleHub, sessionRegistry common.Sess
 	return nil, false
 }
 
-type linkGetRoute struct {
+type linkGetByIDRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type linkGetResult struct {
+type linkGetByIDResult struct {
 	common.Result
 	Link model.LinkDetail
 }
 
-func (i *linkGetRoute) Type() string {
+func (i *linkGetByIDRoute) Type() string {
 	return common.GET
 }
 
-func (i *linkGetRoute) Pattern() string {
+func (i *linkGetByIDRoute) Pattern() string {
 	return "content/link/[0-9]*/"
 }
 
-func (i *linkGetRoute) Handler() interface{} {
+func (i *linkGetByIDRoute) Handler() interface{} {
 	return i.getLinkHandler
 }
 
-func (i *linkGetRoute) getLinkHandler(w http.ResponseWriter, r *http.Request) {
+func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getLinkHandler")
 
-	result := linkGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	result := linkGetByIDResult{}
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			link, ok := i.contentHandler.GetLinkByID(id)
-			if ok {
-				result.Link = link
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
+		}
+
+		link, ok := i.contentHandler.GetLinkByID(id)
+		if ok {
+			result.Link = link
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
 		}
 
 		result.ErrCode = 1
@@ -200,94 +177,48 @@ func (i *linkGetRoute) getLinkHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-type linkGetAllRoute struct {
+type linkGetListRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type linkGetAllResult struct {
+type linkGetListResult struct {
 	common.Result
 	Link []model.Summary
 }
 
-func (i *linkGetAllRoute) Type() string {
+func (i *linkGetListRoute) Type() string {
 	return common.GET
 }
 
-func (i *linkGetAllRoute) Pattern() string {
+func (i *linkGetListRoute) Pattern() string {
 	return "content/link/"
 }
 
-func (i *linkGetAllRoute) Handler() interface{} {
-	return i.getAllLinkHandler
+func (i *linkGetListRoute) Handler() interface{} {
+	return i.getLinkListHandler
 }
 
-func (i *linkGetAllRoute) getAllLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getAllLinkHandler")
+func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getLinkListHandler")
 
-	result := linkGetAllResult{}
+	result := linkGetListResult{}
 	for true {
-		result.Link = i.contentHandler.GetAllLink()
-		result.ErrCode = 0
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type linkGetByCatalogRoute struct {
-	contentHandler common.ContentHandler
-}
-
-type linkGetByCatalogResult struct {
-	common.Result
-	Link []model.Summary
-}
-
-func (i *linkGetByCatalogRoute) Type() string {
-	return common.GET
-}
-
-func (i *linkGetByCatalogRoute) Pattern() string {
-	return "content/link/?catalog=[0-9]*"
-}
-
-func (i *linkGetByCatalogRoute) Handler() interface{} {
-	return i.getByCatalogLinkHandler
-}
-
-func (i *linkGetByCatalogRoute) getByCatalogLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByCatalogLinkHandler")
-
-	result := linkGetByCatalogResult{}
-	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
-	for true {
-		if ok {
-			catalog, ok := params["catalog"]
-			if !ok {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			id, err := strconv.Atoi(catalog)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			result.Link = i.contentHandler.GetLinkByCatalog(id)
+		catalog := r.URL.Query()["catalog"]
+		if len(catalog) < 1 {
+			result.Link = i.contentHandler.GetAllLink()
 			result.ErrCode = 0
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		id, err := strconv.Atoi(catalog[0])
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+
+		result.Link = i.contentHandler.GetLinkByCatalog(id)
+		result.ErrCode = 0
 		break
 	}
 
@@ -387,13 +318,8 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := linkCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -462,12 +388,8 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := linkCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1

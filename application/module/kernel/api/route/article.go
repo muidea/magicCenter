@@ -17,13 +17,10 @@ import (
 
 // AppendArticleRoute 追加User Route
 func AppendArticleRoute(routes []common.Route, modHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
-	rt, _ := CreateGetArticleRoute(modHub)
+	rt, _ := CreateGetArticleByIDRoute(modHub)
 	routes = append(routes, rt)
 
-	rt, _ = CreateGetAllArticleRoute(modHub)
-	routes = append(routes, rt)
-
-	rt, _ = CreateGetByCatalogArticleRoute(modHub)
+	rt, _ = CreateGetArticleListRoute(modHub)
 	routes = append(routes, rt)
 
 	rt, _ = CreateCreateArticleRoute(modHub, sessionRegistry)
@@ -38,8 +35,8 @@ func AppendArticleRoute(routes []common.Route, modHub common.ModuleHub, sessionR
 	return routes
 }
 
-// CreateGetArticleRoute 新建GetArticle Route
-func CreateGetArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetArticleByIDRoute 新建GetArticle Route
+func CreateGetArticleByIDRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -48,15 +45,15 @@ func CreateGetArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleGetRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := articleGetByIDRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
 	return nil, false
 }
 
-// CreateGetAllArticleRoute 新建GetAllArticle Route
-func CreateGetAllArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
+// CreateGetArticleListRoute 新建GetArticle Route
+func CreateGetArticleListRoute(modHub common.ModuleHub) (common.Route, bool) {
 	mod, found := modHub.FindModule(common.CotentModuleID)
 	if !found {
 		return nil, false
@@ -65,24 +62,7 @@ func CreateGetAllArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
 	endPoint := mod.EndPoint()
 	switch endPoint.(type) {
 	case common.ContentHandler:
-		i := articleGetAllRoute{contentHandler: endPoint.(common.ContentHandler)}
-		return &i, true
-	}
-
-	return nil, false
-}
-
-// CreateGetByCatalogArticleRoute 新建GetByCatalogArticleRoute Route
-func CreateGetByCatalogArticleRoute(modHub common.ModuleHub) (common.Route, bool) {
-	mod, found := modHub.FindModule(common.CotentModuleID)
-	if !found {
-		return nil, false
-	}
-
-	endPoint := mod.EndPoint()
-	switch endPoint.(type) {
-	case common.ContentHandler:
-		i := articleGetByCatalogRoute{contentHandler: endPoint.(common.ContentHandler)}
+		i := articleGetListRoute{contentHandler: endPoint.(common.ContentHandler)}
 		return &i, true
 	}
 
@@ -140,54 +120,48 @@ func CreateDestroyArticleRoute(modHub common.ModuleHub, sessionRegistry common.S
 	return nil, false
 }
 
-type articleGetRoute struct {
+type articleGetByIDRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type articleGetResult struct {
+type articleGetByIDResult struct {
 	common.Result
 	Article model.ArticleDetail
 }
 
-func (i *articleGetRoute) Type() string {
+func (i *articleGetByIDRoute) Type() string {
 	return common.GET
 }
 
-func (i *articleGetRoute) Pattern() string {
+func (i *articleGetByIDRoute) Pattern() string {
 	return "content/article/[0-9]*/"
 }
 
-func (i *articleGetRoute) Handler() interface{} {
+func (i *articleGetByIDRoute) Handler() interface{} {
 	return i.getArticleHandler
 }
 
-func (i *articleGetRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
+func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getArticleHandler")
 
-	result := articleGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	result := articleGetByIDResult{}
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			article, ok := i.contentHandler.GetArticleByID(id)
-			if ok {
-				result.Article = article
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		article, ok := i.contentHandler.GetArticleByID(id)
+		if ok {
+			result.Article = article
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
 		break
 	}
 
@@ -199,94 +173,48 @@ func (i *articleGetRoute) getArticleHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(b)
 }
 
-type articleGetAllRoute struct {
+type articleGetListRoute struct {
 	contentHandler common.ContentHandler
 }
 
-type articleGetAllResult struct {
+type articleGetListResult struct {
 	common.Result
 	Article []model.Summary
 }
 
-func (i *articleGetAllRoute) Type() string {
+func (i *articleGetListRoute) Type() string {
 	return common.GET
 }
 
-func (i *articleGetAllRoute) Pattern() string {
+func (i *articleGetListRoute) Pattern() string {
 	return "content/article/"
 }
 
-func (i *articleGetAllRoute) Handler() interface{} {
-	return i.getAllArticleHandler
+func (i *articleGetListRoute) Handler() interface{} {
+	return i.getArticleListHandler
 }
 
-func (i *articleGetAllRoute) getAllArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getAllArticleHandler")
+func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getArticleListHandler")
 
-	result := articleGetAllResult{}
+	result := articleGetListResult{}
 	for true {
-		result.Article = i.contentHandler.GetAllArticle()
-		result.ErrCode = 0
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type articleGetByCatalogRoute struct {
-	contentHandler common.ContentHandler
-}
-
-type articleGetByCatalogResult struct {
-	common.Result
-	Article []model.Summary
-}
-
-func (i *articleGetByCatalogRoute) Type() string {
-	return common.GET
-}
-
-func (i *articleGetByCatalogRoute) Pattern() string {
-	return "content/article/?catalog=[0-9]*"
-}
-
-func (i *articleGetByCatalogRoute) Handler() interface{} {
-	return i.getByCatalogArticleHandler
-}
-
-func (i *articleGetByCatalogRoute) getByCatalogArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getByCatalogArticleHandler")
-
-	result := articleGetByCatalogResult{}
-	_, params, ok := net.ParseRestAPIUrl(r.URL.Path)
-	for true {
-		if ok {
-			catalog, ok := params["catalog"]
-			if !ok {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			id, err := strconv.Atoi(catalog)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			result.Article = i.contentHandler.GetArticleByCatalog(id)
+		catalog := r.URL.Query()["catalog"]
+		if len(catalog) < 1 {
+			result.Article = i.contentHandler.GetAllArticle()
 			result.ErrCode = 0
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		id, err := strconv.Atoi(catalog[0])
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+
+		result.Article = i.contentHandler.GetArticleByCatalog(id)
+		result.ErrCode = 0
 		break
 	}
 
@@ -385,13 +313,8 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := articleCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -459,12 +382,8 @@ func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *htt
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := articleCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1

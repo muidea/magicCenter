@@ -142,29 +142,23 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getUserHandler")
 
 	result := userGetResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if ok {
-			id, err := strconv.Atoi(value)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-
-			user, ok := i.accountHandler.FindUserByID(id)
-			if ok {
-				result.User = user
-				result.ErrCode = 0
-			} else {
-				result.ErrCode = 1
-				result.Reason = "对象不存在"
-			}
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
+		user, ok := i.accountHandler.FindUserByID(id)
+		if ok {
+			result.User = user
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "对象不存在"
+		}
 		break
 	}
 
@@ -295,13 +289,8 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 	log.Print("saveUserHandler")
 
 	result := userCreateResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -323,6 +312,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		user := model.UserDetail{Account: account, Email: email}
 		user.ID = id
 		user.Name = nickName
+		ok := false
 		if len(password) > 0 {
 			user, ok = i.accountHandler.SaveUserWithPassword(user, password)
 		} else {
@@ -372,13 +362,8 @@ func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Req
 	log.Print("destroyUserHandler")
 
 	result := userDestroyResult{}
-	value, _, ok := net.ParseRestAPIUrl(r.URL.Path)
+	_, value := net.SplitResetAPI(r.URL.Path)
 	for true {
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrCode = 1
@@ -386,7 +371,7 @@ func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		ok = i.accountHandler.DestroyUserByID(id)
+		ok := i.accountHandler.DestroyUserByID(id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "删除失败"

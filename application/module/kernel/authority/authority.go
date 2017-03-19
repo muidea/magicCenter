@@ -1,6 +1,8 @@
 package authority
 
 import (
+	"log"
+
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/authority/handler"
@@ -29,16 +31,17 @@ type authority struct {
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
+	log.Println("load authority module")
 	cache := cache.NewCache()
 	instance := &authority{
 		moduleHub:        modHub,
 		sessionRegistry:  sessionRegistry,
 		authorityHandler: handler.CreateAuthorityHandler(modHub, cache)}
 
-	rt, _ := route.CreateAccountLoginRoute(modHub, sessionRegistry)
+	rt, _ := route.CreateAccountLoginRoute(instance.authorityHandler, sessionRegistry)
 	instance.routes = append(instance.routes, rt)
 
-	rt, _ = route.CreateAccountLogoutRoute(modHub, sessionRegistry)
+	rt, _ = route.CreateAccountLogoutRoute(instance.authorityHandler, sessionRegistry)
 	instance.routes = append(instance.routes, rt)
 
 	modHub.RegisterModule(instance)
@@ -84,9 +87,7 @@ func (instance *authority) AuthGroups() []model.AuthGroup {
 
 // Route 路由信息
 func (instance *authority) Routes() []common.Route {
-	routes := []common.Route{}
-
-	return routes
+	return instance.routes
 }
 
 // Startup 启动模块
