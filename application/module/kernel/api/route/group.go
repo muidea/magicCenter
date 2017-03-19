@@ -131,7 +131,7 @@ func (i *groupGetRoute) Type() string {
 }
 
 func (i *groupGetRoute) Pattern() string {
-	return "account/group/[0-9]*/"
+	return "account/group/[0-9]+/"
 }
 
 func (i *groupGetRoute) Handler() interface{} {
@@ -285,7 +285,7 @@ func (i *groupSaveRoute) Type() string {
 }
 
 func (i *groupSaveRoute) Pattern() string {
-	return "account/group/[0-9]*/"
+	return "account/group/[0-9]+/"
 }
 
 func (i *groupSaveRoute) Handler() interface{} {
@@ -355,7 +355,7 @@ func (i *groupDestroyRoute) Type() string {
 }
 
 func (i *groupDestroyRoute) Pattern() string {
-	return "account/group/[0-9]*/"
+	return "account/group/[0-9]+/"
 }
 
 func (i *groupDestroyRoute) Handler() interface{} {

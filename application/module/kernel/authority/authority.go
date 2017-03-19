@@ -1,8 +1,6 @@
 package authority
 
 import (
-	"log"
-
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/authority/handler"
@@ -31,7 +29,6 @@ type authority struct {
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
-	log.Println("load authority module")
 	cache := cache.NewCache()
 	instance := &authority{
 		moduleHub:        modHub,

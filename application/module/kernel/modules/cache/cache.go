@@ -78,9 +78,9 @@ func (instance *cacheModule) AuthGroups() []model.AuthGroup {
 // Route Cache 路由信息
 func (instance *cacheModule) Routes() []common.Route {
 	routes := []common.Route{
-		common.NewRoute(common.GET, "[a-zA-Z0-9]*/", instance.getCacheActionHandler),
+		common.NewRoute(common.GET, "[a-zA-Z0-9]+/", instance.getCacheActionHandler),
 		common.NewRoute(common.POST, "", instance.postCacheActionHandler),
-		common.NewRoute(common.DELETE, "[a-zA-Z0-9]*/", instance.deleteCacheActionHandler),
+		common.NewRoute(common.DELETE, "[a-zA-Z0-9]+/", instance.deleteCacheActionHandler),
 	}
 
 	return routes

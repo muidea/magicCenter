@@ -131,7 +131,7 @@ func (i *userGetRoute) Type() string {
 }
 
 func (i *userGetRoute) Pattern() string {
-	return "account/user/[0-9]*/"
+	return "account/user/[0-9]+/"
 }
 
 func (i *userGetRoute) Handler() interface{} {
@@ -278,7 +278,7 @@ func (i *userSaveRoute) Type() string {
 }
 
 func (i *userSaveRoute) Pattern() string {
-	return "account/user/[0-9]*/"
+	return "account/user/[0-9]+/"
 }
 
 func (i *userSaveRoute) Handler() interface{} {
@@ -351,7 +351,7 @@ func (i *userDestroyRoute) Type() string {
 }
 
 func (i *userDestroyRoute) Pattern() string {
-	return "account/user/[0-9]*/"
+	return "account/user/[0-9]+/"
 }
 
 func (i *userDestroyRoute) Handler() interface{} {

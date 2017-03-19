@@ -134,7 +134,7 @@ func (i *articleGetByIDRoute) Type() string {
 }
 
 func (i *articleGetByIDRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+	return "content/article/[0-9]+/"
 }
 
 func (i *articleGetByIDRoute) Handler() interface{} {
@@ -301,7 +301,7 @@ func (i *articleUpdateRoute) Type() string {
 }
 
 func (i *articleUpdateRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+	return "content/article/[0-9]+/"
 }
 
 func (i *articleUpdateRoute) Handler() interface{} {
@@ -370,7 +370,7 @@ func (i *articleDestroyRoute) Type() string {
 }
 
 func (i *articleDestroyRoute) Pattern() string {
-	return "content/article/[0-9]*/"
+	return "content/article/[0-9]+/"
 }
 
 func (i *articleDestroyRoute) Handler() interface{} {

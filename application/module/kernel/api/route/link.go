@@ -135,7 +135,7 @@ func (i *linkGetByIDRoute) Type() string {
 }
 
 func (i *linkGetByIDRoute) Pattern() string {
-	return "content/link/[0-9]*/"
+	return "content/link/[0-9]+/"
 }
 
 func (i *linkGetByIDRoute) Handler() interface{} {
@@ -306,7 +306,7 @@ func (i *linkUpdateRoute) Type() string {
 }
 
 func (i *linkUpdateRoute) Pattern() string {
-	return "content/link/[0-9]*/"
+	return "content/link/[0-9]+/"
 }
 
 func (i *linkUpdateRoute) Handler() interface{} {
@@ -376,7 +376,7 @@ func (i *linkDestroyRoute) Type() string {
 }
 
 func (i *linkDestroyRoute) Pattern() string {
-	return "content/link/[0-9]*/"
+	return "content/link/[0-9]+/"
 }
 
 func (i *linkDestroyRoute) Handler() interface{} {

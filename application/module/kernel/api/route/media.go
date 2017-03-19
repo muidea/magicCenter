@@ -135,7 +135,7 @@ func (i *mediaGetByIDRoute) Type() string {
 }
 
 func (i *mediaGetByIDRoute) Pattern() string {
-	return "content/media/[0-9]*/"
+	return "content/media/[0-9]+/"
 }
 
 func (i *mediaGetByIDRoute) Handler() interface{} {
@@ -302,7 +302,7 @@ func (i *mediaUpdateRoute) Type() string {
 }
 
 func (i *mediaUpdateRoute) Pattern() string {
-	return "content/media/[0-9]*/"
+	return "content/media/[0-9]+/"
 }
 
 func (i *mediaUpdateRoute) Handler() interface{} {
@@ -372,7 +372,7 @@ func (i *mediaDestroyRoute) Type() string {
 }
 
 func (i *mediaDestroyRoute) Pattern() string {
-	return "content/media/[0-9]*/"
+	return "content/media/[0-9]+/"
 }
 
 func (i *mediaDestroyRoute) Handler() interface{} {

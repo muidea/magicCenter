@@ -132,7 +132,7 @@ func (i *catalogGetByIDRoute) Type() string {
 }
 
 func (i *catalogGetByIDRoute) Pattern() string {
-	return "content/catalog/[0-9]*/"
+	return "content/catalog/[0-9]+/"
 }
 
 func (i *catalogGetByIDRoute) Handler() interface{} {
@@ -299,7 +299,7 @@ func (i *catalogUpdateRoute) Type() string {
 }
 
 func (i *catalogUpdateRoute) Pattern() string {
-	return "content/catalog/[0-9]*/"
+	return "content/catalog/[0-9]+/"
 }
 
 func (i *catalogUpdateRoute) Handler() interface{} {
@@ -368,7 +368,7 @@ func (i *catalogDestroyRoute) Type() string {
 }
 
 func (i *catalogDestroyRoute) Pattern() string {
-	return "content/catalog/[0-9]*/"
+	return "content/catalog/[0-9]+/"
 }
 
 func (i *catalogDestroyRoute) Handler() interface{} {
