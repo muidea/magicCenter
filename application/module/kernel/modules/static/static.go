@@ -1,10 +1,10 @@
 package static
 
 import (
-	"magiccenter/common"
-	"magiccenter/system"
-
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/static/handler"
+	"muidea.com/magicCenter/application/module/kernel/modules/static/route"
 )
 
 // ID Static模块ID
@@ -20,18 +20,18 @@ const Description = "Magic 静态文件管理"
 const URL string = "/static"
 
 type static struct {
+	routes        []common.Route
+	staticHandler common.StaticHandler
 }
 
-var instance *static
-
 // LoadModule 加载Static模块
-func LoadModule() {
-	if instance == nil {
-		instance = &static{}
-	}
+func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
+	instance := &static{staticHandler: handler.CreateStaticHandler("./")}
 
-	modulehub := system.GetModuleHub()
-	modulehub.RegisterModule(instance)
+	rt := route.CreateStaticViewRoute(instance.staticHandler)
+	instance.routes = append(instance.routes, rt)
+
+	modHub.RegisterModule(instance)
 }
 
 // ID Static ID
@@ -66,28 +66,19 @@ func (instance *static) Status() int {
 	return 0
 }
 
-func (instance *static) EndPoint() common.EndPoint {
+func (instance *static) EndPoint() interface{} {
 	return nil
 }
 
-func (instance *static) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
+func (instance *static) AuthGroups() []model.AuthGroup {
+	groups := []model.AuthGroup{}
 
 	return groups
 }
 
 // Route Static 路由信息
 func (instance *static) Routes() []common.Route {
-	router := system.GetRouter()
-	auth := system.GetAuthority()
-
-	routes := []common.Route{
-		router.NewRoute(common.GET, "/static/**", viewArticleHandler, nil),
-		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.POST, "/ajaxMaintain/", MaintainActionHandler, auth.AdminAuthVerify()),
-	}
-
-	return routes
+	return instance.routes
 }
 
 // Startup 启动Static模块
@@ -98,14 +89,4 @@ func (instance *static) Startup() bool {
 // Cleanup 清除Static模块
 func (instance *static) Cleanup() {
 
-}
-
-// Invoke 执行外部命令
-func (instance *static) Invoke(param interface{}, result interface{}) bool {
-	util.ValidataPtr(param)
-	if result != nil {
-		util.ValidataPtr(result)
-	}
-
-	return false
 }

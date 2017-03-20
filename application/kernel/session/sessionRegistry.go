@@ -12,6 +12,7 @@ import (
 var sessionCookieID = "session_id"
 
 func init() {
+	log.Print("sessionRegistry init....")
 	sessionCookieID = createUUID()
 }
 
@@ -55,7 +56,7 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	}
 
 	// 存入cookie,使用cookie存储
-	sessionCookie := http.Cookie{Name: sessionCookieID, Value: userSession.ID(), Path: "/"}
+	sessionCookie := http.Cookie{Name: sessionCookieID, Value: userSession.ID(), Path: "magicCenter"}
 	http.SetCookie(w, &sessionCookie)
 
 	return userSession

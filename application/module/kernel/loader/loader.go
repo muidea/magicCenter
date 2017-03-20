@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/cache"
 	"muidea.com/magicCenter/application/module/kernel/modules/content"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail"
+	"muidea.com/magicCenter/application/module/kernel/modules/static"
 )
 
 // LoadAllModules 加载所有模块
@@ -27,4 +28,6 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 
 	// API 必须放在最后，否则找不到对应的Module
 	api.LoadModule(configuration, sessionRegistry, modulHub)
+
+	static.LoadModule(configuration, modulHub)
 }
