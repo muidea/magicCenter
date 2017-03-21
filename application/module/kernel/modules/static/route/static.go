@@ -62,5 +62,5 @@ func (i *staticResRoute) Handler() interface{} {
 
 func (i *staticResRoute) getStaticResHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("getStaticResHandler, path:%s", r.URL.Path)
-	i.staticHandler.HandleResource("", w, r)
+	i.staticHandler.HandleResource("default", w, r)
 }
