@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Account Center</title>
+    <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/static/common/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="/static/common/jquery/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/static/common/js/common.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid content-box" id="account-Content">
+        <div class="content-header">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="account-List active"><a href="#account-List">列表</a></li>
+                <li role="presentation" class="account-Edit"><a href="#account-Edit">编辑</a></li>
+            </ul>
+        </div>
+        <div class="content-content">
+            <div class="tab-content" id="account-List">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>账号</th>
+                            <th>邮箱</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                <div class="clear"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <tr class="account">
+                            <td><input type="checkbox" /></td>
+                            <td><a class="edit" href="/content/account/query" title="title">Acccount</a></td>
+                            <td>EMail</td>
+                            <td>Status</td>
+                            <td>
+                                <a class="edit" href="/content/link/query" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="/content/link/delete" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-content" id="account-Edit">
+                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form enctype="multipart/form-data" class="account-Form" action="/account/ajaxAccount/" method="post">
+                    <div class="form-group">
+                        <label for="account-account">账号</label> <input class="form-control account-account" type="text" name="account-account" />
+                    </div>
+                    <div class="form-group">
+                        <label for="account-email">备用邮箱</label>
+                        <input class="form-control account-email" type="text" name="account-email" />
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="account-id" name="account-id" class="account-id" value="-1" />
+                    </div>
+                    <button type="submit" class="btn btn-default">提交</button>
+                    <button type="button" class="btn btn-default reset">重填</button>
+                    <div class="clear"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

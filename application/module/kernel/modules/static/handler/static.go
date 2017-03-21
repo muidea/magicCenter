@@ -8,8 +8,6 @@ import (
 
 	"os"
 
-	"log"
-
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/util"
 )
@@ -27,8 +25,6 @@ type impl struct {
 
 func (i *impl) HandleView(basePath string, w http.ResponseWriter, r *http.Request) {
 	fullPath := util.MergePath(i.rootPath, basePath, r.URL.Path)
-	log.Print(fullPath)
-
 	_, err := os.Stat(fullPath)
 	if err == nil || os.IsExist(err) {
 	} else {
@@ -47,8 +43,6 @@ func (i *impl) HandleView(basePath string, w http.ResponseWriter, r *http.Reques
 
 func (i *impl) HandleResource(basePath string, w http.ResponseWriter, r *http.Request) {
 	fullPath := util.MergePath(i.rootPath, basePath, r.URL.Path)
-	log.Print(fullPath)
-
 	_, err := os.Stat(fullPath)
 	if err == nil || os.IsExist(err) {
 		filePath, fileName := path.Split(fullPath)
