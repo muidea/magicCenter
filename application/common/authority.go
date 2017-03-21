@@ -16,7 +16,4 @@ type AuthorityHandler interface {
 	//@in authID 鉴权token
 	//@ret bool 是否登出成功
 	LogoutAccount(authID string) bool
-
-	//@in authID 鉴权token
-	IsLogin(authID string) bool
 }

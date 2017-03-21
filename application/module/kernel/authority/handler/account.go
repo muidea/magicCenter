@@ -3,12 +3,11 @@ package handler
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/foundation/cache"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 type accountActionHandler struct {
 	moduleHub common.ModuleHub
-	authCache cache.Cache
 }
 
 // model.UserDetail 登陆用户
@@ -31,7 +30,7 @@ func (i *accountActionHandler) LoginAccount(account, password string) (model.Use
 
 	authToken := ""
 	if found {
-		authToken = i.authCache.PutIn(user, cache.MaxAgeValue)
+		authToken = util.RandomAlphanumeric(32)
 	}
 
 	return user, authToken, found
@@ -40,15 +39,5 @@ func (i *accountActionHandler) LoginAccount(account, password string) (model.Use
 // authID 登陆token
 func (i *accountActionHandler) LogoutAccount(authID string) bool {
 
-	_, found := i.authCache.FetchOut(authID)
-	if found {
-		i.authCache.Remove(authID)
-	}
-
-	return found
-}
-
-func (i *accountActionHandler) IsLogin(authID string) bool {
-	_, found := i.authCache.FetchOut(authID)
-	return found
+	return true
 }

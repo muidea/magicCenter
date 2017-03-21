@@ -5,7 +5,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/authority/handler"
 	"muidea.com/magicCenter/application/module/kernel/authority/route"
-	"muidea.com/magicCenter/foundation/cache"
 )
 
 // ID 模块ID
@@ -29,11 +28,10 @@ type authority struct {
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
-	cache := cache.NewCache()
 	instance := &authority{
 		moduleHub:        modHub,
 		sessionRegistry:  sessionRegistry,
-		authorityHandler: handler.CreateAuthorityHandler(modHub, cache)}
+		authorityHandler: handler.CreateAuthorityHandler(modHub)}
 
 	rt, _ := route.CreateAccountLoginRoute(instance.authorityHandler, sessionRegistry)
 	instance.routes = append(instance.routes, rt)

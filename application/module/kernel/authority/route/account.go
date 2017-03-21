@@ -6,7 +6,14 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/foundation/util"
 )
+
+var sesstionTokenID = "session_token_id"
+
+func init() {
+	sesstionTokenID = util.RandomAlphanumeric(16)
+}
 
 // CreateAccountLoginRoute 创建AccountLogin Route
 func CreateAccountLoginRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
@@ -52,13 +59,6 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 	session := i.sessionRegistry.GetSession(w, r)
 	result := authorityLoginResult{}
 	for true {
-		_, found := session.GetAccount()
-		if found {
-			result.ErrCode = 1
-			result.Reason = "重复登陆"
-			break
-		}
-
 		err := r.ParseForm()
 		if err != nil {
 			result.ErrCode = 1
@@ -75,7 +75,20 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 			break
 		}
 
+		usr, found := session.GetAccount()
+		if found && usr.Account == account {
+			opt, ok := session.GetOption(sesstionTokenID)
+			if ok {
+				token = opt.(string)
+				result.ErrCode = 0
+				result.Reason = "重复登陆"
+				result.AuthToken = token
+				break
+			}
+		}
+
 		session.SetAccount(user)
+		session.SetOption(sesstionTokenID, token)
 
 		result.ErrCode = 0
 		result.AuthToken = token
@@ -131,6 +144,7 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 		}
 
 		session.ClearAccount()
+		session.RemoveOption(sesstionTokenID)
 
 		result.ErrCode = 0
 		break
