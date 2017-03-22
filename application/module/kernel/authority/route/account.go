@@ -136,13 +136,14 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		ok = i.authorityHandler.LogoutAccount(token[0])
-		if !ok {
+		authToken, ok := session.GetOption(sesstionTokenID)
+		if !ok || authToken != token[0] {
 			result.ErrCode = 1
-			result.Reason = "无效请求"
+			result.Reason = "非法请求"
 			break
 		}
 
+		i.authorityHandler.LogoutAccount(token[0])
 		session.ClearAccount()
 		session.RemoveOption(sesstionTokenID)
 

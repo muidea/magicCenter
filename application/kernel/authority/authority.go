@@ -12,19 +12,31 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
+	"muidea.com/magicCenter/application/common"
 )
 
 // Authority 权限控制服务
 // 控制系统各个模块的访问权限
 type Authority interface {
-	Verify(res http.ResponseWriter, req *http.Request) bool
+	Verify(authorityHandler common.AuthorityHandler, res http.ResponseWriter, req *http.Request) bool
 }
 
-// AuthorityHandler 权限校验处理器
+// AuthorityVerifyHandler 权限校验处理器
 // 用于在路由过程中进行权限校验
-func AuthorityHandler(authority Authority) martini.Handler {
+func AuthorityVerifyHandler(modHub common.ModuleHub, authority Authority) martini.Handler {
+	var authorityHandler common.AuthorityHandler
+	mod, ok := modHub.FindModule(common.AuthorityModuleID)
+	if ok {
+		authorityHandler = nil
+		endPoint := mod.EndPoint()
+		switch endPoint.(type) {
+		case common.AuthorityHandler:
+			authorityHandler = endPoint.(common.AuthorityHandler)
+		}
+	}
+
 	return func(res http.ResponseWriter, req *http.Request, c martini.Context, log *log.Logger) {
-		if authority.Verify(res, req) {
+		if authority.Verify(authorityHandler, res, req) {
 			// 拥有权限，继续执行
 			c.Next()
 		} else {
@@ -43,6 +55,10 @@ func CreateAuthority() Authority {
 type impl struct {
 }
 
-func (i *impl) Verify(res http.ResponseWriter, req *http.Request) bool {
-	return true
+func (i *impl) Verify(authorityHandler common.AuthorityHandler, res http.ResponseWriter, req *http.Request) bool {
+	if authorityHandler == nil {
+		return false
+	}
+
+	return authorityHandler.VerifyAuth(res, req)
 }

@@ -78,7 +78,7 @@ func (i *impl) Run() {
 
 	i.instanceFrameImpl.Use(martini.Logger())
 	i.instanceFrameImpl.Use(martini.Recovery())
-	i.instanceFrameImpl.Use(authority.AuthorityHandler(i.authorityImpl))
+	i.instanceFrameImpl.Use(authority.AuthorityVerifyHandler(i.moduleHubImpl, i.authorityImpl))
 
 	i.instanceFrameImpl.MapTo(martiniRouter, (*martini.Routes)(nil))
 	i.instanceFrameImpl.Action(martiniRouter.Handle)
