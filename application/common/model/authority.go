@@ -24,7 +24,7 @@ func CreateAuthGroup(gname, gdescription string, gtype int) AuthGroup {
 
 // ACL 访问控制列表
 type ACL struct {
-	ID     int
-	URL    string
-	Action int
+	ID        int
+	URL       string
+	AuthGroup []int
 }

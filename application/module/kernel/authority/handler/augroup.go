@@ -8,6 +8,10 @@ import (
 type authGroupManager struct {
 }
 
+func createAuthGroupManager() authGroupManager {
+	return authGroupManager{}
+}
+
 func (i *authGroupManager) adjustUserAuthGroup(userID int, authGroup []int) bool {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {

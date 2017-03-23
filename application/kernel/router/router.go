@@ -57,7 +57,7 @@ type impl struct {
 // AddRoute 增加Route
 func (instance *impl) AddRoute(baseURL string, rt common.Route) {
 	fullURL := net.JoinURL(baseURL, rt.Pattern())
-	switch rt.Action() {
+	switch rt.Method() {
 	case common.GET:
 		instance.AddGetRoute(fullURL, rt.Handler())
 	case common.POST:
@@ -72,7 +72,7 @@ func (instance *impl) AddRoute(baseURL string, rt common.Route) {
 // RemoveRoute 清除Route
 func (instance *impl) RemoveRoute(baseURL string, rt common.Route) {
 	fullURL := net.JoinURL(baseURL, rt.Pattern())
-	switch rt.Action() {
+	switch rt.Method() {
 	case common.GET:
 		instance.RemoveGetRoute(fullURL)
 	case common.POST:

@@ -11,7 +11,7 @@ const (
 // Route 路由接口
 type Route interface {
 	// Action 路由行为GET/PUT/POST/DELETE
-	Action() string
+	Method() string
 	// Pattern 路由规则, 以'/'开始
 	Pattern() string
 	// Handler 路由处理器
@@ -25,7 +25,7 @@ type route struct {
 }
 
 // Type 路由行为GET/POST
-func (r *route) Action() string {
+func (r *route) Method() string {
 	return r.rAction
 }
 

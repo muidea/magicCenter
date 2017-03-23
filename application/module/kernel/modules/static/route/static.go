@@ -26,7 +26,7 @@ type staticViewRoute struct {
 	staticHandler common.StaticHandler
 }
 
-func (i *staticViewRoute) Action() string {
+func (i *staticViewRoute) Method() string {
 	return common.GET
 }
 
@@ -48,7 +48,7 @@ type staticResRoute struct {
 	staticHandler common.StaticHandler
 }
 
-func (i *staticResRoute) Action() string {
+func (i *staticResRoute) Method() string {
 	return common.GET
 }
 

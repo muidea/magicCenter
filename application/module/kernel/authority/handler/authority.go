@@ -13,9 +13,9 @@ import (
 func CreateAuthorityHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.AuthorityHandler {
 	i := impl{
 		sessionRegistry:  sessionRegistry,
-		accountManager:   accountManager{moduleHub: modHub},
-		authGroupManager: authGroupManager{},
-		aclManager:       aclManager{}}
+		accountManager:   createAccountManager(modHub),
+		authGroupManager: createAuthGroupManager(),
+		aclManager:       createACLManager()}
 
 	return &i
 }
@@ -71,7 +71,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 	urlToken := ""
 	authToken, found := req.URL.Query()[common.AuthTokenID]
 	if found {
-		// 如果url里没有token，则认为token为空，直接判断
+		// 如果url里没有token，则认为token为空，判断时使用空字符串进行比较
 		urlToken = authToken[0]
 	}
 
@@ -79,6 +79,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 	obj, ok := session.GetOption(common.AuthTokenID)
 	if ok {
 		// 找到sessionToken了，则说明该用户已经登录了，这里就必须保证两端的token一致否则也要认为鉴权非法
+		// 用户登录过Token必然不为空
 		sessionToken = obj.(string)
 		return urlToken == sessionToken
 	}
@@ -95,19 +96,19 @@ func (i *impl) GetUserAuthGroup(userID int) ([]int, bool) {
 }
 
 func (i *impl) AddACLRoute(moduleURL string, route common.Route) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Action()
+	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
 
 	return i.aclManager.addACLRoute(url)
 }
 
 func (i *impl) DelACLRoute(moduleURL string, route common.Route) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Action()
+	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
 
 	return i.aclManager.delACLRoute(url)
 }
 
 func (i *impl) AdjustACLAuthGroup(moduleURL string, route common.Route, authGroup []int) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Action()
+	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
 
 	return i.aclManager.adjustACLAuthGroup(url, authGroup)
 }

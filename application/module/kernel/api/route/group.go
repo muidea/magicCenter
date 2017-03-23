@@ -126,7 +126,7 @@ type groupGetResult struct {
 	Group model.Group
 }
 
-func (i *groupGetRoute) Action() string {
+func (i *groupGetRoute) Method() string {
 	return common.GET
 }
 
@@ -179,7 +179,7 @@ type groupGetAllResult struct {
 	Group []model.Group
 }
 
-func (i *groupGetAllRoute) Action() string {
+func (i *groupGetAllRoute) Method() string {
 	return common.GET
 }
 
@@ -218,7 +218,7 @@ type groupCreateResult struct {
 	Group model.Group
 }
 
-func (i *groupCreateRoute) Action() string {
+func (i *groupCreateRoute) Method() string {
 	return common.POST
 }
 
@@ -280,7 +280,7 @@ type groupSaveResult struct {
 	Group model.Group
 }
 
-func (i *groupSaveRoute) Action() string {
+func (i *groupSaveRoute) Method() string {
 	return common.PUT
 }
 
@@ -350,7 +350,7 @@ type groupDestroyResult struct {
 	common.Result
 }
 
-func (i *groupDestroyRoute) Action() string {
+func (i *groupDestroyRoute) Method() string {
 	return common.DELETE
 }
 

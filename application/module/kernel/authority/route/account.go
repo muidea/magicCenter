@@ -37,7 +37,7 @@ type authorityLoginResult struct {
 	AuthToken string
 }
 
-func (i *authorityAccountLoginRoute) Action() string {
+func (i *authorityAccountLoginRoute) Method() string {
 	return common.POST
 }
 
@@ -107,7 +107,7 @@ type authorityLogoutResult struct {
 	common.Result
 }
 
-func (i *authorityAccountLogoutRoute) Action() string {
+func (i *authorityAccountLogoutRoute) Method() string {
 	return common.DELETE
 }
 

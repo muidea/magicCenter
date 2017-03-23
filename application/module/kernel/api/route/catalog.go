@@ -127,7 +127,7 @@ type catalogGetByIDResult struct {
 	Catalog model.CatalogDetail
 }
 
-func (i *catalogGetByIDRoute) Action() string {
+func (i *catalogGetByIDRoute) Method() string {
 	return common.GET
 }
 
@@ -180,7 +180,7 @@ type catalogGetListResult struct {
 	Catalog []model.Summary
 }
 
-func (i *catalogGetListRoute) Action() string {
+func (i *catalogGetListRoute) Method() string {
 	return common.GET
 }
 
@@ -234,7 +234,7 @@ type catalogCreateResult struct {
 	Catalog model.Summary
 }
 
-func (i *catalogCreateRoute) Action() string {
+func (i *catalogCreateRoute) Method() string {
 	return common.POST
 }
 
@@ -294,7 +294,7 @@ type catalogUpdateResult struct {
 	Catalog model.Summary
 }
 
-func (i *catalogUpdateRoute) Action() string {
+func (i *catalogUpdateRoute) Method() string {
 	return common.PUT
 }
 
@@ -363,7 +363,7 @@ type catalogDestroyResult struct {
 	common.Result
 }
 
-func (i *catalogDestroyRoute) Action() string {
+func (i *catalogDestroyRoute) Method() string {
 	return common.DELETE
 }
 

@@ -1,20 +1,103 @@
 package handler
 
+import (
+	"muidea.com/magicCenter/application/common/dbhelper"
+	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/authority/dal"
+)
+
 type aclManager struct {
+	aclAuthGroup map[string]model.ACL
+}
+
+func createACLManager() aclManager {
+	return aclManager{aclAuthGroup: make(map[string]model.ACL)}
+}
+
+func (i *aclManager) loadAllACL() bool {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		return false
+	}
+
+	acls := dal.LoadACL(dbhelper)
+	for _, acl := range acls {
+		i.aclAuthGroup[acl.URL] = acl
+	}
+
+	return true
 }
 
 func (i *aclManager) addACLRoute(url string) bool {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		return false
+	}
+
+	acl, ok := dal.InsertACL(dbhelper, url)
+	if ok {
+		i.aclAuthGroup[url] = acl
+	}
+
 	return true
 }
 
 func (i *aclManager) delACLRoute(url string) bool {
-	return true
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		return false
+	}
+
+	acl, ok := i.aclAuthGroup[url]
+	if ok {
+		ok = dal.DeleteACL(dbhelper, acl.ID)
+		if ok {
+			delete(i.aclAuthGroup, url)
+		}
+	}
+
+	return ok
 }
 
 func (i *aclManager) adjustACLAuthGroup(url string, authGroup []int) bool {
-	return true
+	acl, ok := i.aclAuthGroup[url]
+	if !ok {
+		return ok
+	}
+
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		return false
+	}
+	acl.AuthGroup = authGroup
+	ok = dal.UpateACL(dbhelper, acl)
+	if ok {
+		i.aclAuthGroup[url] = acl
+	}
+
+	return ok
 }
 
 func (i *aclManager) verifyAuthGroup(url string, authGroup []int) bool {
-	return true
+	acl, ok := i.aclAuthGroup[url]
+	if !ok {
+		// 如果找不到对应的acl，则说明不需要权限，直接判定有权限
+		return true
+	}
+
+	found := false
+	for _, v := range acl.AuthGroup {
+		for _, g := range authGroup {
+			if v == g {
+				found = true
+				break
+			}
+		}
+
+		if found {
+			break
+		}
+	}
+
+	return found
 }
