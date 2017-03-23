@@ -129,7 +129,7 @@ type articleGetByIDResult struct {
 	Article model.ArticleDetail
 }
 
-func (i *articleGetByIDRoute) Type() string {
+func (i *articleGetByIDRoute) Action() string {
 	return common.GET
 }
 
@@ -182,7 +182,7 @@ type articleGetListResult struct {
 	Article []model.Summary
 }
 
-func (i *articleGetListRoute) Type() string {
+func (i *articleGetListRoute) Action() string {
 	return common.GET
 }
 
@@ -236,7 +236,7 @@ type articleCreateResult struct {
 	Article model.Summary
 }
 
-func (i *articleCreateRoute) Type() string {
+func (i *articleCreateRoute) Action() string {
 	return common.POST
 }
 
@@ -296,7 +296,7 @@ type articleUpdateResult struct {
 	Article model.Summary
 }
 
-func (i *articleUpdateRoute) Type() string {
+func (i *articleUpdateRoute) Action() string {
 	return common.PUT
 }
 
@@ -365,7 +365,7 @@ type articleDestroyResult struct {
 	common.Result
 }
 
-func (i *articleDestroyRoute) Type() string {
+func (i *articleDestroyRoute) Action() string {
 	return common.DELETE
 }
 

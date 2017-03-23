@@ -126,7 +126,7 @@ type userGetResult struct {
 	User model.UserDetail
 }
 
-func (i *userGetRoute) Type() string {
+func (i *userGetRoute) Action() string {
 	return common.GET
 }
 
@@ -179,7 +179,7 @@ type userGetAllResult struct {
 	User []model.UserDetail
 }
 
-func (i *userGetAllRoute) Type() string {
+func (i *userGetAllRoute) Action() string {
 	return common.GET
 }
 
@@ -218,7 +218,7 @@ type userCreateResult struct {
 	User model.UserDetail
 }
 
-func (i *userCreateRoute) Type() string {
+func (i *userCreateRoute) Action() string {
 	return common.POST
 }
 
@@ -273,7 +273,7 @@ type userSaveResult struct {
 	User model.UserDetail
 }
 
-func (i *userSaveRoute) Type() string {
+func (i *userSaveRoute) Action() string {
 	return common.PUT
 }
 
@@ -346,7 +346,7 @@ type userDestroyResult struct {
 	common.Result
 }
 
-func (i *userDestroyRoute) Type() string {
+func (i *userDestroyRoute) Action() string {
 	return common.DELETE
 }
 

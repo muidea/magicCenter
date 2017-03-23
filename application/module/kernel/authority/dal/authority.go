@@ -31,3 +31,17 @@ func UpateUserAuthorityGroup(helper dbhelper.DBHelper, userID int, authGroup []i
 
 	return ok
 }
+
+// GetUserAuthorityGroup 获取指定用户的授权组
+func GetUserAuthorityGroup(helper dbhelper.DBHelper, userID int) []int {
+	authGroup := []int{}
+	sql := fmt.Sprintf("select gid from authority where uid=%d", userID)
+	helper.Query(sql)
+	for helper.Next() {
+		id := 0
+		helper.GetValue(&id)
+		authGroup = append(authGroup, id)
+	}
+
+	return authGroup
+}

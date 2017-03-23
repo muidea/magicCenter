@@ -130,7 +130,7 @@ type mediaGetByIDResult struct {
 	Media model.MediaDetail
 }
 
-func (i *mediaGetByIDRoute) Type() string {
+func (i *mediaGetByIDRoute) Action() string {
 	return common.GET
 }
 
@@ -183,7 +183,7 @@ type mediaGetListResult struct {
 	Media []model.Summary
 }
 
-func (i *mediaGetListRoute) Type() string {
+func (i *mediaGetListRoute) Action() string {
 	return common.GET
 }
 
@@ -237,7 +237,7 @@ type mediaCreateResult struct {
 	Media model.Summary
 }
 
-func (i *mediaCreateRoute) Type() string {
+func (i *mediaCreateRoute) Action() string {
 	return common.POST
 }
 
@@ -297,7 +297,7 @@ type mediaUpdateResult struct {
 	Media model.Summary
 }
 
-func (i *mediaUpdateRoute) Type() string {
+func (i *mediaUpdateRoute) Action() string {
 	return common.PUT
 }
 
@@ -367,7 +367,7 @@ type mediaDestroyResult struct {
 	common.Result
 }
 
-func (i *mediaDestroyRoute) Type() string {
+func (i *mediaDestroyRoute) Action() string {
 	return common.DELETE
 }
 

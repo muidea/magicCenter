@@ -6,6 +6,9 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 )
 
+// AuthTokenID 鉴权Token
+const AuthTokenID = "authToken"
+
 // AuthorityHandler 鉴权处理Handler
 type AuthorityHandler interface {
 	//@in account 账号
@@ -24,4 +27,13 @@ type AuthorityHandler interface {
 
 	// 调整用户授权组
 	AdjustUserAuthGroup(userID int, authGroup []int) bool
+	// 获取指定用户的授权组
+	GetUserAuthGroup(userID int) ([]int, bool)
+
+	// 更新acl route
+	AddACLRoute(moduleURL string, route Route) bool
+	DelACLRoute(moduleURL string, route Route) bool
+
+	// 调整acl的授权组
+	AdjustACLAuthGroup(modelURL string, route Route, authGroup []int) bool
 }

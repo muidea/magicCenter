@@ -130,7 +130,7 @@ type linkGetByIDResult struct {
 	Link model.LinkDetail
 }
 
-func (i *linkGetByIDRoute) Type() string {
+func (i *linkGetByIDRoute) Action() string {
 	return common.GET
 }
 
@@ -186,7 +186,7 @@ type linkGetListResult struct {
 	Link []model.Summary
 }
 
-func (i *linkGetListRoute) Type() string {
+func (i *linkGetListRoute) Action() string {
 	return common.GET
 }
 
@@ -240,7 +240,7 @@ type linkCreateResult struct {
 	Link model.Summary
 }
 
-func (i *linkCreateRoute) Type() string {
+func (i *linkCreateRoute) Action() string {
 	return common.POST
 }
 
@@ -301,7 +301,7 @@ type linkUpdateResult struct {
 	Link model.Summary
 }
 
-func (i *linkUpdateRoute) Type() string {
+func (i *linkUpdateRoute) Action() string {
 	return common.PUT
 }
 
@@ -371,7 +371,7 @@ type linkDestroyResult struct {
 	common.Result
 }
 
-func (i *linkDestroyRoute) Type() string {
+func (i *linkDestroyRoute) Action() string {
 	return common.DELETE
 }
 

@@ -11,7 +11,7 @@ type accountManager struct {
 
 // model.UserDetail 登陆用户
 // bool 是否登陆成功
-func (i *accountManager) FindUser(account, password string) (model.UserDetail, bool) {
+func (i *accountManager) findUser(account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 	found := false
 	modHub, ok := i.moduleHub.FindModule(common.AccountModuleID)

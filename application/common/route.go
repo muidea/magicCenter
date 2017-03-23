@@ -10,8 +10,8 @@ const (
 
 // Route 路由接口
 type Route interface {
-	// Type 路由行为GET/PUT/POST/DELETE
-	Type() string
+	// Action 路由行为GET/PUT/POST/DELETE
+	Action() string
 	// Pattern 路由规则, 以'/'开始
 	Pattern() string
 	// Handler 路由处理器
@@ -19,14 +19,14 @@ type Route interface {
 }
 
 type route struct {
-	rType    string
+	rAction  string
 	rPattern string
 	rHandler interface{}
 }
 
 // Type 路由行为GET/POST
-func (r *route) Type() string {
-	return r.rType
+func (r *route) Action() string {
+	return r.rAction
 }
 
 // Pattern 路由规则
@@ -40,9 +40,9 @@ func (r *route) Handler() interface{} {
 }
 
 // NewRoute 新建一个路由对象
-func NewRoute(rType, rPattern string, rHandler interface{}) Route {
+func NewRoute(rAction, rPattern string, rHandler interface{}) Route {
 	r := route{}
-	r.rType = rType
+	r.rAction = rAction
 	r.rPattern = rPattern
 	r.rHandler = rHandler
 

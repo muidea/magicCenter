@@ -31,7 +31,7 @@ func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry
 	instance := &authority{
 		moduleHub:        modHub,
 		sessionRegistry:  sessionRegistry,
-		authorityHandler: handler.CreateAuthorityHandler(modHub)}
+		authorityHandler: handler.CreateAuthorityHandler(modHub, sessionRegistry)}
 
 	rt, _ := route.CreateAccountLoginRoute(instance.authorityHandler, sessionRegistry)
 	instance.routes = append(instance.routes, rt)

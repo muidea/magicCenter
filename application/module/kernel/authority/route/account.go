@@ -6,13 +6,9 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/util"
 )
 
-var sesstionTokenID = "session_token_id"
-
 func init() {
-	sesstionTokenID = util.RandomAlphanumeric(16)
 }
 
 // CreateAccountLoginRoute 创建AccountLogin Route
@@ -41,7 +37,7 @@ type authorityLoginResult struct {
 	AuthToken string
 }
 
-func (i *authorityAccountLoginRoute) Type() string {
+func (i *authorityAccountLoginRoute) Action() string {
 	return common.POST
 }
 
@@ -77,7 +73,7 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 
 		usr, found := session.GetAccount()
 		if found && usr.Account == account {
-			opt, ok := session.GetOption(sesstionTokenID)
+			opt, ok := session.GetOption(common.AuthTokenID)
 			if ok {
 				token = opt.(string)
 				result.ErrCode = 0
@@ -88,7 +84,7 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 		}
 
 		session.SetAccount(user)
-		session.SetOption(sesstionTokenID, token)
+		session.SetOption(common.AuthTokenID, token)
 
 		result.ErrCode = 0
 		result.AuthToken = token
@@ -111,7 +107,7 @@ type authorityLogoutResult struct {
 	common.Result
 }
 
-func (i *authorityAccountLogoutRoute) Type() string {
+func (i *authorityAccountLogoutRoute) Action() string {
 	return common.DELETE
 }
 
@@ -129,14 +125,14 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 	session := i.sessionRegistry.GetSession(w, r)
 	result := authorityLogoutResult{}
 	for true {
-		token, ok := r.URL.Query()["token"]
+		token, ok := r.URL.Query()[common.AuthTokenID]
 		if !ok || len(token) < 1 {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		authToken, ok := session.GetOption(sesstionTokenID)
+		authToken, ok := session.GetOption(common.AuthTokenID)
 		if !ok || authToken != token[0] {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
@@ -145,7 +141,7 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 
 		i.authorityHandler.LogoutAccount(token[0])
 		session.ClearAccount()
-		session.RemoveOption(sesstionTokenID)
+		session.RemoveOption(common.AuthTokenID)
 
 		result.ErrCode = 0
 		break
