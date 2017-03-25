@@ -11,7 +11,10 @@ type aclManager struct {
 }
 
 func createACLManager() aclManager {
-	return aclManager{aclAuthGroup: make(map[string]model.ACL)}
+	aclManager := aclManager{aclAuthGroup: make(map[string]model.ACL)}
+	aclManager.loadAllACL()
+
+	return aclManager
 }
 
 func (i *aclManager) loadAllACL() bool {

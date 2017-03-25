@@ -70,15 +70,6 @@ func (instance *account) AuthGroups() []model.AuthGroup {
 
 // Route Account 路由信息
 func (instance *account) Routes() []common.Route {
-	/*
-		routes := []common.Route{
-			// 用户账号信息管理视图
-			common.NewRoute(common.GET, "manageUserView/", ui.ManageUserViewHandler),
-
-			// 用户分组信息管理视图
-			common.NewRoute(common.GET, "manageGroupView/", ui.ManageGroupViewHandler),
-		}*/
-
 	return instance.routes
 }
 

@@ -70,18 +70,6 @@ func (instance *content) AuthGroups() []model.AuthGroup {
 
 // Route 路由信息
 func (instance *content) Routes() []common.Route {
-	/*
-		routes := []common.Route{
-			// Article管理视图
-			router.NewRoute(common.GET, "manageArticleView/", ui.ManageArticleViewHandler, auth.AdminAuthVerify()),
-			// Catalog管理视图
-			router.NewRoute(common.GET, "manageCatalogView/", ui.ManageCatalogViewHandler, auth.AdminAuthVerify()),
-			// Link管理视图
-			router.NewRoute(common.GET, "manageLinkView/", ui.ManageLinkViewHandler, auth.AdminAuthVerify()),
-			// Media管理视图
-			router.NewRoute(common.GET, "manageMediaView/", ui.ManageMediaViewHandler, auth.AdminAuthVerify()),
-		}
-	*/
 	return instance.routes
 }
 

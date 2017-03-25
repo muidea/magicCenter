@@ -87,6 +87,18 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 	return true
 }
 
+func (i *impl) GetAuthGroup(module string) ([]model.AuthGroup, bool) {
+	return i.authGroupManager.findAuthGroup(module)
+}
+
+func (i *impl) InsertAuthGroup(authGroups []model.AuthGroup) bool {
+	return i.authGroupManager.insertAuthGroup(authGroups)
+}
+
+func (i *impl) DeleteAuthGroup(authGroups []model.AuthGroup) bool {
+	return i.authGroupManager.deleteAuthGroup(authGroups)
+}
+
 func (i *impl) AdjustUserAuthGroup(userID int, authGroup []int) bool {
 	return i.authGroupManager.adjustUserAuthGroup(userID, authGroup)
 }

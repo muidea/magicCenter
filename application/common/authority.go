@@ -25,6 +25,11 @@ type AuthorityHandler interface {
 	// 校验权限是否OK
 	VerifyAuth(res http.ResponseWriter, req *http.Request) bool
 
+	// 更新授权组
+	GetAuthGroup(module string) ([]model.AuthGroup, bool)
+	InsertAuthGroup(authGroups []model.AuthGroup) bool
+	DeleteAuthGroup(authGroups []model.AuthGroup) bool
+
 	// 调整用户授权组
 	AdjustUserAuthGroup(userID int, authGroup []int) bool
 	// 获取指定用户的授权组
