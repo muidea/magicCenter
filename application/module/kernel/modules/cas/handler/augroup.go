@@ -3,7 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
+	"muidea.com/magicCenter/application/module/kernel/modules/cas/dal"
 )
 
 type authGroupManager struct {

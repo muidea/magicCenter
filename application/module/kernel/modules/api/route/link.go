@@ -11,6 +11,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
 	"muidea.com/magicCenter/foundation/net"
 	"muidea.com/magicCenter/foundation/util"
 )
@@ -135,7 +136,7 @@ func (i *linkGetByIDRoute) Method() string {
 }
 
 func (i *linkGetByIDRoute) Pattern() string {
-	return "content/link/[0-9]+/"
+	return net.JoinURL(def.URL, "content/link/[0-9]+/")
 }
 
 func (i *linkGetByIDRoute) Handler() interface{} {
@@ -191,7 +192,7 @@ func (i *linkGetListRoute) Method() string {
 }
 
 func (i *linkGetListRoute) Pattern() string {
-	return "content/link/"
+	return net.JoinURL(def.URL, "content/link/")
 }
 
 func (i *linkGetListRoute) Handler() interface{} {
@@ -245,7 +246,7 @@ func (i *linkCreateRoute) Method() string {
 }
 
 func (i *linkCreateRoute) Pattern() string {
-	return "content/link/"
+	return net.JoinURL(def.URL, "content/link/")
 }
 
 func (i *linkCreateRoute) Handler() interface{} {
@@ -306,7 +307,7 @@ func (i *linkUpdateRoute) Method() string {
 }
 
 func (i *linkUpdateRoute) Pattern() string {
-	return "content/link/[0-9]+/"
+	return net.JoinURL(def.URL, "content/link/[0-9]+/")
 }
 
 func (i *linkUpdateRoute) Handler() interface{} {
@@ -376,7 +377,7 @@ func (i *linkDestroyRoute) Method() string {
 }
 
 func (i *linkDestroyRoute) Pattern() string {
-	return "content/link/[0-9]+/"
+	return net.JoinURL(def.URL, "content/link/[0-9]+/")
 }
 
 func (i *linkDestroyRoute) Handler() interface{} {

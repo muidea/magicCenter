@@ -6,11 +6,10 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/cache"
-	"muidea.com/magicCenter/foundation/net"
 )
 
-// CreateAuthorityHandler 新建AuthorityHandler
-func CreateAuthorityHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.AuthorityHandler {
+// CreateCASHandler 新建CASHandler
+func CreateCASHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.CASHandler {
 	i := impl{
 		sessionRegistry:  sessionRegistry,
 		accountManager:   createAccountManager(modHub),
@@ -56,7 +55,6 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 	session := i.sessionRegistry.GetSession(res, req)
 
 	authGroup := []int{}
-	url := req.URL.Path + ":" + req.Method
 	user, ok := session.GetAccount()
 	if ok {
 		// Session里找不到用户则说明用户没有登录
@@ -65,7 +63,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 			return false
 		}
 	}
-	if !i.aclManager.verifyAuthGroup(url, authGroup) {
+	if !i.aclManager.verifyAuthGroup(req.URL.Path, req.Method, authGroup) {
 		return false
 	}
 
@@ -112,20 +110,15 @@ func (i *impl) QueryACL(module string) ([]model.ACL, bool) {
 	return i.aclManager.queryACL(module)
 }
 
-func (i *impl) AddACL(url, module string, route common.Route) bool {
-	url = net.JoinURL(url, route.Pattern()) + ":" + route.Method()
-
-	return i.aclManager.addACL(url, module)
+func (i *impl) AddACL(url, method, module string) (model.ACL, bool) {
+	return i.aclManager.addACL(url, method, module)
 }
 
-func (i *impl) DelACL(url, module string, route common.Route) bool {
-	url = net.JoinURL(url, route.Pattern()) + ":" + route.Method()
-
-	return i.aclManager.delACL(url, module)
+func (i *impl) DelACL(url, method, module string) bool {
+	return i.aclManager.delACL(url, method, module)
 }
 
-func (i *impl) AdjustACLAuthGroup(moduleURL string, route common.Route, authGroup []int) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
+func (i *impl) AdjustACLAuthGroup(url, method string, authGroup []int) bool {
 
-	return i.aclManager.adjustACLAuthGroup(url, authGroup)
+	return i.aclManager.adjustACLAuthGroup(url, method, authGroup)
 }

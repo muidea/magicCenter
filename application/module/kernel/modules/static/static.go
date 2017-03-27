@@ -3,21 +3,10 @@ package static
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/static/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/route"
 )
-
-// ID Static模块ID
-const ID = "e9a778e8-1098-4d48-80fc-811782fe2798"
-
-// Name Static模块名称
-const Name = "Magic Static"
-
-// Description Static模块描述信息
-const Description = "Magic 静态文件管理"
-
-// URL Static模块Url
-const URL string = "/static"
 
 type static struct {
 	routes        []common.Route
@@ -39,17 +28,17 @@ func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 
 // ID Static ID
 func (instance *static) ID() string {
-	return ID
+	return def.ID
 }
 
 // Name Static 名称
 func (instance *static) Name() string {
-	return Name
+	return def.Name
 }
 
 // Description Static名称
 func (instance *static) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *static) Group() string {
@@ -58,11 +47,6 @@ func (instance *static) Group() string {
 
 func (instance *static) Type() int {
 	return common.INTERNAL
-}
-
-// URL Static url
-func (instance *static) URL() string {
-	return URL
 }
 
 func (instance *static) Status() int {

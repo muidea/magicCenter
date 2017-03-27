@@ -18,20 +18,20 @@ import (
 // Authority 权限控制服务
 // 控制系统各个模块的访问权限
 type Authority interface {
-	Verify(authorityHandler common.AuthorityHandler, res http.ResponseWriter, req *http.Request) bool
+	Verify(authorityHandler common.CASHandler, res http.ResponseWriter, req *http.Request) bool
 }
 
-// AuthorityVerifyHandler 权限校验处理器
+// VerifyHandler 权限校验处理器
 // 用于在路由过程中进行权限校验
-func AuthorityVerifyHandler(modHub common.ModuleHub, authority Authority) martini.Handler {
-	var authorityHandler common.AuthorityHandler
-	mod, ok := modHub.FindModule(common.AuthorityModuleID)
+func VerifyHandler(modHub common.ModuleHub, authority Authority) martini.Handler {
+	var authorityHandler common.CASHandler
+	mod, ok := modHub.FindModule(common.CASModuleID)
 	if ok {
 		authorityHandler = nil
 		endPoint := mod.EndPoint()
 		switch endPoint.(type) {
-		case common.AuthorityHandler:
-			authorityHandler = endPoint.(common.AuthorityHandler)
+		case common.CASHandler:
+			authorityHandler = endPoint.(common.CASHandler)
 		}
 	}
 
@@ -55,7 +55,7 @@ func CreateAuthority() Authority {
 type impl struct {
 }
 
-func (i *impl) Verify(authorityHandler common.AuthorityHandler, res http.ResponseWriter, req *http.Request) bool {
+func (i *impl) Verify(authorityHandler common.CASHandler, res http.ResponseWriter, req *http.Request) bool {
 	if authorityHandler == nil {
 		return false
 	}

@@ -25,6 +25,7 @@ func CreateAuthGroup(name, description, module string) AuthGroup {
 type ACL struct {
 	ID        int
 	URL       string
+	Method    string
 	Module    string
 	AuthGroup []int
 }

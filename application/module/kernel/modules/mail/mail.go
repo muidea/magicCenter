@@ -5,20 +5,9 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/mail/def"
 	"muidea.com/magicCenter/foundation/net"
 )
-
-// ID Mail模块ID
-const ID = "7fe4a6fa-b73a-401f-bd37-71e76670d18c"
-
-// Name Mail模块名称
-const Name = "Magic EMail"
-
-// Description Mail模块描述信息
-const Description = "Magic 邮件模块"
-
-// URL Mail模块Url
-const URL string = "mail"
 
 // LoadModule 加载Mail模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
@@ -32,7 +21,7 @@ func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 
 // SendMail 发送邮件
 func SendMail(modHub common.ModuleHub, usrMail string, subject, content string) bool {
-	mailModule, found := modHub.FindModule(ID)
+	mailModule, found := modHub.FindModule(def.ID)
 	if !found {
 		panic("can't find mail module")
 	}
@@ -53,15 +42,15 @@ type mail struct {
 }
 
 func (instance *mail) ID() string {
-	return ID
+	return def.ID
 }
 
 func (instance *mail) Name() string {
-	return Name
+	return def.Name
 }
 
 func (instance *mail) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *mail) Group() string {
@@ -70,10 +59,6 @@ func (instance *mail) Group() string {
 
 func (instance *mail) Type() int {
 	return common.KERNEL
-}
-
-func (instance *mail) URL() string {
-	return URL
 }
 
 func (instance *mail) Status() int {

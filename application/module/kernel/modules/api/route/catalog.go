@@ -9,6 +9,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
 	"muidea.com/magicCenter/foundation/net"
 	"muidea.com/magicCenter/foundation/util"
 )
@@ -132,7 +133,7 @@ func (i *catalogGetByIDRoute) Method() string {
 }
 
 func (i *catalogGetByIDRoute) Pattern() string {
-	return "content/catalog/[0-9]+/"
+	return net.JoinURL(def.URL, "content/catalog/[0-9]+/")
 }
 
 func (i *catalogGetByIDRoute) Handler() interface{} {
@@ -185,7 +186,7 @@ func (i *catalogGetListRoute) Method() string {
 }
 
 func (i *catalogGetListRoute) Pattern() string {
-	return "content/catalog/"
+	return net.JoinURL(def.URL, "content/catalog/")
 }
 
 func (i *catalogGetListRoute) Handler() interface{} {
@@ -239,7 +240,7 @@ func (i *catalogCreateRoute) Method() string {
 }
 
 func (i *catalogCreateRoute) Pattern() string {
-	return "content/catalog/"
+	return net.JoinURL(def.URL, "content/catalog/")
 }
 
 func (i *catalogCreateRoute) Handler() interface{} {
@@ -299,7 +300,7 @@ func (i *catalogUpdateRoute) Method() string {
 }
 
 func (i *catalogUpdateRoute) Pattern() string {
-	return "content/catalog/[0-9]+/"
+	return net.JoinURL(def.URL, "content/catalog/[0-9]+/")
 }
 
 func (i *catalogUpdateRoute) Handler() interface{} {
@@ -368,7 +369,7 @@ func (i *catalogDestroyRoute) Method() string {
 }
 
 func (i *catalogDestroyRoute) Pattern() string {
-	return "content/catalog/[0-9]+/"
+	return net.JoinURL(def.URL, "content/catalog/[0-9]+/")
 }
 
 func (i *catalogDestroyRoute) Handler() interface{} {

@@ -9,8 +9,8 @@ import (
 // AuthTokenID 鉴权Token
 const AuthTokenID = "authToken"
 
-// AuthorityHandler 鉴权处理Handler
-type AuthorityHandler interface {
+// CASHandler 鉴权处理Handler
+type CASHandler interface {
 	//@in account 账号
 	//@in password 密码
 	//@ret model.UserDetail 登陆用户
@@ -37,9 +37,9 @@ type AuthorityHandler interface {
 
 	// 更新acl route
 	QueryACL(module string) ([]model.ACL, bool)
-	AddACL(url, module string, route Route) bool
-	DelACL(url, module string, route Route) bool
+	AddACL(url, method, module string) (model.ACL, bool)
+	DelACL(url, method, module string) bool
 
 	// 调整acl的授权组
-	AdjustACLAuthGroup(modelURL string, route Route, authGroup []int) bool
+	AdjustACLAuthGroup(url, method string, authGroup []int) bool
 }

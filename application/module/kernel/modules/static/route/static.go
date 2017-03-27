@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/module/kernel/modules/static/def"
+	"muidea.com/magicCenter/foundation/net"
 )
 
 // CreateStaticViewRoute 新建静态视图路由
@@ -30,7 +32,7 @@ func (i *staticViewRoute) Method() string {
 }
 
 func (i *staticViewRoute) Pattern() string {
-	return "**.html"
+	return net.JoinURL(def.URL, "**.html")
 }
 
 func (i *staticViewRoute) Handler() interface{} {
@@ -52,7 +54,7 @@ func (i *staticResRoute) Method() string {
 }
 
 func (i *staticResRoute) Pattern() string {
-	return "**"
+	return net.JoinURL(def.URL, "**")
 }
 
 func (i *staticResRoute) Handler() interface{} {

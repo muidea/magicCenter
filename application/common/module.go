@@ -13,8 +13,8 @@ const (
 )
 
 const (
-	// AuthorityModuleID 鉴权模块ID
-	AuthorityModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"
+	// CASModuleID CAS模块ID
+	CASModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"
 	// CotentModuleID 内容管理模块ID
 	CotentModuleID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
 	// AccountModuleID 账号管理模块ID
@@ -28,9 +28,6 @@ type Module interface {
 	Description() string
 	Group() string
 	Type() int
-	// URL 模块Url，每个模块都对应唯一的Url
-	URL() string
-	// 状态
 	Status() int
 
 	// AuthGroups 授权组信息

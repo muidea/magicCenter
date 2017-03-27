@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
+	"muidea.com/magicCenter/foundation/net"
 )
 
 func init() {
 }
 
 // CreateAccountLoginRoute 创建AccountLogin Route
-func CreateAccountLoginRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+func CreateAccountLoginRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := authorityAccountLoginRoute{
 		authorityHandler: authorityHandler,
 		sessionRegistry:  sessionRegistry}
@@ -20,7 +22,7 @@ func CreateAccountLoginRoute(authorityHandler common.AuthorityHandler, sessionRe
 }
 
 // CreateAccountLogoutRoute 创建AccountLogout Route
-func CreateAccountLogoutRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+func CreateAccountLogoutRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := authorityAccountLogoutRoute{
 		authorityHandler: authorityHandler,
 		sessionRegistry:  sessionRegistry}
@@ -28,7 +30,7 @@ func CreateAccountLogoutRoute(authorityHandler common.AuthorityHandler, sessionR
 }
 
 type authorityAccountLoginRoute struct {
-	authorityHandler common.AuthorityHandler
+	authorityHandler common.CASHandler
 	sessionRegistry  common.SessionRegistry
 }
 
@@ -42,7 +44,7 @@ func (i *authorityAccountLoginRoute) Method() string {
 }
 
 func (i *authorityAccountLoginRoute) Pattern() string {
-	return "/account/"
+	return net.JoinURL(def.URL, "/account/")
 }
 
 func (i *authorityAccountLoginRoute) Handler() interface{} {
@@ -99,7 +101,7 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 }
 
 type authorityAccountLogoutRoute struct {
-	authorityHandler common.AuthorityHandler
+	authorityHandler common.CASHandler
 	sessionRegistry  common.SessionRegistry
 }
 
@@ -112,7 +114,7 @@ func (i *authorityAccountLogoutRoute) Method() string {
 }
 
 func (i *authorityAccountLogoutRoute) Pattern() string {
-	return "/account/"
+	return net.JoinURL(def.URL, "/account/")
 }
 
 func (i *authorityAccountLogoutRoute) Handler() interface{} {

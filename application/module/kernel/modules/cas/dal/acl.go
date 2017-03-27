@@ -9,9 +9,9 @@ import (
 )
 
 // InsertACL 新增ACL记录
-func InsertACL(helper dbhelper.DBHelper, url, module string) (model.ACL, bool) {
-	acl := model.ACL{URL: url, Module: module, AuthGroup: []int{}}
-	sql := fmt.Sprintf("insert into acl (url, module) values ('%s','%s')", url, module)
+func InsertACL(helper dbhelper.DBHelper, url, method, module string) (model.ACL, bool) {
+	acl := model.ACL{URL: url, Method: method, Module: module, AuthGroup: []int{}}
+	sql := fmt.Sprintf("insert into acl (url, method, module) values ('%s','%s','%s')", url, method, module)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
 		return acl, false
@@ -46,12 +46,12 @@ func UpateACL(helper dbhelper.DBHelper, acl model.ACL) bool {
 // QueryACL 查询指定Module的ACL信息
 func QueryACL(helper dbhelper.DBHelper, module string) []model.ACL {
 	acls := []model.ACL{}
-	sql := fmt.Sprintf("select id, url, module, authgroup from acl where module='%s'", module)
+	sql := fmt.Sprintf("select id, url, method, module, authgroup from acl where module='%s'", module)
 	helper.Query(sql)
 	for helper.Next() {
 		acl := model.ACL{}
 		authGroups := ""
-		helper.GetValue(&acl.ID, &acl.URL, &acl.Module, &authGroups)
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &authGroups)
 		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
 		acls = append(acls, acl)
 	}
@@ -60,14 +60,14 @@ func QueryACL(helper dbhelper.DBHelper, module string) []model.ACL {
 }
 
 // LoadACL 加载所有ACL
-func LoadACL(helper dbhelper.DBHelper) []model.ACL {
+func LoadACL(helper dbhelper.DBHelper, method string) []model.ACL {
 	acls := []model.ACL{}
-	sql := fmt.Sprint("select id, url,module, authgroup from acl")
+	sql := fmt.Sprintf("select id, url, method, module, authgroup from acl where method='%s'", method)
 	helper.Query(sql)
 	for helper.Next() {
 		acl := model.ACL{}
 		authGroups := ""
-		helper.GetValue(&acl.ID, &acl.URL, &acl.Module, &authGroups)
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &authGroups)
 		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
 		acls = append(acls, acl)
 	}

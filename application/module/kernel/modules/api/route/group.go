@@ -8,6 +8,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
 	"muidea.com/magicCenter/foundation/net"
 )
 
@@ -131,7 +132,7 @@ func (i *groupGetRoute) Method() string {
 }
 
 func (i *groupGetRoute) Pattern() string {
-	return "account/group/[0-9]+/"
+	return net.JoinURL(def.URL, "account/group/[0-9]+/")
 }
 
 func (i *groupGetRoute) Handler() interface{} {
@@ -184,7 +185,7 @@ func (i *groupGetAllRoute) Method() string {
 }
 
 func (i *groupGetAllRoute) Pattern() string {
-	return "account/group/"
+	return net.JoinURL(def.URL, "account/group/")
 }
 
 func (i *groupGetAllRoute) Handler() interface{} {
@@ -223,7 +224,7 @@ func (i *groupCreateRoute) Method() string {
 }
 
 func (i *groupCreateRoute) Pattern() string {
-	return "account/group/"
+	return net.JoinURL(def.URL, "account/group/")
 }
 
 func (i *groupCreateRoute) Handler() interface{} {
@@ -285,7 +286,7 @@ func (i *groupSaveRoute) Method() string {
 }
 
 func (i *groupSaveRoute) Pattern() string {
-	return "account/group/[0-9]+/"
+	return net.JoinURL(def.URL, "account/group/[0-9]+/")
 }
 
 func (i *groupSaveRoute) Handler() interface{} {
@@ -355,7 +356,7 @@ func (i *groupDestroyRoute) Method() string {
 }
 
 func (i *groupDestroyRoute) Pattern() string {
-	return "account/group/[0-9]+/"
+	return net.JoinURL(def.URL, "account/group/[0-9]+/")
 }
 
 func (i *groupDestroyRoute) Handler() interface{} {

@@ -11,6 +11,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
 	"muidea.com/magicCenter/foundation/net"
 	"muidea.com/magicCenter/foundation/util"
 )
@@ -135,7 +136,7 @@ func (i *mediaGetByIDRoute) Method() string {
 }
 
 func (i *mediaGetByIDRoute) Pattern() string {
-	return "content/media/[0-9]+/"
+	return net.JoinURL(def.URL, "content/media/[0-9]+/")
 }
 
 func (i *mediaGetByIDRoute) Handler() interface{} {
@@ -188,7 +189,7 @@ func (i *mediaGetListRoute) Method() string {
 }
 
 func (i *mediaGetListRoute) Pattern() string {
-	return "content/media/"
+	return net.JoinURL(def.URL, "content/media/")
 }
 
 func (i *mediaGetListRoute) Handler() interface{} {
@@ -242,7 +243,7 @@ func (i *mediaCreateRoute) Method() string {
 }
 
 func (i *mediaCreateRoute) Pattern() string {
-	return "content/media/"
+	return net.JoinURL(def.URL, "content/media/")
 }
 
 func (i *mediaCreateRoute) Handler() interface{} {
@@ -302,7 +303,7 @@ func (i *mediaUpdateRoute) Method() string {
 }
 
 func (i *mediaUpdateRoute) Pattern() string {
-	return "content/media/[0-9]+/"
+	return net.JoinURL(def.URL, "content/media/[0-9]+/")
 }
 
 func (i *mediaUpdateRoute) Handler() interface{} {
@@ -372,7 +373,7 @@ func (i *mediaDestroyRoute) Method() string {
 }
 
 func (i *mediaDestroyRoute) Pattern() string {
-	return "content/media/[0-9]+/"
+	return net.JoinURL(def.URL, "content/media/[0-9]+/")
 }
 
 func (i *mediaDestroyRoute) Handler() interface{} {

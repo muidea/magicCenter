@@ -1,17 +1,15 @@
 package kernel
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
 	"muidea.com/magicCenter/application/kernel/session"
-
-	"log"
-
-	"github.com/go-martini/martini"
 )
 
 // Kernel MagicCenter系统接口
@@ -58,14 +56,13 @@ func (i *impl) StartUp() error {
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
-		baseURL := m.URL()
 		routes := m.Routes()
 		// if define routes trace something...
 		if len(routes) > 0 {
 			log.Printf("...............register %s's routes...............", m.Name())
 		}
 		for _, rt := range routes {
-			i.routerImpl.AddRoute(baseURL, rt)
+			i.routerImpl.AddRoute(rt)
 		}
 	}
 
@@ -78,7 +75,7 @@ func (i *impl) Run() {
 
 	i.instanceFrameImpl.Use(martini.Logger())
 	i.instanceFrameImpl.Use(martini.Recovery())
-	i.instanceFrameImpl.Use(authority.AuthorityVerifyHandler(i.moduleHubImpl, i.authorityImpl))
+	i.instanceFrameImpl.Use(authority.VerifyHandler(i.moduleHubImpl, i.authorityImpl))
 
 	i.instanceFrameImpl.MapTo(martiniRouter, (*martini.Routes)(nil))
 	i.instanceFrameImpl.Action(martiniRouter.Handle)

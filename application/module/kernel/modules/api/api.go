@@ -3,20 +3,9 @@ package api
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/api/route"
 )
-
-// ID 模块ID
-const ID = "5fa671dc-ccb5-4005-8500-f0e45b13705b"
-
-// Name 模块名称
-const Name = "Magic Reset API"
-
-// Description 模块描述信息
-const Description = "Magic Reset API模块"
-
-// URL 模块Url
-const URL string = "/api"
 
 type api struct {
 	moduleHub       common.ModuleHub
@@ -38,15 +27,15 @@ func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry
 }
 
 func (instance *api) ID() string {
-	return ID
+	return def.ID
 }
 
 func (instance *api) Name() string {
-	return Name
+	return def.Name
 }
 
 func (instance *api) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *api) Group() string {
@@ -55,10 +44,6 @@ func (instance *api) Group() string {
 
 func (instance *api) Type() int {
 	return common.KERNEL
-}
-
-func (instance *api) URL() string {
-	return URL
 }
 
 func (instance *api) Status() int {
@@ -72,9 +57,9 @@ func (instance *api) EndPoint() interface{} {
 func (instance *api) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
-	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", ID))
-	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", ID))
-	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", ID))
+	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", def.ID))
 
 	return groups
 }

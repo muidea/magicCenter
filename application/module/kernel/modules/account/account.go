@@ -3,20 +3,9 @@ package account
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/handler"
 )
-
-// ID 模块ID
-const ID = common.AccountModuleID
-
-// Name 模块名称
-const Name = "Magic Account"
-
-// Description 模块描述信息
-const Description = "Magic 账号管理模块"
-
-// URL 模块Url
-const URL string = "/account"
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
@@ -31,15 +20,15 @@ type account struct {
 }
 
 func (instance *account) ID() string {
-	return ID
+	return def.ID
 }
 
 func (instance *account) Name() string {
-	return Name
+	return def.Name
 }
 
 func (instance *account) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *account) Group() string {
@@ -48,10 +37,6 @@ func (instance *account) Group() string {
 
 func (instance *account) Type() int {
 	return common.KERNEL
-}
-
-func (instance *account) URL() string {
-	return URL
 }
 
 func (instance *account) Status() int {

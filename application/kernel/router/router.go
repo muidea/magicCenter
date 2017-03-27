@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/net"
 
 	"github.com/go-martini/martini"
 )
@@ -13,9 +12,9 @@ import (
 // Router 路由器对象
 type Router interface {
 	// 增加路由
-	AddRoute(baseURL string, rt common.Route)
+	AddRoute(rt common.Route)
 	// 清除路由
-	RemoveRoute(baseURL string, rt common.Route)
+	RemoveRoute(rt common.Route)
 
 	// 增加Get路由
 	AddGetRoute(pattern string, handler interface{})
@@ -55,32 +54,30 @@ type impl struct {
 }
 
 // AddRoute 增加Route
-func (instance *impl) AddRoute(baseURL string, rt common.Route) {
-	fullURL := net.JoinURL(baseURL, rt.Pattern())
+func (instance *impl) AddRoute(rt common.Route) {
 	switch rt.Method() {
 	case common.GET:
-		instance.AddGetRoute(fullURL, rt.Handler())
+		instance.AddGetRoute(rt.Pattern(), rt.Handler())
 	case common.POST:
-		instance.AddPostRoute(fullURL, rt.Handler())
+		instance.AddPostRoute(rt.Pattern(), rt.Handler())
 	case common.DELETE:
-		instance.AddDeleteRoute(fullURL, rt.Handler())
+		instance.AddDeleteRoute(rt.Pattern(), rt.Handler())
 	case common.PUT:
-		instance.AddPutRoute(fullURL, rt.Handler())
+		instance.AddPutRoute(rt.Pattern(), rt.Handler())
 	}
 }
 
 // RemoveRoute 清除Route
-func (instance *impl) RemoveRoute(baseURL string, rt common.Route) {
-	fullURL := net.JoinURL(baseURL, rt.Pattern())
+func (instance *impl) RemoveRoute(rt common.Route) {
 	switch rt.Method() {
 	case common.GET:
-		instance.RemoveGetRoute(fullURL)
+		instance.RemoveGetRoute(rt.Pattern())
 	case common.POST:
-		instance.RemovePostRoute(fullURL)
+		instance.RemovePostRoute(rt.Pattern())
 	case common.DELETE:
-		instance.RemoveDeleteRoute(fullURL)
+		instance.RemoveDeleteRoute(rt.Pattern())
 	case common.PUT:
-		instance.RemovePutRoute(fullURL)
+		instance.RemovePutRoute(rt.Pattern())
 	}
 }
 

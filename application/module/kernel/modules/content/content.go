@@ -3,20 +3,9 @@ package content
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/handler"
 )
-
-// ID 模块ID
-const ID = common.CotentModuleID
-
-// Name 模块名称
-const Name = "Magic Content"
-
-// Description 模块描述信息
-const Description = "Magic 内容管理模块"
-
-// URL 模块Url
-const URL string = "/content"
 
 type content struct {
 	routes         []common.Route
@@ -31,15 +20,15 @@ func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 }
 
 func (instance *content) ID() string {
-	return ID
+	return def.ID
 }
 
 func (instance *content) Name() string {
-	return Name
+	return def.Name
 }
 
 func (instance *content) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *content) Group() string {
@@ -48,10 +37,6 @@ func (instance *content) Group() string {
 
 func (instance *content) Type() int {
 	return common.KERNEL
-}
-
-func (instance *content) URL() string {
-	return URL
 }
 
 func (instance *content) Status() int {

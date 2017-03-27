@@ -10,21 +10,10 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
 	"muidea.com/magicCenter/foundation/cache"
 	"muidea.com/magicCenter/foundation/net"
 )
-
-// ID 模块ID
-const ID = "0424492f-420a-42fb-9106-3882c07bf99e"
-
-// Name 块名称
-const Name = "Magic Cache"
-
-// Description 模块描述信息
-const Description = "Magic 缓存模块"
-
-// URL 模块Url
-const URL string = "/cache"
 
 // LoadModule 加载Cache模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
@@ -38,15 +27,15 @@ type cacheModule struct {
 }
 
 func (instance *cacheModule) ID() string {
-	return ID
+	return def.ID
 }
 
 func (instance *cacheModule) Name() string {
-	return Name
+	return def.Name
 }
 
 func (instance *cacheModule) Description() string {
-	return Description
+	return def.Description
 }
 
 func (instance *cacheModule) Group() string {
@@ -55,10 +44,6 @@ func (instance *cacheModule) Group() string {
 
 func (instance *cacheModule) Type() int {
 	return common.KERNEL
-}
-
-func (instance *cacheModule) URL() string {
-	return URL
 }
 
 func (instance *cacheModule) Status() int {
@@ -78,9 +63,9 @@ func (instance *cacheModule) AuthGroups() []model.AuthGroup {
 // Route Cache 路由信息
 func (instance *cacheModule) Routes() []common.Route {
 	routes := []common.Route{
-		common.NewRoute(common.GET, "[a-zA-Z0-9]+/", instance.getCacheActionHandler),
-		common.NewRoute(common.POST, "", instance.postCacheActionHandler),
-		common.NewRoute(common.DELETE, "[a-zA-Z0-9]+/", instance.deleteCacheActionHandler),
+		common.NewRoute(common.GET, net.JoinURL(def.URL, "[a-zA-Z0-9]+/"), instance.getCacheActionHandler),
+		common.NewRoute(common.POST, net.JoinURL(def.URL, ""), instance.postCacheActionHandler),
+		common.NewRoute(common.DELETE, net.JoinURL(def.URL, "[a-zA-Z0-9]+/"), instance.deleteCacheActionHandler),
 	}
 
 	return routes
