@@ -15,42 +15,42 @@ import (
 )
 
 // AppendAuthGropRoute 追加authgroup 路由
-func AppendAuthGropRoute(routes []common.Route, authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt := CreateQueryAuthGroupRoute(authorityHandler, sessionRegistry)
+func AppendAuthGropRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt := CreateQueryAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateQueryUserAuthGroupRoute(authorityHandler, sessionRegistry)
+	rt = CreateQueryUserAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateAdjustUserAuthGroupRoute(authorityHandler, sessionRegistry)
+	rt = CreateAdjustUserAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateQueryAuthGroupRoute 新建QueryAuthGroup 路由
-func CreateQueryAuthGroupRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateQueryAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityAuthGroupQueryRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 // CreateQueryUserAuthGroupRoute 新建QueryAuthGroup 路由
-func CreateQueryUserAuthGroupRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateQueryUserAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityUserAuthGroupQueryRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 // CreateAdjustUserAuthGroupRoute 新建AdjustAuthGroup 路由
-func CreateAdjustUserAuthGroupRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateAdjustUserAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityUserAuthGroupAdjustRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 type authorityAuthGroupQueryRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityAuthGroupQueryResult struct {
@@ -82,7 +82,7 @@ func (i *authorityAuthGroupQueryRoute) queryAuthGroupHandler(w http.ResponseWrit
 			break
 		}
 
-		authGroups, ok := i.authorityHandler.QueryAuthGroup(modules[0])
+		authGroups, ok := i.casHandler.QueryAuthGroup(modules[0])
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "查询失败"
@@ -103,7 +103,7 @@ func (i *authorityAuthGroupQueryRoute) queryAuthGroupHandler(w http.ResponseWrit
 }
 
 type authorityUserAuthGroupQueryRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityUserAuthGroupQueryResult struct {
@@ -136,7 +136,7 @@ func (i *authorityUserAuthGroupQueryRoute) queryUserAuthGroupHandler(w http.Resp
 			break
 		}
 
-		authGroups, ok := i.authorityHandler.GetUserAuthGroup(id)
+		authGroups, ok := i.casHandler.GetUserAuthGroup(id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "查询失败"
@@ -157,7 +157,7 @@ func (i *authorityUserAuthGroupQueryRoute) queryUserAuthGroupHandler(w http.Resp
 }
 
 type authorityUserAuthGroupAdjustRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityUserAuthGroupAdjustResult struct {
@@ -198,7 +198,7 @@ func (i *authorityUserAuthGroupAdjustRoute) adjustUserAuthGroupHandler(w http.Re
 			break
 		}
 
-		ok = i.authorityHandler.AdjustUserAuthGroup(id, authGroups)
+		ok = i.casHandler.AdjustUserAuthGroup(id, authGroups)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "调整失败"

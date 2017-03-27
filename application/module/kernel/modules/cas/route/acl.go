@@ -13,52 +13,52 @@ import (
 )
 
 // AppendACLRoute 追加acl 路由
-func AppendACLRoute(routes []common.Route, authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt := CreateQueryACLRoute(authorityHandler, sessionRegistry)
+func AppendACLRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt := CreateQueryACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateAddACLRoute(authorityHandler, sessionRegistry)
+	rt = CreateAddACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDelACLRoute(authorityHandler, sessionRegistry)
+	rt = CreateDelACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateUpdateACLRoute(authorityHandler, sessionRegistry)
+	rt = CreateUpdateACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateQueryACLRoute 新建QueryACL 路由
-func CreateQueryACLRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateQueryACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityACLQueryRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 // CreateAddACLRoute 新建AddACL 路由
-func CreateAddACLRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateAddACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityACLAddRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 // CreateDelACLRoute 新建DelACL 路由
-func CreateDelACLRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateDelACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityACLDelRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 // CreateUpdateACLRoute 新建UpdateACL 路由
-func CreateUpdateACLRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateUpdateACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityACLUpdateRoute{
-		authorityHandler: authorityHandler}
+		casHandler: casHandler}
 	return &i
 }
 
 type authorityACLQueryRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityACLQueryResult struct {
@@ -90,7 +90,7 @@ func (i *authorityACLQueryRoute) queryACLHandler(w http.ResponseWriter, r *http.
 			break
 		}
 
-		acls, ok := i.authorityHandler.QueryACL(modules[0])
+		acls, ok := i.casHandler.QueryACL(modules[0])
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "查询失败"
@@ -111,7 +111,7 @@ func (i *authorityACLQueryRoute) queryACLHandler(w http.ResponseWriter, r *http.
 }
 
 type authorityACLAddRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityACLAddResult struct {
@@ -141,7 +141,7 @@ func (i *authorityACLAddRoute) addACLHandler(w http.ResponseWriter, r *http.Requ
 		url := r.FormValue("acl-url")
 		method := r.FormValue("acl-method")
 		module := r.FormValue("acl-module")
-		acl, ok := i.authorityHandler.AddACL(url, method, module)
+		acl, ok := i.casHandler.AddACL(url, method, module)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新增失败"
@@ -162,7 +162,7 @@ func (i *authorityACLAddRoute) addACLHandler(w http.ResponseWriter, r *http.Requ
 }
 
 type authorityACLDelRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityACLDelResult struct {
@@ -191,7 +191,7 @@ func (i *authorityACLDelRoute) delACLHandler(w http.ResponseWriter, r *http.Requ
 		url := r.FormValue("acl-url")
 		method := r.FormValue("acl-method")
 		module := r.FormValue("acl-module")
-		if !i.authorityHandler.DelACL(url, method, module) {
+		if !i.casHandler.DelACL(url, method, module) {
 			result.ErrCode = 1
 			result.Reason = "删除失败"
 		}
@@ -209,7 +209,7 @@ func (i *authorityACLDelRoute) delACLHandler(w http.ResponseWriter, r *http.Requ
 }
 
 type authorityACLUpdateRoute struct {
-	authorityHandler common.CASHandler
+	casHandler common.CASHandler
 }
 
 type authorityACLUpdateResult struct {
@@ -246,7 +246,7 @@ func (i *authorityACLUpdateRoute) updateACLHandler(w http.ResponseWriter, r *htt
 			break
 		}
 
-		acl, ok := i.authorityHandler.AdjustACLAuthGroup(url, method, module, authGroup)
+		acl, ok := i.casHandler.AdjustACLAuthGroup(url, method, module, authGroup)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "更新失败"

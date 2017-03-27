@@ -4,6 +4,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/dashboard/def"
+	"muidea.com/magicCenter/application/module/kernel/modules/dashboard/route"
 )
 
 // 授权分组属性Key，用于读取和存储授权分组信息
@@ -16,6 +17,9 @@ type dashboard struct {
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &dashboard{}
+
+	instance.routes = route.AppendModuleRoute(instance.routes, modHub)
+
 	modHub.RegisterModule(instance)
 }
 

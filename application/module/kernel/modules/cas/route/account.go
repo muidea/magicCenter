@@ -11,35 +11,35 @@ import (
 )
 
 // AppendAccountRoute 追加account 路由
-func AppendAccountRoute(routes []common.Route, authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt, _ := CreateAccountLoginRoute(authorityHandler, sessionRegistry)
+func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt, _ := CreateAccountLoginRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt, _ = CreateAccountLogoutRoute(authorityHandler, sessionRegistry)
+	rt, _ = CreateAccountLogoutRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateAccountLoginRoute 创建AccountLogin Route
-func CreateAccountLoginRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := authorityAccountLoginRoute{
-		authorityHandler: authorityHandler,
-		sessionRegistry:  sessionRegistry}
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
 	return &i, true
 }
 
 // CreateAccountLogoutRoute 创建AccountLogout Route
-func CreateAccountLogoutRoute(authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+func CreateAccountLogoutRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := authorityAccountLogoutRoute{
-		authorityHandler: authorityHandler,
-		sessionRegistry:  sessionRegistry}
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
 	return &i, true
 }
 
 type authorityAccountLoginRoute struct {
-	authorityHandler common.CASHandler
-	sessionRegistry  common.SessionRegistry
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
 }
 
 type authorityLoginResult struct {
@@ -74,7 +74,7 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 
 		account := r.FormValue("login-account")
 		password := r.FormValue("login-password")
-		user, token, ok := i.authorityHandler.LoginAccount(account, password)
+		user, token, ok := i.casHandler.LoginAccount(account, password)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "登入失败"
@@ -109,8 +109,8 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 }
 
 type authorityAccountLogoutRoute struct {
-	authorityHandler common.CASHandler
-	sessionRegistry  common.SessionRegistry
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
 }
 
 type authorityLogoutResult struct {
@@ -149,7 +149,7 @@ func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		i.authorityHandler.LogoutAccount(token[0])
+		i.casHandler.LogoutAccount(token[0])
 		session.ClearAccount()
 		session.RemoveOption(common.AuthTokenID)
 
