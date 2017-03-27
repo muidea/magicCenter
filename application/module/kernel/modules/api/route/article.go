@@ -146,7 +146,7 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 	log.Print("getArticleHandler")
 
 	result := articleGetByIDResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -314,7 +314,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := articleCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -383,7 +383,7 @@ func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *htt
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := articleCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {

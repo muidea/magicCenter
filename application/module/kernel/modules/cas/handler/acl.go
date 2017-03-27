@@ -138,11 +138,11 @@ func (i *aclManager) delACL(url, method, module string) bool {
 	return ok
 }
 
-func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) bool {
+func (i *aclManager) adjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		log.Println("create new dbhelper failed")
-		return false
+		return model.ACL{}, false
 	}
 
 	acl := model.ACL{}
@@ -151,8 +151,8 @@ func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) boo
 	switch method {
 	case common.GET:
 		acl, ok = i.getACLAuthGroup[url]
-		if !ok {
-			return ok
+		if !ok || acl.Module != module {
+			return acl, ok
 		}
 
 		acl.AuthGroup = authGroup
@@ -162,8 +162,8 @@ func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) boo
 		}
 	case common.POST:
 		acl, ok = i.postACLAuthGroup[url]
-		if !ok {
-			return ok
+		if !ok || acl.Module != module {
+			return acl, ok
 		}
 
 		acl.AuthGroup = authGroup
@@ -173,8 +173,8 @@ func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) boo
 		}
 	case common.PUT:
 		acl, ok = i.putACLAuthGroup[url]
-		if !ok {
-			return ok
+		if !ok || acl.Module != module {
+			return acl, ok
 		}
 
 		acl.AuthGroup = authGroup
@@ -184,8 +184,8 @@ func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) boo
 		}
 	case common.DELETE:
 		acl, ok = i.deleteACLAuthGroup[url]
-		if !ok {
-			return ok
+		if !ok || acl.Module != module {
+			return acl, ok
 		}
 
 		acl.AuthGroup = authGroup
@@ -197,7 +197,7 @@ func (i *aclManager) adjustACLAuthGroup(url, method string, authGroup []int) boo
 		log.Printf("illegal method ,value:%s", method)
 	}
 
-	return ok
+	return acl, ok
 }
 
 func (i *aclManager) verifyAuthGroup(url, method string, authGroup []int) bool {

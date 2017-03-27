@@ -147,7 +147,7 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 	log.Print("getMediaHandler")
 
 	result := mediaGetByIDResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -315,7 +315,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := mediaCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -385,7 +385,7 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := mediaCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {

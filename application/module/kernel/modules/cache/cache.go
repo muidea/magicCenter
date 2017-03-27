@@ -90,7 +90,7 @@ func (instance *cacheModule) getCacheActionHandler(w http.ResponseWriter, r *htt
 	log.Println("getCacheActionHandler")
 
 	result := cacheResult{}
-	_, id := net.SplitResetAPI(r.URL.Path)
+	_, id := net.SplitRESTAPI(r.URL.Path)
 	obj, ok := instance.cache.FetchOut(id)
 	if ok {
 		result.Cache = obj
@@ -144,7 +144,7 @@ func (instance *cacheModule) deleteCacheActionHandler(w http.ResponseWriter, r *
 	log.Print("deleteCacheActionHandler")
 	log.Print(r.URL.Path)
 	result := common.Result{}
-	_, id := net.SplitResetAPI(r.URL.Path)
+	_, id := net.SplitRESTAPI(r.URL.Path)
 	log.Print(id)
 	instance.cache.Remove(id)
 	result.ErrCode = 0

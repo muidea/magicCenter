@@ -147,7 +147,7 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 	log.Print("getLinkHandler")
 
 	result := linkGetByIDResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -319,7 +319,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := linkCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -389,7 +389,7 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := linkCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {

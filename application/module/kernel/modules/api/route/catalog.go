@@ -144,7 +144,7 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 	log.Print("getCatalogHandler")
 
 	result := catalogGetByIDResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -312,7 +312,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := catalogCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -381,7 +381,7 @@ func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *htt
 
 	session := i.sessionRegistry.GetSession(w, r)
 	result := catalogCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {

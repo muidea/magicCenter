@@ -10,7 +10,15 @@ import (
 	"muidea.com/magicCenter/foundation/net"
 )
 
-func init() {
+// AppendAccountRoute 追加account 路由
+func AppendAccountRoute(routes []common.Route, authorityHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt, _ := CreateAccountLoginRoute(authorityHandler, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateAccountLogoutRoute(authorityHandler, sessionRegistry)
+	routes = append(routes, rt)
+
+	return routes
 }
 
 // CreateAccountLoginRoute 创建AccountLogin Route
@@ -44,7 +52,7 @@ func (i *authorityAccountLoginRoute) Method() string {
 }
 
 func (i *authorityAccountLoginRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/account/")
+	return net.JoinURL(def.URL, "/user/")
 }
 
 func (i *authorityAccountLoginRoute) Handler() interface{} {
@@ -114,7 +122,7 @@ func (i *authorityAccountLogoutRoute) Method() string {
 }
 
 func (i *authorityAccountLogoutRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/account/")
+	return net.JoinURL(def.URL, "/user/")
 }
 
 func (i *authorityAccountLogoutRoute) Handler() interface{} {

@@ -26,7 +26,7 @@ type CASHandler interface {
 	VerifyAuth(res http.ResponseWriter, req *http.Request) bool
 
 	// 更新授权组
-	GetAuthGroup(module string) ([]model.AuthGroup, bool)
+	QueryAuthGroup(module string) ([]model.AuthGroup, bool)
 	InsertAuthGroup(authGroups []model.AuthGroup) bool
 	DeleteAuthGroup(authGroups []model.AuthGroup) bool
 
@@ -41,5 +41,5 @@ type CASHandler interface {
 	DelACL(url, method, module string) bool
 
 	// 调整acl的授权组
-	AdjustACLAuthGroup(url, method string, authGroup []int) bool
+	AdjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool)
 }

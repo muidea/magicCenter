@@ -13,8 +13,8 @@ func JoinURL(prefix, subfix string) string {
 	return path.Join(prefix, subfix) + "/"
 }
 
-// SplitResetAPI 分割出RestAPI的路径和ID
-func SplitResetAPI(url string) (string, string) {
+// SplitRESTAPI 分割出RestAPI的路径和ID
+func SplitRESTAPI(url string) (string, string) {
 	urlPath, urlID := path.Split(url)
 	if len(urlID) > 0 {
 		return urlPath, urlID

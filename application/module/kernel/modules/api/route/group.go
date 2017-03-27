@@ -143,7 +143,7 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 	log.Print("getGroupHandler")
 
 	result := groupGetResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -297,7 +297,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 	log.Print("saveGroupHandler")
 
 	result := groupCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -367,7 +367,7 @@ func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.R
 	log.Print("destroyGroupHandler")
 
 	result := groupDestroyResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {

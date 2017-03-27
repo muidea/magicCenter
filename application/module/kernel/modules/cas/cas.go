@@ -22,11 +22,9 @@ func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry
 		sessionRegistry: sessionRegistry,
 		casHandler:      handler.CreateCASHandler(modHub, sessionRegistry)}
 
-	rt, _ := route.CreateAccountLoginRoute(instance.casHandler, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
-
-	rt, _ = route.CreateAccountLogoutRoute(instance.casHandler, sessionRegistry)
-	instance.routes = append(instance.routes, rt)
+	instance.routes = route.AppendAccountRoute(instance.routes, instance.casHandler, sessionRegistry)
+	instance.routes = route.AppendACLRoute(instance.routes, instance.casHandler, sessionRegistry)
+	instance.routes = route.AppendAuthGropRoute(instance.routes, instance.casHandler, sessionRegistry)
 
 	modHub.RegisterModule(instance)
 }

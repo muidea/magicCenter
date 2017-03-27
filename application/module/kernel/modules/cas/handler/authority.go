@@ -86,7 +86,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 	return true
 }
 
-func (i *impl) GetAuthGroup(module string) ([]model.AuthGroup, bool) {
+func (i *impl) QueryAuthGroup(module string) ([]model.AuthGroup, bool) {
 	return i.authGroupManager.findAuthGroup(module)
 }
 
@@ -118,7 +118,7 @@ func (i *impl) DelACL(url, method, module string) bool {
 	return i.aclManager.delACL(url, method, module)
 }
 
-func (i *impl) AdjustACLAuthGroup(url, method string, authGroup []int) bool {
+func (i *impl) AdjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool) {
 
-	return i.aclManager.adjustACLAuthGroup(url, method, authGroup)
+	return i.aclManager.adjustACLAuthGroup(url, method, module, authGroup)
 }

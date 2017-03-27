@@ -143,7 +143,7 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getUserHandler")
 
 	result := userGetResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -290,7 +290,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 	log.Print("saveUserHandler")
 
 	result := userCreateResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
@@ -363,7 +363,7 @@ func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Req
 	log.Print("destroyUserHandler")
 
 	result := userDestroyResult{}
-	_, value := net.SplitResetAPI(r.URL.Path)
+	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
