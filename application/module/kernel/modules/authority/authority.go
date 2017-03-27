@@ -3,8 +3,8 @@ package authority
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/authority/handler"
-	"muidea.com/magicCenter/application/module/kernel/authority/route"
+	"muidea.com/magicCenter/application/module/kernel/modules/authority/handler"
+	"muidea.com/magicCenter/application/module/kernel/modules/authority/route"
 )
 
 // ID 模块ID

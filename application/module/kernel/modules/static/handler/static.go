@@ -7,7 +7,7 @@ import (
 	"path"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/module/kernel/static/util"
+	"muidea.com/magicCenter/application/module/kernel/modules/static/util"
 )
 
 // CreateStaticHandler 新建StaticHandler

@@ -3,7 +3,7 @@ package api
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/api/route"
+	"muidea.com/magicCenter/application/module/kernel/modules/api/route"
 )
 
 // ID 模块ID

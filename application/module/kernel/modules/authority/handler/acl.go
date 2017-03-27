@@ -5,7 +5,7 @@ import (
 
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/authority/dal"
+	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
 )
 
 type aclManager struct {

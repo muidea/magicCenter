@@ -3,7 +3,7 @@ package account
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/account/handler"
+	"muidea.com/magicCenter/application/module/kernel/modules/account/handler"
 )
 
 // ID 模块ID
