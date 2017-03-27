@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
@@ -63,7 +64,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 			return false
 		}
 	}
-	if !i.aclManager.verifyAuthGroup(req.URL.Path, req.Method, authGroup) {
+	if !i.aclManager.verifyAuthGroup(req.URL.Path, strings.ToLower(req.Method), authGroup) {
 		return false
 	}
 

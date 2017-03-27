@@ -5,7 +5,7 @@ $(document).ready(function() {
         dataType: 'json' // 'xml', 'script', or 'json' (expected server response type) 
     };
 
-    $('#login_form').attr("action", "/authority/account/");
+    $('#login_form').attr("action", "/cas/user/");
 
     // 绑定表单提交事件处理器
     $('#login_form').submit(function() {
