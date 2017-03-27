@@ -36,8 +36,9 @@ type AuthorityHandler interface {
 	GetUserAuthGroup(userID int) ([]int, bool)
 
 	// 更新acl route
-	AddACLRoute(moduleURL string, route Route) bool
-	DelACLRoute(moduleURL string, route Route) bool
+	QueryACL(module string) []model.ACL
+	AddACL(url, module string, route Route) bool
+	DelACL(url, module string, route Route) bool
 
 	// 调整acl的授权组
 	AdjustACLAuthGroup(modelURL string, route Route, authGroup []int) bool

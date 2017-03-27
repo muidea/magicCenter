@@ -8,10 +8,10 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
-// InsertACL 新怎ACL记录
-func InsertACL(helper dbhelper.DBHelper, url string) (model.ACL, bool) {
-	acl := model.ACL{URL: url, AuthGroup: []int{}}
-	sql := fmt.Sprintf("insert into acl (url) values ('%s')", url)
+// InsertACL 新增ACL记录
+func InsertACL(helper dbhelper.DBHelper, url, module string) (model.ACL, bool) {
+	acl := model.ACL{URL: url, Module: module, AuthGroup: []int{}}
+	sql := fmt.Sprintf("insert into acl (url, module) values ('%s','%s')", url, module)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
 		return acl, false
@@ -43,14 +43,32 @@ func UpateACL(helper dbhelper.DBHelper, acl model.ACL) bool {
 	return ok && num == 1
 }
 
-// LoadACL 加载所有ACL
-func LoadACL(helper dbhelper.DBHelper) []model.ACL {
+// QueryACL 查询指定Module的ACL信息
+func QueryACL(helper dbhelper.DBHelper, module string) []model.ACL {
 	acls := []model.ACL{}
-	sql := fmt.Sprint("select id, url, authgroup from acl")
+	sql := fmt.Sprintf("select id, url, module, authgroup from acl where module='%s'", module)
 	helper.Query(sql)
 	for helper.Next() {
 		acl := model.ACL{}
-		helper.GetValue(&acl.ID, &acl.URL, &acl.AuthGroup)
+		authGroups := ""
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Module, &authGroups)
+		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
+		acls = append(acls, acl)
+	}
+
+	return acls
+}
+
+// LoadACL 加载所有ACL
+func LoadACL(helper dbhelper.DBHelper) []model.ACL {
+	acls := []model.ACL{}
+	sql := fmt.Sprint("select id, url,module, authgroup from acl")
+	helper.Query(sql)
+	for helper.Next() {
+		acl := model.ACL{}
+		authGroups := ""
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Module, &authGroups)
+		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
 		acls = append(acls, acl)
 	}
 

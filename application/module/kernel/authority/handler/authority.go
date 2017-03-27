@@ -15,7 +15,8 @@ func CreateAuthorityHandler(modHub common.ModuleHub, sessionRegistry common.Sess
 		sessionRegistry:  sessionRegistry,
 		accountManager:   createAccountManager(modHub),
 		authGroupManager: createAuthGroupManager(),
-		aclManager:       createACLManager()}
+		aclManager:       createACLManager(),
+		cacheData:        cache.NewCache()}
 
 	return &i
 }
@@ -107,16 +108,20 @@ func (i *impl) GetUserAuthGroup(userID int) ([]int, bool) {
 	return i.authGroupManager.getUserAuthGroup(userID)
 }
 
-func (i *impl) AddACLRoute(moduleURL string, route common.Route) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
-
-	return i.aclManager.addACLRoute(url)
+func (i *impl) QueryACL(module string) ([]model.ACL, bool) {
+	return i.aclManager.queryACL(module)
 }
 
-func (i *impl) DelACLRoute(moduleURL string, route common.Route) bool {
-	url := net.JoinURL(moduleURL, route.Pattern()) + ":" + route.Method()
+func (i *impl) AddACL(url, module string, route common.Route) bool {
+	url = net.JoinURL(url, route.Pattern()) + ":" + route.Method()
 
-	return i.aclManager.delACLRoute(url)
+	return i.aclManager.addACL(url, module)
+}
+
+func (i *impl) DelACL(url, module string, route common.Route) bool {
+	url = net.JoinURL(url, route.Pattern()) + ":" + route.Method()
+
+	return i.aclManager.delACL(url, module)
 }
 
 func (i *impl) AdjustACLAuthGroup(moduleURL string, route common.Route, authGroup []int) bool {

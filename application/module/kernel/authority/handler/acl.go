@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/authority/dal"
@@ -20,6 +22,7 @@ func createACLManager() aclManager {
 func (i *aclManager) loadAllACL() bool {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
+		log.Println("create new dbhelper failed")
 		return false
 	}
 
@@ -31,13 +34,24 @@ func (i *aclManager) loadAllACL() bool {
 	return true
 }
 
-func (i *aclManager) addACLRoute(url string) bool {
+func (i *aclManager) queryACL(module string) ([]model.ACL, bool) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
+		log.Println("create new dbhelper failed")
+		return []model.ACL{}, false
+	}
+
+	return dal.QueryACL(dbhelper, module), true
+}
+
+func (i *aclManager) addACL(url, module string) bool {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		log.Println("create new dbhelper failed")
 		return false
 	}
 
-	acl, ok := dal.InsertACL(dbhelper, url)
+	acl, ok := dal.InsertACL(dbhelper, url, module)
 	if ok {
 		i.aclAuthGroup[url] = acl
 	}
@@ -45,9 +59,10 @@ func (i *aclManager) addACLRoute(url string) bool {
 	return true
 }
 
-func (i *aclManager) delACLRoute(url string) bool {
+func (i *aclManager) delACL(url, module string) bool {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
+		log.Println("create new dbhelper failed")
 		return false
 	}
 
@@ -70,6 +85,7 @@ func (i *aclManager) adjustACLAuthGroup(url string, authGroup []int) bool {
 
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
+		log.Println("create new dbhelper failed")
 		return false
 	}
 	acl.AuthGroup = authGroup
