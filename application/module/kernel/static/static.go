@@ -3,8 +3,8 @@ package static
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/modules/static/handler"
-	"muidea.com/magicCenter/application/module/kernel/modules/static/route"
+	"muidea.com/magicCenter/application/module/kernel/static/handler"
+	"muidea.com/magicCenter/application/module/kernel/static/route"
 )
 
 // ID Static模块ID

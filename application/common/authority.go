@@ -36,7 +36,7 @@ type AuthorityHandler interface {
 	GetUserAuthGroup(userID int) ([]int, bool)
 
 	// 更新acl route
-	QueryACL(module string) []model.ACL
+	QueryACL(module string) ([]model.ACL, bool)
 	AddACL(url, module string, route Route) bool
 	DelACL(url, module string, route Route) bool
 

@@ -22,7 +22,7 @@ const Name = "Magic Dashboard"
 const Description = "Magic Dashboard模块"
 
 // URL 模块Url
-const URL string = "/dashboard"
+const URL = "/dashboard"
 
 // 授权分组属性Key，用于读取和存储授权分组信息
 const authGroupKey = "f67123ea-6fe0-5e46-1234-e6ca1af6fe4e_authGroupKey"

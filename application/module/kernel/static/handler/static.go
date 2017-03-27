@@ -3,13 +3,11 @@ package handler
 import (
 	"html/template"
 	"net/http"
-
+	"os"
 	"path"
 
-	"os"
-
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/module/kernel/modules/static/util"
+	"muidea.com/magicCenter/application/module/kernel/static/util"
 )
 
 // CreateStaticHandler 新建StaticHandler

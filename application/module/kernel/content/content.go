@@ -3,7 +3,7 @@ package content
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/application/module/kernel/modules/content/handler"
+	"muidea.com/magicCenter/application/module/kernel/content/handler"
 )
 
 // ID 模块ID

@@ -2,13 +2,13 @@ package loader
 
 import (
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/module/kernel/account"
 	"muidea.com/magicCenter/application/module/kernel/api"
 	"muidea.com/magicCenter/application/module/kernel/authority"
-	"muidea.com/magicCenter/application/module/kernel/modules/account"
-	"muidea.com/magicCenter/application/module/kernel/modules/cache"
-	"muidea.com/magicCenter/application/module/kernel/modules/content"
-	"muidea.com/magicCenter/application/module/kernel/modules/mail"
-	"muidea.com/magicCenter/application/module/kernel/modules/static"
+	"muidea.com/magicCenter/application/module/kernel/cache"
+	"muidea.com/magicCenter/application/module/kernel/content"
+	"muidea.com/magicCenter/application/module/kernel/mail"
+	"muidea.com/magicCenter/application/module/kernel/static"
 )
 
 // LoadAllModules 加载所有模块
