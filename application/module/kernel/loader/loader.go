@@ -21,7 +21,7 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 
 	account.LoadModule(configuration, modulHub)
 
-	content.LoadModule(configuration, modulHub)
+	content.LoadModule(configuration, sessionRegistry, modulHub)
 
 	cas.LoadModule(configuration, sessionRegistry, modulHub)
 

@@ -5,6 +5,7 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/handler"
+	"muidea.com/magicCenter/application/module/kernel/modules/content/route"
 )
 
 type content struct {
@@ -13,8 +14,13 @@ type content struct {
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
+func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
 	instance := &content{contentHandler: handler.CreateContentHandler()}
+
+	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, sessionRegistry)
+	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, sessionRegistry)
+	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, sessionRegistry)
+	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, sessionRegistry)
 
 	modHub.RegisterModule(instance)
 }

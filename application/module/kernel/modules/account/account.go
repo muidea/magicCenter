@@ -5,11 +5,15 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/handler"
+	"muidea.com/magicCenter/application/module/kernel/modules/account/route"
 )
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &account{accountHandler: handler.CreateAccountHandler()}
+
+	instance.routes = route.AppendUserRoute(instance.routes, instance.accountHandler)
+	instance.routes = route.AppendGroupRoute(instance.routes, instance.accountHandler)
 
 	modHub.RegisterModule(instance)
 }
@@ -49,6 +53,10 @@ func (instance *account) EndPoint() interface{} {
 
 func (instance *account) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
+
+	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", def.ID))
 
 	return groups
 }
