@@ -9,6 +9,7 @@
     <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
     <script type="text/javascript" src="/static/common/js/common.js"></script>
+    <script type="text/javascript" src="/static/common/avalon/2.2.5/avalon.modern.js"></script>
     <script type="text/javascript" src="/static/dashboard/cas/js/acl.js"></script>
     </script>
 </head>
@@ -22,7 +23,7 @@
             </ul>
         </div>
         <div class="content-content">
-            <div class="tab-content" id="acl-List">
+            <div class="tab-content" id="acl-List" ms-controller="acl-List">
                 <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -41,13 +42,12 @@
                             <th>URL</th>
                             <th>方法</th>
                             <th>所属模块</th>
-                            <th>权限组</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="5">
                                 <div class="clear"></div>
                             </td>
                         </tr>
@@ -58,21 +58,16 @@
                             <td><a class="edit" href="#" title="title">Title</a></td>
                             <td>catalog</td>
                             <td>author</td>
-                            <td>2015年8月25日</td>
                             <td>
-                                <a class="edit" href="#" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                                <a class="edit" href="#" title="Edit"><img src="/static/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
                             </td>
                         </tr>
-                        <tr class="acl">
-                            <td><input type="checkbox" /></td>
-                            <td><a class="edit" href="#" title="title">Title</a></td>
-                            <td>catalog</td>
-                            <td>author</td>
-                            <td>2015年8月25日</td>
+                        <tr ms-for="el in @acl">
+                            <td ms-for="v in el">{{v}}</td>
                             <td>
-                                <a class="edit" href="#" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                                <a class="edit" href="#" title="Edit"><img src="/static/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
                             </td>
                         </tr>
                     </tbody>
@@ -114,9 +109,6 @@
             </div>
         </div>
     </div>
-    <script src="js/aclManagerApp.js"></script>
-    <script src="js/aclListController.js"></script>
-    <script src="js/aclEditController.js"></script>
 </body>
 
 </html>

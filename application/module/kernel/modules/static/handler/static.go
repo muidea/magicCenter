@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"html/template"
 	"net/http"
 	"os"
 	"path"
@@ -19,24 +18,6 @@ func CreateStaticHandler(rootPath string) common.StaticHandler {
 
 type impl struct {
 	rootPath string
-}
-
-func (i *impl) HandleView(basePath string, w http.ResponseWriter, r *http.Request) {
-	fullPath := util.MergePath(i.rootPath, basePath, r.URL.Path)
-	_, err := os.Stat(fullPath)
-	if err == nil || os.IsExist(err) {
-	} else {
-		fullPath = path.Join(i.rootPath, "404.html")
-	}
-
-	w.Header().Set("content-type", "text/html")
-	w.Header().Set("charset", "utf-8")
-	t, err := template.ParseFiles(fullPath)
-	if err != nil {
-		panic("parse files failed")
-	}
-
-	t.Execute(w, nil)
 }
 
 func (i *impl) HandleResource(basePath string, w http.ResponseWriter, r *http.Request) {

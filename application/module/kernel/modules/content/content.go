@@ -56,6 +56,10 @@ func (instance *content) EndPoint() interface{} {
 func (instance *content) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
+	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", def.ID))
+	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", def.ID))
+
 	return groups
 }
 

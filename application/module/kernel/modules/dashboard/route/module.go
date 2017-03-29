@@ -21,37 +21,40 @@ func AppendModuleRoute(routes []common.Route, modHub common.ModuleHub) []common.
 
 // CreateGetAllModule 新建GetAllModule Route
 func CreateGetAllModule(modHub common.ModuleHub) common.Route {
-	rt := dashBoardGetAllRoute{moduleHub: modHub}
+	rt := dashBoardGetAllModuleRoute{moduleHub: modHub}
 
 	return &rt
 }
 
-type dashBoardGetAllRoute struct {
+type dashBoardGetAllModuleRoute struct {
 	moduleHub common.ModuleHub
 }
 
-type dashBoardGetAllResult struct {
+type dashBoardGetAllModuleResult struct {
 	common.Result
 	Module []model.Module
 }
 
-func (i *dashBoardGetAllRoute) Method() string {
+func (i *dashBoardGetAllModuleRoute) Method() string {
 	return common.GET
 }
 
-func (i *dashBoardGetAllRoute) Pattern() string {
+func (i *dashBoardGetAllModuleRoute) Pattern() string {
 	return net.JoinURL(def.URL, "/module/")
 }
 
-func (i *dashBoardGetAllRoute) Handler() interface{} {
+func (i *dashBoardGetAllModuleRoute) Handler() interface{} {
 	return i.getAllModuleHandler
 }
 
-func (i *dashBoardGetAllRoute) getAllModuleHandler(w http.ResponseWriter, r *http.Request) {
+func (i *dashBoardGetAllModuleRoute) getAllModuleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getAllModuleHandler")
 
-	result := dashBoardGetAllResult{}
+	result := dashBoardGetAllModuleResult{}
 	for true {
+		mod, _ := i.moduleHub.FindModule(common.CASModuleID)
+		casHandler := mod.EndPoint().(common.CASHandler)
+
 		modules := i.moduleHub.QueryAllModule()
 		for _, v := range modules {
 			module := model.Module{ID: v.ID(), Name: v.Name(), Description: v.Description(), Type: v.Type(), Status: v.Status()}
@@ -60,6 +63,13 @@ func (i *dashBoardGetAllRoute) getAllModuleHandler(w http.ResponseWriter, r *htt
 			for _, rt := range routes {
 				route := model.Route{Pattern: rt.Pattern(), Method: rt.Method()}
 				module.Route = append(module.Route, route)
+			}
+			if module.Route == nil {
+				module.Route = []model.Route{}
+			}
+			module.AuthGroup, _ = casHandler.QueryAuthGroup(v.ID())
+			if module.AuthGroup == nil {
+				module.AuthGroup = []model.AuthGroup{}
 			}
 
 			result.Module = append(result.Module, module)

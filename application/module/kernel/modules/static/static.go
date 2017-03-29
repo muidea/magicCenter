@@ -17,10 +17,7 @@ type static struct {
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
 	instance := &static{staticHandler: handler.CreateStaticHandler("./static/")}
 
-	rt := route.CreateStaticViewRoute(instance.staticHandler)
-	instance.routes = append(instance.routes, rt)
-
-	rt = route.CreateStaticResRoute(instance.staticHandler)
+	rt := route.CreateStaticResRoute(instance.staticHandler)
 	instance.routes = append(instance.routes, rt)
 
 	modHub.RegisterModule(instance)

@@ -15,6 +15,7 @@ type Module struct {
 	Type        int
 	Status      int
 	Route       []Route
+	AuthGroup   []AuthGroup
 }
 
 // Route 路由信息
