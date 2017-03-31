@@ -88,7 +88,7 @@ func (i *impl) VerifyAuth(res http.ResponseWriter, req *http.Request) bool {
 }
 
 func (i *impl) QueryAuthGroup(module string) ([]model.AuthGroup, bool) {
-	return i.authGroupManager.findAuthGroup(module)
+	return i.authGroupManager.queryAuthGroup(module)
 }
 
 func (i *impl) InsertAuthGroup(authGroups []model.AuthGroup) bool {

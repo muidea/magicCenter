@@ -1,7 +1,7 @@
-var acl = {};
+var acl = { module: [] };
 
 acl.acl2AclView = function(acls) {
-    var ret = new Array();
+    var aclListView = new Array();
     for (var i = 0; i < acls.length; ++i) {
         var curAcl = acls[i];
 
@@ -20,11 +20,64 @@ acl.acl2AclView = function(acls) {
             Module: curModule.Name
         };
 
-        ret[i] = view;
+        aclListView[i] = view;
     }
 
-    return ret;
+    return aclListView;
 };
+
+// 加载全部的Module
+acl.getModules = function(callBack) {
+    $.ajax({
+        type: "GET",
+        url: "/dashboard/module/",
+        data: {},
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.Module);
+            }
+        }
+    });
+};
+
+acl.getModulesCallBack = function(errCode, modules) {
+    if (errCode != 0) {
+        return;
+    }
+
+    acl.module = modules;
+    acl.getAcls(acl.getAclsCallBack);
+};
+
+// 加载全部已经定义的ACL
+acl.getAcls = function(callBack) {
+    var acls = [];
+    $.ajax({
+        type: "GET",
+        url: "/cas/acl/?module=all",
+        data: {},
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.ACLs);
+            }
+        }
+    });
+};
+
+acl.getAclsCallBack = function(errCode, acls) {
+    if (errCode != 0) {
+        return;
+    }
+
+    acl.acl = acls;
+    acl.listVM.acl = acl.acl2AclView(acls);
+};
+
+acl.updateEditVM = function(modules) {
+    acl.editVM.module = modules
+}
 
 $(document).ready(function() {
 
@@ -33,27 +86,18 @@ $(document).ready(function() {
         acl: []
     });
 
-    $.ajax({
-        type: "GET",
-        url: "/dashboard/module/",
-        data: {},
-        dataType: "json",
-        success: function(data) {
-            if (data.ErrCode == 0) {
-                acl.module = data.Module;
-            }
-        }
+    acl.editVM = avalon.define({
+        $id: "acl-Edit",
+        module: [],
+        acl: {}
     });
 
-    $.ajax({
-        type: "GET",
-        url: "/cas/acl/?module=all",
-        data: {},
-        dataType: "json",
-        success: function(data) {
-            if (data.ErrCode == 0) {
-                acl.listVM.acl = acl.acl2AclView(data.ACLs);
-            }
+    // 加载完成
+    acl.getModules(acl.getModulesCallBack);
+
+    $("#selectModule").click(
+        function() {
+            acl.updateEditVM(acl.module);
         }
-    });
+    );
 });

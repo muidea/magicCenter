@@ -3,6 +3,8 @@ package handler
 import (
 	"log"
 
+	"strings"
+
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
@@ -58,6 +60,10 @@ func (i *aclManager) queryACL(module string) ([]model.ACL, bool) {
 	if err != nil {
 		log.Println("create new dbhelper failed")
 		return []model.ACL{}, false
+	}
+
+	if strings.ToLower(module) == "all" {
+		return dal.QueryAllACL(dbhelper), true
 	}
 
 	return dal.QueryACL(dbhelper, module), true

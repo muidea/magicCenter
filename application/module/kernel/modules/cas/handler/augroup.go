@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strings"
+
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/dal"
@@ -37,7 +39,16 @@ func (i *authGroupManager) loadAllAuthGroup() bool {
 	return true
 }
 
-func (i *authGroupManager) findAuthGroup(module string) ([]model.AuthGroup, bool) {
+func (i *authGroupManager) queryAuthGroup(module string) ([]model.AuthGroup, bool) {
+	if strings.ToLower(module) == "all" {
+		authGroups := []model.AuthGroup{}
+		for _, groups := range i.module2AuthGroup {
+			authGroups = append(authGroups, groups...)
+		}
+
+		return authGroups, true
+	}
+
 	authGroups, found := i.module2AuthGroup[module]
 	return authGroups, found
 }

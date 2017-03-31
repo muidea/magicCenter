@@ -3,8 +3,6 @@ package dal
 import (
 	"fmt"
 
-	"strings"
-
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/util"
@@ -45,15 +43,27 @@ func UpateACL(helper dbhelper.DBHelper, acl model.ACL) bool {
 	return ok && num == 1
 }
 
+// QueryAllACL 查询全部ACL信息
+func QueryAllACL(helper dbhelper.DBHelper) []model.ACL {
+	acls := []model.ACL{}
+	sql := fmt.Sprint("select id, url, method, module, authgroup from acl order by module, method")
+
+	helper.Query(sql)
+	for helper.Next() {
+		acl := model.ACL{}
+		authGroups := ""
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &authGroups)
+		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
+		acls = append(acls, acl)
+	}
+
+	return acls
+}
+
 // QueryACL 查询指定Module的ACL信息
 func QueryACL(helper dbhelper.DBHelper, module string) []model.ACL {
 	acls := []model.ACL{}
-	sql := ""
-	if strings.ToLower(module) == "all" {
-		sql = fmt.Sprint("select id, url, method, module, authgroup from acl order by module")
-	} else {
-		sql = fmt.Sprintf("select id, url, method, module, authgroup from acl where module='%s'", module)
-	}
+	sql := fmt.Sprintf("select id, url, method, module, authgroup from acl where module='%s'", module)
 
 	helper.Query(sql)
 	for helper.Next() {

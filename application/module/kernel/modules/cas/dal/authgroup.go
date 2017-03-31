@@ -33,7 +33,7 @@ func DeleteAuthGroup(helper dbhelper.DBHelper, id int) bool {
 // GetAllAuthGroup 获取所有AuthGroup
 func GetAllAuthGroup(helper dbhelper.DBHelper) []model.AuthGroup {
 	authGroups := []model.AuthGroup{}
-	sql := fmt.Sprint("select id,name,description,module from authgroup")
+	sql := fmt.Sprint("select id,name,description,module from authgroup order by module")
 	helper.Query(sql)
 	for helper.Next() {
 		authGroup := model.AuthGroup{}
