@@ -26,6 +26,28 @@ acl.acl2AclView = function(acls) {
     return aclListView;
 };
 
+acl.module2AclView = function(modules) {
+    var aclListView = new Array();
+    var ii = 0;
+    for (var idx = 0; idx < modules.length; ++idx) {
+        var curModule = modules[idx];
+        for (var rIdx = 0; rIdx < curModule.Route.length; ++rIdx) {
+            var curRoute = curModule.Route[rIdx];
+            var view = {
+                URL: curRoute.Pattern,
+                Method: curRoute.Method,
+                Module: curModule.Name,
+                ModuleID: curModule.ID
+            }
+
+            aclListView[ii++] = view;
+        }
+    }
+
+    return aclListView;
+}
+
+
 // 加载全部的Module
 acl.getModules = function(callBack) {
     $.ajax({
@@ -95,9 +117,39 @@ $(document).ready(function() {
     // 加载完成
     acl.getModules(acl.getModulesCallBack);
 
-    $("#selectModule").click(
+    $('#moduleListModal').on('show.bs.modal', function(e) {
+        acl.updateEditVM(acl.module);
+
+        $("#moduleListModal .module").prop("checked", false);
+    });
+
+    $('#moduleListModal').on('hidden.bs.modal', function(e) {
+        var selectModuleNames = "";
+        var selectModuleArray = new Array()
+        var offset = 0;
+        $("#moduleListModal .module:checked").each(
+            function() {
+                var id = $(this).val();
+                for (var idx = 0; idx < acl.module.length; idx++) {
+                    var cur = acl.module[idx];
+                    if (cur.ID == id) {
+                        selectModuleArray[offset++] = cur;
+                        if (selectModuleNames.length > 0) {
+                            selectModuleNames += ", ";
+                        }
+                        selectModuleNames += cur.Name;
+                    }
+                }
+            }
+        );
+
+        $("#acl-Edit .acl-selectModule").val(selectModuleNames);
+        acl.editVM.acl = acl.module2AclView(selectModuleArray)
+    });
+
+    $("#moduleListModal .btn-primary").click(
         function() {
-            acl.updateEditVM(acl.module);
+            $('#moduleListModal').modal('hide')
         }
     );
 });

@@ -74,22 +74,22 @@
             <div class="table-content" id="acl-Edit" ms-controller="acl-Edit">
                 <div class="container-fluid page-header">
                     <div class="input-group col-md-8 col-md-offset-2">
-                        <input class="form-control acl-title" placeholder="Select module..." type="text" name="acl-title" />
-                        <span class="input-group-btn"><button class="btn btn-default" type="button" data-toggle="modal" data-target="#myModal" id="selectModule">选择模块</button></span>
+                        <input class="form-control acl-selectModule" placeholder="Select module..." type="text" />
+                        <span class="input-group-btn"><button class="btn btn-default" type="button" data-keyboard="false" data-toggle="modal" data-target="#moduleListModal">选择模块</button></span>
                     </div>
 
                     <!-- Modal -->
-                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal fade" id="moduleListModal" tabindex="-1" role="dialog" aria-labelledby="moduleListModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="myModalLabel">选择模块</h4>
+                                    <h4 class="modal-title" id="moduleListModalLabel">选择模块</h4>
                                 </div>
                                 <div class="modal-body">
                                     <div class="container-fluid">
                                         <div class="row" ms-for="el in @module">
-                                            <div class="col-md-6"><input type="checkbox" value="{{el.ID}}">{{el.Name}}</div>
+                                            <div class="col-md-6"><input class="module" type="checkbox" ms-attr="{value: el.ID}">{{el.Name}}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -123,6 +123,12 @@
                             <td>url</td>
                             <td>get</td>
                             <td>module</td>
+                        </tr>
+                        <tr class="acl" ms-for="el in @acl">
+                            <td><input type="checkbox" /></td>
+                            <td>{{el.URL}}</td>
+                            <td>{{el.Method}}</td>
+                            <td>{{el.Module}}</td>
                         </tr>
                     </tbody>
                 </table>
