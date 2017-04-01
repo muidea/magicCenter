@@ -146,10 +146,4 @@ $(document).ready(function() {
         $("#acl-Edit .acl-selectModule").val(selectModuleNames);
         acl.editVM.acl = acl.module2AclView(selectModuleArray)
     });
-
-    $("#moduleListModal .btn-primary").click(
-        function() {
-            $('#moduleListModal').modal('hide')
-        }
-    );
 });
