@@ -48,19 +48,8 @@
                         </tr>
                     </tfoot>
                     <tbody>
-                        <tr class="acl">
-                            <td><input type="checkbox" /></td>
-                            <td><a class="edit" href="#" title="title">Title</a></td>
-                            <td>catalog</td>
-                            <td>author</td>
-                            <td>
-                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
-                            </td>
-                        </tr>
                         <tr ms-for="el in @acl">
-                            <td><input type="checkbox" />
-                                <!--{{el.ID}}-->
-                            </td>
+                            <td><input type="checkbox" ms-attr="{value: el.ID}" /></td>
                             <td>{{el.URL}}</td>
                             <td>{{el.Method}}</td>
                             <td>{{el.Module}}</td>
@@ -89,7 +78,7 @@
                                 <div class="modal-body">
                                     <div class="container-fluid">
                                         <div class="row" ms-for="el in @module">
-                                            <div class="col-md-6"><input class="module" type="checkbox" ms-attr="{value: el.ID}">{{el.Name}}</div>
+                                            <div class="col-md-6"><input class="module" type="radio" name="select-module" ms-attr="{value: el.ID}">{{el.Name}}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -110,22 +99,9 @@
                             <th>所属模块</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4">
-                                <div class="clear"></div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        <tr class="acl">
-                            <td><input type="checkbox" /></td>
-                            <td>url</td>
-                            <td>get</td>
-                            <td>module</td>
-                        </tr>
-                        <tr class="acl" ms-for="el in @acl">
-                            <td><input type="checkbox" /></td>
+                    <tbody id="selectAcl-List">
+                        <tr ms-for="el in @acl">
+                            <td><input type="checkbox" ms-attr="{value: el.ID, class: 'acl_' + el.ID}" /></td>
                             <td>{{el.URL}}</td>
                             <td>{{el.Method}}</td>
                             <td>{{el.Module}}</td>
@@ -133,7 +109,7 @@
                     </tbody>
                 </table>
                 <div class="container-fluid text-right">
-                    <button type="submit" class="btn btn-default">添加</button>
+                    <button type="button" class="btn btn-default" id="selectAcl-button">添加</button>
                 </div>
             </div>
         </div>

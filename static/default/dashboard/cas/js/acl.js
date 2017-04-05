@@ -1,9 +1,13 @@
 var acl = { module: [] };
 
-acl.acl2AclView = function(acls) {
+acl.acl2AclView = function(acls, filterAclFun) {
     var aclListView = new Array();
     for (var i = 0; i < acls.length; ++i) {
         var curAcl = acls[i];
+
+        if (!filterAclFun(curAcl)) {
+            continue;
+        }
 
         var curModule = null;
         for (var idx = 0; idx < acl.module.length; ++idx) {
@@ -26,21 +30,27 @@ acl.acl2AclView = function(acls) {
     return aclListView;
 };
 
-acl.module2AclView = function(modules) {
+acl.filterModuleAclView = function(modules) {
     var aclListView = new Array();
     var ii = 0;
-    for (var idx = 0; idx < modules.length; ++idx) {
-        var curModule = modules[idx];
-        for (var rIdx = 0; rIdx < curModule.Route.length; ++rIdx) {
-            var curRoute = curModule.Route[rIdx];
-            var view = {
-                URL: curRoute.Pattern,
-                Method: curRoute.Method,
-                Module: curModule.Name,
-                ModuleID: curModule.ID
-            }
+    for (var aclIdx = 0; aclIdx < acl.acl.length; ++aclIdx) {
+        var curAcl = acl.acl[aclIdx];
 
-            aclListView[ii++] = view;
+        for (var idx = 0; idx < modules.length; ++idx) {
+            var curModule = modules[idx];
+
+            if (curAcl.Module == curModule.ID) {
+                var view = {
+                    ID: curAcl.ID,
+                    URL: curAcl.URL,
+                    Method: curAcl.Method,
+                    Module: curModule.Name,
+                    ModuleID: curModule.ID,
+                    Enable: curAcl.Enable
+                }
+
+                aclListView[ii++] = view;
+            }
         }
     }
 
@@ -94,7 +104,9 @@ acl.getAclsCallBack = function(errCode, acls) {
     }
 
     acl.acl = acls;
-    acl.listVM.acl = acl.acl2AclView(acls);
+    acl.listVM.acl = acl.acl2AclView(acls, function(item) {
+        return item.Enable > 0;
+    });
 };
 
 acl.updateEditVM = function(modules) {
@@ -144,6 +156,42 @@ $(document).ready(function() {
         );
 
         $("#acl-Edit .acl-selectModule").val(selectModuleNames);
-        acl.editVM.acl = acl.module2AclView(selectModuleArray)
+        acl.editVM.acl = acl.filterModuleAclView(selectModuleArray)
+        for (var offset = 0; offset < acl.editVM.acl.length; ++offset) {
+            var curAcl = acl.editVM.acl[offset];
+            if (curAcl.Enable > 0) {
+                console.log($("#selectAcl-List .acl_" + curAcl.ID));
+
+                $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
+            }
+        }
     });
+
+    $("#selectAcl-button").click(
+        function() {
+            var aclList = new Array();
+            var offset = 0;
+            var selectAcl = $("#selectAcl-List .acl-id:checked");
+            for (var idx = 0; idx < acl.editVM.acl.length; ++idx) {
+                var curAcl = acl.editVM.acl[idx];
+                selectAcl.each(
+                    function() {
+                        var id = $(this).val();
+                        if (id == curAcl.ID) {
+                            var val = {
+                                ID: curAcl.ID,
+                                URL: curAcl.URL,
+                                Method: curAcl.Method,
+                                Module: curAcl.ModuleID
+                            }
+
+                            aclList[offset++] = val;
+                        }
+                    }
+                );
+            }
+
+            console.log(aclList);
+        }
+    );
 });

@@ -76,7 +76,7 @@ func (i *aclManager) addACL(url, method, module string) (model.ACL, bool) {
 		return model.ACL{}, false
 	}
 
-	acl, ok := dal.InsertACL(dbhelper, url, method, module)
+	acl, ok := dal.InsertACL(dbhelper, url, method, module, 0)
 	if ok {
 		switch method {
 		case common.GET:
