@@ -160,8 +160,6 @@ $(document).ready(function() {
         for (var offset = 0; offset < acl.editVM.acl.length; ++offset) {
             var curAcl = acl.editVM.acl[offset];
             if (curAcl.Enable > 0) {
-                console.log($("#selectAcl-List .acl_" + curAcl.ID));
-
                 $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
             }
         }

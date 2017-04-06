@@ -101,7 +101,7 @@
                     </thead>
                     <tbody id="selectAcl-List">
                         <tr ms-for="el in @acl">
-                            <td><input type="checkbox" ms-attr="{value: el.ID, class: 'acl_' + el.ID}" /></td>
+                            <td><input type="checkbox" ms-attr="{value: el.ID, class: 'acl-id acl_' + el.ID}" /></td>
                             <td>{{el.URL}}</td>
                             <td>{{el.Method}}</td>
                             <td>{{el.Module}}</td>
