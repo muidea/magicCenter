@@ -35,8 +35,9 @@ type CASHandler interface {
 	// 获取指定用户的授权组
 	GetUserAuthGroup(userID int) ([]int, bool)
 
-	// 更新acl route
+	// 查询Acl， module=all表示查询所有
 	QueryACL(module string) ([]model.ACL, bool)
+	// 更新acl
 	AddACL(url, method, module string) (model.ACL, bool)
 	DelACL(url, method, module string) bool
 
