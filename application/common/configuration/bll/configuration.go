@@ -55,8 +55,6 @@ func GetConfigurations(keys []string) map[string]string {
 		v, found := dal.GetOption(helper, k)
 		if found {
 			ret[k] = v
-		} else {
-			ret[k] = ""
 		}
 	}
 
