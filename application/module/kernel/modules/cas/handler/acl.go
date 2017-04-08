@@ -55,7 +55,7 @@ func (i *aclManager) loadAllACL() bool {
 	return true
 }
 
-func (i *aclManager) queryACL(module string) ([]model.ACL, bool) {
+func (i *aclManager) queryACL(module string, status int) ([]model.ACL, bool) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		log.Println("create new dbhelper failed")
@@ -63,10 +63,10 @@ func (i *aclManager) queryACL(module string) ([]model.ACL, bool) {
 	}
 
 	if strings.ToLower(module) == "all" {
-		return dal.QueryAllACL(dbhelper), true
+		return dal.QueryAllACL(dbhelper, status), true
 	}
 
-	return dal.QueryACL(dbhelper, module), true
+	return dal.QueryACL(dbhelper, module, status), true
 }
 
 func (i *aclManager) addACL(url, method, module string) (model.ACL, bool) {
@@ -142,6 +142,26 @@ func (i *aclManager) delACL(url, method, module string) bool {
 	}
 
 	return ok
+}
+
+func (i *aclManager) enableACL(acls []int) bool {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		log.Println("create new dbhelper failed")
+		return false
+	}
+
+	return dal.EnableACL(dbhelper, acls)
+}
+
+func (i *aclManager) disableACL(acls []int) bool {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		log.Println("create new dbhelper failed")
+		return false
+	}
+
+	return dal.DisableACL(dbhelper, acls)
 }
 
 func (i *aclManager) adjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool) {

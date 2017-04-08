@@ -27,6 +27,6 @@ type ACL struct {
 	URL       string
 	Method    string
 	Module    string
-	Enable    int
+	Status    int
 	AuthGroup []int
 }

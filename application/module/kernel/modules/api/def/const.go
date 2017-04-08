@@ -4,10 +4,10 @@ package def
 const ID = "5fa671dc-ccb5-4005-8500-f0e45b13705b"
 
 // Name 模块名称
-const Name = "Magic RESTFull API"
+const Name = "Magic REST API"
 
 // Description 模块描述信息
-const Description = "Magic RESTFull API模块"
+const Description = "Magic REST API模块"
 
 // URL 模块Url
 const URL = "/api"

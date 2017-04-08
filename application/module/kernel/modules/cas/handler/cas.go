@@ -107,8 +107,8 @@ func (i *impl) GetUserAuthGroup(userID int) ([]int, bool) {
 	return i.authGroupManager.getUserAuthGroup(userID)
 }
 
-func (i *impl) QueryACL(module string) ([]model.ACL, bool) {
-	return i.aclManager.queryACL(module)
+func (i *impl) QueryACL(module string, status int) ([]model.ACL, bool) {
+	return i.aclManager.queryACL(module, status)
 }
 
 func (i *impl) AddACL(url, method, module string) (model.ACL, bool) {
@@ -117,6 +117,14 @@ func (i *impl) AddACL(url, method, module string) (model.ACL, bool) {
 
 func (i *impl) DelACL(url, method, module string) bool {
 	return i.aclManager.delACL(url, method, module)
+}
+
+func (i *impl) EnableACL(acls []int) bool {
+	return i.aclManager.enableACL(acls)
+}
+
+func (i *impl) DisableACL(acls []int) bool {
+	return i.aclManager.disableACL(acls)
 }
 
 func (i *impl) AdjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool) {

@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"strconv"
+
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
@@ -17,10 +19,10 @@ func AppendACLRoute(routes []common.Route, casHandler common.CASHandler, session
 	rt := CreateQueryACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateAddACLRoute(casHandler, sessionRegistry)
+	rt = CreateEnableACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDelACLRoute(casHandler, sessionRegistry)
+	rt = CreateDisableACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	rt = CreateUpdateACLRoute(casHandler, sessionRegistry)
@@ -36,16 +38,16 @@ func CreateQueryACLRoute(casHandler common.CASHandler, sessionRegistry common.Se
 	return &i
 }
 
-// CreateAddACLRoute 新建AddACL 路由
-func CreateAddACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityACLAddRoute{
+// CreateEnableACLRoute 新建AddACL 路由
+func CreateEnableACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := authorityACLEnableRoute{
 		casHandler: casHandler}
 	return &i
 }
 
-// CreateDelACLRoute 新建DelACL 路由
-func CreateDelACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityACLDelRoute{
+// CreateDisableACLRoute 新建DelACL 路由
+func CreateDisableACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := authorityACLDisableRoute{
 		casHandler: casHandler}
 	return &i
 }
@@ -89,8 +91,20 @@ func (i *authorityACLQueryRoute) queryACLHandler(w http.ResponseWriter, r *http.
 			result.Reason = "非法参数"
 			break
 		}
+		status := r.URL.Query()["status"]
+		if len(status) < 1 {
+			result.ErrCode = 1
+			result.Reason = "非法参数"
+			break
+		}
+		val, err := strconv.Atoi(status[0])
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "非法参数"
+			break
+		}
 
-		acls, ok := i.casHandler.QueryACL(modules[0])
+		acls, ok := i.casHandler.QueryACL(modules[0], val)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "查询失败"
@@ -110,45 +124,45 @@ func (i *authorityACLQueryRoute) queryACLHandler(w http.ResponseWriter, r *http.
 	w.Write(b)
 }
 
-type authorityACLAddRoute struct {
+type authorityACLEnableRoute struct {
 	casHandler common.CASHandler
 }
 
-type authorityACLAddResult struct {
+type authorityACLEnableResult struct {
 	common.Result
-	ACL model.ACL
 }
 
-func (i *authorityACLAddRoute) Method() string {
+func (i *authorityACLEnableRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityACLAddRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/acl/add/")
+func (i *authorityACLEnableRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/acl/enable/")
 }
 
-func (i *authorityACLAddRoute) Handler() interface{} {
-	return i.addACLHandler
+func (i *authorityACLEnableRoute) Handler() interface{} {
+	return i.enableACLHandler
 }
 
-func (i *authorityACLAddRoute) addACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("addACLHandler")
+func (i *authorityACLEnableRoute) enableACLHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("enableACLHandler")
 
-	result := authorityACLAddResult{}
+	result := authorityACLEnableResult{}
 	for true {
 		r.ParseForm()
-
-		url := r.FormValue("acl-url")
-		method := r.FormValue("acl-method")
-		module := r.FormValue("acl-module")
-		acl, ok := i.casHandler.AddACL(url, method, module)
+		acls, ok := util.Str2IntArray(r.FormValue("acl-list"))
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "参数非法"
+			break
+		}
+		ok = i.casHandler.EnableACL(acls)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新增失败"
 			break
 		}
 
-		result.ACL = acl
 		result.ErrCode = 0
 		break
 	}
@@ -161,37 +175,39 @@ func (i *authorityACLAddRoute) addACLHandler(w http.ResponseWriter, r *http.Requ
 	w.Write(b)
 }
 
-type authorityACLDelRoute struct {
+type authorityACLDisableRoute struct {
 	casHandler common.CASHandler
 }
 
-type authorityACLDelResult struct {
+type authorityACLDisableResult struct {
 	common.Result
 }
 
-func (i *authorityACLDelRoute) Method() string {
+func (i *authorityACLDisableRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityACLDelRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/acl/del/")
+func (i *authorityACLDisableRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/acl/disable/")
 }
 
-func (i *authorityACLDelRoute) Handler() interface{} {
-	return i.delACLHandler
+func (i *authorityACLDisableRoute) Handler() interface{} {
+	return i.disableACLHandler
 }
 
-func (i *authorityACLDelRoute) delACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("delACLHandler")
+func (i *authorityACLDisableRoute) disableACLHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("disableACLHandler")
 
-	result := authorityACLDelResult{}
+	result := authorityACLDisableResult{}
 	for true {
 		r.ParseForm()
-
-		url := r.FormValue("acl-url")
-		method := r.FormValue("acl-method")
-		module := r.FormValue("acl-module")
-		if !i.casHandler.DelACL(url, method, module) {
+		acls, ok := util.Str2IntArray(r.FormValue("acl-list"))
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "参数非法"
+			break
+		}
+		if !i.casHandler.DisableACL(acls) {
 			result.ErrCode = 1
 			result.Reason = "删除失败"
 		}

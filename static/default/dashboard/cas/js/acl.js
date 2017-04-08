@@ -1,10 +1,10 @@
 var acl = { module: [] };
 
-acl.acl2AclView = function(acls, filterAclFun) {
+acl.constructAclListlView = function(acls, filterAclFun) {
     var aclListView = new Array();
+    var offset = 0;
     for (var i = 0; i < acls.length; ++i) {
         var curAcl = acls[i];
-
         if (!filterAclFun(curAcl)) {
             continue;
         }
@@ -21,16 +21,18 @@ acl.acl2AclView = function(acls, filterAclFun) {
             ID: curAcl.ID,
             URL: curAcl.URL,
             Method: curAcl.Method,
-            Module: curModule.Name
+            Status: curAcl.Status,
+            Module: curModule.Name,
+            ModuleID: curModule.ID
         };
 
-        aclListView[i] = view;
+        aclListView[offset++] = view;
     }
 
     return aclListView;
 };
 
-acl.filterModuleAclView = function(modules) {
+acl.constructModuleAclView = function(modules) {
     var aclListView = new Array();
     var ii = 0;
     for (var aclIdx = 0; aclIdx < acl.acl.length; ++aclIdx) {
@@ -44,9 +46,9 @@ acl.filterModuleAclView = function(modules) {
                     ID: curAcl.ID,
                     URL: curAcl.URL,
                     Method: curAcl.Method,
+                    Status: curAcl.Status,
                     Module: curModule.Name,
-                    ModuleID: curModule.ID,
-                    Enable: curAcl.Enable
+                    ModuleID: curModule.ID
                 }
 
                 aclListView[ii++] = view;
@@ -57,9 +59,20 @@ acl.filterModuleAclView = function(modules) {
     return aclListView;
 }
 
+acl.updateListAclVM = function(acls) {
+    acl.listVM.acl = acls;
+}
+
+acl.updateEditModuleVM = function(modules) {
+    acl.editVM.module = modules;
+};
+
+acl.updateEditAclVM = function(acls) {
+    acl.editVM.acl = acls;
+};
 
 // 加载全部的Module
-acl.getModules = function(callBack) {
+acl.getAllModulesAction = function(callBack) {
     $.ajax({
         type: "GET",
         url: "/dashboard/module/",
@@ -73,21 +86,11 @@ acl.getModules = function(callBack) {
     });
 };
 
-acl.getModulesCallBack = function(errCode, modules) {
-    if (errCode != 0) {
-        return;
-    }
-
-    acl.module = modules;
-    acl.getAcls(acl.getAclsCallBack);
-};
-
 // 加载全部已经定义的ACL
-acl.getAcls = function(callBack) {
-    var acls = [];
+acl.getAllAclsAction = function(callBack) {
     $.ajax({
         type: "GET",
-        url: "/cas/acl/?module=all",
+        url: "/cas/acl/?module=all&status=-1",
         data: {},
         dataType: "json",
         success: function(data) {
@@ -98,20 +101,71 @@ acl.getAcls = function(callBack) {
     });
 };
 
-acl.getAclsCallBack = function(errCode, acls) {
-    if (errCode != 0) {
-        return;
+acl.enableAclsAction = function(acls, callBack) {
+    var strAlcs = "";
+    for (var ii = 0; ii < acls.length; ++ii) {
+        strAlcs += acls[ii];
+        strAlcs += ",";
     }
 
-    acl.acl = acls;
-    acl.listVM.acl = acl.acl2AclView(acls, function(item) {
-        return item.Enable > 0;
+    $.ajax({
+        type: "POST",
+        url: "/cas/acl/enable/",
+        data: { "acl-list": strAlcs },
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.ACLs);
+            }
+        }
     });
 };
 
-acl.updateEditVM = function(modules) {
-    acl.editVM.module = modules
-}
+acl.disableAclsAction = function(acls, callBack) {
+    var strAlcs = "";
+    for (var ii = 0; ii < acls.length; ++ii) {
+        strAlcs += acls[ii];
+        strAlcs += ",";
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/cas/acl/disable/",
+        data: { "acl-list": strAlcs },
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.ACLs);
+            }
+        }
+    });
+};
+
+acl.refreshView = function() {
+    var getAllAclsCallBack = function(errCode, acls) {
+        if (errCode != 0) {
+            return;
+        }
+
+        acl.acl = acls;
+        var aclsView = acl.constructAclListlView(acls, function(item) {
+            return item.Status > 0;
+        });
+        acl.updateListAclVM(aclsView);
+    };
+
+    var getAllModulesCallBack = function(errCode, modules) {
+        if (errCode != 0) {
+            return;
+        }
+
+        acl.module = modules;
+        acl.getAllAclsAction(getAllAclsCallBack);
+    };
+
+    // 加载完成
+    acl.getAllModulesAction(getAllModulesCallBack);
+};
 
 $(document).ready(function() {
 
@@ -126,11 +180,8 @@ $(document).ready(function() {
         acl: {}
     });
 
-    // 加载完成
-    acl.getModules(acl.getModulesCallBack);
-
     $('#moduleListModal').on('show.bs.modal', function(e) {
-        acl.updateEditVM(acl.module);
+        acl.updateEditModuleVM(acl.module);
 
         $("#moduleListModal .module").prop("checked", false);
     });
@@ -156,10 +207,12 @@ $(document).ready(function() {
         );
 
         $("#acl-Edit .acl-selectModule").val(selectModuleNames);
-        acl.editVM.acl = acl.filterModuleAclView(selectModuleArray)
+        acl.updateEditAclVM(acl.constructModuleAclView(selectModuleArray));
+
+        // 将已经enable的acl设置上checked标示
         for (var offset = 0; offset < acl.editVM.acl.length; ++offset) {
             var curAcl = acl.editVM.acl[offset];
-            if (curAcl.Enable > 0) {
+            if (curAcl.Status > 0) {
                 $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
             }
         }
@@ -167,29 +220,18 @@ $(document).ready(function() {
 
     $("#selectAcl-button").click(
         function() {
-            var aclList = new Array();
+            var selectAclList = new Array();
             var offset = 0;
-            var selectAcl = $("#selectAcl-List .acl-id:checked");
-            for (var idx = 0; idx < acl.editVM.acl.length; ++idx) {
-                var curAcl = acl.editVM.acl[idx];
-                selectAcl.each(
-                    function() {
-                        var id = $(this).val();
-                        if (id == curAcl.ID) {
-                            var val = {
-                                ID: curAcl.ID,
-                                URL: curAcl.URL,
-                                Method: curAcl.Method,
-                                Module: curAcl.ModuleID
-                            }
+            $("#selectAcl-List .acl_status_0:checked").each(
+                function() {
+                    var id = $(this).val();
+                    selectAclList[offset++] = id;
+                }
+            );
 
-                            aclList[offset++] = val;
-                        }
-                    }
-                );
-            }
-
-            console.log(aclList);
+            console.log(selectAclList);
         }
     );
+
+    acl.refreshView();
 });
