@@ -16,12 +16,13 @@ import (
 
 // AppendACLRoute 追加acl 路由
 func AppendACLRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	// 查询全部ACL或指定Module的ACL
 	rt := CreateQueryACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
-
+	// Enable或Disable ACL
 	rt = CreateStatusACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
-
+	// 调整ACL对应的AuthGroup
 	rt = CreateUpdateACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
@@ -35,7 +36,7 @@ func CreateQueryACLRoute(casHandler common.CASHandler, sessionRegistry common.Se
 	return &i
 }
 
-// CreateStatusACLRoute 新建AddACL 路由
+// CreateStatusACLRoute 新建StatusACL 路由
 func CreateStatusACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := authorityACLStatusRoute{
 		casHandler: casHandler}
@@ -44,7 +45,7 @@ func CreateStatusACLRoute(casHandler common.CASHandler, sessionRegistry common.S
 
 // CreateUpdateACLRoute 新建UpdateACL 路由
 func CreateUpdateACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityACLUpdateRoute{
+	i := authorityACLAuthGroupRoute{
 		casHandler: casHandler}
 	return &i
 }
@@ -177,37 +178,39 @@ func (i *authorityACLStatusRoute) statusACLHandler(w http.ResponseWriter, r *htt
 	w.Write(b)
 }
 
-type authorityACLUpdateRoute struct {
+type authorityACLAuthGroupRoute struct {
 	casHandler common.CASHandler
 }
 
-type authorityACLUpdateResult struct {
+type authorityACLAuthGroupResult struct {
 	common.Result
-	ACL model.ACL
 }
 
-func (i *authorityACLUpdateRoute) Method() string {
+func (i *authorityACLAuthGroupRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityACLUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/acl/update/")
+func (i *authorityACLAuthGroupRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/acl/authgroup/")
 }
 
-func (i *authorityACLUpdateRoute) Handler() interface{} {
-	return i.updateACLHandler
+func (i *authorityACLAuthGroupRoute) Handler() interface{} {
+	return i.updateACLAuthGroupHandler
 }
 
-func (i *authorityACLUpdateRoute) updateACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateACLHandler")
+func (i *authorityACLAuthGroupRoute) updateACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("updateACLAuthGroupHandler")
 
-	result := authorityACLUpdateResult{}
+	result := authorityACLAuthGroupResult{}
 	for true {
 		r.ParseForm()
 
-		url := r.FormValue("acl-url")
-		method := r.FormValue("acl-method")
-		module := r.FormValue("acl-module")
+		aclID, err := strconv.Atoi(r.FormValue("acl-id"))
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "参数非法"
+			break
+		}
 		authGroup, ok := util.Str2IntArray(r.FormValue("acl-authgroup"))
 		if !ok {
 			result.ErrCode = 1
@@ -215,14 +218,13 @@ func (i *authorityACLUpdateRoute) updateACLHandler(w http.ResponseWriter, r *htt
 			break
 		}
 
-		acl, ok := i.casHandler.AdjustACLAuthGroup(url, method, module, authGroup)
+		_, ok = i.casHandler.AdjustACLAuthGroup(aclID, authGroup)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "更新失败"
 			break
 		}
 
-		result.ACL = acl
 		result.ErrCode = 0
 		break
 	}

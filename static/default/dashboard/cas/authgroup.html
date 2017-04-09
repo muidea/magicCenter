@@ -24,77 +24,66 @@
         </div>
         <div class="content-content">
             <div class="tab-content" id="authgroup-List" ms-controller="authgroup-List">
+                <div class="container-fluid page-header">
+                    <div class="input-group col-md-8 col-md-offset-2">
+                        <input class="form-control authgroup-filterModule" placeholder="Search for..." type="text" />
+                        <span class="input-group-btn"><button class="btn btn-default" type="button" id="filter-button">搜索ACL</button></span>
+                    </div>
+                </div>
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th></th>
                             <th>URL</th>
                             <th>方法</th>
                             <th>所属模块</th>
-                            <th>操作</th>
+                            <th>授权组</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="4">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
-                        <tr class="authgroup">
-                            <td><input type="checkbox" /></td>
-                            <td><a class="edit" href="#" title="title">Title</a></td>
-                            <td>catalog</td>
-                            <td>author</td>
-                            <td>
-                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
-                            </td>
-                        </tr>
-                        <tr ms-for="el in @authgroup">
-                            <td><input type="checkbox" />
-                                <!--{{el.ID}}-->
-                            </td>
+                        <tr ms-for="el in @acls">
                             <td>{{el.URL}}</td>
                             <td>{{el.Method}}</td>
                             <td>{{el.Module}}</td>
-                            <td>
-                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
-                            </td>
+                            <td>{{el.AuthGroup}}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="table-content" id="authgroup-Edit">
-                <div class="input-group">
-                    <input class="form-control authgroup-title" placeholder="Search for..." type="text" name="authgroup-title" />
-                    <span class="input-group-btn"><button class="btn btn-default" type="button">选择模块</button></span>
+            <div class="table-content" id="authgroup-Edit" ms-controller="authgroup-Edit">
+                <div class="container-fluid page-header">
+                    <div class="input-group col-md-8 col-md-offset-2">
+                        <input class="form-control authgroup-selectModule" placeholder="Search for..." type="text" />
+                        <span class="input-group-btn"><button class="btn btn-default" type="button">搜索ACL</button></span>
+                    </div>
                 </div>
-                <table class="table table-condensed ">
+                <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th>
+                                <!--<input type="checkbox" />全选--></th>
                             <th>URL</th>
                             <th>方法</th>
+                            <th>所属模块</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3">
-                                <div class="clear"></div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        <tr class="authgroup">
-                            <td><input type="checkbox" /></td>
-                            <td>url</td>
-                            <td>get</td>
+                    <tbody id="selectAcl-List">
+                        <tr ms-for="el in @acls">
+                            <td><input type="checkbox" ms-attr="{value: el.ID, class: 'acl_' + el.ID + ' acl_status_' + el.Status }" /></td>
+                            <td>{{el.URL}}</td>
+                            <td>{{el.Method}}</td>
+                            <td>{{el.Module}}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="container-fluid text-right">
-                    <button type="submit" class="btn btn-default">提交</button>
+                    <button type="button" class="btn btn-default" id="selectAcl-button">确定</button>
                 </div>
             </div>
         </div>

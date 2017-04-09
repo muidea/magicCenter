@@ -44,5 +44,5 @@ type CASHandler interface {
 	DisableACL(acls []int) bool
 
 	// 调整acl的授权组
-	AdjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool)
+	AdjustACLAuthGroup(aid int, authGroup []int) (model.ACL, bool)
 }

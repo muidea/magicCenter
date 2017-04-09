@@ -127,7 +127,6 @@ func (i *impl) DisableACL(acls []int) bool {
 	return i.aclManager.disableACL(acls)
 }
 
-func (i *impl) AdjustACLAuthGroup(url, method, module string, authGroup []int) (model.ACL, bool) {
-
-	return i.aclManager.adjustACLAuthGroup(url, method, module, authGroup)
+func (i *impl) AdjustACLAuthGroup(acl int, authGroup []int) (model.ACL, bool) {
+	return i.aclManager.adjustACLAuthGroup(acl, authGroup)
 }

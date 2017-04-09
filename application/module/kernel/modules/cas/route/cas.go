@@ -16,12 +16,15 @@ import (
 
 // AppendAuthGropRoute 追加authgroup 路由
 func AppendAuthGropRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	// 查询全部AuthGroup或指定Module的AuthGroup
 	rt := CreateQueryAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
+	// 查询指定用户拥有的AuthGroup
 	rt = CreateQueryUserAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
+	// 调整指定用户拥有的AuthGroup
 	rt = CreateAdjustUserAuthGroupRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
