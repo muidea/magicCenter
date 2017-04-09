@@ -1,4 +1,4 @@
-var acl = { module: [] };
+var acl = {};
 
 acl.constructAclListlView = function(acls, filterAclFun) {
     var aclListView = new Array();
@@ -115,7 +115,7 @@ acl.enableAclsAction = function(acls, callBack) {
         dataType: "json",
         success: function(data) {
             if (callBack != null) {
-                callBack(data.ErrCode, data.ACLs);
+                callBack(data.ErrCode);
             }
         }
     });
@@ -135,7 +135,7 @@ acl.disableAclsAction = function(acls, callBack) {
         dataType: "json",
         success: function(data) {
             if (callBack != null) {
-                callBack(data.ErrCode, data.ACLs);
+                callBack(data.ErrCode);
             }
         }
     });
@@ -229,7 +229,33 @@ $(document).ready(function() {
                 }
             );
 
-            console.log(selectAclList);
+            acl.enableAclsAction(
+                selectAclList,
+                function(errCode) {
+                    if (errCode != 0) {
+                        return;
+                    }
+
+                    acl.refreshView();
+                });
+
+            var unSelectAclList = new Array();
+            offset = 0;
+            $("#selectAcl-List .acl_status_1:not(:checked)").each(
+                function() {
+                    var id = $(this).val();
+                    unSelectAclList[offset++] = id;
+                }
+            );
+            acl.disableAclsAction(
+                unSelectAclList,
+                function(errCode) {
+                    if (errCode != 0) {
+                        return;
+                    }
+
+                    acl.refreshView();
+                });
         }
     );
 

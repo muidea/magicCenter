@@ -37,6 +37,10 @@ func DeleteACL(helper dbhelper.DBHelper, id int) bool {
 
 // EnableACL 启用ACL
 func EnableACL(helper dbhelper.DBHelper, ids []int) bool {
+	if len(ids) == 0 {
+		return true
+	}
+
 	str := util.IntArray2Str(ids)
 	sql := fmt.Sprintf("update acl set status=1 where id in(%s)", str)
 	num, ok := helper.Execute(sql)
@@ -46,6 +50,10 @@ func EnableACL(helper dbhelper.DBHelper, ids []int) bool {
 
 // DisableACL 禁用ACL
 func DisableACL(helper dbhelper.DBHelper, ids []int) bool {
+	if len(ids) == 0 {
+		return true
+	}
+
 	str := util.IntArray2Str(ids)
 	sql := fmt.Sprintf("update acl set status=0 where id in(%s)", str)
 	num, ok := helper.Execute(sql)

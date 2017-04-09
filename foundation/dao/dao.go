@@ -100,7 +100,7 @@ func (impl *impl) Query(sql string) {
 
 	rows, err := impl.dbHandle.Query(sql)
 	if err != nil {
-		panic("query exception, err:" + err.Error())
+		panic("query exception, err:" + err.Error() + ", sql:" + sql)
 	}
 
 	impl.rowsHandle = rows
@@ -137,7 +137,7 @@ func (impl *impl) Execute(sql string) (int64, bool) {
 
 	result, err := impl.dbHandle.Exec(sql)
 	if err != nil {
-		panic("exec exception, err:" + err.Error())
+		panic("exec exception, err:" + err.Error() + ", sql:" + sql)
 	}
 
 	num, err := result.RowsAffected()
