@@ -19,10 +19,7 @@ func AppendACLRoute(routes []common.Route, casHandler common.CASHandler, session
 	rt := CreateQueryACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateEnableACLRoute(casHandler, sessionRegistry)
-	routes = append(routes, rt)
-
-	rt = CreateDisableACLRoute(casHandler, sessionRegistry)
+	rt = CreateStatusACLRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	rt = CreateUpdateACLRoute(casHandler, sessionRegistry)
@@ -38,16 +35,9 @@ func CreateQueryACLRoute(casHandler common.CASHandler, sessionRegistry common.Se
 	return &i
 }
 
-// CreateEnableACLRoute 新建AddACL 路由
-func CreateEnableACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityACLEnableRoute{
-		casHandler: casHandler}
-	return &i
-}
-
-// CreateDisableACLRoute 新建DelACL 路由
-func CreateDisableACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityACLDisableRoute{
+// CreateStatusACLRoute 新建AddACL 路由
+func CreateStatusACLRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := authorityACLStatusRoute{
 		casHandler: casHandler}
 	return &i
 }
@@ -124,92 +114,55 @@ func (i *authorityACLQueryRoute) queryACLHandler(w http.ResponseWriter, r *http.
 	w.Write(b)
 }
 
-type authorityACLEnableRoute struct {
+type authorityACLStatusRoute struct {
 	casHandler common.CASHandler
 }
 
-type authorityACLEnableResult struct {
+type authorityACLStatusResult struct {
 	common.Result
 }
 
-func (i *authorityACLEnableRoute) Method() string {
+func (i *authorityACLStatusRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityACLEnableRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/acl/enable/")
+func (i *authorityACLStatusRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/acl/status/")
 }
 
-func (i *authorityACLEnableRoute) Handler() interface{} {
-	return i.enableACLHandler
+func (i *authorityACLStatusRoute) Handler() interface{} {
+	return i.statusACLHandler
 }
 
-func (i *authorityACLEnableRoute) enableACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("enableACLHandler")
+func (i *authorityACLStatusRoute) statusACLHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("statusACLHandler")
 
-	result := authorityACLEnableResult{}
+	result := authorityACLStatusResult{}
 	for true {
 		r.ParseForm()
-		acls, ok := util.Str2IntArray(r.FormValue("acl-list"))
+		enableAcls, ok := util.Str2IntArray(r.FormValue("enable-list"))
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "参数非法"
 			break
 		}
-		ok = i.casHandler.EnableACL(acls)
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "新增失败"
-			break
-		}
-
-		result.ErrCode = 0
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type authorityACLDisableRoute struct {
-	casHandler common.CASHandler
-}
-
-type authorityACLDisableResult struct {
-	common.Result
-}
-
-func (i *authorityACLDisableRoute) Method() string {
-	return common.POST
-}
-
-func (i *authorityACLDisableRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/acl/disable/")
-}
-
-func (i *authorityACLDisableRoute) Handler() interface{} {
-	return i.disableACLHandler
-}
-
-func (i *authorityACLDisableRoute) disableACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("disableACLHandler")
-
-	result := authorityACLDisableResult{}
-	for true {
-		r.ParseForm()
-		acls, ok := util.Str2IntArray(r.FormValue("acl-list"))
+		disableAcls, ok := util.Str2IntArray(r.FormValue("disable-list"))
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "参数非法"
 			break
 		}
-		if !i.casHandler.DisableACL(acls) {
+		ok = i.casHandler.EnableACL(enableAcls)
+		if !ok {
 			result.ErrCode = 1
-			result.Reason = "删除失败"
+			result.Reason = "启用失败"
+			break
+		}
+		ok = i.casHandler.DisableACL(disableAcls)
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "禁用失败"
+			break
 		}
 
 		result.ErrCode = 0
