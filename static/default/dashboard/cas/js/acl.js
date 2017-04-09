@@ -1,17 +1,17 @@
 var acl = {};
 
-acl.constructAclListlView = function(acls, modules, filterAclFun) {
+acl.constructAclListlView = function(aclList, moduleList, filterAclFun) {
     var aclListView = new Array();
     var offset = 0;
-    for (var i = 0; i < acls.length; ++i) {
-        var curAcl = acls[i];
+    for (var i = 0; i < aclList.length; ++i) {
+        var curAcl = aclList[i];
         if (!filterAclFun(curAcl)) {
             continue;
         }
 
         var curModule = null;
-        for (var idx = 0; idx < modules.length; ++idx) {
-            var mod = modules[idx];
+        for (var idx = 0; idx < moduleList.length; ++idx) {
+            var mod = moduleList[idx];
             if (mod.ID == curAcl.Module) {
                 curModule = mod;
                 break;
@@ -32,14 +32,14 @@ acl.constructAclListlView = function(acls, modules, filterAclFun) {
     return aclListView;
 };
 
-acl.constructAclEditView = function(acls, modules) {
+acl.constructAclEditView = function(aclList, moduleList) {
     var aclListView = new Array();
     var ii = 0;
-    for (var aclIdx = 0; aclIdx < acls.length; ++aclIdx) {
-        var curAcl = acls[aclIdx];
+    for (var aclIdx = 0; aclIdx < aclList.length; ++aclIdx) {
+        var curAcl = aclList[aclIdx];
 
-        for (var idx = 0; idx < modules.length; ++idx) {
-            var curModule = modules[idx];
+        for (var idx = 0; idx < moduleList.length; ++idx) {
+            var curModule = moduleList[idx];
 
             if (curAcl.Module == curModule.ID) {
                 var view = {
@@ -59,16 +59,24 @@ acl.constructAclEditView = function(acls, modules) {
     return aclListView;
 }
 
-acl.updateListAclVM = function(acls) {
-    acl.listVM.acls = acls;
+acl.updateListAclVM = function(aclList) {
+    acl.listVM.acls = aclList;
 }
 
-acl.updateEditModuleVM = function(modules) {
-    acl.editVM.modules = modules;
+acl.updateEditModuleVM = function(moduleList) {
+    acl.editVM.modules = moduleList;
 };
 
-acl.updateEditAclVM = function(acls) {
-    acl.editVM.acls = acls;
+acl.updateEditAclVM = function(aclList) {
+    acl.editVM.acls = aclList;
+
+    // 将已经enable的acl设置上checked标示
+    for (var offset = 0; offset < acl.editVM.acls.length; ++offset) {
+        var curAcl = acl.editVM.acls[offset];
+        if (curAcl.Status > 0) {
+            $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
+        }
+    }
 };
 
 // 加载全部的Module
@@ -127,34 +135,54 @@ acl.statusAclsAction = function(enableAcls, disableAcls, callBack) {
     });
 };
 
-acl.refreshView = function() {
-    var getAllAclsCallBack = function(errCode, acls) {
+acl.loadData = function(callBack) {
+    var getAllAclsCallBack = function(errCode, aclList) {
         if (errCode != 0) {
             return;
         }
 
-        acl.acls = acls;
-        var aclsView = acl.constructAclListlView(acl.acls, acl.modules, function(item) {
-            return item.Status > 0;
-        });
-        acl.updateListAclVM(aclsView);
+        acl.acls = aclList;
+        if (callBack != null) {
+            callBack()
+        }
     };
 
-    var getAllModulesCallBack = function(errCode, modules) {
+    var getAllModulesCallBack = function(errCode, moduleList) {
         if (errCode != 0) {
             return;
         }
 
-        acl.modules = modules;
+        acl.modules = moduleList;
         acl.getAllAclsAction(getAllAclsCallBack);
     };
 
     // 加载完成
     acl.getAllModulesAction(getAllModulesCallBack);
+}
+
+acl.refreshAclListView = function(aclList, moduleList) {
+    var aclsView = acl.constructAclListlView(aclList, moduleList, function(item) {
+        return item.Status > 0;
+    });
+    acl.updateListAclVM(aclsView);
+};
+
+acl.refreshAclEditView = function(aclList, moduleList) {
+    var moduleNames = "";
+    var offset = 0;
+    for (var offset = 0; offset < moduleList.length; ++offset) {
+        var curModule = moduleList[offset];
+        if (moduleNames.length > 0) {
+            moduleNames += ", ";
+        }
+        moduleNames += curModule.Name;
+    }
+
+    $("#acl-Edit .acl-selectModule").val(moduleNames);
+    acl.updateEditAclVM(acl.constructAclEditView(aclList, moduleList));
 };
 
 $(document).ready(function() {
-
     acl.listVM = avalon.define({
         $id: "acl-List",
         acls: []
@@ -173,7 +201,6 @@ $(document).ready(function() {
     });
 
     $('#moduleListModal').on('hidden.bs.modal', function(e) {
-        var selectModuleNames = "";
         var selectModuleArray = new Array()
         var offset = 0;
         $("#moduleListModal .module:checked").each(
@@ -183,25 +210,11 @@ $(document).ready(function() {
                     var curModule = acl.modules[idx];
                     if (curModule.ID == id) {
                         selectModuleArray[offset++] = curModule;
-                        if (selectModuleNames.length > 0) {
-                            selectModuleNames += ", ";
-                        }
-                        selectModuleNames += curModule.Name;
                     }
                 }
             }
         );
-
-        $("#acl-Edit .acl-selectModule").val(selectModuleNames);
-        acl.updateEditAclVM(acl.constructAclEditView(acl.acls, selectModuleArray));
-
-        // 将已经enable的acl设置上checked标示
-        for (var offset = 0; offset < acl.editVM.acls.length; ++offset) {
-            var curAcl = acl.editVM.acls[offset];
-            if (curAcl.Status > 0) {
-                $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
-            }
-        }
+        acl.refreshAclEditView(acl.acls, selectModuleArray);
     });
 
     $("#selectAcl-button").click(
@@ -232,11 +245,30 @@ $(document).ready(function() {
                         return;
                     }
 
-                    acl.refreshView();
-                });
+                    var selectModuleArray = new Array()
+                    var offset = 0;
+                    $("#moduleListModal .module:checked").each(
+                        function() {
+                            var id = $(this).val();
+                            for (var idx = 0; idx < acl.modules.length; idx++) {
+                                var curModule = acl.modules[idx];
+                                if (curModule.ID == id) {
+                                    selectModuleArray[offset++] = curModule;
+                                }
+                            }
+                        }
+                    );
 
+                    acl.loadData(function() {
+                        acl.refreshAclListView(acl.acls, acl.modules);
+
+                        acl.refreshAclEditView(acl.acls, selectModuleArray);
+                    })
+                });
         }
     );
 
-    acl.refreshView();
+    acl.loadData(function() {
+        acl.refreshAclListView(acl.acls, acl.modules);
+    })
 });

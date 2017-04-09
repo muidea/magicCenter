@@ -25,36 +25,30 @@
             <div class="tab-content" id="acl-List" ms-controller="acl-List">
                 <div class="container-fluid page-header">
                     <div class="input-group col-md-8 col-md-offset-2">
-                        <input class="form-control acl-title" placeholder="Search for..." type="text" name="acl-title" />
-                        <span class="input-group-btn"><button class="btn btn-default" type="button">搜索模块</button></span>
+                        <input class="form-control acl-filterModule" placeholder="Search for..." type="text" />
+                        <span class="input-group-btn"><button class="btn btn-default" type="button" id="filter-button">搜索模块</button></span>
                     </div>
                 </div>
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th></th>
                             <th>URL</th>
                             <th>方法</th>
                             <th>所属模块</th>
-                            <th>操作</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="3">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
                         <tr ms-for="el in @acls">
-                            <td><input type="checkbox" ms-attr="{value: el.ID}" /></td>
                             <td>{{el.URL}}</td>
                             <td>{{el.Method}}</td>
                             <td>{{el.Module}}</td>
-                            <td>
-                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -92,7 +86,8 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th>
+                                <!--<input type="checkbox" />全选--></th>
                             <th>URL</th>
                             <th>方法</th>
                             <th>所属模块</th>
@@ -108,7 +103,7 @@
                     </tbody>
                 </table>
                 <div class="container-fluid text-right">
-                    <button type="button" class="btn btn-default" id="selectAcl-button">添加</button>
+                    <button type="button" class="btn btn-default" id="selectAcl-button">确定</button>
                 </div>
             </div>
         </div>
