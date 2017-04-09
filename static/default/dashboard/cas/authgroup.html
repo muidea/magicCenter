@@ -27,7 +27,7 @@
                 <div class="container-fluid page-header">
                     <div class="input-group col-md-8 col-md-offset-2">
                         <input class="form-control authgroup-filterModule" placeholder="Search for..." type="text" />
-                        <span class="input-group-btn"><button class="btn btn-default" type="button" id="filter-button">搜索ACL</button></span>
+                        <span class="input-group-btn"><button class="btn btn-default filter-button" type="button">搜索ACL</button></span>
                     </div>
                 </div>
                 <table class="table table-hover">
@@ -60,7 +60,7 @@
                 <div class="container-fluid page-header">
                     <div class="input-group col-md-8 col-md-offset-2">
                         <input class="form-control authgroup-selectModule" placeholder="Search for..." type="text" />
-                        <span class="input-group-btn"><button class="btn btn-default" type="button">搜索ACL</button></span>
+                        <span class="input-group-btn"><button class="btn btn-default filter-button" type="button">搜索ACL</button></span>
                     </div>
                 </div>
                 <table class="table table-hover">
@@ -73,7 +73,7 @@
                             <th>所属模块</th>
                         </tr>
                     </thead>
-                    <tbody id="selectAcl-List">
+                    <tbody id="filterAcl-List">
                         <tr ms-for="el in @acls">
                             <td><input type="checkbox" ms-attr="{value: el.ID, class: 'acl_' + el.ID + ' acl_status_' + el.Status }" /></td>
                             <td>{{el.URL}}</td>
@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
                 <div class="container-fluid text-right">
-                    <button type="button" class="btn btn-default" id="selectAcl-button">确定</button>
+                    <button type="button" class="btn btn-default" id="adjustAcl-button">确定</button>
                 </div>
             </div>
         </div>

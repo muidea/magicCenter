@@ -75,20 +75,8 @@ authgroup.updateListAclVM = function(aclList) {
     authgroup.listVM.acls = aclList;
 }
 
-authgroup.updateEditModuleVM = function(moduleList) {
-    authgroup.editVM.modules = moduleList;
-};
-
 authgroup.updateEditAclVM = function(aclList) {
     authgroup.editVM.acls = aclList;
-
-    // 将已经enable的authgroup设置上checked标示
-    for (var offset = 0; offset < authgroup.editVM.acls.length; ++offset) {
-        var curAcl = authgroup.editVM.acls[offset];
-        if (curAcl.Status > 0) {
-            $("#selectAcl-List .acl_" + curAcl.ID).prop("checked", true);
-        }
-    }
 };
 
 // 加载全部的Module
@@ -196,21 +184,6 @@ authgroup.refreshAclListView = function(aclList, authGroupList, moduleList) {
     authgroup.updateListAclVM(aclsView);
 };
 
-authgroup.refreshAclEditView = function(aclList, authGroupList, moduleList) {
-    var moduleNames = "";
-    var offset = 0;
-    for (var offset = 0; offset < moduleList.length; ++offset) {
-        var curModule = moduleList[offset];
-        if (moduleNames.length > 0) {
-            moduleNames += ", ";
-        }
-        moduleNames += curModule.Name;
-    }
-
-    $("#authgroup-Edit .authgroup-selectModule").val(moduleNames);
-    authgroup.updateEditAclVM(authgroup.constructAclEditView(aclList, moduleList));
-};
-
 $(document).ready(function() {
     authgroup.listVM = avalon.define({
         $id: "authgroup-List",
@@ -219,59 +192,11 @@ $(document).ready(function() {
 
     authgroup.editVM = avalon.define({
         $id: "authgroup-Edit",
-        modules: [],
         acls: []
     });
 
-    $("#selectAcl-button").click(
-        function() {
-            var selectAclList = new Array();
-            var offset = 0;
-            $("#selectAcl-List .acl_status_0:checked").each(
-                function() {
-                    var id = $(this).val();
-                    selectAclList[offset++] = id;
-                }
-            );
-
-            var unSelectAclList = new Array();
-            offset = 0;
-            $("#selectAcl-List .acl_status_1:not(:checked)").each(
-                function() {
-                    var id = $(this).val();
-                    unSelectAclList[offset++] = id;
-                }
-            );
-
-            authgroup.updateAclAuthGroupAction(
-                selectAclList,
-                unSelectAclList,
-                function(errCode) {
-                    if (errCode != 0) {
-                        return;
-                    }
-
-                    var selectModuleArray = new Array()
-                    var offset = 0;
-                    $("#moduleListModal .module:checked").each(
-                        function() {
-                            var id = $(this).val();
-                            for (var idx = 0; idx < authgroup.modules.length; idx++) {
-                                var curModule = authgroup.modules[idx];
-                                if (curModule.ID == id) {
-                                    selectModuleArray[offset++] = curModule;
-                                }
-                            }
-                        }
-                    );
-
-                    authgroup.loadData(function() {
-                        authgroup.refreshAclListView(authgroup.acls, authgroup.authGroups, authgroup.modules);
-
-                        authgroup.refreshAclEditView(authgroup.acls, selectModuleArray);
-                    })
-                });
-        }
+    $("#adjustAcl-button").click(
+        function() {}
     );
 
     authgroup.loadData(function() {
