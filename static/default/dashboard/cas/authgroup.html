@@ -59,7 +59,7 @@
             <div class="table-content" id="authgroup-Edit" ms-controller="authgroup-Edit">
                 <div class="container-fluid page-header">
                     <div class="input-group col-md-8 col-md-offset-2">
-                        <input class="form-control authgroup-selectModule" placeholder="Search for..." type="text" />
+                        <input class="form-control authgroup-filter" placeholder="Search for..." type="text" />
                         <span class="input-group-btn"><button class="btn btn-default filter-button" type="button">搜索ACL</button></span>
                     </div>
                 </div>
@@ -82,8 +82,13 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="input-group col-md-8 col-md-offset-2">
+                    <ul class="list-group">
+                        <li ms-for="el in @authGroups" class="list-group-item">{{el.Name}}</li>
+                    </ul>
+                </div>
                 <div class="container-fluid text-right">
-                    <button type="button" class="btn btn-default" id="adjustAcl-button">确定</button>
+                    <button type="button" class="btn btn-default adjust-button">确定</button>
                 </div>
             </div>
         </div>

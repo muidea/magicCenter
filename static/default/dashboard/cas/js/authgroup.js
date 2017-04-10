@@ -69,14 +69,18 @@ authgroup.constructAclEditView = function(aclList, authGroupList, moduleList) {
     }
 
     return aclListView;
-}
+};
 
 authgroup.updateListAclVM = function(aclList) {
     authgroup.listVM.acls = aclList;
-}
+};
 
 authgroup.updateEditAclVM = function(aclList) {
     authgroup.editVM.acls = aclList;
+};
+
+authgroup.updateEditAuthGroupVM = function(authGroupList) {
+    authgroup.editVM.authGroups = authGroupList;
 };
 
 // 加载全部的Module
@@ -107,7 +111,7 @@ authgroup.getAllAuthGroupsAction = function(callBack) {
             }
         }
     });
-}
+};
 
 // 加载全部已经定义的ACL
 authgroup.getAllAclsAction = function(callBack) {
@@ -177,11 +181,55 @@ authgroup.loadData = function(callBack) {
 
     // 加载完成
     authgroup.getAllModulesAction(getAllModulesCallBack);
-}
+};
 
 authgroup.refreshAclListView = function(aclList, authGroupList, moduleList) {
     var aclsView = authgroup.constructAclListlView(aclList, authGroupList, moduleList);
     authgroup.updateListAclVM(aclsView);
+};
+
+authgroup.refreshAclEidtView = function(filterVal, aclList, authGroupList, moduleList) {
+    var aclsView = authgroup.constructAclEditView(aclList, authGroupList, moduleList);
+    var filterAclsView = new Array();
+    var filterModuleList = new Array();
+    var offset = 0;
+    for (var idx = 0; idx < aclsView.length; ++idx) {
+        var cur = aclsView[idx];
+        if (cur.URL.search(filterVal) != -1) {
+            if (filterModuleList.length == 0) {
+                filterModuleList[filterModuleList.length] = cur.ModuleID;
+            } else if (filterModuleList[0] != cur.ModuleID) {
+                filterModuleList[filterModuleList.length] = cur.ModuleID;
+            }
+
+            filterAclsView[offset++] = cur;
+            continue;
+        }
+
+        if (cur.Module.search(filterVal) != -1) {
+            if (filterModuleList.length == 0) {
+                filterModuleList[filterModuleList.length] = cur.ModuleID;
+            } else if (filterModuleList[0] != cur.ModuleID) {
+                filterModuleList[filterModuleList.length] = cur.ModuleID;
+            }
+
+            filterAclsView[offset++] = cur;
+            continue;
+        }
+    }
+
+    if (filterModuleList.length == 1) {
+        var filterAuthgroupsView = new Array();
+        for (var ii = 0; ii < authGroupList.length; ++ii) {
+            var cur = authGroupList[ii];
+            if (cur.Module == filterModuleList[0]) {
+                filterAuthgroupsView[filterAuthgroupsView.length] = cur;
+            }
+        }
+
+        authgroup.updateEditAclVM(filterAclsView);
+        authgroup.updateEditAuthGroupVM(filterAuthgroupsView);
+    }
 };
 
 $(document).ready(function() {
@@ -192,15 +240,23 @@ $(document).ready(function() {
 
     authgroup.editVM = avalon.define({
         $id: "authgroup-Edit",
-        acls: []
+        acls: [],
+        authGroups: []
     });
 
-    $("#adjustAcl-button").click(
+    // 过滤出符合要求的ACL
+    $("#authgroup-Edit .filter-button").click(
+        function() {
+            var filterVal = $("#authgroup-Edit .authgroup-filter").val();
+            authgroup.refreshAclEidtView(filterVal, authgroup.acls, authgroup.authGroups, authgroup.modules);
+        }
+    );
+
+    $("#authgroup-Edit .adjust-button").click(
         function() {}
     );
 
     authgroup.loadData(function() {
-        console.log(authgroup.acls);
         authgroup.refreshAclListView(authgroup.acls, authgroup.authGroups, authgroup.modules);
     })
 });
