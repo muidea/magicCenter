@@ -185,10 +185,11 @@ authgroup.loadData = function(callBack) {
 
 authgroup.refreshAclListView = function(aclList, authGroupList, moduleList) {
     var aclsView = authgroup.constructAclListlView(aclList, authGroupList, moduleList);
+
     authgroup.updateListAclVM(aclsView);
 };
 
-authgroup.refreshAclEidtView = function(filterVal, aclList, authGroupList, moduleList) {
+authgroup.refreshAclEditView = function(filterVal, aclList, authGroupList, moduleList) {
     var aclsView = authgroup.constructAclEditView(aclList, authGroupList, moduleList);
     var filterAclsView = new Array();
     var filterModuleList = new Array();
@@ -218,18 +219,21 @@ authgroup.refreshAclEidtView = function(filterVal, aclList, authGroupList, modul
         }
     }
 
+    var filterAuthgroupsView = new Array();
     if (filterModuleList.length == 1) {
-        var filterAuthgroupsView = new Array();
+        authgroup.editVM.showPanel = true;
         for (var ii = 0; ii < authGroupList.length; ++ii) {
-            var cur = authGroupList[ii];
-            if (cur.Module == filterModuleList[0]) {
-                filterAuthgroupsView[filterAuthgroupsView.length] = cur;
+            var curAuthGroup = authGroupList[ii];
+            if (curAuthGroup.Module == filterModuleList[0]) {
+                var group = { ID: curAuthGroup.ID, Name: curAuthGroup.Name };
+                filterAuthgroupsView[filterAuthgroupsView.length] = group;
             }
         }
-
-        authgroup.updateEditAclVM(filterAclsView);
-        authgroup.updateEditAuthGroupVM(filterAuthgroupsView);
+    } else {
+        authgroup.editVM.showPanel = false;
     }
+    authgroup.updateEditAclVM(filterAclsView);
+    authgroup.updateEditAuthGroupVM(filterAuthgroupsView);
 };
 
 $(document).ready(function() {
@@ -241,14 +245,15 @@ $(document).ready(function() {
     authgroup.editVM = avalon.define({
         $id: "authgroup-Edit",
         acls: [],
-        authGroups: []
+        authGroups: [],
+        showPanel: false
     });
 
     // 过滤出符合要求的ACL
     $("#authgroup-Edit .filter-button").click(
         function() {
             var filterVal = $("#authgroup-Edit .authgroup-filter").val();
-            authgroup.refreshAclEidtView(filterVal, authgroup.acls, authgroup.authGroups, authgroup.modules);
+            authgroup.refreshAclEditView(filterVal, authgroup.acls, authgroup.authGroups, authgroup.modules);
         }
     );
 
