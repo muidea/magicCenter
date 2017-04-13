@@ -258,7 +258,36 @@ $(document).ready(function() {
     );
 
     $("#authgroup-Edit .adjust-button").click(
-        function() {}
+        function() {
+            var selectAclList = new Array();
+            var offset = 0;
+            $("#filterAcl-List .acl_status_1:checked").each(
+                function() {
+                    var id = $(this).val();
+                    selectAclList[offset++] = id;
+                }
+            );
+            var selectAuthGroupList = new Array();
+            offset = 0;
+            $("#authgroup-Edit .acl_authgroup:checked").each(
+                function() {
+                    var id = $(this).val();
+                    selectAuthGroupList[offset++] = id;
+                }
+            );
+
+            if (selectAclList.length > 0 && selectAuthGroupList.length > 0) {
+                authgroup.updateAclAuthGroupAction(selectAclList[0], selectAuthGroupList, function(errCode) {
+                    if (errCode > 0) {
+                        return;
+                    }
+
+                    authgroup.loadData(function() {
+                        authgroup.refreshAclListView(authgroup.acls, authgroup.authGroups, authgroup.modules);
+                    })
+                });
+            }
+        }
     );
 
     authgroup.loadData(function() {

@@ -84,7 +84,7 @@
                 </table>
                 <div ms-if="@showPanel" class="input-group col-md-8 col-md-offset-2">
                     <div class="col-md-2">选择授权组</div>
-                    <div class="col-md-3" ms-for="el in @authGroups"><input type="checkbox">{{el.Name}}</div>
+                    <div class="col-md-3" ms-for="el in @authGroups"><input type="checkbox" ms-attr="{value: el.ID, class: 'acl_authgroup'}">{{el.Name}}</div>
                 </div>
                 <div class="container-fluid text-right">
                     <button type="button" class="btn btn-default adjust-button">确定</button>
