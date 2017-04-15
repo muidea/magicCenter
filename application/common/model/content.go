@@ -14,18 +14,18 @@ const MEDIA = "media"
 
 // Summary 摘要信息
 type Summary struct {
-	ID      int
-	Name    string
-	Catalog []int
+	ID         int
+	Name       string
+	Catalog    []int
+	CreateDate string
+	Creater    int
 }
 
 // ArticleDetail 文章
 type ArticleDetail struct {
 	Summary
 
-	Content    string
-	CreateDate string
-	Author     int
+	Content string
 }
 
 // CatalogDetail 分类详细信息
@@ -33,25 +33,19 @@ type CatalogDetail struct {
 	Summary
 
 	Description string
-	CreateDate  string
-	Author      int
 }
 
 // LinkDetail 链接
 type LinkDetail struct {
 	Summary
 
-	URL        string
-	Logo       string
-	CreateDate string
-	Author     int
+	URL  string
+	Logo string
 }
 
 // MediaDetail 文件信息
 type MediaDetail struct {
 	Summary
-	URL        string
-	Desc       string
-	CreateDate string
-	Author     int
+	URL  string
+	Desc string
 }

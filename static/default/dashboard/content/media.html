@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
     <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.form.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
     <script type="text/javascript" src="/static/common/js/common.js"></script>
+    <script type="text/javascript" src="/static/common/avalon/2.2.5/avalon.modern.js"></script>
+    <script type="text/javascript" src="/static/dashboard/content/js/media.js"></script>
 </head>
 
 <body>
@@ -22,75 +22,46 @@
             </ul>
         </div>
         <div class="content-content">
-            <div class="tab-content" id="media-List">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="tab-content" id="media-List" ms-controller="media-List">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>路径</th>
-                            <th>描述</th>
+                            <th></th>
+                            <th>标题</th>
                             <th>分类</th>
-                            <th>创建者</th>
+                            <th>创建日期</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="5">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
-                        <tr class="media">
-                            <td>Media Name</td>
-                            <td><a class="edit" href="#" title="title">Media Url</a></td>
-                            <td>Media desc</td>
-                            <td>Catalog</td>
-                            <td>Creater</td>
+                        <tr class="media" ms-for="el in @medias">
+                            <td><input type="checkbox" /></td>
+                            <td>{{el.Name}}</td>
+                            <td>{{el.Catalog}}</td>
+                            <td>{{el.CreateDate}}</td>
                             <td>
-                                <a class="edit" href="#" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                                <a class="edit" href="#" title="Edit"><img src="/static/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="tab-content" id="media-Edit">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <form enctype="multipart/form-data" class="media-Form" action="/content/ajaxMedia/" method="post">
+                <form enctype="multipart/form-data" class="media-Form" action="/content/ajaxArticle/" method="post">
                     <div class="form-group">
-                        <label for="media-url">文件</label>
-                        <input class="form-control media-url" type="file" accept="*" name="media-url" onblur="media.assignDefaltName();" />
+                        <label for="media-title">标题</label> <input class="form-control media-title" type="text" name="media-title" />
                     </div>
                     <div class="form-group">
-                        <label for="media-name">名称</label>
-                        <input class="form-control media-name" type="text" name="media-name" />
-                    </div>
-                    <div class="form-group">
-                        <label for="media-desc">描述</label>
-                        <textarea class="form-control text-input textarea wysiwyg media-desc" name="media-desc" cols="79" rows="8" id="media-desc"></textarea>
+                        <label for="media-content">内容</label>
+                        <textarea class="form-control text-input textarea wysiwyg media-content" name="media-content" cols="79" rows="15"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="media-catalog">分类</label>
@@ -100,7 +71,7 @@
                         </chckBox>
                     </div>
                     <div class="form-group">
-                        <input type="hidden" name="media-id" class="media-id" value="-1" />
+                        <input type="hidden" id="media-id" name="media-id" class="media-id" value="-1" />
                     </div>
                     <button type="submit" class="btn btn-default">提交</button>
                     <button type="button" class="btn btn-default reset">重填</button>

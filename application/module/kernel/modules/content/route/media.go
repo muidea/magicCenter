@@ -284,7 +284,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Desc = r.FormValue("media-desc")
 		media.Catalog, _ = util.Str2IntArray(r.FormValue("media-catalog"))
 		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		media.Author = user.ID
+		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
 			result.ErrCode = 1

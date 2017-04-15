@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
     <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.form.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
     <script type="text/javascript" src="/static/common/js/common.js"></script>
+    <script type="text/javascript" src="/static/common/avalon/2.2.5/avalon.modern.js"></script>
+    <script type="text/javascript" src="/static/dashboard/content/js/article.js"></script>
 </head>
 
 <body>
@@ -22,73 +22,39 @@
             </ul>
         </div>
         <div class="content-content">
-            <div class="tab-content" id="article-List">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="tab-content" id="article-List" ms-controller="article-List">
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>标题</th>
                             <th>分类</th>
-                            <th>作者</th>
                             <th>创建日期</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="5">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
-                        <tr class="article">
+                        <tr class="article" ms-for="el in @articles">
                             <td><input type="checkbox" /></td>
-                            <td><a class="edit" href="#" title="title">Title</a></td>
-                            <td>catalog</td>
-                            <td>author</td>
-                            <td>2015年8月25日</td>
+                            <td>{{el.Name}}</td>
+                            <td>{{el.Catalog}}</td>
+                            <td>{{el.CreateDate}}</td>
                             <td>
-                                <a class="edit" href="#" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
-                            </td>
-                        </tr>
-                        <tr class="article">
-                            <td><input type="checkbox" /></td>
-                            <td><a class="edit" href="#" title="title">Title</a></td>
-                            <td>catalog</td>
-                            <td>author</td>
-                            <td>2015年8月25日</td>
-                            <td>
-                                <a class="edit" href="#" title="Edit"><img src="/common/images/pencil.png" alt="Edit" /></a>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                                <a class="edit" href="#" title="Edit"><img src="/static/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="#" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="tab-content" id="article-Edit">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <form enctype="multipart/form-data" class="article-Form" action="/content/ajaxArticle/" method="post">
                     <div class="form-group">
                         <label for="article-title">标题</label> <input class="form-control article-title" type="text" name="article-title" />

@@ -19,7 +19,7 @@ func TestArticle(t *testing.T) {
 	ar := model.ArticleDetail{}
 	ar.Name = "testing"
 	ar.Content = "123456789"
-	ar.Author = 0
+	ar.Creater = 0
 	ar.CreateDate = "2016-08-08 00:00:00"
 	ar.Catalog = append(ar.Catalog, 8)
 	ar.ID = 10

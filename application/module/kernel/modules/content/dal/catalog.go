@@ -12,12 +12,12 @@ import (
 func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
 
-	sql := fmt.Sprintf(`select id, name from catalog`)
+	sql := fmt.Sprintf(`select id, name,createdate,creater from catalog`)
 	helper.Query(sql)
 
 	for helper.Next() {
 		c := model.Summary{}
-		helper.GetValue(&c.ID, &c.Name)
+		helper.GetValue(&c.ID, &c.Name, &c.CreateDate, &c.Creater)
 
 		summaryList = append(summaryList, c)
 	}
@@ -41,7 +41,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Author)
+		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
 		result = true
 	}
 
@@ -62,11 +62,15 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		catalog := model.Summary{}
-		catalog.ID = r.RId()
-		catalog.Name = r.RName()
+		sql := fmt.Sprintf(`select id, name,createdate,creater from catalog where id =%d`, r.RId())
+		helper.Query(sql)
 
-		summaryList = append(summaryList, catalog)
+		if helper.Next() {
+			summary := model.Summary{}
+			helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
+
+			summaryList = append(summaryList, summary)
+		}
 	}
 
 	for index, value := range summaryList {
@@ -125,7 +129,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate strin
 // SaveCatalog 保存分类
 func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Author, catalog.ID)
+	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
@@ -139,5 +143,5 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.S
 		result = false
 	}
 
-	return model.Summary{ID: catalog.ID, Name: catalog.Name, Catalog: catalog.Catalog}, result
+	return model.Summary{ID: catalog.ID, Name: catalog.Name, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}, result
 }

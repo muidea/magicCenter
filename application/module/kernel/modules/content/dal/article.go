@@ -11,12 +11,12 @@ import (
 // QueryAllArticleSummary 查询所有文章摘要
 func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, title from article`)
+	sql := fmt.Sprintf(`select id, title,createdate,creater from article`)
 	helper.Query(sql)
 
 	for helper.Next() {
 		summary := model.Summary{}
-		helper.GetValue(&summary.ID, &summary.Name)
+		helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
 
 		summaryList = append(summaryList, summary)
 	}
@@ -36,12 +36,12 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bool) {
 	ar := model.ArticleDetail{}
 
-	sql := fmt.Sprintf(`select id, title, content, author, createdate from article where id = %d`, id)
+	sql := fmt.Sprintf(`select id, title, content, creater, createdate from article where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&ar.ID, &ar.Name, &ar.Content, &ar.Author, &ar.CreateDate)
+		helper.GetValue(&ar.ID, &ar.Name, &ar.Content, &ar.Creater, &ar.CreateDate)
 		result = true
 	}
 
@@ -60,12 +60,12 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 	summaryList := []model.Summary{}
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, title from article where id =%d`, r.RId())
+		sql := fmt.Sprintf(`select id, title, createdate,creater from article where id =%d`, r.RId())
 		helper.Query(sql)
 
 		if helper.Next() {
 			summary := model.Summary{}
-			helper.GetValue(&summary.ID, &summary.Name)
+			helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
 
 			summaryList = append(summaryList, summary)
 		}
@@ -83,19 +83,19 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 }
 
 // CreateArticle 保存文章
-func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, author int, createDate string) (model.Summary, bool) {
+func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
 	article := model.Summary{}
 	article.Name = title
 	article.Catalog = catalogs
 
 	// insert
-	sql := fmt.Sprintf(`insert into article (title,content,author,createdate) values ('%s','%s',%d,'%s')`, title, content, author, createDate)
+	sql := fmt.Sprintf(`insert into article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
 	num, result := helper.Execute(sql)
 	if num != 1 || !result {
 		return article, false
 	}
 
-	sql = fmt.Sprintf(`select id from article where title='%s' and author =%d and createdate='%s'`, title, author, createDate)
+	sql = fmt.Sprintf(`select id from article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
 
 	helper.Query(sql)
 	result = false
@@ -119,7 +119,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update article set title ='%s', content ='%s', author =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Author, article.CreateDate, article.ID)
+	sql := fmt.Sprintf(`update article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
@@ -133,7 +133,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 		result = false
 	}
 
-	return model.Summary{ID: article.ID, Name: article.Name, Catalog: article.Catalog}, result
+	return model.Summary{ID: article.ID, Name: article.Name, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}, result
 }
 
 // DeleteArticle 删除文章

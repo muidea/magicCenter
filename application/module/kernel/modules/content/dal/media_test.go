@@ -22,7 +22,7 @@ func TestMedia(t *testing.T) {
 	img.Name = "test image"
 	img.URL = "test image url"
 	img.Desc = "test image descr"
-	img.Author = 10
+	img.Creater = 10
 	img.Catalog = append(img.Catalog, 10)
 
 	_, ret := SaveMedia(helper, img)

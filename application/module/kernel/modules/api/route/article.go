@@ -337,7 +337,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		article.Content = r.FormValue("article-content")
 		article.Catalog, _ = util.Str2IntArray(r.FormValue("article-catalog"))
 		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		article.Author = user.ID
+		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
 		if !ok {
 			result.ErrCode = 1

@@ -22,7 +22,7 @@ func TestLink(t *testing.T) {
 	lnk.Name = "test Link"
 	lnk.URL = "test url"
 	lnk.Logo = "test link logo"
-	lnk.Author = 10
+	lnk.Creater = 10
 	lnk.Catalog = append(lnk.Catalog, 8)
 
 	_, ret := SaveLink(helper, lnk)

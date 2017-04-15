@@ -343,7 +343,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link.Logo = r.FormValue("link-logo")
 		link.Catalog, _ = util.Str2IntArray(r.FormValue("link-catalog"))
 		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		link.Author = user.ID
+		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
 		if !ok {
 			result.ErrCode = 1

@@ -20,7 +20,7 @@ func TestCatalog(t *testing.T) {
 	ca := model.CatalogDetail{}
 	ca.ID = 12
 	ca.Name = "testCatalog"
-	ca.Author = 3
+	ca.Creater = 3
 	ca.Catalog = append(ca.Catalog, 10)
 	catalog, ret := SaveCatalog(helper, ca)
 	if !ret {
@@ -32,7 +32,7 @@ func TestCatalog(t *testing.T) {
 	if !found {
 		t.Error("QueryCatalogByID failed")
 	}
-	if ca.Author != 3 {
+	if ca.Creater != 3 {
 		t.Error("QueryCatalogByID failed")
 	}
 
