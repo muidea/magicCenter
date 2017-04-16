@@ -44,6 +44,7 @@ type authorityAccountLoginRoute struct {
 
 type authorityLoginResult struct {
 	common.Result
+	User      string
 	AuthToken string
 }
 
@@ -97,6 +98,7 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 		session.SetOption(common.AuthTokenID, token)
 
 		result.ErrCode = 0
+		result.User = user.Name
 		result.AuthToken = token
 		break
 	}

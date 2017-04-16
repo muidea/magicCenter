@@ -1,4 +1,58 @@
+var magicCenter = {};
+
+function setCookie(c_name, value, expiredays) {
+    var exdate = new Date()
+    exdate.setDate(exdate.getDate() + expiredays)
+    document.cookie = c_name + "=" + escape(value) +
+        ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+}
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=")
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1
+            c_end = document.cookie.indexOf(";", c_start)
+            if (c_end == -1) c_end = document.cookie.length
+            return unescape(document.cookie.substring(c_start, c_end))
+        }
+    }
+    return ""
+}
+
+// 用户登出
+magicCenter.logoutUserAction = function(authToken) {
+    $.ajax({
+        type: "DELETE",
+        url: "/cas/user/?authToken=" + authToken,
+        data: {},
+        dataType: "json",
+        success: function(data) {
+            setCookie("userName", "", 0);
+            setCookie("authToken", "", 0);
+            location.href = "/static/dashboard/login.html";
+        }
+    });
+};
+
 $(document).ready(function() {
+    magicCenter.viewVM = avalon.define({
+        $id: "magicCenter",
+        user: []
+    });
+
+    var user = getCookie("userName");
+    var authToken = getCookie("authToken");
+
+    console.log("user:" + user + ", authToken:" + authToken);
+    if (user.length == 0 || authToken.length == 0) {
+        location.href = "/static/dashboard/login.html";
+        return;
+    }
+    magicCenter.curUser = user;
+    magicCenter.authToken = authToken;
+
+    magicCenter.viewVM.user = user;
 
     function updatePathNav() {
         var topPath = $("#main-nav>li>a.active").text();
@@ -38,11 +92,8 @@ $(document).ready(function() {
 
     $("#main-nav li a.nav-top-item").click(
         function() {
-            var hrefUrl = $(this).attr("href");
-            if (hrefUrl == "#") {
-                hrefUrl = $(this).parent().find("ul li a.active").attr("href");
-            }
-            
+            var hrefUrl = $(this).parent().find("ul li a.active").attr("href");
+
             $("#body-content").load(hrefUrl);
 
             updatePathNav();
@@ -61,4 +112,10 @@ $(document).ready(function() {
     );
 
     $("#main-nav li a.active").parent().find("ul li a.active").trigger("click");
+
+    $("#profile-links .user-logout").click(
+        function() {
+            magicCenter.logoutUserAction(magicCenter.authToken);
+        }
+    );
 });

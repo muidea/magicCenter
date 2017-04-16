@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
     <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/static/common/js/common.js"></script>
+    <script type="text/javascript" src="/static/common/avalon/2.2.5/avalon.modern.js"></script>
     <script type="text/javascript" src="/static/dashboard/js/index.js"></script>
     </script>
 </head>
 
-<body>
+<body ms-controller="magicCenter">
     <div class="container-fluid">
         <ol class="breadcrumb" id="path-nav">
             <li><a href="#">Home</a></li>
@@ -24,8 +26,8 @@
                 <ul class="list-group" id="main-nav">
                     <li class="list-group-item">
                         <div id="profile-links">
-                            Hello, <a href="#" class="user-profile" title="Edit your profile">{{.User.Name}}</a> |
-                            <a href="/dashboard/logout/" title="Sign Out">Sign Out</a>
+                            Hello, <a href="/#/user-profile/" class="user-profile" title="Edit your profile">{{@user}}</a> |
+                            <a href="/#/user-logout/" class="user-logout" title="Sign Out">Sign Out</a>
                         </div>
                     </li>
                     <li class="list-group-item"><a href="/#/content/" class="nav-top-item active">内容管理 </a>

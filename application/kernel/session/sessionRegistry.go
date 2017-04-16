@@ -56,7 +56,7 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	}
 
 	// 存入cookie,使用cookie存储
-	sessionCookie := http.Cookie{Name: sessionCookieID, Value: userSession.ID(), Path: "magicCenter"}
+	sessionCookie := http.Cookie{Name: sessionCookieID, Value: userSession.ID(), Path: ""}
 	http.SetCookie(w, &sessionCookie)
 
 	return userSession

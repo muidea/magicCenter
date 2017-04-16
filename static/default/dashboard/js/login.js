@@ -1,4 +1,11 @@
 $(document).ready(function() {
+    function setCookie(c_name, value, expiredays) {
+        var exdate = new Date()
+        exdate.setDate(exdate.getDate() + expiredays)
+        document.cookie = c_name + "=" + escape(value) +
+            ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+    }
+
     var options = {
         beforeSubmit: showRequest, // pre-submit callback
         success: showResponse, // post-submit callback
@@ -22,11 +29,12 @@ $(document).ready(function() {
     }
     // post-submit callback
     function showResponse(re) {
-        console.log(re);
         if (re.ErrCode > 0) {
             $("#alertInfo").removeClass('hidden');
             $("#alertInfo").html(re.Reason);
         } else {
+            setCookie("userName", re.User, 1);
+            setCookie("authToken", re.AuthToken, 1);
             location.href = "/static/dashboard/index.html";
         }
     }
