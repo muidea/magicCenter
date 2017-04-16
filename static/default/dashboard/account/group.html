@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/static/common/bootstrap/3.3.6/css/bootstrap-theme.css" type="text/css" media="screen" />
     <script type="text/javascript" src="/static/common/jquery/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.form.js"></script>
-    <script type="text/javascript" src="/static/common/jquery/jquery.hotkeys.js"></script>
     <script type="text/javascript" src="/static/common/bootstrap/3.3.6/js/bootstrap.js"></script>
     <script type="text/javascript" src="/static/common/js/common.js"></script>
+    <script type="text/javascript" src="/static/common/avalon/2.2.5/avalon.modern.js"></script>
+    <script type="text/javascript" src="/static/dashboard/account/js/group.js"></script>
 </head>
 
 <body>
@@ -22,22 +22,12 @@
             </ul>
         </div>
         <div class="content-content">
-            <div class="tab-content" id="group-List">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="tab-content" id="group-List" ms-controller="group-List">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>分组名</th>
+                            <th></th>
+                            <th>名称</th>
                             <th>描述</th>
                             <th>类型</th>
                             <th>操作</th>
@@ -45,35 +35,26 @@
                     </thead>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="5">
                                 <div class="clear"></div>
                             </td>
                         </tr>
                     </tfoot>
                     <tbody>
-                        <tr class="group">
-                            <td><a class="edit" href="#" title="title">Group Name</a></td>
-                            <td>User Count</td>
-                            <td>Creater</td>
+                        <tr class="user" ms-for="el in @groups">
+                            <td><input type="checkbox" /></td>
+                            <td>{{el.Name}}</td>
+                            <td>{{el.Description}}</td>
+                            <td>{{el.Type}}</td>
                             <td>
-                                <a class="delete" href="#" title="Delete"><img src="/common/images/cross.png" alt="Delete" /></a>
+                                <a class="edit" href="/content/link/query" title="Edit"><img src="/static/common/images/pencil.png" alt="Edit" /></a>
+                                <a class="delete" href="/content/link/delete" title="Delete"><img src="/static/common/images/cross.png" alt="Delete" /></a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="tab-content" id="group-Edit">
-                <div class="modal fade alert-Info" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body content">
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <form class="group-Form" action="/account/ajaxGroup/" method="post">
                     <div class="form-group">
                         <label for="group-name">分组名</label>

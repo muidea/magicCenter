@@ -1,159 +1,123 @@
-var article = {};
+var group = {};
 
-article.constructArticleListlView = function(articleList, catalogList) {
-    var articleListView = new Array();
+group.constructGroupListlView = function(groupList) {
+    var groupListView = new Array();
     var offset = 0;
-    for (var i = 0; i < articleList.length; ++i) {
-        var curArticle = articleList[i];
-        var catalogNames = "";
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curCatalog = catalogList[idx];
-            for (var j = 0; j < curArticle.Catalog; j++) {
-                var val = curArticle.Catalog[j];
-                if (curCatalog.ID == val) {
-                    if (catalogNames.length > 0) {
-                        catalogNames += ", ";
-                    }
-                    catalogNames += curCatalog.Name;
-                }
-            }
-        }
+    for (var i = 0; i < groupList.length; ++i) {
+        var curGroup = groupList[i];
+
         var view = {
-            ID: curArticle.ID,
-            Name: curArticle.Name,
-            Catalog: catalogNames,
-            CreateDate: curArticle.CreateDate
+            ID: curGroup.ID,
+            Name: curGroup.Name,
+            Description: curGroup.Description,
+            Type: curGroup.Type
         };
 
-        articleListView[offset++] = view;
+        groupListView[offset++] = view;
     }
 
-    return articleListView;
+    return groupListView;
 };
 
-article.constructArticleEditView = function(articleList, catalogList) {
-    var articleListView = new Array();
+group.constructGroupEditView = function(groupList, groupList) {
+    var groupListView = new Array();
     var ii = 0;
-    for (var articleIdx = 0; articleIdx < articleList.length; ++articleIdx) {
-        var curArticle = articleList[articleIdx];
+    for (var groupIdx = 0; groupIdx < groupList.length; ++groupIdx) {
+        var curGroup = groupList[groupIdx];
 
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curModule = catalogList[idx];
+        for (var idx = 0; idx < groupList.length; ++idx) {
+            var curModule = groupList[idx];
 
-            if (curArticle.Module == curModule.ID) {
+            if (curGroup.Module == curModule.ID) {
                 var view = {
-                    ID: curArticle.ID,
-                    URL: curArticle.URL,
-                    Method: curArticle.Method,
-                    Status: curArticle.Status,
+                    ID: curGroup.ID,
+                    URL: curGroup.URL,
+                    Method: curGroup.Method,
+                    Status: curGroup.Status,
                     Module: curModule.Name,
                     ModuleID: curModule.ID
                 }
 
-                articleListView[ii++] = view;
+                groupListView[ii++] = view;
             }
         }
     }
 
-    return articleListView;
+    return groupListView;
 }
 
-article.updateListArticleVM = function(articleList) {
-    article.listVM.articles = articleList;
+group.updateListGroupVM = function(groupList) {
+    group.listVM.groups = groupList;
 }
 
-article.updateEditModuleVM = function(catalogList) {
-    article.editVM.modules = catalogList;
+group.updateEditModuleVM = function(groupList) {
+    group.editVM.modules = groupList;
 };
 
-article.updateEditArticleVM = function(articleList) {
-    article.editVM.articles = articleList;
+group.updateEditGroupVM = function(groupList) {
+    group.editVM.groups = groupList;
 
-    // 将已经enable的article设置上checked标示
-    for (var offset = 0; offset < article.editVM.articles.length; ++offset) {
-        var curArticle = article.editVM.articles[offset];
-        if (curArticle.Status > 0) {
-            $("#selectArticle-List .article_" + curArticle.ID).prop("checked", true);
+    // 将已经enable的group设置上checked标示
+    for (var offset = 0; offset < group.editVM.groups.length; ++offset) {
+        var curGroup = group.editVM.groups[offset];
+        if (curGroup.Status > 0) {
+            $("#selectGroup-List .group_" + curGroup.ID).prop("checked", true);
         }
     }
 };
 
-// 加载全部的Article
-article.getAllArticlesAction = function(callBack) {
+// 加载全部的Group
+group.getAllGroupsAction = function(callBack) {
     $.ajax({
         type: "GET",
-        url: "/content/article/",
+        url: "/account/group/",
         data: {},
         dataType: "json",
         success: function(data) {
             if (callBack != null) {
-                callBack(data.ErrCode, data.Article);
+                callBack(data.ErrCode, data.Group);
             }
         }
     });
 };
 
-// 加载全部Catalog
-article.getAllCatalogsAction = function(callBack) {
-    $.ajax({
-        type: "GET",
-        url: "/content/catalog/",
-        data: {},
-        dataType: "json",
-        success: function(data) {
-            if (callBack != null) {
-                callBack(data.ErrCode, data.Catalog);
-            }
-        }
-    });
-};
-
-article.loadData = function(callBack) {
-    var getAllCatalogsCallBack = function(errCode, catalogList) {
+group.loadData = function(callBack) {
+    var getAllGroupsCallBack = function(errCode, groupList) {
         if (errCode != 0) {
             return;
         }
 
-        article.catalogs = catalogList;
+        group.groups = groupList;
         if (callBack != null) {
             callBack()
         }
     };
 
-    var getAllArticlesCallBack = function(errCode, articleList) {
-        if (errCode != 0) {
-            return;
-        }
-
-        article.articles = articleList;
-        article.getAllCatalogsAction(getAllCatalogsCallBack);
-    };
-
     // 加载完成
-    article.getAllArticlesAction(getAllArticlesCallBack);
+    group.getAllGroupsAction(getAllGroupsCallBack);
 }
 
-article.refreshArticleListView = function(articleList, catalogList) {
-    var articlesView = article.constructArticleListlView(articleList, catalogList);
-    article.updateListArticleVM(articlesView);
+group.refreshGroupListView = function(groupList, groupList) {
+    var groupsView = group.constructGroupListlView(groupList, groupList);
+    group.updateListGroupVM(groupsView);
 };
 
-article.refreshArticleEditView = function(article, catalogList) {};
+group.refreshGroupEditView = function(group, groupList) {};
 
 $(document).ready(function() {
-    article.listVM = avalon.define({
-        $id: "article-List",
-        articles: []
+    group.listVM = avalon.define({
+        $id: "group-List",
+        groups: []
     });
 
-    article.editVM = avalon.define({
-        $id: "article-Edit",
+    group.editVM = avalon.define({
+        $id: "group-Edit",
         modules: [],
-        articles: []
+        groups: []
     });
 
     $('#moduleListModal').on('show.bs.modal', function(e) {
-        article.updateEditModuleVM(article.modules);
+        group.updateEditModuleVM(group.modules);
 
         $("#moduleListModal .module").prop("checked", false);
     });
@@ -164,40 +128,40 @@ $(document).ready(function() {
         $("#moduleListModal .module:checked").each(
             function() {
                 var id = $(this).val();
-                for (var idx = 0; idx < article.modules.length; idx++) {
-                    var curModule = article.modules[idx];
+                for (var idx = 0; idx < group.modules.length; idx++) {
+                    var curModule = group.modules[idx];
                     if (curModule.ID == id) {
                         selectModuleArray[offset++] = curModule;
                     }
                 }
             }
         );
-        article.refreshArticleEditView(article.articles, selectModuleArray);
+        group.refreshGroupEditView(group.groups, selectModuleArray);
     });
 
-    $("#selectArticle-button").click(
+    $("#selectGroup-button").click(
         function() {
-            var selectArticleList = new Array();
+            var selectGroupList = new Array();
             var offset = 0;
-            $("#selectArticle-List .article_status_0:checked").each(
+            $("#selectGroup-List .group_status_0:checked").each(
                 function() {
                     var id = $(this).val();
-                    selectArticleList[offset++] = id;
+                    selectGroupList[offset++] = id;
                 }
             );
 
-            var unSelectArticleList = new Array();
+            var unSelectGroupList = new Array();
             offset = 0;
-            $("#selectArticle-List .article_status_1:not(:checked)").each(
+            $("#selectGroup-List .group_status_1:not(:checked)").each(
                 function() {
                     var id = $(this).val();
-                    unSelectArticleList[offset++] = id;
+                    unSelectGroupList[offset++] = id;
                 }
             );
 
-            article.statusArticlesAction(
-                selectArticleList,
-                unSelectArticleList,
+            group.statusGroupsAction(
+                selectGroupList,
+                unSelectGroupList,
                 function(errCode) {
                     if (errCode != 0) {
                         return;
@@ -208,8 +172,8 @@ $(document).ready(function() {
                     $("#moduleListModal .module:checked").each(
                         function() {
                             var id = $(this).val();
-                            for (var idx = 0; idx < article.modules.length; idx++) {
-                                var curModule = article.modules[idx];
+                            for (var idx = 0; idx < group.modules.length; idx++) {
+                                var curModule = group.modules[idx];
                                 if (curModule.ID == id) {
                                     selectModuleArray[offset++] = curModule;
                                 }
@@ -217,16 +181,16 @@ $(document).ready(function() {
                         }
                     );
 
-                    article.loadData(function() {
-                        article.refreshArticleListView(article.articles, article.catalogs);
+                    group.loadData(function() {
+                        group.refreshGroupListView(group.groups, group.groups);
 
-                        article.refreshArticleEditView(article.articles, selectModuleArray);
+                        group.refreshGroupEditView(group.groups, selectModuleArray);
                     })
                 });
         }
     );
 
-    article.loadData(function() {
-        article.refreshArticleListView(article.articles, article.catalogs);
+    group.loadData(function() {
+        group.refreshGroupListView(group.groups, group.groups);
     })
 });

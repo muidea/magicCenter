@@ -74,7 +74,6 @@ user.getAllUsersAction = function(callBack) {
         data: {},
         dataType: "json",
         success: function(data) {
-            console.log(data);
             if (callBack != null) {
                 callBack(data.ErrCode, data.User);
             }
