@@ -43,8 +43,6 @@ $(document).ready(function() {
 
     var user = getCookie("userName");
     var authToken = getCookie("authToken");
-
-    console.log("user:" + user + ", authToken:" + authToken);
     if (user.length == 0 || authToken.length == 0) {
         location.href = "/static/dashboard/login.html";
         return;

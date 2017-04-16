@@ -54,24 +54,23 @@
                     </tbody>
                 </table>
             </div>
-            <div class="tab-content" id="catalog-Edit">
-                <form enctype="multipart/form-data" class="catalog-Form" action="/content/ajaxCatalog/" method="post">
-                    <div class="form-group">
-                        <label for="catalog-name">名称</label> <input class="form-control catalog-name" type="text" name="catalog-name" id="catalog-name" />
-                    </div>
-                    <div class="form-group">
-                        <label for="catalog-parent">父类</label>
-                        <chckBox class="checkbox catalog-parent">
-                            <label><input type="checkbox"/> Check me out </label>
-                            <label><input type="checkbox"/> Check me out </label>
-                        </chckBox>
-                    </div>
-                    <div class="form-group">
-                        <input type="hidden" id="catalog-id" name="catalog-id" class="catalog-id" value="-1" />
-                    </div>
-                    <button type="submit" class="btn btn-default">提交</button>
-                    <button type="button" class="btn btn-default reset">重填</button>
-                </form>
+            <div class="tab-content" id="catalog-Edit" ms-controller="catalog-Edit">
+                <div class="form-group">
+                    <label for="catalog-name">名称</label> <input class="form-control catalog-name" type="text" name="catalog-name" />
+                </div>
+                <div class="form-group">
+                    <label for="catalog-description">描述</label> <textarea class="form-control catalog-description" type="text" name="catalog-description" rows="5"> </textarea>
+                </div>
+                <div class="form-group">
+                    <label for="catalog-parent">父类</label>
+                    <chckBox class="checkbox catalog-parent">
+                        <label ms-for="el in @parentCatalogs"><input type="checkbox" ms-attr="{value: el.ID, class:'item'}"/>{{el.Name}}</label>
+                    </chckBox>
+                </div>
+                <div class="form-group">
+                    <input type="hidden" name="catalog-id" class="catalog-id" value="-1" />
+                </div>
+                <button type="button" id="submitCatalog-button" class="btn btn-default">提交</button>
             </div>
         </div>
     </div>

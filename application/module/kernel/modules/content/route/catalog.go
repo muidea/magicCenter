@@ -210,7 +210,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 		name := r.FormValue("catalog-name")
 		description := r.FormValue("catalog-description")
 		createdate := time.Now().Format("2006-01-02 15:04:05")
-		catalogs, _ := util.Str2IntArray(r.FormValue("catalog-catalog"))
+		catalogs, _ := util.Str2IntArray(r.FormValue("catalog-parent"))
 		catalog, ok := i.contentHandler.CreateCatalog(name, description, createdate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
