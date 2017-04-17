@@ -12,6 +12,7 @@ import (
 )
 
 type aclManager struct {
+	dbhelper           dbhelper.DBHelper
 	getACLAuthGroup    map[string]*model.ACL
 	postACLAuthGroup   map[string]*model.ACL
 	putACLAuthGroup    map[string]*model.ACL
@@ -19,8 +20,9 @@ type aclManager struct {
 	allACLAuthGroup    map[int]*model.ACL
 }
 
-func createACLManager() aclManager {
+func createACLManager(dbhelper dbhelper.DBHelper) aclManager {
 	aclManager := aclManager{
+		dbhelper:           dbhelper,
 		getACLAuthGroup:    make(map[string]*model.ACL),
 		postACLAuthGroup:   make(map[string]*model.ACL),
 		putACLAuthGroup:    make(map[string]*model.ACL),
@@ -32,31 +34,25 @@ func createACLManager() aclManager {
 }
 
 func (i *aclManager) loadAllACL() bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return false
-	}
-
-	acls := dal.LoadACL(dbhelper, common.GET)
+	acls := dal.LoadACL(i.dbhelper, common.GET)
 	for _, acl := range acls {
 		cur := acl
 		i.getACLAuthGroup[acl.URL] = &cur
 		i.allACLAuthGroup[acl.ID] = &cur
 	}
-	acls = dal.LoadACL(dbhelper, common.POST)
+	acls = dal.LoadACL(i.dbhelper, common.POST)
 	for _, acl := range acls {
 		cur := acl
 		i.postACLAuthGroup[acl.URL] = &cur
 		i.allACLAuthGroup[acl.ID] = &cur
 	}
-	acls = dal.LoadACL(dbhelper, common.PUT)
+	acls = dal.LoadACL(i.dbhelper, common.PUT)
 	for _, acl := range acls {
 		cur := acl
 		i.putACLAuthGroup[acl.URL] = &cur
 		i.allACLAuthGroup[acl.ID] = &cur
 	}
-	acls = dal.LoadACL(dbhelper, common.DELETE)
+	acls = dal.LoadACL(i.dbhelper, common.DELETE)
 	for _, acl := range acls {
 		cur := acl
 		i.deleteACLAuthGroup[acl.URL] = &cur
@@ -66,27 +62,15 @@ func (i *aclManager) loadAllACL() bool {
 }
 
 func (i *aclManager) queryACL(module string, status int) ([]model.ACL, bool) {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return []model.ACL{}, false
-	}
-
 	if strings.ToLower(module) == "all" {
-		return dal.QueryAllACL(dbhelper, status), true
+		return dal.QueryAllACL(i.dbhelper, status), true
 	}
 
-	return dal.QueryACL(dbhelper, module, status), true
+	return dal.QueryACL(i.dbhelper, module, status), true
 }
 
 func (i *aclManager) addACL(url, method, module string) (model.ACL, bool) {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return model.ACL{}, false
-	}
-
-	acl, ok := dal.InsertACL(dbhelper, url, method, module, 0)
+	acl, ok := dal.InsertACL(i.dbhelper, url, method, module, 0)
 	if ok {
 		switch method {
 		case common.GET:
@@ -107,12 +91,6 @@ func (i *aclManager) addACL(url, method, module string) (model.ACL, bool) {
 }
 
 func (i *aclManager) delACL(url, method, module string) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return false
-	}
-
 	aclID := -1
 	ok := false
 	switch method {
@@ -120,7 +98,7 @@ func (i *aclManager) delACL(url, method, module string) bool {
 		acl, ok := i.getACLAuthGroup[url]
 		if ok {
 			aclID = acl.ID
-			ok = dal.DeleteACL(dbhelper, aclID)
+			ok = dal.DeleteACL(i.dbhelper, aclID)
 			if ok {
 				delete(i.getACLAuthGroup, url)
 			}
@@ -129,7 +107,7 @@ func (i *aclManager) delACL(url, method, module string) bool {
 		acl, ok := i.postACLAuthGroup[url]
 		if ok {
 			aclID = acl.ID
-			ok = dal.DeleteACL(dbhelper, aclID)
+			ok = dal.DeleteACL(i.dbhelper, aclID)
 			if ok {
 				delete(i.postACLAuthGroup, url)
 			}
@@ -138,7 +116,7 @@ func (i *aclManager) delACL(url, method, module string) bool {
 		acl, ok := i.putACLAuthGroup[url]
 		if ok {
 			aclID = acl.ID
-			ok = dal.DeleteACL(dbhelper, aclID)
+			ok = dal.DeleteACL(i.dbhelper, aclID)
 			if ok {
 				delete(i.putACLAuthGroup, url)
 			}
@@ -147,7 +125,7 @@ func (i *aclManager) delACL(url, method, module string) bool {
 		acl, ok := i.deleteACLAuthGroup[url]
 		if ok {
 			aclID = acl.ID
-			ok = dal.DeleteACL(dbhelper, aclID)
+			ok = dal.DeleteACL(i.dbhelper, aclID)
 			if ok {
 				delete(i.deleteACLAuthGroup, url)
 			}
@@ -162,13 +140,7 @@ func (i *aclManager) delACL(url, method, module string) bool {
 }
 
 func (i *aclManager) enableACL(acls []int) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return false
-	}
-
-	ok := dal.EnableACL(dbhelper, acls)
+	ok := dal.EnableACL(i.dbhelper, acls)
 	if ok {
 		for _, v := range acls {
 			acl, found := i.allACLAuthGroup[v]
@@ -182,13 +154,7 @@ func (i *aclManager) enableACL(acls []int) bool {
 }
 
 func (i *aclManager) disableACL(acls []int) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return false
-	}
-
-	ok := dal.DisableACL(dbhelper, acls)
+	ok := dal.DisableACL(i.dbhelper, acls)
 	if ok {
 		for _, v := range acls {
 			acl, found := i.allACLAuthGroup[v]
@@ -202,12 +168,6 @@ func (i *aclManager) disableACL(acls []int) bool {
 }
 
 func (i *aclManager) adjustACLAuthGroup(aclID int, authGroup []int) (model.ACL, bool) {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		log.Println("create new dbhelper failed")
-		return model.ACL{}, false
-	}
-
 	acl, found := i.allACLAuthGroup[aclID]
 	if !found {
 		return model.ACL{}, false
@@ -216,7 +176,7 @@ func (i *aclManager) adjustACLAuthGroup(aclID int, authGroup []int) (model.ACL, 
 	ok := false
 
 	acl.AuthGroup = authGroup
-	ok = dal.UpateACL(dbhelper, *acl)
+	ok = dal.UpateACL(i.dbhelper, *acl)
 	switch acl.Method {
 	case common.GET:
 		if ok {

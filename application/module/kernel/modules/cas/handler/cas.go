@@ -5,17 +5,19 @@ import (
 	"strings"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/cache"
 )
 
 // CreateCASHandler 新建CASHandler
 func CreateCASHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.CASHandler {
+	dbhelper, _ := dbhelper.NewHelper()
 	i := impl{
 		sessionRegistry:  sessionRegistry,
 		accountManager:   createAccountManager(modHub),
-		authGroupManager: createAuthGroupManager(),
-		aclManager:       createACLManager(),
+		authGroupManager: createAuthGroupManager(dbhelper),
+		aclManager:       createACLManager(dbhelper),
 		cacheData:        cache.NewCache()}
 
 	return &i

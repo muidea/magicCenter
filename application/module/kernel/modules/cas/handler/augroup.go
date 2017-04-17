@@ -9,23 +9,19 @@ import (
 )
 
 type authGroupManager struct {
+	dbhelper         dbhelper.DBHelper
 	module2AuthGroup map[string][]model.AuthGroup
 }
 
-func createAuthGroupManager() authGroupManager {
-	authGroupManager := authGroupManager{module2AuthGroup: make(map[string][]model.AuthGroup)}
+func createAuthGroupManager(dbhelper dbhelper.DBHelper) authGroupManager {
+	authGroupManager := authGroupManager{dbhelper: dbhelper, module2AuthGroup: make(map[string][]model.AuthGroup)}
 	authGroupManager.loadAllAuthGroup()
 
 	return authGroupManager
 }
 
 func (i *authGroupManager) loadAllAuthGroup() bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		return false
-	}
-
-	authGroups := dal.GetAllAuthGroup(dbhelper)
+	authGroups := dal.GetAllAuthGroup(i.dbhelper)
 	for _, authGroup := range authGroups {
 		authGroups, found := i.module2AuthGroup[authGroup.Module]
 		if !found {
@@ -54,13 +50,8 @@ func (i *authGroupManager) queryAuthGroup(module string) ([]model.AuthGroup, boo
 }
 
 func (i *authGroupManager) insertAuthGroup(authGroups []model.AuthGroup) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		return false
-	}
-
 	for _, authGroup := range authGroups {
-		authGroup, ok := dal.InsertAuthGroup(dbhelper, authGroup)
+		authGroup, ok := dal.InsertAuthGroup(i.dbhelper, authGroup)
 		if ok {
 			authGroups, found := i.module2AuthGroup[authGroup.Module]
 			if !found {
@@ -76,12 +67,8 @@ func (i *authGroupManager) insertAuthGroup(authGroups []model.AuthGroup) bool {
 }
 
 func (i *authGroupManager) deleteAuthGroup(authGroups []model.AuthGroup) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		return false
-	}
 	for _, v := range authGroups {
-		dal.DeleteAuthGroup(dbhelper, v.ID)
+		dal.DeleteAuthGroup(i.dbhelper, v.ID)
 
 		curAuthGroups, found := i.module2AuthGroup[v.Module]
 		newAuthGroups := []model.AuthGroup{}
@@ -101,18 +88,9 @@ func (i *authGroupManager) deleteAuthGroup(authGroups []model.AuthGroup) bool {
 }
 
 func (i *authGroupManager) adjustUserAuthGroup(userID int, authGroup []int) bool {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		return false
-	}
-	return dal.UpateUserAuthorityGroup(dbhelper, userID, authGroup)
+	return dal.UpateUserAuthorityGroup(i.dbhelper, userID, authGroup)
 }
 
 func (i *authGroupManager) getUserAuthGroup(userID int) ([]int, bool) {
-	dbhelper, err := dbhelper.NewHelper()
-	if err != nil {
-		return []int{}, false
-	}
-
-	return dal.GetUserAuthorityGroup(dbhelper, userID), true
+	return dal.GetUserAuthorityGroup(i.dbhelper, userID), true
 }
