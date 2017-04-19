@@ -31,51 +31,31 @@ article.constructArticleListlView = function(articleList, catalogList) {
     return articleListView;
 };
 
-article.constructArticleEditView = function(articleList, catalogList) {
-    var articleListView = new Array();
+
+article.constructArticleEditView = function(catalogList) {
+    var catalogListView = new Array();
     var ii = 0;
-    for (var articleIdx = 0; articleIdx < articleList.length; ++articleIdx) {
-        var curArticle = articleList[articleIdx];
+    for (var idx = 0; idx < catalogList.length; ++idx) {
+        var curCatalog = catalogList[idx];
 
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curModule = catalogList[idx];
+        var view = {
+            ID: curCatalog.ID,
+            Name: curCatalog.Name
+        };
 
-            if (curArticle.Module == curModule.ID) {
-                var view = {
-                    ID: curArticle.ID,
-                    URL: curArticle.URL,
-                    Method: curArticle.Method,
-                    Status: curArticle.Status,
-                    Module: curModule.Name,
-                    ModuleID: curModule.ID
-                }
-
-                articleListView[ii++] = view;
-            }
-        }
+        catalogListView[ii++] = view;
     }
 
-    return articleListView;
-}
+    return catalogListView;
+};
 
 article.updateListArticleVM = function(articleList) {
     article.listVM.articles = articleList;
-}
-
-article.updateEditModuleVM = function(catalogList) {
-    article.editVM.modules = catalogList;
 };
 
-article.updateEditArticleVM = function(articleList) {
-    article.editVM.articles = articleList;
-
-    // 将已经enable的article设置上checked标示
-    for (var offset = 0; offset < article.editVM.articles.length; ++offset) {
-        var curArticle = article.editVM.articles[offset];
-        if (curArticle.Status > 0) {
-            $("#selectArticle-List .article_" + curArticle.ID).prop("checked", true);
-        }
-    }
+article.updateEditArticleVM = function(curArticle, catalogList) {
+    article.editVM.article = curArticle;
+    article.editVM.catalogs = catalogList;
 };
 
 // 加载全部的Article
@@ -124,7 +104,7 @@ article.loadData = function(callBack) {
         if (errCode != 0) {
             return;
         }
-
+        article.curArticle = { ID: -1, Name: "", Content: "", Catalog: [] };
         article.articles = articleList;
         article.getAllCatalogsAction(getAllCatalogsCallBack);
     };
@@ -138,7 +118,18 @@ article.refreshArticleListView = function(articleList, catalogList) {
     article.updateListArticleVM(articlesView);
 };
 
-article.refreshArticleEditView = function(article, catalogList) {};
+article.refreshArticleEditView = function(curArticle, catalogList) {
+    var articleView = {
+        ID: curArticle.ID,
+        Name: curArticle.Name,
+        Content: curArticle.Content,
+        Catalog: curArticle.Catalog
+    };
+    console.log(curArticle);
+
+    var catalogView = article.constructArticleEditView(catalogList);
+    article.updateEditArticleVM(articleView, catalogView);
+};
 
 $(document).ready(function() {
     article.listVM = avalon.define({
@@ -148,32 +139,10 @@ $(document).ready(function() {
 
     article.editVM = avalon.define({
         $id: "article-Edit",
-        modules: [],
-        articles: []
+        article: {},
+        catalogs: []
     });
 
-    $('#moduleListModal').on('show.bs.modal', function(e) {
-        article.updateEditModuleVM(article.modules);
-
-        $("#moduleListModal .module").prop("checked", false);
-    });
-
-    $('#moduleListModal').on('hidden.bs.modal', function(e) {
-        var selectModuleArray = new Array()
-        var offset = 0;
-        $("#moduleListModal .module:checked").each(
-            function() {
-                var id = $(this).val();
-                for (var idx = 0; idx < article.modules.length; idx++) {
-                    var curModule = article.modules[idx];
-                    if (curModule.ID == id) {
-                        selectModuleArray[offset++] = curModule;
-                    }
-                }
-            }
-        );
-        article.refreshArticleEditView(article.articles, selectModuleArray);
-    });
 
     $("#selectArticle-button").click(
         function() {
@@ -220,7 +189,7 @@ $(document).ready(function() {
                     article.loadData(function() {
                         article.refreshArticleListView(article.articles, article.catalogs);
 
-                        article.refreshArticleEditView(article.articles, selectModuleArray);
+                        article.refreshArticleEditView(article.curArticle, article.catalogs);
                     })
                 });
         }
@@ -228,5 +197,7 @@ $(document).ready(function() {
 
     article.loadData(function() {
         article.refreshArticleListView(article.articles, article.catalogs);
+
+        article.refreshArticleEditView(article.curArticle, article.catalogs);
     })
 });
