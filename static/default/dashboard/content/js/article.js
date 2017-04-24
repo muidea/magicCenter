@@ -6,15 +6,19 @@ article.constructArticleListlView = function(articleList, catalogList) {
     for (var i = 0; i < articleList.length; ++i) {
         var curArticle = articleList[i];
         var catalogNames = "";
+
         for (var idx = 0; idx < catalogList.length; ++idx) {
             var curCatalog = catalogList[idx];
-            for (var j = 0; j < curArticle.Catalog; j++) {
-                var val = curArticle.Catalog[j];
-                if (curCatalog.ID == val) {
-                    if (catalogNames.length > 0) {
-                        catalogNames += ", ";
+            if (curArticle.Catalog) {
+                for (var j = 0; j < curArticle.Catalog.length; j++) {
+                    var val = curArticle.Catalog[j];
+                    if (curCatalog.ID == val) {
+                        if (catalogNames.length > 0) {
+                            catalogNames += ", ";
+                        }
+                        catalogNames += curCatalog.Name;
+                        break;
                     }
-                    catalogNames += curCatalog.Name;
                 }
             }
         }
@@ -30,7 +34,6 @@ article.constructArticleListlView = function(articleList, catalogList) {
 
     return articleListView;
 };
-
 
 article.constructArticleEditView = function(catalogList) {
     var catalogListView = new Array();
@@ -88,6 +91,34 @@ article.getAllCatalogsAction = function(callBack) {
     });
 };
 
+article.saveArticleAction = function(title, content, catalogs, callBack) {
+    $.ajax({
+        type: "POST",
+        url: "/content/article/",
+        data: { "article-title": title, "article-content": content, "article-catalog": catalogs },
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.Article);
+            }
+        }
+    });
+};
+
+article.updateArticleAtion = function(id, title, content, catalogs, callBack) {
+    $.ajax({
+        type: "PUT",
+        url: "/content/article/" + id + "/",
+        data: { "article-title": title, "article-content": content, "article-catalog": catalogs },
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.Article);
+            }
+        }
+    });
+}
+
 article.loadData = function(callBack) {
     var getAllCatalogsCallBack = function(errCode, catalogList) {
         if (errCode != 0) {
@@ -125,7 +156,6 @@ article.refreshArticleEditView = function(curArticle, catalogList) {
         Content: curArticle.Content,
         Catalog: curArticle.Catalog
     };
-    console.log(curArticle);
 
     var catalogView = article.constructArticleEditView(catalogList);
     article.updateEditArticleVM(articleView, catalogView);
@@ -144,54 +174,43 @@ $(document).ready(function() {
     });
 
 
-    $("#selectArticle-button").click(
+    $("#article-Edit .submit").click(
         function() {
-            var selectArticleList = new Array();
-            var offset = 0;
-            $("#selectArticle-List .article_status_0:checked").each(
+            var id = $("#article-Edit .article-id").val();
+            var title = $("#article-Edit .article-title").val();
+            var content = $("#article-Edit .article-content").val();
+            var catalog = "";
+            $("#article-Edit .catalog-item:checked").each(
                 function() {
                     var id = $(this).val();
-                    selectArticleList[offset++] = id;
-                }
-            );
-
-            var unSelectArticleList = new Array();
-            offset = 0;
-            $("#selectArticle-List .article_status_1:not(:checked)").each(
-                function() {
-                    var id = $(this).val();
-                    unSelectArticleList[offset++] = id;
-                }
-            );
-
-            article.statusArticlesAction(
-                selectArticleList,
-                unSelectArticleList,
-                function(errCode) {
-                    if (errCode != 0) {
-                        return;
+                    if (catalog.length > 0) {
+                        catalog += ",";
                     }
-
-                    var selectModuleArray = new Array()
-                    var offset = 0;
-                    $("#moduleListModal .module:checked").each(
-                        function() {
-                            var id = $(this).val();
-                            for (var idx = 0; idx < article.modules.length; idx++) {
-                                var curModule = article.modules[idx];
-                                if (curModule.ID == id) {
-                                    selectModuleArray[offset++] = curModule;
-                                }
-                            }
-                        }
-                    );
-
-                    article.loadData(function() {
-                        article.refreshArticleListView(article.articles, article.catalogs);
-
-                        article.refreshArticleEditView(article.curArticle, article.catalogs);
-                    })
+                    catalog += id;
                 });
+
+            var callBack = function(errCode, data) {
+                if (errCode > 0) {
+                    return;
+                }
+
+                $("#article-Edit .article-id").val(-1);
+                $("#article-Edit .article-title").val("");
+                $("#article-Edit .article-content").val("");
+                $("#article-Edit .catalog-item").prop("checked", false);
+
+                article.loadData(function() {
+                    article.refreshArticleListView(article.articles, article.catalogs);
+
+                    article.refreshArticleEditView(article.curArticle, article.catalogs);
+                })
+            };
+
+            if (id == -1) {
+                article.saveArticleAction(title, content, catalog, callBack);
+            } else {
+                article.updateArticleAtion(id, title, content, catalog, callBack);
+            }
         }
     );
 

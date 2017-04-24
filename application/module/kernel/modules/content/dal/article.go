@@ -86,6 +86,8 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
 	article := model.Summary{}
 	article.Name = title
+	article.CreateDate = createDate
+	article.Creater = creater
 	article.Catalog = catalogs
 
 	// insert
