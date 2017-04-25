@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"log"
+
 	_ "github.com/go-sql-driver/mysql" //引入Mysql驱动
 )
 
@@ -29,24 +31,28 @@ type impl struct {
 func Fetch(user string, password string, address string, dbName string) (Dao, error) {
 	connectStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", user, password, address, dbName)
 
-	dao := &impl{dbHandle: nil, dbTx: nil, rowsHandle: nil}
+	i := impl{dbHandle: nil, dbTx: nil, rowsHandle: nil}
 	db, err := sql.Open("mysql", connectStr)
 	if err != nil {
 		panic("open database exception, err:" + err.Error())
 	} else {
-		dao.dbHandle = db
+		log.Print("open database connection...")
+		i.dbHandle = db
 	}
 
-	return dao, err
+	return &i, err
 }
 
 func (impl *impl) Release() {
+
 	if impl.rowsHandle != nil {
 		impl.rowsHandle.Close()
 	}
 	impl.rowsHandle = nil
 
 	if impl.dbHandle != nil {
+		log.Print("close database connection...")
+
 		impl.dbHandle.Close()
 	}
 	impl.dbHandle = nil
@@ -97,12 +103,15 @@ func (impl *impl) Query(sql string) {
 	if impl.dbHandle == nil {
 		panic("dbHanlde is nil")
 	}
+	if impl.rowsHandle != nil {
+		impl.rowsHandle.Close()
+		impl.rowsHandle = nil
+	}
 
 	rows, err := impl.dbHandle.Query(sql)
 	if err != nil {
 		panic("query exception, err:" + err.Error() + ", sql:" + sql)
 	}
-
 	impl.rowsHandle = rows
 }
 
@@ -113,6 +122,7 @@ func (impl *impl) Next() bool {
 
 	ret := impl.rowsHandle.Next()
 	if !ret {
+		impl.rowsHandle.Close()
 		impl.rowsHandle = nil
 	}
 

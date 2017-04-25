@@ -15,40 +15,45 @@ type User struct {
 	catalog  int
 }
 
-func TestInser(t *testing.T) {
-	dao, err := dao.Fetch("root", "rootkit", "localhost:3306", "magicid_db")
+func testFun(t *testing.T) {
+	dao, err := dao.Fetch("magiccenter", "magiccenter", "localhost:3306", "magiccenter_db")
 	if err != nil {
 		t.Errorf("Fetch dao failed, err:%s", err.Error())
 	}
 	defer dao.Release()
 
-	insertSql := fmt.Sprintf("%s", "insert into magicid_db.user value(4,'test3','test3',1)")
-	if !dao.Execute(insertSql) {
+	insertSql := fmt.Sprintf("%s", "insert into magiccenter_db.user value(1,'test3','test3','test11','aaa',1)")
+	num, ok := dao.Execute(insertSql)
+	if num == 1 && ok {
 		t.Errorf("Insert data failed")
 	}
 
+	querySql := "select * from magiccenter_db.user where id=1"
+	dao.Query(querySql)
+}
+
+func TestInser(t *testing.T) {
+	testFun(t)
+
+	forever := make(chan bool)
+	log.Printf(" [*] To exit press CTRL+C")
+	<-forever
 }
 
 func TestQuery(t *testing.T) {
-	dao, err := dao.Fetch("root", "rootkit", "localhost:3306", "magicid_db")
+	dao, err := dao.Fetch("magiccenter", "magiccenter", "localhost:3306", "magiccenter_db")
 	if err != nil {
 		t.Errorf("Fetch dao failed, err:%s", err.Error())
 	}
 	defer dao.Release()
 
-	selectSql := fmt.Sprint("select id,name,password,type from magicid_db.user")
+	selectSql := fmt.Sprint("select id,name,password,type from magiccenter_db.user")
 
-	if !dao.Query(selectSql) {
-		t.Errorf("Query all data failed")
-	}
+	dao.Query(selectSql)
 
 	for dao.Next() {
 		user := User{}
 
-		if !dao.GetField(&user.id, &user.name, &user.password, &user.catalog) {
-			t.Errorf("Get Fileds failed")
-		} else {
-			log.Printf("id:%d, name:%s, pass:%s, type:%d", user.id, user.name, user.password, user.catalog)
-		}
+		dao.GetField(&user.id, &user.name, &user.password, &user.catalog)
 	}
 }

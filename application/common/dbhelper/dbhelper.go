@@ -32,7 +32,6 @@ type impl struct {
 // NewHelper 创建数据助手
 func NewHelper() (DBHelper, error) {
 	m := &impl{}
-
 	dao, err := dao.Fetch("magiccenter", "magiccenter", "localhost:3306", "magiccenter_db")
 	if err != nil {
 		log.Print("fetch database failed, err:" + err.Error())
