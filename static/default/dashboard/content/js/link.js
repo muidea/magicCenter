@@ -6,15 +6,17 @@ link.constructLinkListlView = function(linkList, catalogList) {
     for (var i = 0; i < linkList.length; ++i) {
         var curLink = linkList[i];
         var catalogNames = "";
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curCatalog = catalogList[idx];
-            for (var j = 0; j < curLink.Catalog; j++) {
-                var val = curLink.Catalog[j];
-                if (curCatalog.ID == val) {
-                    if (catalogNames.length > 0) {
-                        catalogNames += ", ";
+        if (curLink.Catalog) {
+            for (var idx = 0; idx < catalogList.length; ++idx) {
+                var curCatalog = catalogList[idx];
+                for (var j = 0; j < curLink.Catalog.length; j++) {
+                    var val = curLink.Catalog[j];
+                    if (curCatalog.ID == val) {
+                        if (catalogNames.length > 0) {
+                            catalogNames += ", ";
+                        }
+                        catalogNames += curCatalog.Name;
                     }
-                    catalogNames += curCatalog.Name;
                 }
             }
         }
@@ -31,51 +33,30 @@ link.constructLinkListlView = function(linkList, catalogList) {
     return linkListView;
 };
 
-link.constructLinkEditView = function(linkList, catalogList) {
-    var linkListView = new Array();
+link.constructLinkEditView = function(catalogList) {
+    var catalogListView = new Array();
     var ii = 0;
-    for (var linkIdx = 0; linkIdx < linkList.length; ++linkIdx) {
-        var curLink = linkList[linkIdx];
 
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curModule = catalogList[idx];
-
-            if (curLink.Module == curModule.ID) {
-                var view = {
-                    ID: curLink.ID,
-                    URL: curLink.URL,
-                    Method: curLink.Method,
-                    Status: curLink.Status,
-                    Module: curModule.Name,
-                    ModuleID: curModule.ID
-                }
-
-                linkListView[ii++] = view;
-            }
+    for (var idx = 0; idx < catalogList.length; ++idx) {
+        var curCatalog = catalogList[idx];
+        var view = {
+            ID: curCatalog.ID,
+            Name: curCatalog.Name
         }
+
+        catalogListView[ii++] = view;
     }
 
-    return linkListView;
+    return catalogListView;
 }
 
 link.updateListLinkVM = function(linkList) {
     link.listVM.links = linkList;
 }
 
-link.updateEditModuleVM = function(catalogList) {
-    link.editVM.modules = catalogList;
-};
-
-link.updateEditLinkVM = function(linkList) {
-    link.editVM.links = linkList;
-
-    // 将已经enable的link设置上checked标示
-    for (var offset = 0; offset < link.editVM.links.length; ++offset) {
-        var curLink = link.editVM.links[offset];
-        if (curLink.Status > 0) {
-            $("#selectLink-List .link_" + curLink.ID).prop("checked", true);
-        }
-    }
+link.updateEditLinkVM = function(linkView, catalogView) {
+    link.editVM.link = linkView;
+    link.editVM.catalogs = catalogView;
 };
 
 // 加载全部的Link
@@ -108,12 +89,27 @@ link.getAllCatalogsAction = function(callBack) {
     });
 };
 
+link.saveLinkAction = function(name, url, logo, catalogs, callBack) {
+    $.ajax({
+        type: "POST",
+        url: "/content/link/",
+        data: { "link-name": name, "link-url": url, "link-logo": logo, "link-catalog": catalogs },
+        dataType: "json",
+        success: function(data) {
+            if (callBack != null) {
+                callBack(data.ErrCode, data.Link);
+            }
+        }
+    });
+};
+
 link.loadData = function(callBack) {
     var getAllCatalogsCallBack = function(errCode, catalogList) {
         if (errCode != 0) {
             return;
         }
 
+        link.curLink = { ID: -1, Name: "", URL: "", Logo: "", Catalog: [] };
         link.catalogs = catalogList;
         if (callBack != null) {
             callBack()
@@ -138,7 +134,18 @@ link.refreshLinkListView = function(linkList, catalogList) {
     link.updateListLinkVM(linksView);
 };
 
-link.refreshLinkEditView = function(link, catalogList) {};
+link.refreshLinkEditView = function(curLink, catalogList) {
+    var linkView = {
+        ID: curLink.ID,
+        Name: curLink.Name,
+        URL: curLink.URL,
+        Logo: curLink.Logo,
+        Catalog: curLink.Catalog
+    };
+
+    var catalogView = link.constructLinkEditView(catalogList);
+    link.updateEditLinkVM(linkView, catalogView)
+};
 
 $(document).ready(function() {
     link.listVM = avalon.define({
@@ -148,85 +155,48 @@ $(document).ready(function() {
 
     link.editVM = avalon.define({
         $id: "link-Edit",
-        modules: [],
-        links: []
+        link: {},
+        catalogs: []
     });
 
-    $('#moduleListModal').on('show.bs.modal', function(e) {
-        link.updateEditModuleVM(link.modules);
-
-        $("#moduleListModal .module").prop("checked", false);
-    });
-
-    $('#moduleListModal').on('hidden.bs.modal', function(e) {
-        var selectModuleArray = new Array()
-        var offset = 0;
-        $("#moduleListModal .module:checked").each(
-            function() {
-                var id = $(this).val();
-                for (var idx = 0; idx < link.modules.length; idx++) {
-                    var curModule = link.modules[idx];
-                    if (curModule.ID == id) {
-                        selectModuleArray[offset++] = curModule;
-                    }
-                }
-            }
-        );
-        link.refreshLinkEditView(link.links, selectModuleArray);
-    });
-
-    $("#selectLink-button").click(
+    $("#link-Edit .submit").click(
         function() {
-            var selectLinkList = new Array();
-            var offset = 0;
-            $("#selectLink-List .link_status_0:checked").each(
+            var linkID = $("#link-Edit .link-id").val();
+            var linkName = $("#link-Edit .link-name").val();
+            var linkURL = $("#link-Edit .link-url").val();
+            var linkLogo = $("#link-Edit .link-logo").val();
+            var selectCatalog = "";
+            $("#link-Edit .link-catalog .catalog-item:checked").each(
                 function() {
                     var id = $(this).val();
-                    selectLinkList[offset++] = id;
-                }
-            );
-
-            var unSelectLinkList = new Array();
-            offset = 0;
-            $("#selectLink-List .link_status_1:not(:checked)").each(
-                function() {
-                    var id = $(this).val();
-                    unSelectLinkList[offset++] = id;
-                }
-            );
-
-            link.statusLinksAction(
-                selectLinkList,
-                unSelectLinkList,
-                function(errCode) {
-                    if (errCode != 0) {
-                        return;
+                    if (selectCatalog.length > 0) {
+                        selectCatalog += ",";
                     }
+                    selectCatalog += id;
+                }
+            );
 
-                    var selectModuleArray = new Array()
-                    var offset = 0;
-                    $("#moduleListModal .module:checked").each(
-                        function() {
-                            var id = $(this).val();
-                            for (var idx = 0; idx < link.modules.length; idx++) {
-                                var curModule = link.modules[idx];
-                                if (curModule.ID == id) {
-                                    selectModuleArray[offset++] = curModule;
-                                }
-                            }
-                        }
-                    );
+            var callBack = function(errCode, catalogItem) {
+                if (errCode != 0) {
+                    return;
+                }
 
-                    link.loadData(function() {
-                        link.refreshLinkListView(link.links, link.catalogs);
+                $("#link-Edit .link-name").val("");
+                $("#link-Edit .link-url").val("");
+                $("#link-Edit .link-logo").val("");
+                $("#link-Edit .link-catalog .catalog-item").prop("checked", false);
 
-                        link.refreshLinkEditView(link.links, selectModuleArray);
-                    })
+                link.loadData(function() {
+                    link.refreshLinkListView(link.links, link.catalogs);
+                    link.refreshLinkEditView(link.curLink, link.catalogs);
                 });
+            };
+            link.saveLinkAction(linkName, linkURL, linkLogo, selectCatalog, callBack);
         }
     );
 
     link.loadData(function() {
         link.refreshLinkListView(link.links, link.catalogs);
-    })
+        link.refreshLinkEditView(link.curLink, link.catalogs);
+    });
 });

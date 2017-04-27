@@ -6,9 +6,9 @@ catalog.constructCatalogListlView = function(catalogList, parentCatalogList) {
     for (var ii = 0; ii < catalogList.length; ++ii) {
         var curCatalog = catalogList[ii];
         var catalogNames = "";
-        for (var idx = 0; idx < parentCatalogList.length; ++idx) {
-            var curParentCatalog = parentCatalogList[idx];
-            if (curCatalog.Catalog) {
+        if (curCatalog.Catalog) {
+            for (var idx = 0; idx < parentCatalogList.length; ++idx) {
+                var curParentCatalog = parentCatalogList[idx];
                 for (var jj = 0; jj < curCatalog.Catalog.length; jj++) {
                     var val = curCatalog.Catalog[jj];
                     if (curParentCatalog.ID == val) {
@@ -76,7 +76,7 @@ catalog.getAllCatalogsAction = function(callBack) {
     });
 };
 
-catalog.submitCatalogAction = function(name, description, parents, callBack) {
+catalog.saveCatalogAction = function(name, description, parents, callBack) {
     $.ajax({
         type: "POST",
         url: "/content/catalog/",
@@ -134,6 +134,7 @@ $(document).ready(function() {
 
     $("#submitCatalog-button").click(
         function() {
+            var catalogID = $("#catalog-Edit .catalog-id").val();
             var catalogName = $("#catalog-Edit .catalog-name").val();
             var catalogDescription = $("#catalog-Edit .catalog-description").val();
             var selectParent = "";
@@ -147,7 +148,7 @@ $(document).ready(function() {
                 }
             );
 
-            catalog.submitCatalogAction(catalogName, catalogDescription, selectParent, function(errCode, catalogItem) {
+            var callBack = function(errCode, catalogItem) {
                 if (errCode != 0) {
                     return;
                 }
@@ -160,8 +161,10 @@ $(document).ready(function() {
                     catalog.refreshCatalogListView(catalog.catalogs, catalog.catalogs);
 
                     catalog.refreshCatalogEditView(catalog.curCatalog, catalog.catalogs);
-                })
-            });
+                });
+            };
+
+            catalog.saveCatalogAction(catalogName, catalogDescription, selectParent, callBack);
         }
     );
 
@@ -169,5 +172,5 @@ $(document).ready(function() {
         catalog.refreshCatalogListView(catalog.catalogs, catalog.catalogs);
 
         catalog.refreshCatalogEditView(catalog.curCatalog, catalog.catalogs);
-    })
+    });
 });

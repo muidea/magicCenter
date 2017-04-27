@@ -6,15 +6,17 @@ media.constructMediaListlView = function(mediaList, catalogList) {
     for (var i = 0; i < mediaList.length; ++i) {
         var curMedia = mediaList[i];
         var catalogNames = "";
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curCatalog = catalogList[idx];
-            for (var j = 0; j < curMedia.Catalog; j++) {
-                var val = curMedia.Catalog[j];
-                if (curCatalog.ID == val) {
-                    if (catalogNames.length > 0) {
-                        catalogNames += ", ";
+        if (curMedia.Catalog) {
+            for (var idx = 0; idx < catalogList.length; ++idx) {
+                var curCatalog = catalogList[idx];
+                for (var j = 0; j < curMedia.Catalog.length; j++) {
+                    var val = curMedia.Catalog[j];
+                    if (curCatalog.ID == val) {
+                        if (catalogNames.length > 0) {
+                            catalogNames += ", ";
+                        }
+                        catalogNames += curCatalog.Name;
                     }
-                    catalogNames += curCatalog.Name;
                 }
             }
         }
@@ -31,51 +33,30 @@ media.constructMediaListlView = function(mediaList, catalogList) {
     return mediaListView;
 };
 
-media.constructMediaEditView = function(mediaList, catalogList) {
-    var mediaListView = new Array();
+media.constructMediaEditView = function(catalogList) {
+    var catalogListView = new Array();
     var ii = 0;
-    for (var mediaIdx = 0; mediaIdx < mediaList.length; ++mediaIdx) {
-        var curMedia = mediaList[mediaIdx];
 
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curModule = catalogList[idx];
-
-            if (curMedia.Module == curModule.ID) {
-                var view = {
-                    ID: curMedia.ID,
-                    URL: curMedia.URL,
-                    Method: curMedia.Method,
-                    Status: curMedia.Status,
-                    Module: curModule.Name,
-                    ModuleID: curModule.ID
-                }
-
-                mediaListView[ii++] = view;
-            }
+    for (var idx = 0; idx < catalogList.length; ++idx) {
+        var curCatalog = catalogList[idx];
+        var view = {
+            ID: curCatalog.ID,
+            Name: curCatalog.Name
         }
+
+        catalogListView[ii++] = view;
     }
 
-    return mediaListView;
+    return catalogListView;
 }
 
 media.updateListMediaVM = function(mediaList) {
     media.listVM.medias = mediaList;
 }
 
-media.updateEditModuleVM = function(catalogList) {
-    media.editVM.modules = catalogList;
-};
-
-media.updateEditMediaVM = function(mediaList) {
-    media.editVM.medias = mediaList;
-
-    // 将已经enable的media设置上checked标示
-    for (var offset = 0; offset < media.editVM.medias.length; ++offset) {
-        var curMedia = media.editVM.medias[offset];
-        if (curMedia.Status > 0) {
-            $("#selectMedia-List .media_" + curMedia.ID).prop("checked", true);
-        }
-    }
+media.updateEditMediaVM = function(mediaView, catalogView) {
+    media.editVM.media = mediaView;
+    media.editVM.catalogs = catalogView;
 };
 
 // 加载全部的Media
@@ -114,6 +95,7 @@ media.loadData = function(callBack) {
             return;
         }
 
+        media.curMedia = { ID: -1, Name: "", Catalog: [] };
         media.catalogs = catalogList;
         if (callBack != null) {
             callBack()
@@ -138,7 +120,16 @@ media.refreshMediaListView = function(mediaList, catalogList) {
     media.updateListMediaVM(mediasView);
 };
 
-media.refreshMediaEditView = function(media, catalogList) {};
+media.refreshMediaEditView = function(curMedia, catalogList) {
+    var mediaView = {
+        ID: curMedia.ID,
+        Name: curMedia.Name,
+        Catalog: curMedia.Catalog
+    };
+
+    var catalogView = media.constructMediaEditView(catalogList);
+    media.updateEditMediaVM(mediaView, catalogView)
+};
 
 $(document).ready(function() {
     media.listVM = avalon.define({
@@ -148,53 +139,12 @@ $(document).ready(function() {
 
     media.editVM = avalon.define({
         $id: "media-Edit",
-        modules: [],
-        medias: []
-    });
-
-    $('#moduleListModal').on('show.bs.modal', function(e) {
-        media.updateEditModuleVM(media.modules);
-
-        $("#moduleListModal .module").prop("checked", false);
-    });
-
-    $('#moduleListModal').on('hidden.bs.modal', function(e) {
-        var selectModuleArray = new Array()
-        var offset = 0;
-        $("#moduleListModal .module:checked").each(
-            function() {
-                var id = $(this).val();
-                for (var idx = 0; idx < media.modules.length; idx++) {
-                    var curModule = media.modules[idx];
-                    if (curModule.ID == id) {
-                        selectModuleArray[offset++] = curModule;
-                    }
-                }
-            }
-        );
-        media.refreshMediaEditView(media.medias, selectModuleArray);
+        media: {},
+        catalogs: []
     });
 
     $("#selectMedia-button").click(
         function() {
-            var selectMediaList = new Array();
-            var offset = 0;
-            $("#selectMedia-List .media_status_0:checked").each(
-                function() {
-                    var id = $(this).val();
-                    selectMediaList[offset++] = id;
-                }
-            );
-
-            var unSelectMediaList = new Array();
-            offset = 0;
-            $("#selectMedia-List .media_status_1:not(:checked)").each(
-                function() {
-                    var id = $(this).val();
-                    unSelectMediaList[offset++] = id;
-                }
-            );
-
             media.statusMediasAction(
                 selectMediaList,
                 unSelectMediaList,
@@ -203,24 +153,10 @@ $(document).ready(function() {
                         return;
                     }
 
-                    var selectModuleArray = new Array()
-                    var offset = 0;
-                    $("#moduleListModal .module:checked").each(
-                        function() {
-                            var id = $(this).val();
-                            for (var idx = 0; idx < media.modules.length; idx++) {
-                                var curModule = media.modules[idx];
-                                if (curModule.ID == id) {
-                                    selectModuleArray[offset++] = curModule;
-                                }
-                            }
-                        }
-                    );
-
                     media.loadData(function() {
                         media.refreshMediaListView(media.medias, media.catalogs);
 
-                        media.refreshMediaEditView(media.medias, selectModuleArray);
+                        media.refreshMediaEditView(media.curMedia, media.catalogs);
                     })
                 });
         }
@@ -228,5 +164,7 @@ $(document).ready(function() {
 
     media.loadData(function() {
         media.refreshMediaListView(media.medias, media.catalogs);
+
+        media.refreshMediaEditView(media.curMedia, media.catalogs);
     })
 });

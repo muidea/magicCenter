@@ -7,9 +7,9 @@ article.constructArticleListlView = function(articleList, catalogList) {
         var curArticle = articleList[i];
         var catalogNames = "";
 
-        for (var idx = 0; idx < catalogList.length; ++idx) {
-            var curCatalog = catalogList[idx];
-            if (curArticle.Catalog) {
+        if (curArticle.Catalog) {
+            for (var idx = 0; idx < catalogList.length; ++idx) {
+                var curCatalog = catalogList[idx];
                 for (var j = 0; j < curArticle.Catalog.length; j++) {
                     var val = curArticle.Catalog[j];
                     if (curCatalog.ID == val) {
