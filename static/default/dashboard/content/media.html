@@ -59,6 +59,10 @@
                     <label for="media-name">文件</label> <input class="form-control media-name" type="file" />
                 </div>
                 <div class="form-group">
+                    <label for="media-description">内容</label>
+                    <textarea class="form-control text-input textarea media-description" cols="79" rows="5"></textarea>
+                </div>
+                <div class="form-group">
                     <label for="media-catalog">分类</label>
                     <chckBox class="checkbox media-catalog">
                         <label ms-for="el in @catalogs"><input type="checkbox" ms-attr="{value: el.ID, class:'catalog-item'}"/>{{el.Name}}</label>

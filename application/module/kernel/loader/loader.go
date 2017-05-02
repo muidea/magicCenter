@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/cas"
 	"muidea.com/magicCenter/application/module/kernel/modules/content"
 	"muidea.com/magicCenter/application/module/kernel/modules/dashboard"
+	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail"
 	"muidea.com/magicCenter/application/module/kernel/modules/static"
 )
@@ -31,4 +32,6 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 	api.LoadModule(configuration, sessionRegistry, modulHub)
 
 	static.LoadModule(configuration, modulHub)
+
+	fileregistry.LoadModule(configuration, modulHub)
 }
