@@ -32,7 +32,7 @@ const (
 	//ResourcePath = "@system_resourcePath"
 
 	// UploadPath 上传文件保存路径
-	//UploadPath = "@system_uploadPath"
+	UploadPath = "@system_uploadPath"
 )
 
 // SystemInfo 系统信息

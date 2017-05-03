@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strings"
 )
 
 // MultipartFormFile 接受文件参数
-func MultipartFormFile(r *http.Request, field, dstPath string) (string, string, error) {
+// string 文件名
+// error 错误码
+func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
 	dstFile := ""
-	fileType := ""
 	var err error
 
 	for true {
@@ -36,19 +36,8 @@ func MultipartFormFile(r *http.Request, field, dstPath string) (string, string, 
 
 		defer dst.Close()
 		_, err = io.Copy(dst, src)
-
-		fileInfo, err := os.Stat(dstFile)
-		if err == nil {
-			items := strings.Split(fileInfo.Name(), ".")
-			cnt := len(items)
-			if cnt >= 2 {
-				fileType = items[cnt-1]
-			} else {
-				fileType = "unknown"
-			}
-		}
 		break
 	}
 
-	return dstFile, fileType, err
+	return dstFile, err
 }

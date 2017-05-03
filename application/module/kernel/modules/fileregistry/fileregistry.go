@@ -4,20 +4,20 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/def"
-	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/route"
 )
 
 type fileRegistry struct {
-	routes              []common.Route
-	fileRegistryHandler handler.FileRegistryHandler
+	routes []common.Route
 }
 
 // LoadModule 加载Static模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	instance := &fileRegistry{fileRegistryHandler: handler.CreateHandler()}
+	uploadPath, _ := cfg.GetOption(model.UploadPath)
 
-	instance.routes = route.AppendFileRegistryRoute(instance.routes)
+	instance := &fileRegistry{}
+
+	instance.routes = route.AppendFileRegistryRoute(instance.routes, uploadPath)
 
 	modHub.RegisterModule(instance)
 }

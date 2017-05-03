@@ -31,7 +31,7 @@ type impl struct {
 func (instance *impl) loadConfig() {
 	log.Println("configuration initialize ...")
 
-	keys := []string{model.AppName, model.AppDescription, model.AppDomain, model.AppLogo, model.MailServer, model.MailAccount, model.MailPassword, model.SysDefaultModule}
+	keys := []string{model.AppName, model.AppDescription, model.AppDomain, model.AppLogo, model.MailServer, model.MailAccount, model.MailPassword, model.SysDefaultModule, model.UploadPath}
 
 	instance.configInfoMap = bll.GetConfigurations(keys)
 }
