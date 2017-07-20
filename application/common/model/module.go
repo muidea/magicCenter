@@ -14,12 +14,12 @@ type Module struct {
 	Description string
 	Type        int
 	Status      int
-	Route       []Route
+	Route       []EntryPoint
 	AuthGroup   []AuthGroup
 }
 
-// Route 路由信息
-type Route struct {
+// EntryPoint 功能入口
+type EntryPoint struct {
 	Pattern string
 	Method  string
 }
