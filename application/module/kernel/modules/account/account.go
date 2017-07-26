@@ -10,7 +10,8 @@ import (
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	instance := &account{accountHandler: handler.CreateAccountHandler()}
+
+	instance := &account{routes: make([]common.Route, 0), accountHandler: handler.CreateAccountHandler()}
 
 	instance.routes = route.AppendUserRoute(instance.routes, instance.accountHandler)
 	instance.routes = route.AppendGroupRoute(instance.routes, instance.accountHandler)
@@ -47,16 +48,16 @@ func (instance *account) Status() int {
 	return 0
 }
 
-func (instance *account) EndPoint() interface{} {
+func (instance *account) EntryPoint() interface{} {
 	return instance.accountHandler
 }
 
 func (instance *account) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
-	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", def.ID))
-	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", def.ID))
-	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", def.ID))
+	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
+	groups = append(groups, model.AuthGroup{Name: "UserGroup", Description: "允许查看用户权限范围内的内容"})
+	groups = append(groups, model.AuthGroup{Name: "AdminGroup", Description: "允许管理用户权限范围内的内容"})
 
 	return groups
 }

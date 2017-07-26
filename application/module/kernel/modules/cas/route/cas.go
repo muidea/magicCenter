@@ -5,211 +5,157 @@ import (
 	"log"
 	"net/http"
 
-	"strconv"
-
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
-// AppendAuthGropRoute 追加authgroup 路由
-func AppendAuthGropRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	// 查询全部AuthGroup或指定Module的AuthGroup
-	rt := CreateQueryAuthGroupRoute(casHandler, sessionRegistry)
+// AppendAccountRoute 追加account 路由
+func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt, _ := CreateAccountLoginRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	// 查询指定用户拥有的AuthGroup
-	rt = CreateQueryUserAuthGroupRoute(casHandler, sessionRegistry)
-	routes = append(routes, rt)
-
-	// 调整指定用户拥有的AuthGroup
-	rt = CreateAdjustUserAuthGroupRoute(casHandler, sessionRegistry)
+	rt, _ = CreateAccountLogoutRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
-// CreateQueryAuthGroupRoute 新建QueryAuthGroup 路由
-func CreateQueryAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityAuthGroupQueryRoute{
-		casHandler: casHandler}
-	return &i
+// CreateAccountLoginRoute 创建AccountLogin Route
+func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := authorityAccountLoginRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
 }
 
-// CreateQueryUserAuthGroupRoute 新建QueryAuthGroup 路由
-func CreateQueryUserAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityUserAuthGroupQueryRoute{
-		casHandler: casHandler}
-	return &i
+// CreateAccountLogoutRoute 创建AccountLogout Route
+func CreateAccountLogoutRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := authorityAccountLogoutRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
 }
 
-// CreateAdjustUserAuthGroupRoute 新建AdjustAuthGroup 路由
-func CreateAdjustUserAuthGroupRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := authorityUserAuthGroupAdjustRoute{
-		casHandler: casHandler}
-	return &i
+type authorityAccountLoginRoute struct {
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
 }
 
-type authorityAuthGroupQueryRoute struct {
-	casHandler common.CASHandler
-}
-
-type authorityAuthGroupQueryResult struct {
+type authorityLoginResult struct {
 	common.Result
-	AuthGroup []model.AuthGroup
+	User      string
+	AuthToken string
 }
 
-func (i *authorityAuthGroupQueryRoute) Method() string {
-	return common.GET
-}
-
-func (i *authorityAuthGroupQueryRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/authgroup/")
-}
-
-func (i *authorityAuthGroupQueryRoute) Handler() interface{} {
-	return i.queryAuthGroupHandler
-}
-
-func (i *authorityAuthGroupQueryRoute) queryAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryAuthGroupHandler")
-
-	result := authorityAuthGroupQueryResult{}
-	for true {
-		modules := r.URL.Query()["module"]
-		if len(modules) < 1 {
-			result.ErrCode = 1
-			result.Reason = "非法参数"
-			break
-		}
-
-		authGroups, ok := i.casHandler.QueryAuthGroup(modules[0])
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "查询失败"
-			break
-		}
-
-		result.ErrCode = 0
-		result.AuthGroup = authGroups
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type authorityUserAuthGroupQueryRoute struct {
-	casHandler common.CASHandler
-}
-
-type authorityUserAuthGroupQueryResult struct {
-	common.Result
-	AuthGroup []int
-}
-
-func (i *authorityUserAuthGroupQueryRoute) Method() string {
-	return common.GET
-}
-
-func (i *authorityUserAuthGroupQueryRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/authgroup/[0-9]+/")
-}
-
-func (i *authorityUserAuthGroupQueryRoute) Handler() interface{} {
-	return i.queryUserAuthGroupHandler
-}
-
-func (i *authorityUserAuthGroupQueryRoute) queryUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryUserAuthGroupHandler")
-
-	result := authorityUserAuthGroupQueryResult{}
-	_, value := net.SplitRESTAPI(r.URL.Path)
-	for true {
-		id, err := strconv.Atoi(value)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
-
-		authGroups, ok := i.casHandler.GetUserAuthGroup(id)
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "查询失败"
-			break
-		}
-
-		result.ErrCode = 0
-		result.AuthGroup = authGroups
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type authorityUserAuthGroupAdjustRoute struct {
-	casHandler common.CASHandler
-}
-
-type authorityUserAuthGroupAdjustResult struct {
-	common.Result
-	AuthGroup []int
-}
-
-func (i *authorityUserAuthGroupAdjustRoute) Method() string {
+func (i *authorityAccountLoginRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityUserAuthGroupAdjustRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/authgroup/[0-9]+/")
+func (i *authorityAccountLoginRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/user/")
 }
 
-func (i *authorityUserAuthGroupAdjustRoute) Handler() interface{} {
-	return i.adjustUserAuthGroupHandler
+func (i *authorityAccountLoginRoute) Handler() interface{} {
+	return i.loginHandler
 }
 
-func (i *authorityUserAuthGroupAdjustRoute) adjustUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("adjustUserAuthGroupHandler")
+func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("loginHandler")
 
-	result := authorityUserAuthGroupQueryResult{}
-	_, value := net.SplitRESTAPI(r.URL.Path)
+	session := i.sessionRegistry.GetSession(w, r)
+	result := authorityLoginResult{}
 	for true {
-		id, err := strconv.Atoi(value)
+		err := r.ParseForm()
 		if err != nil {
 			result.ErrCode = 1
-			result.Reason = "无效参数"
+			result.Reason = "非法请求"
 			break
 		}
 
-		r.ParseForm()
-		authGroups, ok := util.Str2IntArray(r.FormValue("acl-authgroup"))
+		account := r.FormValue("login-account")
+		password := r.FormValue("login-password")
+		user, token, ok := i.casHandler.LoginAccount(account, password)
 		if !ok {
 			result.ErrCode = 1
-			result.Reason = "无效参数"
+			result.Reason = "登入失败"
 			break
 		}
 
-		ok = i.casHandler.AdjustUserAuthGroup(id, authGroups)
-		if !ok {
-			result.ErrCode = 1
-			result.Reason = "调整失败"
-			break
+		usr, found := session.GetAccount()
+		if found && usr.Account == account {
+			opt, ok := session.GetOption(common.AuthTokenID)
+			if ok {
+				token = opt.(string)
+				result.ErrCode = 0
+				result.Reason = "重复登陆"
+				result.AuthToken = token
+				break
+			}
 		}
+
+		session.SetAccount(user)
+		session.SetOption(common.AuthTokenID, token)
 
 		result.ErrCode = 0
-		result.AuthGroup = authGroups
+		result.User = user.Name
+		result.AuthToken = token
+		break
+	}
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type authorityAccountLogoutRoute struct {
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
+}
+
+type authorityLogoutResult struct {
+	common.Result
+}
+
+func (i *authorityAccountLogoutRoute) Method() string {
+	return common.DELETE
+}
+
+func (i *authorityAccountLogoutRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/user/")
+}
+
+func (i *authorityAccountLogoutRoute) Handler() interface{} {
+	return i.logoutHandler
+}
+
+func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("logoutHandler")
+
+	session := i.sessionRegistry.GetSession(w, r)
+	result := authorityLogoutResult{}
+	for true {
+		token, ok := r.URL.Query()[common.AuthTokenID]
+		if !ok || len(token) < 1 {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
+		authToken, ok := session.GetOption(common.AuthTokenID)
+		if !ok || authToken != token[0] {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
+		i.casHandler.Logout(token[0])
+		session.ClearAccount()
+		session.RemoveOption(common.AuthTokenID)
+
+		result.ErrCode = 0
 		break
 	}
 

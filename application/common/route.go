@@ -1,11 +1,15 @@
 package common
 
+import (
+	"muidea.com/magicCenter/application/common/model"
+)
+
 // 基本HTTP行为定义
 const (
-	GET    = "get"
-	PUT    = "put"
-	POST   = "post"
-	DELETE = "delete"
+	GET    = "GET"
+	PUT    = "PUT"
+	POST   = "POST"
+	DELETE = "DELETE"
 )
 
 // Route 路由接口
@@ -19,19 +23,18 @@ type Route interface {
 }
 
 type route struct {
-	rAction  string
-	rPattern string
+	rRoute   model.Route
 	rHandler interface{}
 }
 
 // Type 路由行为GET/POST
 func (r *route) Method() string {
-	return r.rAction
+	return r.rRoute.Method
 }
 
 // Pattern 路由规则
 func (r *route) Pattern() string {
-	return r.rPattern
+	return r.rRoute.Pattern
 }
 
 // Handler 路由处理器
@@ -40,11 +43,8 @@ func (r *route) Handler() interface{} {
 }
 
 // NewRoute 新建一个路由对象
-func NewRoute(rAction, rPattern string, rHandler interface{}) Route {
-	r := route{}
-	r.rAction = rAction
-	r.rPattern = rPattern
-	r.rHandler = rHandler
+func NewRoute(method, pattern string, rHandler interface{}) Route {
+	r := route{rRoute: model.Route{Method: method, Pattern: pattern}, rHandler: rHandler}
 
 	return &r
 }

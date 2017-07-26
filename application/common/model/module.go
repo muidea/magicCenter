@@ -1,5 +1,17 @@
 package model
 
+// AuthGroup 授权组
+type AuthGroup struct {
+	Name        string
+	Description string
+}
+
+// Route 功能入口
+type Route struct {
+	Pattern string
+	Method  string
+}
+
 /*
 Module 模块类型
 Id:标识该Module的字符串ID
@@ -14,12 +26,6 @@ type Module struct {
 	Description string
 	Type        int
 	Status      int
-	Route       []EntryPoint
 	AuthGroup   []AuthGroup
-}
-
-// EntryPoint 功能入口
-type EntryPoint struct {
-	Pattern string
-	Method  string
+	Route       []Route
 }

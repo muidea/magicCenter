@@ -37,7 +37,7 @@ func (instance *application) construct() {
 
 func (instance *application) Run() {
 	loader := loader.CreateLoader()
-	configuration := configuration.CreateConfiguration()
+	configuration := configuration.GetSystemConfiguration()
 
 	sys := kernel.NewKernel(loader, configuration)
 	sys.StartUp()

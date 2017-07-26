@@ -50,7 +50,7 @@ func (instance *static) Status() int {
 	return 0
 }
 
-func (instance *static) EndPoint() interface{} {
+func (instance *static) EntryPoint() interface{} {
 	return nil
 }
 

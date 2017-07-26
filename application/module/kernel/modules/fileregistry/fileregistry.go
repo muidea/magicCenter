@@ -49,7 +49,7 @@ func (instance *fileRegistry) Status() int {
 	return 0
 }
 
-func (instance *fileRegistry) EndPoint() interface{} {
+func (instance *fileRegistry) EntryPoint() interface{} {
 	return nil
 }
 

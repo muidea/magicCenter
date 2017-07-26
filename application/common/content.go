@@ -1,5 +1,6 @@
 package common
 
+
 import (
 	"muidea.com/magicCenter/application/common/model"
 )

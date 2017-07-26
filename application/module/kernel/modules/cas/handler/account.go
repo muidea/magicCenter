@@ -23,7 +23,7 @@ func (i *accountManager) findUser(account, password string) (model.UserDetail, b
 		return user, false
 	}
 
-	endPoint := modHub.EndPoint()
+	endPoint := modHub.EntryPoint()
 	switch endPoint.(type) {
 	case common.AccountHandler:
 		accountHandler := endPoint.(common.AccountHandler)

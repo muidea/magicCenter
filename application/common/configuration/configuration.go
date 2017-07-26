@@ -7,76 +7,53 @@ package configuration
 */
 
 import (
-	"log"
-
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/configuration/bll"
-	"muidea.com/magicCenter/application/common/model"
 )
 
-// CreateConfiguration 创建Configuration
-func CreateConfiguration() common.Configuration {
-	impl := &impl{}
-	impl.configInfoMap = map[string]string{}
+func init() {
+	localConfigurationMap = make(map[string]common.Configuration)
+}
 
-	impl.loadConfig()
-	return impl
+// GetConfiguration 获取指定的Configuration
+func GetConfiguration(id string) common.Configuration {
+	cfg, found := localConfigurationMap[id]
+	if !found {
+		cfg = createConfiguration(id)
+		localConfigurationMap[id] = cfg
+	}
+
+	return cfg
+}
+
+var localConfigurationMap map[string]common.Configuration
+
+// CreateConfiguration 创建Configuration
+func createConfiguration(id string) common.Configuration {
+	s := &impl{id: id}
+	s.configInfoMap = map[string]string{}
+
+	return s
 }
 
 type impl struct {
+	id            string
 	configInfoMap map[string]string
 }
 
-// LoadConfig 加载系统配置信息
-func (instance *impl) loadConfig() {
-	log.Println("configuration initialize ...")
-
-	keys := []string{model.AppName, model.AppDescription, model.AppDomain, model.AppLogo, model.MailServer, model.MailAccount, model.MailPassword, model.SysDefaultModule, model.UploadPath}
-
-	instance.configInfoMap = bll.GetConfigurations(keys)
+func (instance *impl) ID() string {
+	return instance.id
 }
 
-// UpdateSystemInfo 更新系统信息
-func (instance *impl) UpdateSystemInfo(info model.SystemInfo) bool {
-	configs := map[string]string{}
-	configs[model.AppName] = info.Name
-	configs[model.AppDescription] = info.Description
-	configs[model.AppDomain] = info.Domain
-	configs[model.AppLogo] = info.Logo
-	configs[model.MailServer] = info.MailServer
-	configs[model.MailAccount] = info.MailAccount
-	configs[model.MailPassword] = info.MailPassword
-
-	instance.configInfoMap[model.AppName] = info.Name
-	instance.configInfoMap[model.AppDescription] = info.Description
-	instance.configInfoMap[model.AppDomain] = info.Domain
-	instance.configInfoMap[model.AppLogo] = info.Logo
-	instance.configInfoMap[model.MailServer] = info.MailServer
-	instance.configInfoMap[model.MailAccount] = info.MailAccount
-	instance.configInfoMap[model.MailPassword] = info.MailPassword
-
-	return bll.UpdateConfigurations(configs)
-}
-
-// GetSystemInfo 获取系统信息
-func (instance *impl) GetSystemInfo() model.SystemInfo {
-	info := model.SystemInfo{}
-	info.Name = instance.configInfoMap[model.AppName]
-	info.Description = instance.configInfoMap[model.AppDescription]
-	info.Domain = instance.configInfoMap[model.AppDomain]
-	info.Logo = instance.configInfoMap[model.AppLogo]
-	info.MailServer = instance.configInfoMap[model.MailServer]
-	info.MailAccount = instance.configInfoMap[model.MailAccount]
-	info.MailPassword = instance.configInfoMap[model.MailPassword]
-
-	return info
+func (instance *impl) LoadConfig(items []string) {
+	instance.configInfoMap = bll.GetConfigurations(instance.id, items)
 }
 
 // GetOption 获取指定的配置项
 func (instance *impl) GetOption(name string) (string, bool) {
 	value, found := instance.configInfoMap[name]
 	if !found {
-		return bll.GetConfiguration(name)
+		return bll.GetConfiguration(instance.id, name)
 	}
 
 	return value, found
@@ -90,7 +67,7 @@ func (instance *impl) SetOption(name, value string) bool {
 		return true
 	}
 
-	if bll.UpdateConfiguration(name, value) {
+	if bll.UpdateConfiguration(instance.id, name, value) {
 		if found {
 			// 如果之前已经在内存中Load过了，这里也需要把内存中得信息更新一下
 			instance.configInfoMap[name] = value
@@ -99,4 +76,15 @@ func (instance *impl) SetOption(name, value string) bool {
 	}
 
 	return false
+}
+
+func (instance *impl) UpdateOptions(opts map[string]string) bool {
+	ret := bll.UpdateConfigurations(instance.id, opts)
+	if ret {
+		for k, v := range opts {
+			instance.configInfoMap[k] = v
+		}
+	}
+
+	return ret
 }

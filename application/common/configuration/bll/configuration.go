@@ -6,7 +6,7 @@ import (
 )
 
 // UpdateConfigurations 更新配置集
-func UpdateConfigurations(configs map[string]string) bool {
+func UpdateConfigurations(owner string, configs map[string]string) bool {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -16,7 +16,7 @@ func UpdateConfigurations(configs map[string]string) bool {
 	result := true
 	helper.BeginTransaction()
 	for k, v := range configs {
-		if !dal.SetOption(helper, k, v) {
+		if !dal.SetOption(helper, owner, k, v) {
 			result = false
 			break
 		}
@@ -32,18 +32,18 @@ func UpdateConfigurations(configs map[string]string) bool {
 }
 
 // UpdateConfiguration 更新配置项
-func UpdateConfiguration(key, value string) bool {
+func UpdateConfiguration(owner, key, value string) bool {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.SetOption(helper, key, value)
+	return dal.SetOption(helper, owner, key, value)
 }
 
 // GetConfigurations 获取配置集
-func GetConfigurations(keys []string) map[string]string {
+func GetConfigurations(owner string, keys []string) map[string]string {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
@@ -52,7 +52,7 @@ func GetConfigurations(keys []string) map[string]string {
 
 	ret := map[string]string{}
 	for _, k := range keys {
-		v, found := dal.GetOption(helper, k)
+		v, found := dal.GetOption(helper, owner, k)
 		if found {
 			ret[k] = v
 		}
@@ -62,12 +62,12 @@ func GetConfigurations(keys []string) map[string]string {
 }
 
 // GetConfiguration 获取指定配置项
-func GetConfiguration(key string) (string, bool) {
+func GetConfiguration(owner, key string) (string, bool) {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return dal.GetOption(helper, key)
+	return dal.GetOption(helper, owner, key)
 }

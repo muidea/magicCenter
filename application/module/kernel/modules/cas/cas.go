@@ -8,7 +8,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/route"
 )
 
-type authority struct {
+type cas struct {
 	moduleHub       common.ModuleHub
 	sessionRegistry common.SessionRegistry
 	routes          []common.Route
@@ -17,67 +17,65 @@ type authority struct {
 
 // LoadModule 加载模块
 func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
-	instance := &authority{
+	instance := &cas{
 		moduleHub:       modHub,
 		sessionRegistry: sessionRegistry,
 		casHandler:      handler.CreateCASHandler(modHub, sessionRegistry)}
 
 	instance.routes = route.AppendAccountRoute(instance.routes, instance.casHandler, sessionRegistry)
-	instance.routes = route.AppendACLRoute(instance.routes, instance.casHandler, sessionRegistry)
-	instance.routes = route.AppendAuthGropRoute(instance.routes, instance.casHandler, sessionRegistry)
 
 	modHub.RegisterModule(instance)
 }
 
-func (instance *authority) ID() string {
+func (instance *cas) ID() string {
 	return def.ID
 }
 
-func (instance *authority) Name() string {
+func (instance *cas) Name() string {
 	return def.Name
 }
 
-func (instance *authority) Description() string {
+func (instance *cas) Description() string {
 	return def.Description
 }
 
-func (instance *authority) Group() string {
+func (instance *cas) Group() string {
 	return "kernel"
 }
 
-func (instance *authority) Type() int {
+func (instance *cas) Type() int {
 	return common.KERNEL
 }
 
-func (instance *authority) Status() int {
+func (instance *cas) Status() int {
 	return 0
 }
 
-func (instance *authority) EndPoint() interface{} {
+func (instance *cas) EntryPoint() interface{} {
 	return instance.casHandler
 }
 
-func (instance *authority) AuthGroups() []model.AuthGroup {
+func (instance *cas) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
-	groups = append(groups, model.CreateAuthGroup("PublicGroup", "允许查看公开权限的内容", def.ID))
-	groups = append(groups, model.CreateAuthGroup("UserGroup", "允许查看用户权限范围内的内容", def.ID))
-	groups = append(groups, model.CreateAuthGroup("AdminGroup", "允许管理用户权限范围内的内容", def.ID))
+	groups = append(groups, model.AuthGroup{"PublicGroup", "允许查看公开权限的内容"})
+	groups = append(groups, model.AuthGroup{"UserGroup", "允许查看用户权限范围内的内容"})
+	groups = append(groups, model.AuthGroup{"AdminGroup", "允许管理用户权限范围内的内容"})
 
 	return groups
 }
 
 // Route 路由信息
-func (instance *authority) Routes() []common.Route {
+func (instance *cas) Routes() []common.Route {
 	return instance.routes
 }
 
 // Startup 启动模块
-func (instance *authority) Startup() bool {
+func (instance *cas) Startup() bool {
 	return true
 }
 
 // Cleanup 清除模块
-func (instance *authority) Cleanup() {
+func (instance *cas) Cleanup() {
 
 }

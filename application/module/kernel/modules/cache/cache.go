@@ -11,19 +11,19 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
-	"muidea.com/magicCenter/foundation/cache"
+	"muidea.com/magicCenter/application/module/kernel/modules/cache/handler"
 	"muidea.com/magicCenter/foundation/net"
 )
 
 // LoadModule 加载Cache模块
 func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	instance := &cacheModule{cache: cache.NewCache()}
+	instance := &cacheModule{cacheHandler: handler.CreateCacheHandler(cfg, modHub)}
 
 	modHub.RegisterModule(instance)
 }
 
 type cacheModule struct {
-	cache cache.Cache
+	cacheHandler common.CacheHandler
 }
 
 func (instance *cacheModule) ID() string {
@@ -50,8 +50,8 @@ func (instance *cacheModule) Status() int {
 	return 0
 }
 
-func (instance *cacheModule) EndPoint() interface{} {
-	return instance.cache
+func (instance *cacheModule) EntryPoint() interface{} {
+	return instance.cacheHandler
 }
 
 func (instance *cacheModule) AuthGroups() []model.AuthGroup {
@@ -78,7 +78,6 @@ func (instance *cacheModule) Startup() bool {
 
 // Cleanup 清除Cache模块
 func (instance *cacheModule) Cleanup() {
-	instance.cache.Release()
 }
 
 type cacheResult struct {
@@ -91,7 +90,7 @@ func (instance *cacheModule) getCacheActionHandler(w http.ResponseWriter, r *htt
 
 	result := cacheResult{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
-	obj, ok := instance.cache.FetchOut(id)
+	obj, ok := instance.cacheHandler.FetchOut(id)
 	if ok {
 		result.Cache = obj
 		result.ErrCode = 0
@@ -128,7 +127,7 @@ func (instance *cacheModule) postCacheActionHandler(w http.ResponseWriter, r *ht
 			age = 10
 		}
 
-		result.Cache = instance.cache.PutIn(value, float64(age))
+		result.Cache = instance.cacheHandler.PutIn(value, float64(age))
 		break
 	}
 
@@ -146,7 +145,7 @@ func (instance *cacheModule) deleteCacheActionHandler(w http.ResponseWriter, r *
 	result := common.Result{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
 	log.Print(id)
-	instance.cache.Remove(id)
+	instance.cacheHandler.Remove(id)
 	result.ErrCode = 0
 	result.Reason = "清除成功"
 

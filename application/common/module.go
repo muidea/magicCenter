@@ -13,6 +13,8 @@ const (
 )
 
 const (
+	// AuthorityModuleID Authority模块ID
+	AuthorityModuleID = "158e11b7-adee-4b0d-afc9-0b47145195bd"
 	// CASModuleID CAS模块ID
 	CASModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"
 	// CotentModuleID 内容管理模块ID
@@ -33,11 +35,11 @@ type Module interface {
 	// AuthGroups 授权组信息
 	AuthGroups() []model.AuthGroup
 
-	// EndPoint 模块提供访问接口
-	EndPoint() interface{}
-
 	// Routes 模块支持的路由信息
 	Routes() []Route
+
+	// EntryPoint 模块提供访问接口
+	EntryPoint() interface{}
 
 	//Startup 启动模块
 	Startup() bool

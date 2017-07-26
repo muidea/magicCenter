@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/module/kernel/modules/api/def"
+	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/def"
 	"muidea.com/magicCenter/foundation/net"
 )
 

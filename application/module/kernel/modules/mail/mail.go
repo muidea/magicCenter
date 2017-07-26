@@ -26,7 +26,7 @@ func SendMail(modHub common.ModuleHub, usrMail string, subject, content string) 
 		panic("can't find mail module")
 	}
 
-	endPoint := mailModule.EndPoint()
+	endPoint := mailModule.EntryPoint()
 	switch endPoint.(type) {
 	case *mail:
 		return endPoint.(*mail).postMail(usrMail, subject, content)
@@ -65,7 +65,7 @@ func (instance *mail) Status() int {
 	return 0
 }
 
-func (instance *mail) EndPoint() interface{} {
+func (instance *mail) EntryPoint() interface{} {
 	return instance
 }
 

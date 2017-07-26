@@ -18,10 +18,14 @@ type CASHandler interface {
 	//@ret bool 是否登陆成功
 	LoginAccount(account, password string) (model.UserDetail, string, bool)
 
+	LoginToken(token string) (string, bool)
+
 	//@in authToken 鉴权token
 	//@ret bool 是否登出成功
-	LogoutAccount(authToken string) bool
+	Logout(authToken string) bool
 
 	// 校验权限是否OK
-	VerifyAuth(res http.ResponseWriter, req *http.Request) bool
+	VerifyToken(authToken string) bool
+
+	VerifyAccount(res http.ResponseWriter, req *http.Request) bool
 }

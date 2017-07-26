@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
@@ -54,10 +53,6 @@ func NewKernel(loader common.ModuleLoader, configuration common.Configuration) K
 
 func (i *impl) StartUp() error {
 	i.loaderImpl.LoadAllModules(i.configurationImpl, i.sessionRegistryImpl, i.moduleHubImpl)
-
-	if !i.verifySystem() {
-		i.initCas()
-	}
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
@@ -121,31 +116,4 @@ func (i *impl) Configuration() common.Configuration {
 // GetSession 获取当前Session
 func (i *impl) Session(w http.ResponseWriter, r *http.Request) common.Session {
 	return i.sessionRegistryImpl.GetSession(w, r)
-}
-
-func (i *impl) verifySystem() bool {
-	// 如果系统还没有设置名称，则认为当前还没有进行初始化，需要重新进行初始化
-	_, ok := i.configurationImpl.GetOption(model.AppName)
-	return ok
-}
-
-func (i *impl) initCas() {
-	log.Println("init Cas...")
-	casModule, ok := i.moduleHubImpl.FindModule(common.CASModuleID)
-	if !ok {
-		return
-	}
-
-	casHandler := casModule.EndPoint().(common.CASHandler)
-
-	allModules := i.moduleHubImpl.QueryAllModule()
-	for _, m := range allModules {
-		authGroups := m.AuthGroups()
-		casHandler.InsertAuthGroup(authGroups)
-
-		routes := m.Routes()
-		for _, v := range routes {
-			casHandler.AddACL(v.Pattern(), v.Method(), m.ID())
-		}
-	}
 }

@@ -28,10 +28,10 @@ func VerifyHandler(modHub common.ModuleHub, authority Authority) martini.Handler
 	mod, ok := modHub.FindModule(common.CASModuleID)
 	if ok {
 		authorityHandler = nil
-		endPoint := mod.EndPoint()
-		switch endPoint.(type) {
+		entryPoint := mod.EntryPoint()
+		switch entryPoint.(type) {
 		case common.CASHandler:
-			authorityHandler = endPoint.(common.CASHandler)
+			authorityHandler = entryPoint.(common.CASHandler)
 		}
 	}
 
@@ -60,5 +60,5 @@ func (i *impl) Verify(authorityHandler common.CASHandler, res http.ResponseWrite
 		return false
 	}
 
-	return authorityHandler.VerifyAuth(res, req)
+	return authorityHandler.VerifyAccount(res, req)
 }
