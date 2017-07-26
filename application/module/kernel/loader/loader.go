@@ -29,5 +29,5 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 
 	static.LoadModule(configuration, modulHub)
 
-	fileregistry.LoadModule(configuration, modulHub)
+	fileregistry.LoadModule(configuration, sessionRegistry, modulHub)
 }

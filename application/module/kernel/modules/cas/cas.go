@@ -58,9 +58,9 @@ func (instance *cas) EntryPoint() interface{} {
 func (instance *cas) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
-	groups = append(groups, model.AuthGroup{"PublicGroup", "允许查看公开权限的内容"})
-	groups = append(groups, model.AuthGroup{"UserGroup", "允许查看用户权限范围内的内容"})
-	groups = append(groups, model.AuthGroup{"AdminGroup", "允许管理用户权限范围内的内容"})
+	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
+	groups = append(groups, model.AuthGroup{Name: "UserGroup", Description: "允许查看用户权限范围内的内容"})
+	groups = append(groups, model.AuthGroup{Name: "AdminGroup", Description: "允许管理用户权限范围内的内容"})
 
 	return groups
 }

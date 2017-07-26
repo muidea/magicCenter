@@ -23,7 +23,7 @@ func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, ses
 
 // CreateAccountLoginRoute 创建AccountLogin Route
 func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
-	i := authorityAccountLoginRoute{
+	i := accountLoginRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
 	return &i, true
@@ -31,40 +31,40 @@ func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry commo
 
 // CreateAccountLogoutRoute 创建AccountLogout Route
 func CreateAccountLogoutRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
-	i := authorityAccountLogoutRoute{
+	i := accountLogoutRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
 	return &i, true
 }
 
-type authorityAccountLoginRoute struct {
+type accountLoginRoute struct {
 	casHandler      common.CASHandler
 	sessionRegistry common.SessionRegistry
 }
 
-type authorityLoginResult struct {
+type accountLoginResult struct {
 	common.Result
 	User      string
 	AuthToken string
 }
 
-func (i *authorityAccountLoginRoute) Method() string {
+func (i *accountLoginRoute) Method() string {
 	return common.POST
 }
 
-func (i *authorityAccountLoginRoute) Pattern() string {
+func (i *accountLoginRoute) Pattern() string {
 	return net.JoinURL(def.URL, "/user/")
 }
 
-func (i *authorityAccountLoginRoute) Handler() interface{} {
+func (i *accountLoginRoute) Handler() interface{} {
 	return i.loginHandler
 }
 
-func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
+func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("loginHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := authorityLoginResult{}
+	result := accountLoginResult{}
 	for true {
 		err := r.ParseForm()
 		if err != nil {
@@ -110,32 +110,32 @@ func (i *authorityAccountLoginRoute) loginHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type authorityAccountLogoutRoute struct {
+type accountLogoutRoute struct {
 	casHandler      common.CASHandler
 	sessionRegistry common.SessionRegistry
 }
 
-type authorityLogoutResult struct {
+type accountLogoutResult struct {
 	common.Result
 }
 
-func (i *authorityAccountLogoutRoute) Method() string {
+func (i *accountLogoutRoute) Method() string {
 	return common.DELETE
 }
 
-func (i *authorityAccountLogoutRoute) Pattern() string {
+func (i *accountLogoutRoute) Pattern() string {
 	return net.JoinURL(def.URL, "/user/")
 }
 
-func (i *authorityAccountLogoutRoute) Handler() interface{} {
+func (i *accountLogoutRoute) Handler() interface{} {
 	return i.logoutHandler
 }
 
-func (i *authorityAccountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
+func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("logoutHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := authorityLogoutResult{}
+	result := accountLogoutResult{}
 	for true {
 		token, ok := r.URL.Query()[common.AuthTokenID]
 		if !ok || len(token) < 1 {

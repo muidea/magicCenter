@@ -1,7 +1,6 @@
 package route
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -11,24 +10,26 @@ import (
 )
 
 // AppendFileRegistryRoute 追加FileRegistry路由
-func AppendFileRegistryRoute(routes []common.Route, uploadPath string) []common.Route {
-	route := createUploadFileRoute(uploadPath)
-
+func AppendFileRegistryRoute(routes []common.Route, fileRegistryHandler common.FileRegistryHandler) []common.Route {
+	route := createUploadFileRoute(fileRegistryHandler)
 	routes = append(routes, route)
+
+	rt := createDeleteFileRoute(fileRegistryHandler)
+	routes = append(routes, rt)
+
 	return routes
 }
 
-func createUploadFileRoute(uploadPath string) common.Route {
-	return &uploadFileRoute{uploadPath: uploadPath}
+func createUploadFileRoute(fileRegistryHandler common.FileRegistryHandler) common.Route {
+	return &uploadFileRoute{fileRegistryHandler: fileRegistryHandler}
+}
+
+func createDeleteFileRoute(fileRegistryHandler common.FileRegistryHandler) common.Route {
+	return &deleteFileRoute{fileRegistryHandler: fileRegistryHandler}
 }
 
 type uploadFileRoute struct {
-	uploadPath string
-}
-
-type uploadFileResult struct {
-	common.Result
-	FilePath string
+	fileRegistryHandler common.FileRegistryHandler
 }
 
 func (i *uploadFileRoute) Method() string {
@@ -46,38 +47,27 @@ func (i *uploadFileRoute) Handler() interface{} {
 func (i *uploadFileRoute) uploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("uploadFileHandler")
 
-	result := uploadFileResult{}
-	for true {
-		keyName := r.URL.Query().Get("key-name")
-		if len(keyName) == 0 {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
+	i.fileRegistryHandler.UploadFile(w, r)
+}
 
-		err := r.ParseMultipartForm(0)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效请求数据"
-			break
-		}
+type deleteFileRoute struct {
+	fileRegistryHandler common.FileRegistryHandler
+}
 
-		dstFile, err := net.MultipartFormFile(r, keyName, i.uploadPath)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "处理出错"
-			break
-		}
+func (i *deleteFileRoute) Method() string {
+	return common.DELETE
+}
 
-		result.ErrCode = 0
-		result.FilePath = dstFile
-		break
-	}
+func (i *deleteFileRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/fileregistry/[a-zA-Z]+[a-zA-Z0-9]*")
+}
 
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
+func (i *deleteFileRoute) Handler() interface{} {
+	return i.deleteFileHandler
+}
 
-	w.Write(b)
+func (i *deleteFileRoute) deleteFileHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("deleteFileHandler")
+
+	i.fileRegistryHandler.DeleteFile(w, r)
 }
