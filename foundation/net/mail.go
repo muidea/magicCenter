@@ -13,7 +13,7 @@ import (
 // subject:The subject of mail
 // body: The content of mail
 // mailtyoe: mail type html or text
-func SendMail(user, password, host, to, subject, body, mailtype string) error {
+func SendMail(user, password, host string, sendTo []string, subject, content string, attachment []string, mailtype string) error {
 	hp := strings.Split(host, ":")
 	auth := smtp.PlainAuth("", user, password, hp[0])
 	var contentType string
@@ -23,8 +23,8 @@ func SendMail(user, password, host, to, subject, body, mailtype string) error {
 		contentType = "Content-Type: text/plain" + "; charset=UTF-8"
 	}
 
-	msg := []byte("To: " + to + "\r\nFrom: " + user + "<" + user + ">\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + body)
-	sendTo := strings.Split(to, ";")
+	mailList := strings.Join(sendTo, ";")
+	msg := []byte("To: " + mailList + "\r\nFrom: " + user + "<" + user + ">\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + content)
 	err := smtp.SendMail(host, auth, user, sendTo, msg)
 	return err
 }

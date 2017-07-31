@@ -9,14 +9,14 @@ import (
 )
 
 // LoadModule 加载模块
-func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 
 	instance := &account{routes: make([]common.Route, 0), accountHandler: handler.CreateAccountHandler()}
 
 	instance.routes = route.AppendUserRoute(instance.routes, instance.accountHandler)
 	instance.routes = route.AppendGroupRoute(instance.routes, instance.accountHandler)
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 type account struct {

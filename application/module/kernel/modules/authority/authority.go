@@ -16,16 +16,16 @@ type authority struct {
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 	instance := &authority{
-		moduleHub:        modHub,
+		moduleHub:        moduleHub,
 		sessionRegistry:  sessionRegistry,
-		authorityHandler: handler.CreateAuthorityHandler(modHub, sessionRegistry)}
+		authorityHandler: handler.CreateAuthorityHandler(moduleHub, sessionRegistry)}
 
 	instance.routes = route.AppendACLRoute(instance.routes, instance.authorityHandler, sessionRegistry)
 	instance.routes = route.AppendAuthGropRoute(instance.routes, instance.authorityHandler, sessionRegistry)
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 func (instance *authority) ID() string {

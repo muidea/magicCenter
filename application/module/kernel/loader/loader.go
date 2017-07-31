@@ -13,21 +13,21 @@ import (
 )
 
 // LoadAllModules 加载所有模块
-func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, modulHub common.ModuleHub) {
+func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 
-	mail.LoadModule(configuration, modulHub)
+	mail.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	cache.LoadModule(configuration, modulHub)
+	cache.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	account.LoadModule(configuration, modulHub)
+	account.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	content.LoadModule(configuration, sessionRegistry, modulHub)
+	content.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	authority.LoadModule(configuration, sessionRegistry, modulHub)
+	authority.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	cas.LoadModule(configuration, sessionRegistry, modulHub)
+	cas.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	static.LoadModule(configuration, modulHub)
+	static.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	fileregistry.LoadModule(configuration, sessionRegistry, modulHub)
+	fileregistry.LoadModule(configuration, sessionRegistry, moduleHub)
 }

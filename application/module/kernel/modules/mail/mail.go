@@ -1,44 +1,27 @@
 package mail
 
 import (
-	"log"
-
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail/def"
-	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCenter/application/module/kernel/modules/mail/handler"
 )
 
 // LoadModule 加载Mail模块
-func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	account, _ := cfg.GetOption(model.MailAccount)
-	password, _ := cfg.GetOption(model.MailPassword)
-	server, _ := cfg.GetOption(model.MailServer)
-	instance := &mail{mailAccount: account, mailPassword: password, mailServer: server}
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+	account, _ := configuration.GetOption(model.MailAccount)
+	password, _ := configuration.GetOption(model.MailPassword)
+	server, _ := configuration.GetOption(model.MailServer)
+	instance := &mail{mailAccount: account, mailPassword: password, mailServer: server, mailHandler: handler.CreateEMailHandler(configuration, sessionRegistry, moduleHub)}
 
-	modHub.RegisterModule(instance)
-}
-
-// SendMail 发送邮件
-func SendMail(modHub common.ModuleHub, usrMail string, subject, content string) bool {
-	mailModule, found := modHub.FindModule(def.ID)
-	if !found {
-		panic("can't find mail module")
-	}
-
-	endPoint := mailModule.EntryPoint()
-	switch endPoint.(type) {
-	case *mail:
-		return endPoint.(*mail).postMail(usrMail, subject, content)
-	}
-
-	return false
+	moduleHub.RegisterModule(instance)
 }
 
 type mail struct {
 	mailAccount  string
 	mailPassword string
 	mailServer   string
+	mailHandler  common.MailHandler
 }
 
 func (instance *mail) ID() string {
@@ -66,7 +49,7 @@ func (instance *mail) Status() int {
 }
 
 func (instance *mail) EntryPoint() interface{} {
-	return instance
+	return instance.mailHandler
 }
 
 func (instance *mail) AuthGroups() []model.AuthGroup {
@@ -90,14 +73,4 @@ func (instance *mail) Startup() bool {
 // Cleanup 清除Mail模块
 func (instance *mail) Cleanup() {
 
-}
-
-func (instance *mail) postMail(to, subject, body string) bool {
-	err := net.SendMail(instance.mailAccount, instance.mailPassword, instance.mailServer, to, subject, body, "html")
-	if err != nil {
-		log.Printf("sendMail fail, err:%s", err.Error())
-		return false
-	}
-
-	return true
 }

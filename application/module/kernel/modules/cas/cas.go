@@ -16,15 +16,15 @@ type cas struct {
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 	instance := &cas{
-		moduleHub:       modHub,
+		moduleHub:       moduleHub,
 		sessionRegistry: sessionRegistry,
-		casHandler:      handler.CreateCASHandler(modHub, sessionRegistry)}
+		casHandler:      handler.CreateCASHandler(moduleHub, sessionRegistry)}
 
 	instance.routes = route.AppendAccountRoute(instance.routes, instance.casHandler, sessionRegistry)
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 func (instance *cas) ID() string {

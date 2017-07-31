@@ -14,7 +14,7 @@ type content struct {
 }
 
 // LoadModule 加载模块
-func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 	instance := &content{contentHandler: handler.CreateContentHandler()}
 
 	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, sessionRegistry)
@@ -22,7 +22,7 @@ func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry
 	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, sessionRegistry)
 	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, sessionRegistry)
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 func (instance *content) ID() string {

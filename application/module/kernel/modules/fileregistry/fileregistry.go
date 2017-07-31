@@ -14,14 +14,14 @@ type fileRegistry struct {
 }
 
 // LoadModule 加载Static模块
-func LoadModule(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) {
-	fileRegistryHanler := handler.CreateFileRegistryHandler(cfg, sessionRegistry, modHub)
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+	fileRegistryHanler := handler.CreateFileRegistryHandler(configuration, sessionRegistry, moduleHub)
 
 	instance := &fileRegistry{fileRegistryHanler: fileRegistryHanler}
 
 	instance.routes = route.AppendFileRegistryRoute(instance.routes, instance.fileRegistryHanler)
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 // ID ID

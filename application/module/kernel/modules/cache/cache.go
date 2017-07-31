@@ -16,10 +16,10 @@ import (
 )
 
 // LoadModule 加载Cache模块
-func LoadModule(cfg common.Configuration, modHub common.ModuleHub) {
-	instance := &cacheModule{cacheHandler: handler.CreateCacheHandler(cfg, modHub)}
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+	instance := &cacheModule{cacheHandler: handler.CreateCacheHandler(configuration, moduleHub)}
 
-	modHub.RegisterModule(instance)
+	moduleHub.RegisterModule(instance)
 }
 
 type cacheModule struct {
