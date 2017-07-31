@@ -73,8 +73,8 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
-		account := r.FormValue("login-account")
-		password := r.FormValue("login-password")
+		account := r.FormValue("user-account")
+		password := r.FormValue("user-password")
 		user, token, ok := i.casHandler.LoginAccount(account, password)
 		if !ok {
 			result.ErrCode = 1

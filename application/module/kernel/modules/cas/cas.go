@@ -27,35 +27,35 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 	moduleHub.RegisterModule(instance)
 }
 
-func (instance *cas) ID() string {
+func (s *cas) ID() string {
 	return def.ID
 }
 
-func (instance *cas) Name() string {
+func (s *cas) Name() string {
 	return def.Name
 }
 
-func (instance *cas) Description() string {
+func (s *cas) Description() string {
 	return def.Description
 }
 
-func (instance *cas) Group() string {
+func (s *cas) Group() string {
 	return "kernel"
 }
 
-func (instance *cas) Type() int {
+func (s *cas) Type() int {
 	return common.KERNEL
 }
 
-func (instance *cas) Status() int {
+func (s *cas) Status() int {
 	return 0
 }
 
-func (instance *cas) EntryPoint() interface{} {
-	return instance.casHandler
+func (s *cas) EntryPoint() interface{} {
+	return s.casHandler
 }
 
-func (instance *cas) AuthGroups() []model.AuthGroup {
+func (s *cas) AuthGroups() []model.AuthGroup {
 	groups := []model.AuthGroup{}
 
 	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
@@ -66,16 +66,16 @@ func (instance *cas) AuthGroups() []model.AuthGroup {
 }
 
 // Route 路由信息
-func (instance *cas) Routes() []common.Route {
-	return instance.routes
+func (s *cas) Routes() []common.Route {
+	return s.routes
 }
 
 // Startup 启动模块
-func (instance *cas) Startup() bool {
+func (s *cas) Startup() bool {
 	return true
 }
 
 // Cleanup 清除模块
-func (instance *cas) Cleanup() {
+func (s *cas) Cleanup() {
 
 }

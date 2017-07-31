@@ -1,9 +1,18 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
+import (
+	"net/http"
+
+	"muidea.com/magicCenter/application/common/model"
+)
+
+// AuthTokenID 鉴权Token
+const AuthTokenID = "authToken"
 
 // AuthorityHandler 鉴权处理器
 type AuthorityHandler interface {
+	VerifyAuthority(res http.ResponseWriter, req *http.Request) bool
+
 	// 更新授权组
 	QueryAuthGroup(module string) ([]model.AuthGroup, bool)
 	InsertAuthGroup(authGroups []model.AuthGroup) bool

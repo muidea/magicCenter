@@ -1,13 +1,8 @@
 package common
 
 import (
-	"net/http"
-
 	"muidea.com/magicCenter/application/common/model"
 )
-
-// AuthTokenID 鉴权Token
-const AuthTokenID = "authToken"
 
 // CASHandler 鉴权处理Handler
 type CASHandler interface {
@@ -26,6 +21,4 @@ type CASHandler interface {
 
 	// 校验权限是否OK
 	VerifyToken(authToken string) bool
-
-	VerifyAccount(res http.ResponseWriter, req *http.Request) bool
 }
