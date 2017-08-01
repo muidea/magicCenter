@@ -3,14 +3,15 @@
 import urllib2
 import urllib
 import cookielib
+import json
 
 class MagicCenter(object):
     'MagicCenter'
     def __init__(self):
         self.operate = ''
-        self.cookjar = cookielib.LWPCookieJar()
+        self.cookjar = cookielib.LWPCookieJar('magicCenter.cookie')
         try:
-            self.cookjar.revert('magicCenter.cookie')
+            self.cookjar.load(ignore_discard=True)
         except cookielib.LoadError:
             pass
         except IOError:
@@ -25,11 +26,15 @@ class MagicCenter(object):
         req = urllib2.Request('http://localhost:8888/cas/user/', urllib.urlencode(params))
 
         self.operate = self.opener.open(req)
-        data = self.operate.readlines()
-        print data
-        self.cookjar.save('magicCenter.cookie')
+        obj = json.loads(self.operate.readlines()[0])
+        if obj['ErrCode'] == 0:
+            print 'login success ok'
+        else:
+            print 'login failed'
+
+        self.cookjar.save(ignore_discard=True)
 
 if __name__ == '__main__':
-    TT = MagicCenter()
-    TT.login('rangh@126.com', '123')
+    APP = MagicCenter()
+    APP.login('rangh@126.com', '123')
     
