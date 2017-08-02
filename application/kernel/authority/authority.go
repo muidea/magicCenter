@@ -23,12 +23,12 @@ type Authority interface {
 
 // VerifyHandler 权限校验处理器
 // 用于在路由过程中进行权限校验
-func VerifyHandler(modHub common.ModuleHub, authority Authority) martini.Handler {
+func VerifyHandler(moduleHub common.ModuleHub, authority Authority) martini.Handler {
 	var authorityHandler common.AuthorityHandler
-	mod, ok := modHub.FindModule(common.AuthorityModuleID)
+	authorityModule, ok := moduleHub.FindModule(common.AuthorityModuleID)
 	if ok {
 		authorityHandler = nil
-		entryPoint := mod.EntryPoint()
+		entryPoint := authorityModule.EntryPoint()
 		switch entryPoint.(type) {
 		case common.AuthorityHandler:
 			authorityHandler = entryPoint.(common.AuthorityHandler)

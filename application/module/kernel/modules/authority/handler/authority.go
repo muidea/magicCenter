@@ -10,7 +10,7 @@ import (
 )
 
 // CreateAuthorityHandler 新建CASHandler
-func CreateAuthorityHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.AuthorityHandler {
+func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.AuthorityHandler {
 	dbhelper, _ := dbhelper.NewHelper()
 	i := impl{
 		sessionRegistry:  sessionRegistry,
@@ -18,11 +18,19 @@ func CreateAuthorityHandler(modHub common.ModuleHub, sessionRegistry common.Sess
 		aclManager:       createACLManager(dbhelper),
 		cacheData:        cache.NewCache()}
 
+	casModule, _ := moduleHub.FindModule(common.CASModuleID)
+	entryPoint := casModule.EntryPoint()
+	switch entryPoint.(type) {
+	case common.CASHandler:
+		i.casHandler = entryPoint.(common.CASHandler)
+	}
+
 	return &i
 }
 
 type impl struct {
 	sessionRegistry  common.SessionRegistry
+	casHandler       common.CASHandler
 	authGroupManager authGroupManager
 	aclManager       aclManager
 	cacheData        cache.Cache
@@ -52,6 +60,11 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		// 找到sessionToken了，则说明该用户已经登录了，这里就必须保证两端的token一致否则也要认为鉴权非法
 		// 用户登录过Token必然不为空
 		sessionToken = obj.(string)
+
+		if i.casHandler != nil {
+			i.casHandler.RefreshToken(sessionToken, req.RemoteAddr)
+		}
+
 		return urlToken == sessionToken
 	}
 

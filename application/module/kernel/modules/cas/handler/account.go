@@ -27,10 +27,10 @@ func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
 		return s, false
 	}
 
-	endPoint := mod.EntryPoint()
-	switch endPoint.(type) {
+	entryPoint := mod.EntryPoint()
+	switch entryPoint.(type) {
 	case common.AccountHandler:
-		s.accountHandler = endPoint.(common.AccountHandler)
+		s.accountHandler = entryPoint.(common.AccountHandler)
 	}
 
 	return s, s.accountHandler != nil
