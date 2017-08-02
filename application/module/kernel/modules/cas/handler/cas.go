@@ -1,49 +1,71 @@
 package handler
 
 import (
+	"strings"
+
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
-	"muidea.com/magicCenter/foundation/cache"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // CreateCASHandler 新建CASHandler
-func CreateCASHandler(modHub common.ModuleHub) common.CASHandler {
+func CreateCASHandler(moduleHub common.ModuleHub) common.CASHandler {
+	manager, _ := createAccountManager(moduleHub)
 	i := impl{
-		accountManager: createAccountManager(modHub),
-		cacheData:      cache.NewCache()}
+		accountManager: manager,
+		token2IDMap:    make(map[string]int)}
 
 	return &i
 }
 
 type impl struct {
 	accountManager accountManager
-	cacheData      cache.Cache
+	token2IDMap    map[string]int
 }
 
-func (i *impl) LoginAccount(account, password string) (model.UserDetail, string, bool) {
-	user, ok := i.accountManager.findUser(account, password)
+func (i *impl) allocAuthToken() string {
+	return strings.ToLower(util.RandomAlphanumeric(32))
+}
+
+func (i *impl) LoginAccount(account, password, remoteAddr string) (model.UserDetail, string, bool) {
+	user, ok := i.accountManager.userLogin(account, password, remoteAddr)
 	if !ok {
 		return user, "", ok
 	}
 
-	token := i.cacheData.PutIn(user, cache.MaxAgeValue)
+	token := i.allocAuthToken()
+	i.token2IDMap[token] = user.ID
+
 	return user, token, ok
 }
 
-func (i *impl) LoginToken(token string) (string, bool) {
-	return token, true
+func (i *impl) LoginToken(authToken, remoteAddr string) (string, bool) {
+	return authToken, true
 }
 
-func (i *impl) Logout(authToken string) bool {
-	_, ok := i.cacheData.FetchOut(authToken)
-	if !ok {
-		return false
+func (i *impl) Logout(authToken, remoteAddr string) bool {
+	id, ok := i.token2IDMap[authToken]
+	if ok {
+		i.accountManager.userLogout(id, remoteAddr)
 	}
 
-	i.cacheData.Remove(authToken)
-	return true
+	return ok
+}
+
+func (i *impl) RefreshToken(authToken, remoteAddr string) bool {
+	id, ok := i.token2IDMap[authToken]
+	if ok {
+		i.accountManager.userRefresh(id, remoteAddr)
+	}
+
+	return ok
 }
 
 func (i *impl) VerifyToken(authToken string) bool {
-	return true
+	_, ok := i.token2IDMap[authToken]
+	return ok
+}
+
+func (i *impl) AllocStaticToken(id string, expiration int64) (string, bool) {
+	return "", true
 }

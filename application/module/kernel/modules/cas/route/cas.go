@@ -76,7 +76,8 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 
 		account := r.FormValue("user-account")
 		password := r.FormValue("user-password")
-		user, token, ok := i.casHandler.LoginAccount(account, password)
+		remoteAddr := r.RemoteAddr
+		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "登入失败"
@@ -140,7 +141,7 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			break
 		}
 
-		i.casHandler.Logout(token[0])
+		i.casHandler.Logout(token[0], r.RemoteAddr)
 		session.ClearAccount()
 		session.RemoveOption(common.AuthTokenID)
 
