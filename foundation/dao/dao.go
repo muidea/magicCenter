@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"log"
-
 	_ "github.com/go-sql-driver/mysql" //引入Mysql驱动
 )
 
@@ -36,7 +34,7 @@ func Fetch(user string, password string, address string, dbName string) (Dao, er
 	if err != nil {
 		panic("open database exception, err:" + err.Error())
 	} else {
-		log.Print("open database connection...")
+		//log.Print("open database connection...")
 		i.dbHandle = db
 	}
 
@@ -51,7 +49,7 @@ func (impl *impl) Release() {
 	impl.rowsHandle = nil
 
 	if impl.dbHandle != nil {
-		log.Print("close database connection...")
+		//log.Print("close database connection...")
 
 		impl.dbHandle.Close()
 	}

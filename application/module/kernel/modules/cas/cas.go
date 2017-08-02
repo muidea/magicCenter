@@ -20,7 +20,7 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 	instance := &cas{
 		moduleHub:       moduleHub,
 		sessionRegistry: sessionRegistry,
-		casHandler:      handler.CreateCASHandler(moduleHub, sessionRegistry)}
+		casHandler:      handler.CreateCASHandler(moduleHub)}
 
 	instance.routes = route.AppendAccountRoute(instance.routes, instance.casHandler, sessionRegistry)
 

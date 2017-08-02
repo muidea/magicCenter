@@ -7,19 +7,17 @@ import (
 )
 
 // CreateCASHandler 新建CASHandler
-func CreateCASHandler(modHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.CASHandler {
+func CreateCASHandler(modHub common.ModuleHub) common.CASHandler {
 	i := impl{
-		sessionRegistry: sessionRegistry,
-		accountManager:  createAccountManager(modHub),
-		cacheData:       cache.NewCache()}
+		accountManager: createAccountManager(modHub),
+		cacheData:      cache.NewCache()}
 
 	return &i
 }
 
 type impl struct {
-	sessionRegistry common.SessionRegistry
-	accountManager  accountManager
-	cacheData       cache.Cache
+	accountManager accountManager
+	cacheData      cache.Cache
 }
 
 func (i *impl) LoginAccount(account, password string) (model.UserDetail, string, bool) {

@@ -3,6 +3,7 @@
 import urllib2
 import urllib
 import cookielib
+import json
 
 class MagicSession(object):
     "MagicSession"
@@ -22,24 +23,61 @@ class MagicSession(object):
 
     def post(self, url, params):
         "Post"
-        request = urllib2.Request(url, urllib.urlencode(params))
-        request.get_method = lambda: 'POST'
-        return self.opener.open(request).readlines()[0]
+        ret = None
+        try:
+            request = urllib2.Request(url, urllib.urlencode(params))
+            request.get_method = lambda: 'POST'
+            val = self.opener.open(request).readlines()[0]
+            print val
+            ret = json.loads(val)
+        except urllib2.URLError:
+            print 'post request exception'
+        except ValueError:
+            print ('decode json exception,val:{1}', val)
+
+        return ret
 
     def get(self, url):
         "Get"
-        request = urllib2.Request(url)
-        request.get_method = lambda: 'GET'
-        return self.opener.open(request).readlines()[0]
+        ret = None
+        try:
+            request = urllib2.Request(url)
+            request.get_method = lambda: 'GET'
+            val = self.opener.open(request).readlines()[0]
+            ret = json.loads(val)
+        except urllib2.URLError:
+            print 'post request exception'
+        except ValueError:
+            print ('decode json exception,val:{1}', val)
+
+        return ret        
 
     def put(self, url, params):
         "Put"
-        request = urllib2.Request(url, urllib.urlencode(params))
-        request.get_method = lambda: 'PUT'
-        return self.opener.open(request).readlines()[0]
+        ret = None
+        try:
+            request = urllib2.Request(url, urllib.urlencode(params))
+            request.get_method = lambda: 'PUT'
+            val = self.opener.open(request).readlines()[0]
+            ret = json.loads(val)
+        except urllib2.URLError:
+            print 'post request exception'
+        except ValueError:
+            print ('decode json exception,val:{1}', val)
+
+        return ret
 
     def delete(self, url):
         "Delete"
-        request = urllib2.Request(url)
-        request.get_method = lambda: 'DELETE'
-        return self.opener.open(request).readlines()[0]
+        ret = None
+        try:
+            request = urllib2.Request(url)
+            request.get_method = lambda: 'DELETE'
+            val = self.opener.open(request).readlines()[0]
+            ret = json.loads(val)
+        except urllib2.URLError:
+            print 'post request exception'
+        except ValueError:
+            print ('decode json exception,val:{1}', val)
+
+        return ret            

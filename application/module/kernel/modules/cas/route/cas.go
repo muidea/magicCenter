@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
 	"muidea.com/magicCenter/foundation/net"
 )
@@ -44,7 +45,7 @@ type accountLoginRoute struct {
 
 type accountLoginResult struct {
 	common.Result
-	User      string
+	User      model.UserDetail
 	AuthToken string
 }
 
@@ -82,23 +83,11 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
-		usr, found := session.GetAccount()
-		if found && usr.Account == account {
-			opt, ok := session.GetOption(common.AuthTokenID)
-			if ok {
-				token = opt.(string)
-				result.ErrCode = 0
-				result.Reason = "重复登陆"
-				result.AuthToken = token
-				break
-			}
-		}
-
-		session.SetAccount(user)
 		session.SetOption(common.AuthTokenID, token)
+		session.SetAccount(user)
 
 		result.ErrCode = 0
-		result.User = user.Name
+		result.User = user
 		result.AuthToken = token
 		break
 	}
