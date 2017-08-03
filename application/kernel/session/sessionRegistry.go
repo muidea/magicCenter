@@ -170,7 +170,7 @@ func (right commandChanImpl) update(session sessionImpl) bool {
 }
 
 func (right commandChanImpl) find(id string) (sessionImpl, bool) {
-	log.Printf("find session by id,id:%s", id)
+	log.Printf("find session by id, id:%s", id)
 	reply := make(chan interface{})
 	right <- commandData{action: find, value: id, result: reply}
 

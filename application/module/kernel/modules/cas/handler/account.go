@@ -73,6 +73,11 @@ func (s *accountManager) userRefresh(id int, remoteAddr string) {
 	}
 }
 
+func (s accountManager) userVerify(id int) bool {
+	_, ok := s.onlineUser[id]
+	return ok
+}
+
 func (s *accountManager) userLogout(id int, remoteAddr string) {
 	delete(s.onlineUser, id)
 }

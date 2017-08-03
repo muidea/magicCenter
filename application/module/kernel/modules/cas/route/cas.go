@@ -141,7 +141,12 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			break
 		}
 
-		i.casHandler.Logout(token[0], r.RemoteAddr)
+		if !i.casHandler.Logout(token[0], r.RemoteAddr) {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
 		session.ClearAccount()
 		session.RemoveOption(common.AuthTokenID)
 

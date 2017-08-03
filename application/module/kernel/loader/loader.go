@@ -23,9 +23,9 @@ func LoadAllModules(configuration common.Configuration, sessionRegistry common.S
 
 	content.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	authority.LoadModule(configuration, sessionRegistry, moduleHub)
-
 	cas.LoadModule(configuration, sessionRegistry, moduleHub)
+
+	authority.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	static.LoadModule(configuration, sessionRegistry, moduleHub)
 
