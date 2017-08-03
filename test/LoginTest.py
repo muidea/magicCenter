@@ -17,16 +17,14 @@ class MagicCenter(MagicSession.MagicSession):
             self.authority_token = val['AuthToken']
             self.current_user = val['User']
             print 'login success'
-            print self.current_user
-            print self.authority_token
             return True
         else:
             print 'login failed'
             return False
 
-    def logout(self, authToken):
+    def logout(self, auth_token):
         'logout'
-        val = self.delete('http://localhost:8888/cas/user/?authToken=%s'%authToken)
+        val = self.delete('http://localhost:8888/cas/user/?authToken=%s'%auth_token)
         if val and val['ErrCode'] == 0:
             print 'logout success'
         else:

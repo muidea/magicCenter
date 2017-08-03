@@ -28,7 +28,6 @@ class MagicSession(object):
             request = urllib2.Request(url, urllib.urlencode(params))
             request.get_method = lambda: 'POST'
             val = self.opener.open(request).readlines()[0]
-            print val
             ret = json.loads(val)
         except urllib2.URLError:
             print 'post request exception'
