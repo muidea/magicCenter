@@ -251,14 +251,22 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		account := r.FormValue("user-account")
+		user, ok := i.accountHandler.FindUserByID(id)
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "非法参数"
+			break
+		}
+
 		email := r.FormValue("user-email")
+		if email != "" {
+			user.Email = email
+		}
 		nickName := r.FormValue("user-name")
+		if nickName != "" {
+			user.Name = nickName
+		}
 		password := r.FormValue("user-password")
-		user := model.UserDetail{Account: account, Email: email}
-		user.ID = id
-		user.Name = nickName
-		ok := false
 		if len(password) > 0 {
 			user, ok = i.accountHandler.SaveUserWithPassword(user, password)
 		} else {

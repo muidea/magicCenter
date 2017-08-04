@@ -2,8 +2,8 @@
 
 import MagicSession
 
-class MagicCenter(MagicSession.MagicSession):
-    'MagicCenter'
+class LoginTest(MagicSession.MagicSession):
+    'LoginTest'
     def __init__(self):
         MagicSession.MagicSession.__init__(self)
         self.authority_token = ''
@@ -31,7 +31,7 @@ class MagicCenter(MagicSession.MagicSession):
             print 'logout failed'
 
 if __name__ == '__main__':
-    APP = MagicCenter()
+    APP = LoginTest()
     APP.login('rangh@126.com', '123')
     APP.logout('123')
     APP.logout(APP.authority_token)

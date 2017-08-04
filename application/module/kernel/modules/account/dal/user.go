@@ -84,7 +84,7 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 
 // CreateUser 创建新用户，根据用户信息和密码
 func CreateUser(helper dbhelper.DBHelper, account, email string) (model.UserDetail, bool) {
-	user := model.UserDetail{}
+	user := model.UserDetail{Account: account, Email: email}
 	sql := fmt.Sprintf("select id from user where account='%s'", account)
 	helper.Query(sql)
 	if helper.Next() {

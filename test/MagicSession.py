@@ -60,7 +60,7 @@ class MagicSession(object):
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
         except urllib2.URLError:
-            print 'post request exception'
+            print 'put request exception,%s'%url
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
