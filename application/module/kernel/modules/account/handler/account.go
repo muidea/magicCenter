@@ -63,8 +63,8 @@ func (i *impl) FindGroupByName(name string) (model.Group, bool) {
 	return i.groupHandler.findGroupByName(name)
 }
 
-func (i *impl) CreateGroup(name, description string, catalog int) (model.Group, bool) {
-	return i.groupHandler.createGroup(name, description, catalog)
+func (i *impl) CreateGroup(name, description string) (model.Group, bool) {
+	return i.groupHandler.createGroup(name, description)
 }
 
 func (i *impl) SaveGroup(group model.Group) (model.Group, bool) {

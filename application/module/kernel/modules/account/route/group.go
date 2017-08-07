@@ -190,14 +190,8 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 
 		name := r.FormValue("group-name")
 		description := r.FormValue("group-description")
-		catalog, err := strconv.Atoi(r.FormValue("group-catalog"))
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "非法参数"
-			break
-		}
 
-		group, ok := i.accountHandler.CreateGroup(name, description, catalog)
+		group, ok := i.accountHandler.CreateGroup(name, description)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
@@ -260,13 +254,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 
 		name := r.FormValue("group-name")
 		description := r.FormValue("group-description")
-		catalog, err := strconv.Atoi(r.FormValue("group-catalog"))
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "非法参数"
-			break
-		}
-		group := model.Group{ID: id, Name: name, Description: description, Type: catalog}
+		group := model.Group{ID: id, Name: name, Description: description, Type: 0}
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {

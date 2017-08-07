@@ -16,7 +16,7 @@ type AccountHandler interface {
 	GetAllGroup() []model.Group
 	FindGroupByID(id int) (model.Group, bool)
 	FindGroupByName(name string) (model.Group, bool)
-	CreateGroup(name, description string, catalog int) (model.Group, bool)
+	CreateGroup(name, description string) (model.Group, bool)
 	SaveGroup(group model.Group) (model.Group, bool)
 	DestroyGroup(id int) bool
 }

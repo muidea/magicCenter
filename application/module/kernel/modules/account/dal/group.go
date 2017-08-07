@@ -71,15 +71,21 @@ func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool)
 }
 
 // CreateGroup 新建分组
-func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int) (model.Group, bool) {
-	group := model.Group{}
-	sql := fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", name, description, catalog)
+func CreateGroup(helper dbhelper.DBHelper, name, description string) (model.Group, bool) {
+	group := model.Group{Name: name, Description: description}
+	sql := fmt.Sprintf("select id from `group` where name='%s' and catalog=%d", name, 0)
+	helper.Query(sql)
+	if helper.Next() {
+		return group, false
+	}
+
+	sql = fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", name, description, 0)
 	_, result := helper.Execute(sql)
 	if !result {
 		return group, result
 	}
 
-	sql = fmt.Sprintf("select id from `group` where name='%s' and description='%s' and catalog=%d", name, description, catalog)
+	sql = fmt.Sprintf("select id from `group` where name='%s' and description='%s' and catalog=%d", name, description, 0)
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&group.ID)
@@ -115,9 +121,8 @@ func SaveGroup(helper dbhelper.DBHelper, group model.Group) (model.Group, bool) 
 	}
 
 	if !result {
-		group.Type = 1
 		// insert
-		sql = fmt.Sprintf("insert into `group` (name, description, catalog) values ('%s','%s',%d)", group.Name, group.Description, group.Type)
+		sql = fmt.Sprintf("insert into `group` (name, description) values ('%s','%s')", group.Name, group.Description)
 	} else {
 		// modify
 		sql = fmt.Sprintf("update `group` set name ='%s', description='%s' where id=%d", group.Name, group.Description, group.ID)

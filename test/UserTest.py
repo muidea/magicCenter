@@ -51,6 +51,19 @@ class UserTest(MagicSession.MagicSession):
             print 'find user failed'
             return None
 
+    def find_all(self):
+        'FindAllUser'
+        val = self.get('http://localhost:8888/account/user/')
+        if val and val['ErrCode'] == 0:
+            if len(val['User']) != 2:
+                print 'find all user failed'
+                return False
+
+            return True
+
+        return False
+
+
     def destroy(self, user_id):
         'DestroyUser'
         val = self.delete('http://localhost:8888/account/user/%d/'%user_id)
@@ -92,6 +105,8 @@ if __name__ == '__main__':
             print 'find user failed'
 
         APP.destroy(USER_ID)
+
+        APP.find_all()
     else:
         print 'create user failed'
 

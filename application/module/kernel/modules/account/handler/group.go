@@ -22,8 +22,8 @@ func (i *groupActionHandler) findGroupByName(name string) (model.Group, bool) {
 	return dal.QueryGroupByName(i.dbhelper, name)
 }
 
-func (i *groupActionHandler) createGroup(name, description string, catalog int) (model.Group, bool) {
-	return dal.CreateGroup(i.dbhelper, name, description, catalog)
+func (i *groupActionHandler) createGroup(name, description string) (model.Group, bool) {
+	return dal.CreateGroup(i.dbhelper, name, description)
 }
 
 func (i *groupActionHandler) saveGroup(group model.Group) (model.Group, bool) {
