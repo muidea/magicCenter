@@ -19,10 +19,6 @@ func TestUser(t *testing.T) {
 	user.Name = "nickName"
 	user.Email = "test@126.com"
 	user.Status = 0
-	user.Groups = append(user.Groups, 10)
-	user.Groups = append(user.Groups, 11)
-	user.Groups = append(user.Groups, 12)
-	user.Groups = append(user.Groups, 13)
 
 	user2 := user
 	user2.Account = "t2"

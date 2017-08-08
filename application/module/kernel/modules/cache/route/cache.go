@@ -65,7 +65,6 @@ func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Reque
 	if ok {
 		result.Cache = obj
 		result.ErrCode = 0
-		result.Reason = "查询成功"
 	} else {
 		result.ErrCode = 1
 		result.Reason = "对象不存在"
@@ -127,6 +126,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		result.Token = i.cacheHandler.PutIn(value, float64(age))
+		result.ErrCode = 0
 		break
 	}
 
@@ -158,7 +158,7 @@ func (i *deleteCacheRoute) Method() string {
 }
 
 func (i *deleteCacheRoute) Pattern() string {
-	return net.JoinURL(def.URL, "a-zA-Z0-9]+/")
+	return net.JoinURL(def.URL, "[a-zA-Z0-9]+/")
 }
 
 func (i *deleteCacheRoute) Handler() interface{} {

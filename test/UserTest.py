@@ -15,9 +15,9 @@ class UserTest(MagicSession.MagicSession):
         if val and val['ErrCode'] == 0:
             print 'create user success'
             return val['User']
-        else:
-            print 'create user failed'
-            return None
+
+        print 'create user failed'
+        return None
 
     def update(self, user):
         'UpdateUser'
@@ -26,9 +26,8 @@ class UserTest(MagicSession.MagicSession):
         if val and val['ErrCode'] == 0:
             print 'update user success'
             return val['User']
-        else:
-            print 'update user failed'
-            return None
+        print 'update user failed'
+        return None
 
     def updatepassword(self, user, pwd):
         'UpdateUserPassword'
@@ -37,19 +36,17 @@ class UserTest(MagicSession.MagicSession):
         if val and val['ErrCode'] == 0:
             print 'update user password success'
             return val['User']
-        else:
-            print 'update user password failed'
-            return None
-        
+        print 'update user password failed'
+        return None
+
     def find(self, user_id):
         'FindUser'
         val = self.get('http://localhost:8888/account/user/%d/'%user_id)
         if val and val['ErrCode'] == 0:
             print 'find user success'
             return val['User']
-        else:
-            print 'find user failed'
-            return None
+        print 'find user failed'
+        return None
 
     def find_all(self):
         'FindAllUser'
@@ -70,9 +67,8 @@ class UserTest(MagicSession.MagicSession):
         if val and val['ErrCode'] == 0:
             print 'destroy user success'
             return True
-        else:
-            print 'destroy user failed'
-            return False
+        print 'destroy user failed'
+        return False
 
 if __name__ == '__main__':
     APP = UserTest()
@@ -109,4 +105,3 @@ if __name__ == '__main__':
         APP.find_all()
     else:
         print 'create user failed'
-
