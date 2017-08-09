@@ -279,7 +279,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		catalog.Name = r.FormValue("catalog-name")
 		catalog.Description = r.FormValue("catalog-description")
 		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("catalog-catalog"))
+		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("catalog-parent"))
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {

@@ -52,7 +52,6 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
 	}
-
 	return catalog, result
 }
 
@@ -101,6 +100,9 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate string, parent []int, creater int) (model.Summary, bool) {
 	catalog := model.Summary{}
 	catalog.Name = name
+	catalog.Creater = creater
+	catalog.Catalog = parent
+	catalog.CreateDate = createdate
 
 	// insert
 	sql := fmt.Sprintf(`insert into catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createdate, creater)

@@ -18,9 +18,8 @@ class LoginTest(MagicSession.MagicSession):
             self.current_user = val['User']
             print 'login success'
             return True
-        else:
-            print 'login failed'
-            return False
+        print 'login failed'
+        return False
 
     def logout(self, auth_token):
         'logout'

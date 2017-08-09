@@ -85,13 +85,14 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rtype string) (Resource, b
 
 // QueryRelativeResource 查询关联的资源
 func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rtype string) []Resource {
-	sql := fmt.Sprintf(`select r.id, r.type, r.name from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src =%d and rr.srcType ='%s'`, rid, rtype)
+	sql := fmt.Sprintf(`select distinct(r.oid), r.name, r.type, r.id from resource r, resource_relative rr where r.id = rr.dst and r.type = rr.dstType and rr.src =%d and rr.srcType ='%s'`, rid, rtype)
 	helper.Query(sql)
 
 	resultList := []Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
-		helper.GetValue(&res.rid, &res.rtype, &res.rname)
+		oid := 0
+		helper.GetValue(&oid, &res.rname, &res.rtype, &res.rid)
 		resultList = append(resultList, res)
 	}
 
@@ -141,8 +142,10 @@ func SaveResource(helper dbhelper.DBHelper, res Resource) bool {
 		sql = fmt.Sprintf(`update resource set name ='%s' where type='%s' and id=%d`, res.RName(), res.RType(), res.RId())
 	}
 
-	num, result := helper.Execute(sql)
-	if result && num == 1 {
+	// 这里只需要没有出错就可以了，不需要判断是否真实的更新了记录
+	// 原因是由于resource本身并没有变化，所以update是没有记录更新的
+	_, result = helper.Execute(sql)
+	if result {
 		saveResourceRelative(helper, res)
 	}
 

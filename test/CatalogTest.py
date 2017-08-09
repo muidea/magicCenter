@@ -1,0 +1,102 @@
+"CatalogTest"
+
+import MagicSession
+import LoginTest
+
+def join_str(catalog):
+    'JoinStr'
+    ret = ''
+    for v in catalog:
+        ret = '%s,%d'%(ret, v)
+    return ret
+
+class CatalogTest(MagicSession.MagicSession):
+    'CatalogTest'
+    def __init__(self, auth_token):
+        MagicSession.MagicSession.__init__(self)
+        self.authority_token = auth_token
+
+
+    def create(self, name, description, catalogs):
+        'create'
+        params = {'catalog-name': name, 'catalog-description': description, 'catalog-parent': catalogs}
+        val = self.post('http://localhost:8888/content/catalog/?token=%s'%self.authority_token, params)
+        if val and val['ErrCode'] == 0:
+            print 'create catalog success'
+            return val['Catalog']
+
+        print 'create catalog failed'
+        return None
+
+    def destroy(self, catalog_id):
+        'destroy'
+        val = self.delete('http://localhost:8888/content/catalog/%s/?token=%s'%(catalog_id, self.authority_token))
+        if val and val['ErrCode'] == 0:
+            print 'destroy catalog success'
+            return True
+
+        print 'destroy catalog failed'
+        return False
+
+    def update(self, catalog):
+        'update'
+        catalogs = join_str(catalog['Catalog'])
+        params = {'catalog-name': catalog['Name'], 'catalog-description': catalog['Description'], 'catalog-parent': catalogs}
+        val = self.put('http://localhost:8888/content/catalog/%s/?token=%s'%(catalog['ID'], self.authority_token), params)
+        if val and val['ErrCode'] == 0:
+            print 'update catalog success'
+            return val['Catalog']
+
+        print 'update catalog failed'
+        return None
+
+    def query(self, catalog_id):
+        'query'
+        val = self.get('http://localhost:8888/content/catalog/%d/?token=%s'%(catalog_id, self.authority_token))
+        if val and val['ErrCode'] == 0:
+            print 'query catalog success'
+            return val['Catalog']
+
+        print 'query catalog failed'
+        return None
+
+    def query_all(self):
+        'query_all'
+        val = self.get('http://localhost:8888/content/catalog/?token=%s'%self.authority_token)
+        if val and val['ErrCode'] == 0:
+            print 'query_all catalog success'
+            return val['Catalog']
+
+        print 'query_all catalog failed'
+        return None
+
+if __name__ == '__main__':
+    LOGIN = LoginTest.LoginTest()
+    if not LOGIN.login('rangh@126.com', '123'):
+        print 'login failed'
+    else:
+        APP = CatalogTest(LOGIN.authority_token)
+        CATALOG = APP.create('testCatalog', 'testDescription', '8,9')
+        if CATALOG:
+            CATALOG_ID = CATALOG['ID']
+            CATALOG['Description'] = 'aaaaaa'
+            CATALOG['Catalog'] = [8,9,10]
+            CATALOG = APP.update(CATALOG)
+            if not CATALOG:
+                print 'update catalog failed'
+            elif len(CATALOG['Catalog']) != 3:
+                print 'update catalog failed, catalog len invalid'
+            else:
+                pass
+            CATALOG = APP.query(CATALOG_ID)
+            if not CATALOG:
+                print 'query catalog failed'
+
+            if len(APP.query_all()) <= 0:
+                print 'query_all catalog failed'
+            
+            APP.destroy(CATALOG_ID)
+        else:
+            print 'create catalog failed'
+
+        LOGIN.logout(LOGIN.authority_token)
