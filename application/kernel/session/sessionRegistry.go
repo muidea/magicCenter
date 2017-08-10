@@ -17,7 +17,7 @@ func init() {
 }
 
 func createUUID() string {
-	return util.RandomAlphanumeric(64)
+	return util.RandomAlphanumeric(32)
 }
 
 type sessionRegistryImpl struct {
@@ -40,7 +40,7 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 
 	cookie, err := r.Cookie(sessionCookieID)
 	if err != nil {
-		log.Printf("can't find cookie,create new session, err:" + err.Error())
+		log.Printf("can't find cookie,create new session, cookieID:%s, err:%s", sessionCookieID, err.Error())
 		id := createUUID()
 		userSession = sm.CreateSession(id)
 	} else {

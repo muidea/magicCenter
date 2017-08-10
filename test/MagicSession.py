@@ -19,6 +19,10 @@ class MagicSession(object):
 
     def __del__(self):
         print "MagicSession destruct"
+        self.save_cookie()
+
+    def save_cookie(self):
+        "SaveCookie"
         self.cookjar.save(ignore_discard=True)
 
     def post(self, url, params):
@@ -29,6 +33,7 @@ class MagicSession(object):
             request.get_method = lambda: 'POST'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
+            self.save_cookie()
         except urllib2.URLError:
             print 'post request exception'
         except ValueError:
@@ -44,6 +49,7 @@ class MagicSession(object):
             request.get_method = lambda: 'GET'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
+            self.save_cookie()
         except urllib2.URLError:
             print 'post request exception'
         except ValueError:
@@ -59,6 +65,7 @@ class MagicSession(object):
             request.get_method = lambda: 'PUT'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
+            self.save_cookie()
         except urllib2.URLError:
             print 'put request exception,%s'%url
         except ValueError:
@@ -74,6 +81,7 @@ class MagicSession(object):
             request.get_method = lambda: 'DELETE'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
+            self.save_cookie()
         except urllib2.URLError:
             print 'post request exception'
         except ValueError:

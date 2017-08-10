@@ -91,6 +91,8 @@ if __name__ == '__main__':
             CATALOG = APP.query(CATALOG_ID)
             if not CATALOG:
                 print 'query catalog failed'
+            elif cmp(CATALOG['Description'],'aaaaaa') != 0:
+                print 'update catalog failed, description invalid'
 
             if len(APP.query_all()) <= 0:
                 print 'query_all catalog failed'
