@@ -39,7 +39,7 @@ func AppendLinkRoute(routes []common.Route, contentHandler common.ContentHandler
 
 // CreateGetLinkByIDRoute 新建GetLink Route
 func CreateGetLinkByIDRoute(contentHandler common.ContentHandler) common.Route {
-	i := linkGetListRoute{contentHandler: contentHandler}
+	i := linkGetByIDRoute{contentHandler: contentHandler}
 	return &i
 }
 
@@ -110,8 +110,6 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 			result.Reason = "对象不存在"
 		}
 
-		result.ErrCode = 1
-		result.Reason = "无效参数"
 		break
 	}
 
