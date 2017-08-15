@@ -3,37 +3,52 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+	"path"
+	"strings"
+	"time"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/dal"
 	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // CreateFileRegistryHandler 新建FileRegistryHandler
 func CreateFileRegistryHandler(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) common.FileRegistryHandler {
 	uploadPath, _ := cfg.GetOption(model.UploadPath)
 
-	i := impl{uploadPath: uploadPath, sessionRegistry: sessionRegistry}
+	dbhelper, _ := dbhelper.NewHelper()
+
+	i := impl{dbhelper: dbhelper, uploadPath: uploadPath, sessionRegistry: sessionRegistry}
 
 	return &i
 }
 
 type impl struct {
+	dbhelper        dbhelper.DBHelper
 	uploadPath      string
 	sessionRegistry common.SessionRegistry
 }
 
 type uploadFileResult struct {
 	common.Result
-	FilePath string
+	AccessToken string
+}
+
+type downloadFileResult struct {
+	common.Result
+	RedirectURL string
 }
 
 type deleteFileResult struct {
 	common.Result
 }
 
-func (s *impl) FindFile(filePath string) (string, bool) {
-	return "", true
+func (s *impl) FindFile(accessToken string) (model.FileInfo, bool) {
+	return dal.FindFileInfo(s.dbhelper, accessToken)
 }
 
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
@@ -59,15 +74,78 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		dstFile, err := net.MultipartFormFile(req, keyName, s.uploadPath)
+		tempPath := "./"
+		dstFile, err := net.MultipartFormFile(req, keyName, tempPath)
 		if err != nil {
 			result.ErrCode = 1
-			result.Reason = "处理出错"
+			result.Reason = "上传文件出错"
+			break
+		}
+
+		accessToken := strings.ToLower(util.RandomAlphanumeric(32))
+		_, fileName := path.Split(dstFile)
+		finalFilePath := path.Join(s.uploadPath, accessToken)
+		_, err = os.Stat(finalFilePath)
+		if err != nil {
+			err = os.MkdirAll(finalFilePath, os.ModePerm)
+		}
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "处理文件出错"
+			break
+		}
+
+		finalFilePath = path.Join(finalFilePath, fileName)
+		err = os.Rename(dstFile, finalFilePath)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "处理文件出错"
+			break
+		}
+
+		fileInfo := model.FileInfo{FileName: fileName, FilePath: finalFilePath}
+		fileInfo.AccessToken = accessToken
+		fileInfo.UploadDate = time.Now().Format("2006-01-02 15:04:05")
+
+		ret := dal.SaveFileInfo(s.dbhelper, fileInfo)
+		if ret {
+			result.AccessToken = fileInfo.AccessToken
+			result.ErrCode = 0
+		} else {
+			result.ErrCode = 1
+			result.Reason = "保存文件信息失败"
+		}
+
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	res.Write(b)
+}
+
+func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
+	result := downloadFileResult{}
+	for true {
+		if req.Method != common.GET {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
+		_, id := net.SplitRESTAPI(req.URL.Path)
+		fileInfo, ok := dal.FindFileInfo(s.dbhelper, id)
+		if !ok {
+			result.ErrCode = 1
+			result.Reason = "指定文件不存在"
 			break
 		}
 
 		result.ErrCode = 0
-		result.FilePath = dstFile
+		result.RedirectURL = fileInfo.FilePath
 		break
 	}
 
@@ -88,7 +166,18 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		//_, id := net.SplitRESTAPI(req.URL.Path)
+		_, id := net.SplitRESTAPI(req.URL.Path)
+		fileInfo, ok := dal.FindFileInfo(s.dbhelper, id)
+		if ok {
+			dal.RemoveFileInfo(s.dbhelper, id)
+			_, err := os.Stat(fileInfo.FilePath)
+			if err == nil {
+				os.Remove(fileInfo.FilePath)
+
+				filePath, _ := path.Split(fileInfo.FilePath)
+				os.Remove(filePath)
+			}
+		}
 
 		result.ErrCode = 0
 		break

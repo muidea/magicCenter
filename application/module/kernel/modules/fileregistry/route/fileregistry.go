@@ -14,7 +14,10 @@ func AppendFileRegistryRoute(routes []common.Route, fileRegistryHandler common.F
 	route := createUploadFileRoute(fileRegistryHandler)
 	routes = append(routes, route)
 
-	rt := createDeleteFileRoute(fileRegistryHandler)
+	rt := createDownloadFileRoute(fileRegistryHandler)
+	routes = append(routes, rt)
+
+	rt = createDeleteFileRoute(fileRegistryHandler)
 	routes = append(routes, rt)
 
 	return routes
@@ -22,6 +25,10 @@ func AppendFileRegistryRoute(routes []common.Route, fileRegistryHandler common.F
 
 func createUploadFileRoute(fileRegistryHandler common.FileRegistryHandler) common.Route {
 	return &uploadFileRoute{fileRegistryHandler: fileRegistryHandler}
+}
+
+func createDownloadFileRoute(fileRegistryHandler common.FileRegistryHandler) common.Route {
+	return &downloadFileRoute{fileRegistryHandler: fileRegistryHandler}
 }
 
 func createDeleteFileRoute(fileRegistryHandler common.FileRegistryHandler) common.Route {
@@ -37,7 +44,7 @@ func (i *uploadFileRoute) Method() string {
 }
 
 func (i *uploadFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/fileregistry/")
+	return net.JoinURL(def.URL, "")
 }
 
 func (i *uploadFileRoute) Handler() interface{} {
@@ -50,6 +57,28 @@ func (i *uploadFileRoute) uploadFileHandler(w http.ResponseWriter, r *http.Reque
 	i.fileRegistryHandler.UploadFile(w, r)
 }
 
+type downloadFileRoute struct {
+	fileRegistryHandler common.FileRegistryHandler
+}
+
+func (i *downloadFileRoute) Method() string {
+	return common.GET
+}
+
+func (i *downloadFileRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/[a-zA-Z]+[a-zA-Z0-9]*")
+}
+
+func (i *downloadFileRoute) Handler() interface{} {
+	return i.downloadFileHandler
+}
+
+func (i *downloadFileRoute) downloadFileHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("downloadFileHandler")
+
+	i.fileRegistryHandler.DownloadFile(w, r)
+}
+
 type deleteFileRoute struct {
 	fileRegistryHandler common.FileRegistryHandler
 }
@@ -59,7 +88,7 @@ func (i *deleteFileRoute) Method() string {
 }
 
 func (i *deleteFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/fileregistry/[a-zA-Z]+[a-zA-Z0-9]*")
+	return net.JoinURL(def.URL, "/[a-zA-Z]+[a-zA-Z0-9]*")
 }
 
 func (i *deleteFileRoute) Handler() interface{} {

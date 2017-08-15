@@ -5,6 +5,8 @@ import urllib
 import cookielib
 import json
 
+import MultipartPostHandler
+
 class MagicSession(object):
     "MagicSession"
     def __init__(self):
@@ -14,7 +16,7 @@ class MagicSession(object):
             self.cookjar.load(ignore_discard=True)
         except IOError:
             pass
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookjar))
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookjar), MultipartPostHandler.MultipartPostHandler)
         urllib2.install_opener(self.opener)
 
     def __del__(self):

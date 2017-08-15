@@ -3,3 +3,4 @@
 magicCenter
 *.pyc
 *.cookie
+static/*
