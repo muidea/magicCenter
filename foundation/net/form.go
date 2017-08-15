@@ -18,7 +18,7 @@ func MultipartFormFile(r *http.Request, field, dstPath string) (string, error) {
 	for true {
 		srcFile, head, err := r.FormFile(field)
 		if err != nil {
-			log.Printf("get file field failed, err:%s", err.Error())
+			log.Printf("get file field failed, field:%s, err:%s", field, err.Error())
 			retErr = err
 			break
 		}

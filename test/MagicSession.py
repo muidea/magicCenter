@@ -30,7 +30,7 @@ class MagicSession(object):
     def post(self, url, params):
         "Post"
         ret = None
-        try:
+        try: 
             request = urllib2.Request(url, urllib.urlencode(params))
             request.get_method = lambda: 'POST'
             val = self.opener.open(request).readlines()[0]
@@ -53,7 +53,7 @@ class MagicSession(object):
             ret = json.loads(val)
             self.save_cookie()
         except urllib2.URLError:
-            print 'post request exception'
+            print 'get request exception'
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
@@ -85,8 +85,22 @@ class MagicSession(object):
             ret = json.loads(val)
             self.save_cookie()
         except urllib2.URLError:
-            print 'post request exception'
+            print 'delete request exception'
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
         return ret            
+
+    def upload(self, url, params):
+        "Upload"
+        ret = None
+        try: 
+            val = self.opener.open(url, params).readlines()[0]
+            ret = json.loads(val)
+            self.save_cookie()
+        except urllib2.URLError:
+            print 'post request exception'
+        except ValueError:
+            print ('decode json exception,val:{1}', val)
+
+        return ret        
