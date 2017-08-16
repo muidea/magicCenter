@@ -1,4 +1,4 @@
-"FileTest"
+"FileRegistryTest"
 
 
 import MagicSession
