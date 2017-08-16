@@ -26,7 +26,7 @@ const (
 	SysDefaultModule = "@system_defaultModule"
 
 	// StaticPath 静态资源路径
-	//StaticPath = "@system_staticPath"
+	StaticPath = "@system_staticPath"
 
 	// ResourcePath 应用资源路径
 	//ResourcePath = "@system_resourcePath"

@@ -18,11 +18,12 @@ import (
 
 // CreateFileRegistryHandler 新建FileRegistryHandler
 func CreateFileRegistryHandler(cfg common.Configuration, sessionRegistry common.SessionRegistry, modHub common.ModuleHub) common.FileRegistryHandler {
+	staticPath, _ := cfg.GetOption(model.StaticPath)
 	uploadPath, _ := cfg.GetOption(model.UploadPath)
 
 	dbhelper, _ := dbhelper.NewHelper()
 
-	i := impl{dbhelper: dbhelper, uploadPath: uploadPath, sessionRegistry: sessionRegistry}
+	i := impl{dbhelper: dbhelper, uploadPath: path.Join(staticPath, uploadPath), sessionRegistry: sessionRegistry}
 
 	return &i
 }
