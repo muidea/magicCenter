@@ -1,7 +1,9 @@
 package def
 
+import "muidea.com/magicCenter/application/common"
+
 // ID 模块ID
-const ID = "b467c59d-10a5-4875-b617-66662f8824fa"
+const ID = common.FileRegistryModuleID
 
 // Name 模块名称
 const Name = "Magic FileRegistry"

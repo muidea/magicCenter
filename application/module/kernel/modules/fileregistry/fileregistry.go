@@ -52,7 +52,7 @@ func (instance *fileRegistry) Status() int {
 }
 
 func (instance *fileRegistry) EntryPoint() interface{} {
-	return nil
+	return instance.fileRegistryHanler
 }
 
 func (instance *fileRegistry) AuthGroups() []model.AuthGroup {

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -48,8 +49,9 @@ type deleteFileResult struct {
 	common.Result
 }
 
-func (s *impl) FindFile(accessToken string) (model.FileInfo, bool) {
-	return dal.FindFileInfo(s.dbhelper, accessToken)
+func (s *impl) FindFile(accessToken string) (string, model.FileInfo, bool) {
+	fileInfo, ok := dal.FindFileInfo(s.dbhelper, accessToken)
+	return s.uploadPath, fileInfo, ok
 }
 
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
@@ -104,7 +106,8 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		fileInfo := model.FileInfo{FileName: fileName, FilePath: finalFilePath}
+		filePath := path.Join(accessToken, fileName)
+		fileInfo := model.FileInfo{FileName: fileName, FilePath: filePath}
 		fileInfo.AccessToken = accessToken
 		fileInfo.UploadDate = time.Now().Format("2006-01-02 15:04:05")
 
@@ -138,7 +141,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		_, id := net.SplitRESTAPI(req.URL.Path)
-		fileInfo, ok := dal.FindFileInfo(s.dbhelper, id)
+		_, ok := dal.FindFileInfo(s.dbhelper, id)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "指定文件不存在"
@@ -146,7 +149,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		result.ErrCode = 0
-		result.RedirectURL = fileInfo.FilePath
+		result.RedirectURL = fmt.Sprintf("/static/?source=%s", id)
 		break
 	}
 

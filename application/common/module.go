@@ -21,6 +21,8 @@ const (
 	CotentModuleID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
 	// AccountModuleID 账号管理模块ID
 	AccountModuleID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
+	// FileRegistryModuleID 文件管理模块ID
+	FileRegistryModuleID = "b467c59d-10a5-4875-b617-66662f8824fa"
 )
 
 // Module 功能模块接口

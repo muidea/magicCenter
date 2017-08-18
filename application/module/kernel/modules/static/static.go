@@ -15,7 +15,7 @@ type static struct {
 
 // LoadModule 加载Static模块
 func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
-	instance := &static{staticHandler: handler.CreateStaticHandler("./static/")}
+	instance := &static{staticHandler: handler.CreateStaticHandler(configuration, sessionRegistry, moduleHub)}
 
 	rt := route.CreateStaticResRoute(instance.staticHandler)
 	instance.routes = append(instance.routes, rt)
