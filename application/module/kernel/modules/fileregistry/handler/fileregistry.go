@@ -174,11 +174,12 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 		fileInfo, ok := dal.FindFileInfo(s.dbhelper, id)
 		if ok {
 			dal.RemoveFileInfo(s.dbhelper, id)
-			_, err := os.Stat(fileInfo.FilePath)
+			finalFilePath := path.Join(s.uploadPath, fileInfo.FilePath)
+			_, err := os.Stat(finalFilePath)
 			if err == nil {
-				os.Remove(fileInfo.FilePath)
+				os.Remove(finalFilePath)
 
-				filePath, _ := path.Split(fileInfo.FilePath)
+				filePath, _ := path.Split(finalFilePath)
 				os.Remove(filePath)
 			}
 		}

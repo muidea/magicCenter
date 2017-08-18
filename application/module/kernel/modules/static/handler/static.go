@@ -51,18 +51,18 @@ func (i *impl) HandleResource(basePath string, w http.ResponseWriter, r *http.Re
 	if err == nil || os.IsExist(err) {
 		filePath, fileName := path.Split(fullPath)
 		dir := http.Dir(filePath)
-		f, err := dir.Open(fileName)
+		file, err := dir.Open(fileName)
 		if err != nil {
 			return
 		}
-		defer f.Close()
+		defer file.Close()
 
-		fi, err := f.Stat()
+		fi, err := file.Stat()
 		if err != nil || fi.IsDir() {
 			return
 		}
 
-		http.ServeContent(w, r, fullPath, fi.ModTime(), f)
+		http.ServeContent(w, r, fullPath, fi.ModTime(), file)
 	} else {
 		http.Redirect(w, r, "/404.html", 404)
 	}
