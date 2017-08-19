@@ -38,21 +38,20 @@ func CreateSessionRegistry() common.SessionRegistry {
 func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request) common.Session {
 	var userSession common.Session
 
+	sessionID := r.URL.Query().Get(common.SessionID)
 	cookie, err := r.Cookie(sessionCookieID)
-	if err != nil {
-		log.Printf("can't find cookie,create new session, cookieID:%s, err:%s", sessionCookieID, err.Error())
-		id := createUUID()
-		userSession = sm.CreateSession(id)
+	if err == nil {
+		sessionID = cookie.Value
+	}
+
+	cur, found := sm.FindSession(sessionID)
+	if !found {
+		log.Printf("can\\'t find session,create new session, sessionID:%s", sessionID)
+		sessionID := createUUID()
+		userSession = sm.CreateSession(sessionID)
 	} else {
-		cur, found := sm.FindSession(cookie.Value)
-		if !found {
-			log.Printf("invalid cookie,create new session, cookieValue:%s", cookie.Value)
-			id := createUUID()
-			userSession = sm.CreateSession(id)
-		} else {
-			log.Print("find exist ession from cookie")
-			userSession = cur
-		}
+		log.Printf("find exist session, sessionID:%s", sessionID)
+		userSession = cur
 	}
 
 	// 存入cookie,使用cookie存储

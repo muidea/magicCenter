@@ -47,13 +47,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return false
 	}
 
-	urlToken := ""
-	authToken, found := req.URL.Query()[common.AuthTokenID]
-	if found {
-		// 如果url里没有token，则认为token为空，判断时使用空字符串进行比较
-		urlToken = authToken[0]
-	}
-
+	urlToken := req.URL.Query().Get(common.AuthTokenID)
 	sessionToken := ""
 	obj, ok := session.GetOption(common.AuthTokenID)
 	if ok {
