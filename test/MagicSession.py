@@ -9,9 +9,10 @@ import MultipartPostHandler
 
 class MagicSession(object):
     "MagicSession"
-    def __init__(self):
+    def __init__(self, base_url):
         print "MagicSession construct"
         self.cookjar = cookielib.LWPCookieJar('magicCenter.cookie')
+        self.base_url = base_url
         try:
             self.cookjar.load(ignore_discard=True)
         except IOError:
@@ -30,8 +31,8 @@ class MagicSession(object):
     def post(self, url, params):
         "Post"
         ret = None
-        try: 
-            request = urllib2.Request(url, urllib.urlencode(params))
+        try:
+            request = urllib2.Request('%s%s'%(self.base_url, url), urllib.urlencode(params))
             request.get_method = lambda: 'POST'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
@@ -47,7 +48,7 @@ class MagicSession(object):
         "Get"
         ret = None
         try:
-            request = urllib2.Request(url)
+            request = urllib2.Request('%s%s'%(self.base_url, url))
             request.get_method = lambda: 'GET'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
@@ -57,13 +58,13 @@ class MagicSession(object):
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
-        return ret        
+        return ret
 
     def put(self, url, params):
         "Put"
         ret = None
         try:
-            request = urllib2.Request(url, urllib.urlencode(params))
+            request = urllib2.Request('%s%s'%(self.base_url, url), urllib.urlencode(params))
             request.get_method = lambda: 'PUT'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
@@ -79,7 +80,7 @@ class MagicSession(object):
         "Delete"
         ret = None
         try:
-            request = urllib2.Request(url)
+            request = urllib2.Request('%s%s'%(self.base_url, url))
             request.get_method = lambda: 'DELETE'
             val = self.opener.open(request).readlines()[0]
             ret = json.loads(val)
@@ -89,13 +90,13 @@ class MagicSession(object):
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
-        return ret            
+        return ret
 
     def upload(self, url, params):
         "Upload"
         ret = None
-        try: 
-            val = self.opener.open(url, params).readlines()[0]
+        try:
+            val = self.opener.open('%s%s'%(self.base_url, url), params).readlines()[0]
             ret = json.loads(val)
             self.save_cookie()
         except urllib2.URLError:
@@ -103,4 +104,4 @@ class MagicSession(object):
         except ValueError:
             print ('decode json exception,val:{1}', val)
 
-        return ret        
+        return ret

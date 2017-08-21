@@ -12,15 +12,15 @@ def join_str(catalog):
 
 class ArticleTest(MagicSession.MagicSession):
     'ArticleTest'
-    def __init__(self, auth_token):
-        MagicSession.MagicSession.__init__(self)
+    def __init__(self, base_url, auth_token):
+        MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
 
     def create(self, title, content, catalogs):
         'create'
         params = {'article-title': title, 'article-content': content, 'article-catalog': catalogs}
-        val = self.post('http://localhost:8888/content/article/?token=%s'%self.authority_token, params)
+        val = self.post('/content/article/?token=%s'%(self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'create article success'
             return val['Article']
@@ -30,7 +30,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def destroy(self, article_id):
         'destroy'
-        val = self.delete('http://localhost:8888/content/article/%s/?token=%s'%(article_id, self.authority_token))
+        val = self.delete('/content/article/%s/?token=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'destroy article success'
             return True
@@ -42,7 +42,7 @@ class ArticleTest(MagicSession.MagicSession):
         'update'
         catalogs = join_str(article['Catalog'])
         params = {'article-title': article['Name'], 'article-content': article['Content'], 'article-catalog': catalogs}
-        val = self.put('http://localhost:8888/content/article/%s/?token=%s'%(article['ID'], self.authority_token), params)
+        val = self.put('/content/article/%s/?token=%s'%(article['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update article success'
             return val['Article']
@@ -52,7 +52,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def query(self, article_id):
         'query'
-        val = self.get('http://localhost:8888/content/article/%d/?token=%s'%(article_id, self.authority_token))
+        val = self.get('/content/article/%d/?token=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'query article success'
             return val['Article']
@@ -62,7 +62,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def query_all(self):
         'query_all'
-        val = self.get('http://localhost:8888/content/article/?token=%s'%self.authority_token)
+        val = self.get('/content/article/?token=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
             print 'query_all article success'
             return val['Article']
@@ -71,11 +71,11 @@ class ArticleTest(MagicSession.MagicSession):
         return None
 
 if __name__ == '__main__':
-    LOGIN = LoginTest.LoginTest()
+    LOGIN = LoginTest.LoginTest('http://localhost:8888/api/v1')
     if not LOGIN.login('rangh@126.com', '123'):
         print 'login failed'
     else:
-        APP = ArticleTest(LOGIN.authority_token)
+        APP = ArticleTest('http://localhost:8888/api/v1', LOGIN.authority_token)
         ARTICLE = APP.create('testArticle', 'test article content', '8,9')
         if ARTICLE:
             ARTICLE_ID = ARTICLE['ID']

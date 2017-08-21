@@ -44,6 +44,7 @@ func VerifyHandler(moduleHub common.ModuleHub, authority Authority) martini.Hand
 			c.Next()
 		} else {
 			// 没有权限
+			log.Print("illegal authority")
 		}
 	}
 }

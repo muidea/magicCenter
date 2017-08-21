@@ -5,13 +5,13 @@ import MagicSession
 
 class GroupTest(MagicSession.MagicSession):
     "GroupTest"
-    def __init__(self):
-        MagicSession.MagicSession.__init__(self)
+    def __init__(self, base_url):
+        MagicSession.MagicSession.__init__(self, base_url)
 
     def create(self, name, description):
         "CreateGroup"
         params = {'group-name': name, 'group-description': description}
-        val = self.post('http://localhost:8888/account/group/', params)
+        val = self.post('/account/group/', params)
         if val and val['ErrCode'] == 0:
             print 'create group success'
             return val['Group']
@@ -22,7 +22,7 @@ class GroupTest(MagicSession.MagicSession):
     def save(self, group):
         "UpdateGroup"
         params = {'group-name': group['Name'], 'group-description': group['Description']}
-        val = self.put('http://localhost:8888/account/group/%d/'%group['ID'], params)
+        val = self.put('/account/group/%d/'%group['ID'], params)
         if val and val['ErrCode'] == 0:
             print 'update group success'
             return val['Group']
@@ -32,7 +32,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def find(self, group_id):
         "FindGroup"
-        val = self.get('http://localhost:8888/account/group/%d/'%group_id)
+        val = self.get('/account/group/%d/'%group_id)
         if val and val['ErrCode'] == 0:
             print 'find group success'
             return val['Group']
@@ -42,7 +42,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def find_all(self):
         "FindAllGroup"
-        val = self.get('http://localhost:8888/account/group/')
+        val = self.get('/account/group/')
         if val and val['ErrCode'] == 0:
             if len(val['Group']) < 0:
                 print 'find all group failed'
@@ -55,7 +55,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def destroy(self, group_id):
         "DestroyGroup"
-        val = self.delete('http://localhost:8888/account/group/%d/'%group_id)
+        val = self.delete('/account/group/%d/'%group_id)
         if val and val['ErrCode'] == 0:
             print 'destroy group success'
             return True
@@ -64,7 +64,7 @@ class GroupTest(MagicSession.MagicSession):
             return False
 
 if __name__ == '__main__':
-    APP = GroupTest()
+    APP = GroupTest('http://localhost:8888/api/v1')
     GROUP = APP.create('testGorup1', 'test description')
     if GROUP:
         GROUP_ID = GROUP['ID']

@@ -5,13 +5,13 @@ import LoginTest
 
 class UserTest(MagicSession.MagicSession):
     "UserTest"
-    def __init__(self):
-        MagicSession.MagicSession.__init__(self)
+    def __init__(self, base_url):
+        MagicSession.MagicSession.__init__(self, base_url)
 
     def create(self, account, email):
         "CreateUser"
         params = {'user-account': account, 'user-email': email}
-        val = self.post('http://localhost:8888/account/user/', params)
+        val = self.post('/account/user/', params)
         if val and val['ErrCode'] == 0:
             print 'create user success'
             return val['User']
@@ -22,7 +22,7 @@ class UserTest(MagicSession.MagicSession):
     def update(self, user):
         'UpdateUser'
         params = {'user-email': user['Email'], 'user-name': user['Name']}
-        val = self.put('http://localhost:8888/account/user/%d/'%user['ID'], params)
+        val = self.put('/account/user/%d/'%user['ID'], params)
         if val and val['ErrCode'] == 0:
             print 'update user success'
             return val['User']
@@ -32,7 +32,7 @@ class UserTest(MagicSession.MagicSession):
     def updatepassword(self, user, pwd):
         'UpdateUserPassword'
         params = {'user-password': pwd, 'user-email': user['Email'], 'user-name': user['Name']}
-        val = self.put('http://localhost:8888/account/user/%d/'%user['ID'], params)
+        val = self.put('/account/user/%d/'%user['ID'], params)
         if val and val['ErrCode'] == 0:
             print 'update user password success'
             return val['User']
@@ -41,7 +41,7 @@ class UserTest(MagicSession.MagicSession):
 
     def find(self, user_id):
         'FindUser'
-        val = self.get('http://localhost:8888/account/user/%d/'%user_id)
+        val = self.get('/account/user/%d/'%user_id)
         if val and val['ErrCode'] == 0:
             print 'find user success'
             return val['User']
@@ -50,7 +50,7 @@ class UserTest(MagicSession.MagicSession):
 
     def find_all(self):
         'FindAllUser'
-        val = self.get('http://localhost:8888/account/user/')
+        val = self.get('/account/user/')
         if val and val['ErrCode'] == 0:
             if len(val['User']) != 2:
                 print 'find all user failed'
@@ -63,7 +63,7 @@ class UserTest(MagicSession.MagicSession):
 
     def destroy(self, user_id):
         'DestroyUser'
-        val = self.delete('http://localhost:8888/account/user/%d/'%user_id)
+        val = self.delete('/account/user/%d/'%user_id)
         if val and val['ErrCode'] == 0:
             print 'destroy user success'
             return True
@@ -71,14 +71,14 @@ class UserTest(MagicSession.MagicSession):
         return False
 
 if __name__ == '__main__':
-    APP = UserTest()
+    APP = UserTest('http://localhost:8888/api/v1')
     USER = APP.create('testUser12', 'rangh@test.com')
     if USER:
         USER_ID = USER['ID']
         print USER
         USER_NEW = APP.updatepassword(USER, '123')
         if USER_NEW:
-            LOGIN = LoginTest.LoginTest()
+            LOGIN = LoginTest.LoginTest('http://localhost:8888/api/v1')
             if not LOGIN.login(USER['Account'], '123'):
                 print 'update user password failed'
         USER_NEW = None

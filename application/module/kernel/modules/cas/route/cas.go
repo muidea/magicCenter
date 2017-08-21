@@ -46,6 +46,7 @@ type accountLoginRoute struct {
 type accountLoginResult struct {
 	common.Result
 	User      model.UserDetail
+	SessionID string
 	AuthToken string
 }
 
@@ -74,8 +75,8 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
-		account := r.FormValue("user-account")
-		password := r.FormValue("user-password")
+		account := r.FormValue("user_account")
+		password := r.FormValue("user_password")
 		remoteAddr := r.RemoteAddr
 		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)
 		if !ok {
@@ -89,6 +90,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 
 		result.ErrCode = 0
 		result.User = user
+		result.SessionID = session.ID()
 		result.AuthToken = token
 		break
 	}

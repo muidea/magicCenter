@@ -5,14 +5,14 @@ import MagicSession
 
 class FileRegistryTest(MagicSession.MagicSession):
     "FileRegistryTest"
-    def __init__(self):
-        MagicSession.MagicSession.__init__(self)
+    def __init__(self, base_url):
+        MagicSession.MagicSession.__init__(self, base_url)
     
     def upload_file(self, file_name):
         'upload file'
         key_name = "test-name"
         params = {"test-name": open(file_name, 'rb')}
-        val = self.upload('http://localhost:8888/fileregistry/?key-name=%s'%key_name, params)
+        val = self.upload('/fileregistry/?key-name=%s'%key_name, params)
         if val and val['ErrCode'] == 0:
             print 'upload file success'
             return val['AccessToken']
@@ -23,7 +23,7 @@ class FileRegistryTest(MagicSession.MagicSession):
 
     def download_file(self, access_token):
         'download file'
-        val = self.get('http://localhost:8888/fileregistry/%s/'%access_token)
+        val = self.get('/fileregistry/%s/'%access_token)
         if val and val['ErrCode'] == 0:
             print 'download file success'
             return val['RedirectURL']
@@ -33,7 +33,7 @@ class FileRegistryTest(MagicSession.MagicSession):
 
     def delete_file(self, access_token):
         'delete file'
-        val = self.delete('http://localhost:8888/fileregistry/%s/'%access_token)
+        val = self.delete('/fileregistry/%s/'%access_token)
         if val and val['ErrCode'] == 0:
             print 'delete file success'
             return True
@@ -43,7 +43,7 @@ class FileRegistryTest(MagicSession.MagicSession):
 
     
 if __name__ == '__main__':
-    APP = FileRegistryTest()
+    APP = FileRegistryTest('http://localhost:8888/api/v1')
     INFO = APP.upload_file('./ArticleTest.py')
     if INFO:
         URL = APP.download_file(INFO)
