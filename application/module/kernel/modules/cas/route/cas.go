@@ -19,6 +19,9 @@ func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, ses
 	rt, _ = CreateAccountLogoutRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
+	rt, _ = CreateAccountStatusRoute(casHandler, sessionRegistry)
+	routes = append(routes, rt)
+
 	return routes
 }
 
@@ -33,6 +36,14 @@ func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry commo
 // CreateAccountLogoutRoute 创建AccountLogout Route
 func CreateAccountLogoutRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := accountLogoutRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
+}
+
+// CreateAccountStatusRoute 创建AccountStatus Route
+func CreateAccountStatusRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := accountStatusRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
 	return &i, true

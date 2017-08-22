@@ -29,8 +29,17 @@ class LoginTest(MagicSession.MagicSession):
         else:
             print 'logout failed'
 
+    def status(self, auth_token):
+        'status'
+        val = self.get('/cas/user/?authToken=%s'%auth_token)
+        if val and val['ErrCode'] == 0:
+            print 'get user status success'
+        else:
+            print 'get user status failed'
+
 if __name__ == '__main__':
     APP = LoginTest('http://localhost:8888/api/v1')
     APP.login('rangh@126.com', '123')
+    APP.status(APP.authority_token)
     APP.logout('123')
     APP.logout(APP.authority_token)
