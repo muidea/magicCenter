@@ -74,15 +74,16 @@ func (i *impl) RefreshToken(authToken, remoteAddr string) bool {
 	return ok
 }
 
-func (i *impl) VerifyToken(authToken string) bool {
+func (i *impl) VerifyToken(authToken string) (model.OnlineAccountInfo, bool) {
+	var info model.OnlineAccountInfo
 	id, ok := i.token2IDMap[authToken]
 	if ok {
-		ok = i.accountManager.userVerify(id)
+		info, ok = i.accountManager.userVerify(id)
 		if !ok {
 			delete(i.token2IDMap, authToken)
 		}
 	}
-	return ok
+	return info, ok
 }
 
 func (i *impl) AllocStaticToken(id string, expiration int64) (string, bool) {

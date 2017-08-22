@@ -163,3 +163,59 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 
 	w.Write(b)
 }
+
+type accountStatusRoute struct {
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
+}
+
+type accountStatusResult struct {
+	common.Result
+	AccountInfo model.OnlineAccountInfo
+}
+
+func (i *accountStatusRoute) Method() string {
+	return common.GET
+}
+
+func (i *accountStatusRoute) Pattern() string {
+	return net.JoinURL(def.URL, "/user/")
+}
+
+func (i *accountStatusRoute) Handler() interface{} {
+	return i.statusHandler
+}
+
+func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("statusHandler")
+
+	session := i.sessionRegistry.GetSession(w, r)
+	result := accountStatusResult{}
+	for true {
+		token := r.URL.Query().Get(common.AuthTokenID)
+		authToken, ok := session.GetOption(common.AuthTokenID)
+		if !ok || authToken.(string) != token {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
+		info, found := i.casHandler.VerifyToken(token)
+		if !found {
+			result.ErrCode = 1
+			result.Reason = "非法请求"
+			break
+		}
+
+		result.AccountInfo = info
+		result.ErrCode = 0
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}

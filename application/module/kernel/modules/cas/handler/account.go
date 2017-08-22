@@ -8,20 +8,13 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 )
 
-type onlineAccountInfo struct {
-	id         int    // User ID
-	loginTime  int64  // 登陆时间
-	updateTime int64  // 更新时间
-	address    string // 访问IP
-}
-
 type accountManager struct {
 	accountHandler common.AccountHandler
-	onlineUser     map[int]onlineAccountInfo
+	onlineUser     map[int]model.OnlineAccountInfo
 }
 
 func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
-	s := accountManager{accountHandler: nil, onlineUser: make(map[int]onlineAccountInfo)}
+	s := accountManager{accountHandler: nil, onlineUser: make(map[int]model.OnlineAccountInfo)}
 	mod, ok := moduleHub.FindModule(common.AccountModuleID)
 	if !ok {
 		return s, false
@@ -46,16 +39,17 @@ func (s *accountManager) userLogin(account, password, remoteAddr string) (model.
 
 	info, ok := s.onlineUser[user.ID]
 	if ok {
-		if info.address != remoteAddr {
-			log.Printf("duplicate user[%d] logining,pre address:%s, cur address:%s", info.id, info.address, remoteAddr)
+		if info.Address != remoteAddr {
+			log.Printf("duplicate user[%d] logining,pre address:%s, cur address:%s", info.ID, info.Address, remoteAddr)
 		}
 	}
 
-	info = onlineAccountInfo{}
-	info.id = user.ID
-	info.address = remoteAddr
-	info.loginTime = time.Now().Unix()
-	info.updateTime = info.loginTime
+	info = model.OnlineAccountInfo{}
+	info.ID = user.ID
+	info.Name = user.Name
+	info.Address = remoteAddr
+	info.LoginTime = time.Now().Unix()
+	info.UpdateTime = info.LoginTime
 	s.onlineUser[user.ID] = info
 	return user, true
 }
@@ -63,19 +57,19 @@ func (s *accountManager) userLogin(account, password, remoteAddr string) (model.
 func (s *accountManager) userRefresh(id int, remoteAddr string) {
 	info, ok := s.onlineUser[id]
 	if ok {
-		if info.address != remoteAddr {
-			log.Printf("illegal user[%d] refresh, pre address:%s, cur address:%s", id, info.address, remoteAddr)
+		if info.Address != remoteAddr {
+			log.Printf("illegal user[%d] refresh, pre address:%s, cur address:%s", id, info.Address, remoteAddr)
 		}
-		info.updateTime = time.Now().Unix()
+		info.UpdateTime = time.Now().Unix()
 		s.onlineUser[id] = info
 	} else {
 		log.Printf("illegal user[%d] refresh, not login, address:%s", id, remoteAddr)
 	}
 }
 
-func (s accountManager) userVerify(id int) bool {
-	_, ok := s.onlineUser[id]
-	return ok
+func (s accountManager) userVerify(id int) (model.OnlineAccountInfo, bool) {
+	info, ok := s.onlineUser[id]
+	return info, ok
 }
 
 func (s *accountManager) userLogout(id int, remoteAddr string) {

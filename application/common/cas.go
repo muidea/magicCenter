@@ -24,7 +24,7 @@ type CASHandler interface {
 	RefreshToken(authToken string, remoteAddr string) bool
 
 	// 校验权限是否OK
-	VerifyToken(authToken string) bool
+	VerifyToken(authToken string) (model.OnlineAccountInfo, bool)
 
 	// 生成一个静态Token
 	AllocStaticToken(id string, expiration int64) (string, bool)
