@@ -58,6 +58,8 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	sessionCookie := http.Cookie{Name: sessionCookieID, Value: userSession.ID(), Path: "/"}
 	http.SetCookie(w, &sessionCookie)
 
+	r.AddCookie(&sessionCookie)
+
 	return userSession
 }
 
