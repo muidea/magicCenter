@@ -13,6 +13,8 @@ const (
 )
 
 const (
+	// CORSModuleID Cors模块ID
+	CORSModuleID = "7ecee3c9-baac-4a54-88d7-ec65fa9e1485"
 	// AuthorityModuleID Authority模块ID
 	AuthorityModuleID = "158e11b7-adee-4b0d-afc9-0b47145195bd"
 	// CASModuleID CAS模块ID

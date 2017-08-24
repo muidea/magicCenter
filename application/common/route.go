@@ -6,10 +6,11 @@ import (
 
 // 基本HTTP行为定义
 const (
-	GET    = "GET"
-	PUT    = "PUT"
-	POST   = "POST"
-	DELETE = "DELETE"
+	GET     = "GET"
+	PUT     = "PUT"
+	POST    = "POST"
+	DELETE  = "DELETE"
+	OPTIONS = "OPTIONS"
 )
 
 // Route 路由接口

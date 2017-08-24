@@ -34,6 +34,11 @@ type Router interface {
 	// 清除Put路由
 	RemovePutRoute(pattern string)
 
+	// 增加Options路由
+	AddOptionsRoute(pattern string, handler interface{})
+	// 清除Options路由
+	RemoveOptionsRoute(pattern string)
+
 	// 返回Martini.Router对象
 	Router() martini.Router
 
@@ -66,6 +71,8 @@ func (instance *impl) AddRoute(rt common.Route) {
 		instance.AddDeleteRoute(fullURL, rt.Handler())
 	case common.PUT:
 		instance.AddPutRoute(fullURL, rt.Handler())
+	case common.OPTIONS:
+		instance.AddOptionsRoute(fullURL, rt.Handler())
 	}
 }
 
@@ -80,6 +87,8 @@ func (instance *impl) RemoveRoute(rt common.Route) {
 		instance.RemoveDeleteRoute(rt.Pattern())
 	case common.PUT:
 		instance.RemovePutRoute(rt.Pattern())
+	case common.OPTIONS:
+		instance.RemoveOptionsRoute(rt.Pattern())
 	}
 }
 
@@ -138,6 +147,19 @@ func (instance *impl) AddDeleteRoute(pattern string, handler interface{}) {
 
 // RemoveDeleteRoute 清除一条Delete路由
 func (instance *impl) RemoveDeleteRoute(pattern string) {
+}
+
+// AddOptionsRoute 添加一条Options路由
+func (instance *impl) AddOptionsRoute(pattern string, handler interface{}) {
+	if martini.Env != martini.Prod {
+		log.Printf("[options]:%s", pattern)
+	}
+
+	instance.martiniRouter.Options(pattern, handler)
+}
+
+// RemoveOptionsRoute 清除一条Options路由
+func (instance *impl) RemoveOptionsRoute(pattern string) {
 }
 
 // Dispatch 分发一次请求
