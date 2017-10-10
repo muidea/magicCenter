@@ -12,7 +12,6 @@ import (
 var sessionCookieID = "session_id"
 
 func init() {
-	log.Print("sessionRegistry init....")
 	sessionCookieID = createUUID()
 }
 

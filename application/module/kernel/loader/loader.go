@@ -7,7 +7,6 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/cache"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas"
 	"muidea.com/magicCenter/application/module/kernel/modules/content"
-	"muidea.com/magicCenter/application/module/kernel/modules/cors"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail"
 	"muidea.com/magicCenter/application/module/kernel/modules/static"
@@ -15,8 +14,6 @@ import (
 
 // LoadAllModules 加载所有模块
 func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
-
-	cors.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	mail.LoadModule(configuration, sessionRegistry, moduleHub)
 

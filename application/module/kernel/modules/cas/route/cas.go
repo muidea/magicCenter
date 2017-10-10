@@ -89,6 +89,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		account := r.FormValue("user_account")
 		password := r.FormValue("user_password")
 		remoteAddr := r.RemoteAddr
+		log.Printf("account:%s,password:%s,remoteaddr:%s", account, password, remoteAddr)
 		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)
 		if !ok {
 			result.ErrCode = 1
@@ -204,6 +205,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	result := accountStatusResult{}
 	for true {
 		token := r.URL.Query().Get(common.AuthTokenID)
+		log.Printf("authToken:%s", token)
 		authToken, ok := session.GetOption(common.AuthTokenID)
 		if !ok || authToken.(string) != token {
 			result.ErrCode = 1
@@ -214,7 +216,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 		info, found := i.casHandler.VerifyToken(token)
 		if !found {
 			result.ErrCode = 1
-			result.Reason = "非法请求"
+			result.Reason = "无效Token"
 			break
 		}
 

@@ -78,17 +78,18 @@ func (instance *impl) AddRoute(rt common.Route) {
 
 // RemoveRoute 清除Route
 func (instance *impl) RemoveRoute(rt common.Route) {
+	fullURL := net.JoinURL(common.APIPrefix, rt.Pattern())
 	switch rt.Method() {
 	case common.GET:
-		instance.RemoveGetRoute(rt.Pattern())
+		instance.RemoveGetRoute(fullURL)
 	case common.POST:
-		instance.RemovePostRoute(rt.Pattern())
+		instance.RemovePostRoute(fullURL)
 	case common.DELETE:
-		instance.RemoveDeleteRoute(rt.Pattern())
+		instance.RemoveDeleteRoute(fullURL)
 	case common.PUT:
-		instance.RemovePutRoute(rt.Pattern())
+		instance.RemovePutRoute(fullURL)
 	case common.OPTIONS:
-		instance.RemoveOptionsRoute(rt.Pattern())
+		instance.RemoveOptionsRoute(fullURL)
 	}
 }
 

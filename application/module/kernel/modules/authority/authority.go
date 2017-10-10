@@ -5,7 +5,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/handler"
-	"muidea.com/magicCenter/application/module/kernel/modules/authority/route"
 )
 
 type authority struct {
@@ -21,9 +20,6 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 		moduleHub:        moduleHub,
 		sessionRegistry:  sessionRegistry,
 		authorityHandler: handler.CreateAuthorityHandler(moduleHub, sessionRegistry)}
-
-	instance.routes = route.AppendACLRoute(instance.routes, instance.authorityHandler, sessionRegistry)
-	instance.routes = route.AppendAuthGropRoute(instance.routes, instance.authorityHandler, sessionRegistry)
 
 	moduleHub.RegisterModule(instance)
 }
