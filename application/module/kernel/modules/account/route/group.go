@@ -77,7 +77,7 @@ func (i *groupGetRoute) Method() string {
 }
 
 func (i *groupGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/[0-9]+/")
+	return net.JoinURL(def.URL, "/group/:id/")
 }
 
 func (i *groupGetRoute) Handler() interface{} {
@@ -225,7 +225,7 @@ func (i *groupSaveRoute) Method() string {
 }
 
 func (i *groupSaveRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/[0-9]+/")
+	return net.JoinURL(def.URL, "/group/:id/")
 }
 
 func (i *groupSaveRoute) Handler() interface{} {
@@ -289,7 +289,7 @@ func (i *groupDestroyRoute) Method() string {
 }
 
 func (i *groupDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/[0-9]+/")
+	return net.JoinURL(def.URL, "/group/:id/")
 }
 
 func (i *groupDestroyRoute) Handler() interface{} {

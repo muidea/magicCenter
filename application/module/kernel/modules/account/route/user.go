@@ -77,7 +77,7 @@ func (i *userGetRoute) Method() string {
 }
 
 func (i *userGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/[0-9]+/")
+	return net.JoinURL(def.URL, "/user/:id/")
 }
 
 func (i *userGetRoute) Handler() interface{} {
@@ -224,7 +224,7 @@ func (i *userSaveRoute) Method() string {
 }
 
 func (i *userSaveRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/[0-9]+/")
+	return net.JoinURL(def.URL, "/user/:id/")
 }
 
 func (i *userSaveRoute) Handler() interface{} {
@@ -305,7 +305,7 @@ func (i *userDestroyRoute) Method() string {
 }
 
 func (i *userDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/[0-9]+/")
+	return net.JoinURL(def.URL, "/user/:id/")
 }
 
 func (i *userDestroyRoute) Handler() interface{} {

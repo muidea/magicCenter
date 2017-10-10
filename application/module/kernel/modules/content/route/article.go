@@ -80,7 +80,7 @@ func (i *articleGetByIDRoute) Method() string {
 }
 
 func (i *articleGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/[0-9]+/")
+	return net.JoinURL(def.URL, "/article/:id/")
 }
 
 func (i *articleGetByIDRoute) Handler() interface{} {
@@ -247,7 +247,7 @@ func (i *articleUpdateRoute) Method() string {
 }
 
 func (i *articleUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/[0-9]+/")
+	return net.JoinURL(def.URL, "/article/:id/")
 }
 
 func (i *articleUpdateRoute) Handler() interface{} {
@@ -316,7 +316,7 @@ func (i *articleDestroyRoute) Method() string {
 }
 
 func (i *articleDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/[0-9]+/")
+	return net.JoinURL(def.URL, "/article/:id/")
 }
 
 func (i *articleDestroyRoute) Handler() interface{} {

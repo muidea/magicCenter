@@ -49,7 +49,7 @@ func (i *queryCacheRoute) Method() string {
 }
 
 func (i *queryCacheRoute) Pattern() string {
-	return net.JoinURL(def.URL, "[a-zA-Z0-9]+/")
+	return net.JoinURL(def.URL, ":id/")
 }
 
 func (i *queryCacheRoute) Handler() interface{} {
@@ -158,7 +158,7 @@ func (i *deleteCacheRoute) Method() string {
 }
 
 func (i *deleteCacheRoute) Pattern() string {
-	return net.JoinURL(def.URL, "[a-zA-Z0-9]+/")
+	return net.JoinURL(def.URL, ":id/")
 }
 
 func (i *deleteCacheRoute) Handler() interface{} {

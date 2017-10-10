@@ -66,7 +66,7 @@ func (i *downloadFileRoute) Method() string {
 }
 
 func (i *downloadFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/[a-z0-9]+/")
+	return net.JoinURL(def.URL, "/:id/")
 }
 
 func (i *downloadFileRoute) Handler() interface{} {
@@ -88,7 +88,7 @@ func (i *deleteFileRoute) Method() string {
 }
 
 func (i *deleteFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/[a-z0-9]+/")
+	return net.JoinURL(def.URL, "/:id/")
 }
 
 func (i *deleteFileRoute) Handler() interface{} {

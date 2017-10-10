@@ -78,7 +78,7 @@ func (i *catalogGetByIDRoute) Method() string {
 }
 
 func (i *catalogGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/catalog/[0-9]+/")
+	return net.JoinURL(def.URL, "/catalog/:id/")
 }
 
 func (i *catalogGetByIDRoute) Handler() interface{} {
@@ -245,7 +245,7 @@ func (i *catalogUpdateRoute) Method() string {
 }
 
 func (i *catalogUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/catalog/[0-9]+/")
+	return net.JoinURL(def.URL, "/catalog/:id/")
 }
 
 func (i *catalogUpdateRoute) Handler() interface{} {
@@ -314,7 +314,7 @@ func (i *catalogDestroyRoute) Method() string {
 }
 
 func (i *catalogDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/catalog/[0-9]+/")
+	return net.JoinURL(def.URL, "/catalog/:id/")
 }
 
 func (i *catalogDestroyRoute) Handler() interface{} {

@@ -81,7 +81,7 @@ func (i *mediaGetByIDRoute) Method() string {
 }
 
 func (i *mediaGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/[0-9]+/")
+	return net.JoinURL(def.URL, "/media/:id/")
 }
 
 func (i *mediaGetByIDRoute) Handler() interface{} {
@@ -248,7 +248,7 @@ func (i *mediaUpdateRoute) Method() string {
 }
 
 func (i *mediaUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/[0-9]+/")
+	return net.JoinURL(def.URL, "/media/:id/")
 }
 
 func (i *mediaUpdateRoute) Handler() interface{} {
@@ -318,7 +318,7 @@ func (i *mediaDestroyRoute) Method() string {
 }
 
 func (i *mediaDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/[0-9]+/")
+	return net.JoinURL(def.URL, "/media/:id/")
 }
 
 func (i *mediaDestroyRoute) Handler() interface{} {

@@ -81,7 +81,7 @@ func (i *linkGetByIDRoute) Method() string {
 }
 
 func (i *linkGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/[0-9]+/")
+	return net.JoinURL(def.URL, "/link/:id/")
 }
 
 func (i *linkGetByIDRoute) Handler() interface{} {
@@ -250,7 +250,7 @@ func (i *linkUpdateRoute) Method() string {
 }
 
 func (i *linkUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/[0-9]+/")
+	return net.JoinURL(def.URL, "/link/:id/")
 }
 
 func (i *linkUpdateRoute) Handler() interface{} {
@@ -320,7 +320,7 @@ func (i *linkDestroyRoute) Method() string {
 }
 
 func (i *linkDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/[0-9]+/")
+	return net.JoinURL(def.URL, "/link/:id/")
 }
 
 func (i *linkDestroyRoute) Handler() interface{} {
