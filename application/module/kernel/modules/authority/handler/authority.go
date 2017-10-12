@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/cache"
 )
 
@@ -56,4 +57,24 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	return true
+}
+
+func (i *impl) QueryModuleAuthGroup(id []string) model.AuthGroupInfo {
+	return model.AuthGroupInfo{}
+}
+
+func (i *impl) QueryUserAuthGroup(user model.User) model.AuthGroupInfo {
+	return model.AuthGroupInfo{}
+}
+
+func (i *impl) UpdateUserAuthGroup(user model.User, authGroupInfo model.AuthGroupInfo) {
+
+}
+
+func (i *impl) QueryGroupAuthGroup(group model.Group) model.AuthGroupInfo {
+	return model.AuthGroupInfo{}
+}
+
+func (i *impl) UpdateGroupAuthGroup(group model.Group, authGroupInfo model.AuthGroupInfo) {
+
 }

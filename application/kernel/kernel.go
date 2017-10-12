@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
 	"muidea.com/magicCenter/application/kernel/session"
@@ -31,6 +32,7 @@ type impl struct {
 	configurationImpl   common.Configuration
 	routerImpl          router.Router
 	moduleHubImpl       common.ModuleHub
+	authorityImpl       authority.Authority
 	sessionRegistryImpl common.SessionRegistry
 	instanceFrameImpl   *martini.Martini
 }
@@ -42,6 +44,7 @@ func NewKernel(loader common.ModuleLoader, configuration common.Configuration) K
 		configurationImpl:   configuration,
 		routerImpl:          router.CreateRouter(),
 		moduleHubImpl:       modulehub.CreateModuleHub(),
+		authorityImpl:       authority.CreateAuthority(),
 		sessionRegistryImpl: session.CreateSessionRegistry(),
 		instanceFrameImpl:   martini.New()}
 
@@ -72,6 +75,7 @@ func (i *impl) Run() {
 
 	i.instanceFrameImpl.Use(martini.Logger())
 	i.instanceFrameImpl.Use(martini.Recovery())
+	i.instanceFrameImpl.Use(authority.VerifyHandler(i.moduleHubImpl, i.authorityImpl))
 
 	i.instanceFrameImpl.MapTo(martiniRouter, (*martini.Routes)(nil))
 	i.instanceFrameImpl.Action(martiniRouter.Handle)

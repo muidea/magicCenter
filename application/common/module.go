@@ -23,6 +23,8 @@ const (
 	AccountModuleID = "b9e35167-b2a3-43ae-8c57-9b4379475e47"
 	// FileRegistryModuleID 文件管理模块ID
 	FileRegistryModuleID = "b467c59d-10a5-4875-b617-66662f8824fa"
+	// SystemModuleID 系统管理模块ID
+	SystemModuleID = "5b9965b6-b2be-4072-87e2-25b4f96aee54"
 )
 
 // Module 功能模块接口

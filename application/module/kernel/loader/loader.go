@@ -10,10 +10,13 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail"
 	"muidea.com/magicCenter/application/module/kernel/modules/static"
+	"muidea.com/magicCenter/application/module/kernel/modules/system"
 )
 
 // LoadAllModules 加载所有模块
 func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+
+	system.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	mail.LoadModule(configuration, sessionRegistry, moduleHub)
 
