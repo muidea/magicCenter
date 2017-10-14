@@ -8,6 +8,7 @@ package authority
 应用端通过System获取接口对象
 */
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -43,8 +44,14 @@ func VerifyHandler(moduleHub common.ModuleHub, authority Authority) martini.Hand
 			// 拥有权限，继续执行
 			c.Next()
 		} else {
-			// 没有权限
-			log.Print("illegal authority")
+			// 没有权限, 直接返回错误
+			result := common.Result{ErrCode: common.InvalidAuthority, Reason: "无操作权限"}
+			b, err := json.Marshal(result)
+			if err != nil {
+				panic("json.Marshal, failed, err:" + err.Error())
+			}
+
+			res.Write(b)
 		}
 	}
 }

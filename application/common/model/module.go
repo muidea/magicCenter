@@ -2,6 +2,7 @@ package model
 
 // AuthGroup 授权组
 type AuthGroup struct {
+	ID          int
 	Name        string
 	Description string
 }

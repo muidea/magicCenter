@@ -2,7 +2,6 @@ package system
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/system/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/system/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/system/route"
@@ -52,12 +51,6 @@ func (instance *system) Status() int {
 
 func (instance *system) EntryPoint() interface{} {
 	return instance.systemHandler
-}
-
-func (instance *system) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	return groups
 }
 
 // Route System 路由信息

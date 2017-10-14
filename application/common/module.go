@@ -1,7 +1,5 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
-
 // 模块类型
 const (
 	// 内核模块，不能被禁用
@@ -35,9 +33,6 @@ type Module interface {
 	Group() string
 	Type() int
 	Status() int
-
-	// AuthGroups 授权组信息
-	AuthGroups() []model.AuthGroup
 
 	// Routes 模块支持的路由信息
 	Routes() []Route

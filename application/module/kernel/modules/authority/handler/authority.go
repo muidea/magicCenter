@@ -59,10 +59,6 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	return true
 }
 
-func (i *impl) QueryModuleAuthGroup(id []string) model.AuthGroupInfo {
-	return model.AuthGroupInfo{}
-}
-
 func (i *impl) QueryUserAuthGroup(user model.User) model.AuthGroupInfo {
 	return model.AuthGroupInfo{}
 }

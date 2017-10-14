@@ -2,7 +2,6 @@ package cas
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/route"
@@ -53,16 +52,6 @@ func (s *cas) Status() int {
 
 func (s *cas) EntryPoint() interface{} {
 	return s.casHandler
-}
-
-func (s *cas) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
-	groups = append(groups, model.AuthGroup{Name: "UserGroup", Description: "允许查看用户权限范围内的内容"})
-	groups = append(groups, model.AuthGroup{Name: "AdminGroup", Description: "允许管理用户权限范围内的内容"})
-
-	return groups
 }
 
 // Route 路由信息

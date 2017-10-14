@@ -2,7 +2,6 @@ package content
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/route"
@@ -51,16 +50,6 @@ func (instance *content) Status() int {
 
 func (instance *content) EntryPoint() interface{} {
 	return instance.contentHandler
-}
-
-func (instance *content) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
-	groups = append(groups, model.AuthGroup{Name: "UserGroup", Description: "允许查看用户权限范围内的内容"})
-	groups = append(groups, model.AuthGroup{Name: "AdminGroup", Description: "允许管理用户权限范围内的内容"})
-
-	return groups
 }
 
 // Route 路由信息

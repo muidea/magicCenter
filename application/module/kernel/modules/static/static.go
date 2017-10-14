@@ -2,7 +2,6 @@ package static
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/route"
@@ -52,12 +51,6 @@ func (instance *static) Status() int {
 
 func (instance *static) EntryPoint() interface{} {
 	return nil
-}
-
-func (instance *static) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	return groups
 }
 
 // Route Static 路由信息

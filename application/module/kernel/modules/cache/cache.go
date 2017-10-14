@@ -2,7 +2,6 @@ package cache
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/route"
@@ -47,12 +46,6 @@ func (s *cacheModule) Status() int {
 
 func (s *cacheModule) EntryPoint() interface{} {
 	return s.cacheHandler
-}
-
-func (s *cacheModule) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	return groups
 }
 
 // Route Cache 路由信息

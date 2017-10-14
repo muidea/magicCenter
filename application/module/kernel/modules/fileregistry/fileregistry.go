@@ -2,7 +2,6 @@ package fileregistry
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/route"
@@ -53,12 +52,6 @@ func (instance *fileRegistry) Status() int {
 
 func (instance *fileRegistry) EntryPoint() interface{} {
 	return instance.fileRegistryHanler
-}
-
-func (instance *fileRegistry) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	return groups
 }
 
 // Route 路由信息

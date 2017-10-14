@@ -52,12 +52,6 @@ func (instance *mail) EntryPoint() interface{} {
 	return instance.mailHandler
 }
 
-func (instance *mail) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	return groups
-}
-
 // Route Mail 路由信息
 func (instance *mail) Routes() []common.Route {
 	routes := []common.Route{}

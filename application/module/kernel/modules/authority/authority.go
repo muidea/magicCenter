@@ -2,7 +2,6 @@ package authority
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/handler"
 )
@@ -50,16 +49,6 @@ func (instance *authority) Status() int {
 
 func (instance *authority) EntryPoint() interface{} {
 	return instance.authorityHandler
-}
-
-func (instance *authority) AuthGroups() []model.AuthGroup {
-	groups := []model.AuthGroup{}
-
-	groups = append(groups, model.AuthGroup{Name: "PublicGroup", Description: "允许查看公开权限的内容"})
-	groups = append(groups, model.AuthGroup{Name: "UserGroup", Description: "允许查看用户权限范围内的内容"})
-	groups = append(groups, model.AuthGroup{Name: "AdminGroup", Description: "允许管理用户权限范围内的内容"})
-
-	return groups
 }
 
 // Route 路由信息

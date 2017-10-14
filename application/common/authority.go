@@ -10,8 +10,6 @@ import (
 type AuthorityHandler interface {
 	// 校验权限
 	VerifyAuthority(res http.ResponseWriter, req *http.Request) bool
-	// 查询指定Module的权限组
-	QueryModuleAuthGroup(id []string) model.AuthGroupInfo
 	// 查询指定用户的授权组信息
 	QueryUserAuthGroup(user model.User) model.AuthGroupInfo
 	// 更新指定用户的授权信息
