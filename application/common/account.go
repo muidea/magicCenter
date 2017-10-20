@@ -7,7 +7,7 @@ type AccountHandler interface {
 	GetAllUser() []model.UserDetail
 	FindUserByID(id int) (model.UserDetail, bool)
 	FindUserByAccount(account, password string) (model.UserDetail, bool)
-	CreateUser(account, email string) (model.UserDetail, bool)
+	CreateUser(account, email string, groups []int) (model.UserDetail, bool)
 	SaveUser(user model.UserDetail) (model.UserDetail, bool)
 	SaveUserWithPassword(user model.UserDetail, password string) (model.UserDetail, bool)
 	DestroyUserByID(id int) bool

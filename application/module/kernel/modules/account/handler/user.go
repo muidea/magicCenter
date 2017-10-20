@@ -23,8 +23,8 @@ func (i *userActionHandler) findUserByAccount(account, password string) (model.U
 }
 
 // 新建User
-func (i *userActionHandler) createUser(account, email string) (model.UserDetail, bool) {
-	return dal.CreateUser(i.dbhelper, account, email)
+func (i *userActionHandler) createUser(account, email string, groups []int) (model.UserDetail, bool) {
+	return dal.CreateUser(i.dbhelper, account, email, groups)
 }
 
 // 保存User

@@ -10,6 +10,7 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendUserRoute 追加User Route
@@ -190,7 +191,16 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		account := r.FormValue("user-account")
 		email := r.FormValue("user-email")
-		user, ok := i.accountHandler.CreateUser(account, email)
+		groups := r.FormValue("user-groups")
+
+		gValues, ok := util.Str2IntArray(groups)
+		if !ok {
+			result.ErrCode = common.Failed
+			result.Reason = "非法用户分组信息"
+			break
+		}
+
+		user, ok := i.accountHandler.CreateUser(account, email, gValues)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
@@ -266,6 +276,17 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		if nickName != "" {
 			user.Name = nickName
 		}
+		groups := r.FormValue("user-groups")
+		if groups != "" {
+			gValues, ok := util.Str2IntArray(groups)
+			if !ok {
+				result.ErrCode = common.Failed
+				result.Reason = "非法用户分组信息"
+				break
+			}
+			user.Groups = gValues
+		}
+
 		password := r.FormValue("user-password")
 		if len(password) > 0 {
 			user, ok = i.accountHandler.SaveUserWithPassword(user, password)

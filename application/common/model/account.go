@@ -33,6 +33,8 @@ type UserDetail struct {
 	Account string
 	//EMail 用户邮箱
 	Email string
+	//Groups 所属分组
+	Groups []int
 	// Status 用户状态，预留字段，暂时没有用到
 	Status int
 }

@@ -83,16 +83,18 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 }
 
 // CreateUser 创建新用户，根据用户信息和密码
-func CreateUser(helper dbhelper.DBHelper, account, email string) (model.UserDetail, bool) {
-	user := model.UserDetail{Account: account, Email: email}
+func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (model.UserDetail, bool) {
+	user := model.UserDetail{Account: account, Email: email, Groups: groups}
 	sql := fmt.Sprintf("select id from user where account='%s'", account)
 	helper.Query(sql)
 	if helper.Next() {
 		return user, false
 	}
 
+	gVal := util.IntArray2Str(groups)
+
 	// insert
-	sql = fmt.Sprintf("insert into user(account, password, nickname, email, status) values ('%s', '%s', '%s', '%s', %d)", account, "", "", email, 0)
+	sql = fmt.Sprintf("insert into user(account, password, nickname, email, groups, status) values ('%s', '%s', '%s', '%s', '%s', %d)", account, "", "", email, gVal, 0)
 	_, result := helper.Execute(sql)
 	if result {
 		sql = fmt.Sprintf("select id from user where account='%s' and email='%s'", account, email)
@@ -113,8 +115,9 @@ func CreateUser(helper dbhelper.DBHelper, account, email string) (model.UserDeta
 
 // SaveUser 保存用户信息
 func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
+	gVal := util.IntArray2Str(user.Groups)
 	// modify
-	sql := fmt.Sprintf("update user set nickname='%s', email='%s', status=%d where id =%d", user.Name, user.Email, user.Status, user.ID)
+	sql := fmt.Sprintf("update user set nickname='%s', email='%s', groups='%s', status=%d where id =%d", user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1
@@ -122,8 +125,9 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 
 // SaveUserWithPassword 保存用户信息
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
+	gVal := util.IntArray2Str(user.Groups)
 	// modify
-	sql := fmt.Sprintf("update user set password='%s', nickname='%s', email='%s', status=%d where id =%d", password, user.Name, user.Email, user.Status, user.ID)
+	sql := fmt.Sprintf("update user set password='%s', nickname='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1

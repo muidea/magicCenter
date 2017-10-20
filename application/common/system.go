@@ -6,5 +6,7 @@ import "muidea.com/magicCenter/application/common/model"
 type SystemHandler interface {
 	GetSystemConfig() model.SystemInfo
 
-	UpdateSystemConfig(sysInfo model.SystemInfo)
+	UpdateSystemConfig(sysInfo model.SystemInfo) bool
+
+	GetModuleList() []model.Module
 }

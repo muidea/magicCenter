@@ -59,18 +59,26 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	return true
 }
 
-func (i *impl) QueryUserAuthGroup(user model.User) model.AuthGroupInfo {
-	return model.AuthGroupInfo{}
+func (i *impl) QueryRouteAuthGroup(id, pattern string) []model.AuthGroup {
+	return []model.AuthGroup{}
 }
 
-func (i *impl) UpdateUserAuthGroup(user model.User, authGroupInfo model.AuthGroupInfo) {
+func (i *impl) UpdateRouteAuthGroup(id, pattern string, authGroups []model.AuthGroup) {
 
 }
 
-func (i *impl) QueryGroupAuthGroup(group model.Group) model.AuthGroupInfo {
-	return model.AuthGroupInfo{}
+func (i *impl) QueryUserAuthGroup(user model.User) []int {
+	return []int{}
 }
 
-func (i *impl) UpdateGroupAuthGroup(group model.Group, authGroupInfo model.AuthGroupInfo) {
+func (i *impl) UpdateUserAuthGroup(user model.User, authGroups []int) {
+
+}
+
+func (i *impl) QueryUserModule(user model.User) []string {
+	return []string{}
+}
+
+func (i *impl) UpdateUserModule(User model.User, modules []string) {
 
 }

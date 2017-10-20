@@ -7,9 +7,6 @@ type AuthGroup struct {
 	Description string
 }
 
-// AuthGroupInfo 授权组信息
-type AuthGroupInfo map[string][]AuthGroup
-
 // Route 功能入口
 type Route struct {
 	Pattern string
@@ -30,6 +27,5 @@ type Module struct {
 	Description string
 	Type        int
 	Status      int
-	AuthGroup   []AuthGroup
 	Route       []Route
 }

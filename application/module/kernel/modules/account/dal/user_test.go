@@ -18,24 +18,27 @@ func TestUser(t *testing.T) {
 	user.Account = "test"
 	user.Name = "nickName"
 	user.Email = "test@126.com"
+	user.Groups = []int{}
 	user.Status = 0
 
 	user2 := user
 	user2.Account = "t2"
 
-	ret := CreateUser(helper, user, "test")
+	groups := []int{}
+
+	_, ret := CreateUser(helper, "user", "test", groups)
 	if !ret {
 		t.Error("CreateUser failed")
 		return
 	}
 
-	ret = CreateUser(helper, user2, "test")
+	_, ret = CreateUser(helper, "user2", "test", groups)
 	if !ret {
 		t.Error("CreateUser failed")
 		return
 	}
 
-	usr, found := QueryUserByAccount(helper, "test")
+	usr, found := QueryUserByAccount(helper, "test", "test")
 	if !found {
 		t.Errorf("QueryUserByAccount failed, account:%s", "test")
 		return
@@ -43,7 +46,7 @@ func TestUser(t *testing.T) {
 
 	usr.Name = "testNick"
 
-	ret = SaveUser(helper, usr)
+	_, ret = SaveUser(helper, usr)
 	if !ret {
 		t.Errorf("SaveUser failed, id=%d", usr.ID)
 		return
@@ -56,32 +59,6 @@ func TestUser(t *testing.T) {
 	}
 	if newUsr.Name != "testNick" {
 		t.Error("invalid user name")
-		return
-	}
-
-	vU, ret := VerifyUserByAccount(helper, "test", "test")
-	if !ret {
-		t.Error("VerifyUserByAccount failed")
-		return
-	}
-	if vU.Email != "test@126.com" {
-		t.Error("VerifyUserByAccount failed")
-		return
-	}
-
-	u1 := QueryUserByGroup(helper, 10)
-	if len(u1) == 0 {
-		t.Errorf("QueryUserByGroup failed, group=%d", 10)
-		return
-	}
-	u2 := QueryUserByGroup(helper, 11)
-	if len(u2) == 0 {
-		t.Errorf("QueryUserByGroup failed, group=%d", 11)
-		return
-	}
-	u3 := QueryUserByGroup(helper, 13)
-	if len(u3) == 0 {
-		t.Errorf("QueryUserByGroup failed, group=%d", 13)
 		return
 	}
 
