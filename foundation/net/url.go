@@ -2,8 +2,6 @@ package net
 
 import "path"
 
-import "strings"
-
 // JoinURL 合并Url路径
 func JoinURL(prefix, subfix string) string {
 	if len(subfix) > 0 && subfix[len(subfix)-1] != '/' {
@@ -15,10 +13,5 @@ func JoinURL(prefix, subfix string) string {
 
 // SplitRESTAPI 分割出RestAPI的路径和ID
 func SplitRESTAPI(url string) (string, string) {
-	urlPath, urlID := path.Split(url)
-	if len(urlID) > 0 {
-		return urlPath, urlID
-	}
-
-	return path.Split(strings.TrimRight(urlPath, "/"))
+	return path.Split(url)
 }

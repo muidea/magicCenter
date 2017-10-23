@@ -39,25 +39,25 @@ func TestJoinURL(t *testing.T) {
 
 func TestParseRestAPIUrl(t *testing.T) {
 	url := "/user/abc"
-	dir, name := SplitResetAPI(url)
-	if dir != "/user" && name != "abc" {
-		t.Errorf("SplitResetAPI failed, dir:%s,name:%s", dir, name)
+	dir, name := SplitRESTAPI(url)
+	if dir != "/user/" && name != "abc" {
+		t.Errorf("SplitRESTAPI failed, dir:%s,name:%s", dir, name)
 	}
 
 	url = "/user/abc/"
-	dir, name = SplitResetAPI(url)
-	if dir != "/user" && name != "abc" {
-		t.Errorf("SplitResetAPI failed, dir:%s,name:%s", dir, name)
+	dir, name = SplitRESTAPI(url)
+	if dir != "/user/abc/" && name != "" {
+		t.Errorf("SplitRESTAPI failed, dir:%s,name:%s", dir, name)
 	}
 
 	url = "/user/"
-	dir, name = SplitResetAPI(url)
-	if dir != "" && name != "user" {
-		t.Errorf("SplitResetAPI failed, dir:%s,name:%s", dir, name)
+	dir, name = SplitRESTAPI(url)
+	if dir != "/user/" && name != "" {
+		t.Errorf("SplitRESTAPI failed, dir:%s,name:%s", dir, name)
 	}
 	url = "/user"
-	dir, name = SplitResetAPI(url)
-	if dir != "" && name != "user" {
-		t.Errorf("SplitResetAPI failed, dir:%s,name:%s", dir, name)
+	dir, name = SplitRESTAPI(url)
+	if dir != "/" && name != "user" {
+		t.Errorf("SplitRESTAPI failed, dir:%s,name:%s", dir, name)
 	}
 }

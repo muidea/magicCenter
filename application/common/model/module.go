@@ -1,12 +1,5 @@
 package model
 
-// AuthGroup 授权组
-type AuthGroup struct {
-	ID          int
-	Name        string
-	Description string
-}
-
 // Route 功能入口
 type Route struct {
 	Pattern string
