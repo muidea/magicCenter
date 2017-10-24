@@ -80,7 +80,7 @@ func (i *articleGetByIDRoute) Method() string {
 }
 
 func (i *articleGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/:id/")
+	return net.JoinURL(def.URL, def.GetArticleDetail)
 }
 
 func (i *articleGetByIDRoute) Handler() interface{} {
@@ -133,7 +133,7 @@ func (i *articleGetListRoute) Method() string {
 }
 
 func (i *articleGetListRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/")
+	return net.JoinURL(def.URL, def.GetArticleList)
 }
 
 func (i *articleGetListRoute) Handler() interface{} {
@@ -187,7 +187,7 @@ func (i *articleCreateRoute) Method() string {
 }
 
 func (i *articleCreateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/")
+	return net.JoinURL(def.URL, def.PostArticle)
 }
 
 func (i *articleCreateRoute) Handler() interface{} {
@@ -247,7 +247,7 @@ func (i *articleUpdateRoute) Method() string {
 }
 
 func (i *articleUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/:id/")
+	return net.JoinURL(def.URL, def.PutArticle)
 }
 
 func (i *articleUpdateRoute) Handler() interface{} {
@@ -316,7 +316,7 @@ func (i *articleDestroyRoute) Method() string {
 }
 
 func (i *articleDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/article/:id/")
+	return net.JoinURL(def.URL, def.DeleteArticle)
 }
 
 func (i *articleDestroyRoute) Handler() interface{} {

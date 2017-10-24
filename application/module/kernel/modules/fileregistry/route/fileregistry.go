@@ -44,7 +44,7 @@ func (i *uploadFileRoute) Method() string {
 }
 
 func (i *uploadFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "")
+	return net.JoinURL(def.URL, def.PostFile)
 }
 
 func (i *uploadFileRoute) Handler() interface{} {
@@ -66,7 +66,7 @@ func (i *downloadFileRoute) Method() string {
 }
 
 func (i *downloadFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/:id/")
+	return net.JoinURL(def.URL, def.GetFile)
 }
 
 func (i *downloadFileRoute) Handler() interface{} {
@@ -88,7 +88,7 @@ func (i *deleteFileRoute) Method() string {
 }
 
 func (i *deleteFileRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/:id/")
+	return net.JoinURL(def.URL, def.DeleteFile)
 }
 
 func (i *deleteFileRoute) Handler() interface{} {

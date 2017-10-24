@@ -78,7 +78,7 @@ func (i *userGetRoute) Method() string {
 }
 
 func (i *userGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/:id/")
+	return net.JoinURL(def.URL, def.GetUser)
 }
 
 func (i *userGetRoute) Handler() interface{} {
@@ -131,7 +131,7 @@ func (i *userGetAllRoute) Method() string {
 }
 
 func (i *userGetAllRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/")
+	return net.JoinURL(def.URL, def.GetAllUser)
 }
 
 func (i *userGetAllRoute) Handler() interface{} {
@@ -170,7 +170,7 @@ func (i *userCreateRoute) Method() string {
 }
 
 func (i *userCreateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/")
+	return net.JoinURL(def.URL, def.PostUser)
 }
 
 func (i *userCreateRoute) Handler() interface{} {
@@ -234,7 +234,7 @@ func (i *userSaveRoute) Method() string {
 }
 
 func (i *userSaveRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/:id/")
+	return net.JoinURL(def.URL, def.PutUser)
 }
 
 func (i *userSaveRoute) Handler() interface{} {
@@ -326,7 +326,7 @@ func (i *userDestroyRoute) Method() string {
 }
 
 func (i *userDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/:id/")
+	return net.JoinURL(def.URL, def.DeleteUser)
 }
 
 func (i *userDestroyRoute) Handler() interface{} {

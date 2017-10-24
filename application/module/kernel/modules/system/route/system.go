@@ -53,7 +53,7 @@ func (i *getSystemConfigRoute) Method() string {
 }
 
 func (i *getSystemConfigRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/info/")
+	return net.JoinURL(def.URL, def.GetSystemConfig)
 }
 
 func (i *getSystemConfigRoute) Handler() interface{} {
@@ -86,7 +86,7 @@ func (i *setSystemConfigRoute) Method() string {
 }
 
 func (i *setSystemConfigRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/info/")
+	return net.JoinURL(def.URL, def.PutSystemConfig)
 }
 
 func (i *setSystemConfigRoute) Handler() interface{} {
@@ -140,7 +140,7 @@ func (i *getModulesRoute) Method() string {
 }
 
 func (i *getModulesRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/module/")
+	return net.JoinURL(def.URL, def.GetSystemModule)
 }
 
 func (i *getModulesRoute) Handler() interface{} {

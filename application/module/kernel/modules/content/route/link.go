@@ -81,7 +81,7 @@ func (i *linkGetByIDRoute) Method() string {
 }
 
 func (i *linkGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/:id/")
+	return net.JoinURL(def.URL, def.GetLinkDetail)
 }
 
 func (i *linkGetByIDRoute) Handler() interface{} {
@@ -135,7 +135,7 @@ func (i *linkGetListRoute) Method() string {
 }
 
 func (i *linkGetListRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/")
+	return net.JoinURL(def.URL, def.GetLinkList)
 }
 
 func (i *linkGetListRoute) Handler() interface{} {
@@ -189,7 +189,7 @@ func (i *linkCreateRoute) Method() string {
 }
 
 func (i *linkCreateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/")
+	return net.JoinURL(def.URL, def.PostLink)
 }
 
 func (i *linkCreateRoute) Handler() interface{} {
@@ -250,7 +250,7 @@ func (i *linkUpdateRoute) Method() string {
 }
 
 func (i *linkUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/:id/")
+	return net.JoinURL(def.URL, def.PutLink)
 }
 
 func (i *linkUpdateRoute) Handler() interface{} {
@@ -320,7 +320,7 @@ func (i *linkDestroyRoute) Method() string {
 }
 
 func (i *linkDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/link/:id/")
+	return net.JoinURL(def.URL, def.DeleteLink)
 }
 
 func (i *linkDestroyRoute) Handler() interface{} {

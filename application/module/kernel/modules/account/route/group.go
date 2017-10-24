@@ -77,7 +77,7 @@ func (i *groupGetRoute) Method() string {
 }
 
 func (i *groupGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/:id/")
+	return net.JoinURL(def.URL, def.GetGroup)
 }
 
 func (i *groupGetRoute) Handler() interface{} {
@@ -130,7 +130,7 @@ func (i *groupGetAllRoute) Method() string {
 }
 
 func (i *groupGetAllRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/")
+	return net.JoinURL(def.URL, def.GetAllGroup)
 }
 
 func (i *groupGetAllRoute) Handler() interface{} {
@@ -169,7 +169,7 @@ func (i *groupCreateRoute) Method() string {
 }
 
 func (i *groupCreateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/")
+	return net.JoinURL(def.URL, def.PostGroup)
 }
 
 func (i *groupCreateRoute) Handler() interface{} {
@@ -225,7 +225,7 @@ func (i *groupSaveRoute) Method() string {
 }
 
 func (i *groupSaveRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/:id/")
+	return net.JoinURL(def.URL, def.PutGroup)
 }
 
 func (i *groupSaveRoute) Handler() interface{} {
@@ -289,7 +289,7 @@ func (i *groupDestroyRoute) Method() string {
 }
 
 func (i *groupDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/group/:id/")
+	return net.JoinURL(def.URL, def.DeleteGroup)
 }
 
 func (i *groupDestroyRoute) Handler() interface{} {

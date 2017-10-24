@@ -11,3 +11,12 @@ const Description = "Magic 缓存模块"
 
 // URL 模块Url
 const URL string = "/cache"
+
+// GetItem 获取指定的Item项
+const GetItem = "/item/:id"
+
+// PostItem 新增Item项
+const PostItem = "/item/"
+
+// DeleteItem 删除Item项
+const DeleteItem = "/item/:id"

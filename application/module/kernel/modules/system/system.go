@@ -16,8 +16,7 @@ type system struct {
 func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 	instance := &system{systemHandler: handler.CreateSystemHandler(configuration, sessionRegistry, moduleHub)}
 
-	rt := route.CreateSystemRoute(instance.systemHandler)
-	instance.routes = append(instance.routes, rt)
+	instance.routes = route.AppendSystemRoute(instance.routes, instance.systemHandler)
 
 	moduleHub.RegisterModule(instance)
 }

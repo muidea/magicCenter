@@ -25,7 +25,7 @@ func (i *staticResRoute) Method() string {
 }
 
 func (i *staticResRoute) Pattern() string {
-	return net.JoinURL(def.URL, "**")
+	return net.JoinURL(def.URL, def.GetStatic)
 }
 
 func (i *staticResRoute) Handler() interface{} {

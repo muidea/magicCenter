@@ -13,3 +13,12 @@ const Description = "Magic 文件管理器"
 
 // URL 模块Url
 const URL = "/fileregistry"
+
+// PostFile 上传文件
+const PostFile = "/file/"
+
+// GetFile 下载文件
+const GetFile = "/file/:id"
+
+// DeleteFile 删除文件
+const DeleteFile = "/file/:id"

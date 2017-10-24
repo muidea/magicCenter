@@ -66,7 +66,7 @@ func (i *accountLoginRoute) Method() string {
 }
 
 func (i *accountLoginRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/")
+	return net.JoinURL(def.URL, def.PostUserLogin)
 }
 
 func (i *accountLoginRoute) Handler() interface{} {
@@ -128,7 +128,7 @@ func (i *accountLogoutRoute) Method() string {
 }
 
 func (i *accountLogoutRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/")
+	return net.JoinURL(def.URL, def.DeleteUserLogout)
 }
 
 func (i *accountLogoutRoute) Handler() interface{} {
@@ -191,7 +191,7 @@ func (i *accountStatusRoute) Method() string {
 }
 
 func (i *accountStatusRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/user/")
+	return net.JoinURL(def.URL, def.GetUserStatus)
 }
 
 func (i *accountStatusRoute) Handler() interface{} {

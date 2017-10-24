@@ -81,7 +81,7 @@ func (i *mediaGetByIDRoute) Method() string {
 }
 
 func (i *mediaGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/:id/")
+	return net.JoinURL(def.URL, def.GetMediaDetail)
 }
 
 func (i *mediaGetByIDRoute) Handler() interface{} {
@@ -134,7 +134,7 @@ func (i *mediaGetListRoute) Method() string {
 }
 
 func (i *mediaGetListRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/")
+	return net.JoinURL(def.URL, def.GetMediaList)
 }
 
 func (i *mediaGetListRoute) Handler() interface{} {
@@ -188,7 +188,7 @@ func (i *mediaCreateRoute) Method() string {
 }
 
 func (i *mediaCreateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/")
+	return net.JoinURL(def.URL, def.PostMedia)
 }
 
 func (i *mediaCreateRoute) Handler() interface{} {
@@ -248,7 +248,7 @@ func (i *mediaUpdateRoute) Method() string {
 }
 
 func (i *mediaUpdateRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/:id/")
+	return net.JoinURL(def.URL, def.PutMedia)
 }
 
 func (i *mediaUpdateRoute) Handler() interface{} {
@@ -318,7 +318,7 @@ func (i *mediaDestroyRoute) Method() string {
 }
 
 func (i *mediaDestroyRoute) Pattern() string {
-	return net.JoinURL(def.URL, "/media/:id/")
+	return net.JoinURL(def.URL, def.DeleteMedia)
 }
 
 func (i *mediaDestroyRoute) Handler() interface{} {

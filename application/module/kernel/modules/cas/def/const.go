@@ -13,3 +13,12 @@ const Description = "Magic Cas模块"
 
 // URL 模块Url
 const URL = "/cas"
+
+// PostUserLogin 用户登录
+const PostUserLogin = "/user/"
+
+// DeleteUserLogout 用户登出
+const DeleteUserLogout = "/user/"
+
+// GetUserStatus 用户状态
+const GetUserStatus = "/user/"

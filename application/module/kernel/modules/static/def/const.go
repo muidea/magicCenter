@@ -11,3 +11,6 @@ const Description = "Magic 静态文件管理"
 
 // URL Static模块Url
 const URL = "/static"
+
+// GetStatic 获取静态文件
+const GetStatic = "**"
