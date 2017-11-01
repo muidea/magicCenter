@@ -12,7 +12,7 @@ import (
 func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
 
-	sql := fmt.Sprintf(`select id, name,createdate,creater from catalog`)
+	sql := fmt.Sprintf(`select id, name,createdate,creater from content_catalog`)
 	helper.Query(sql)
 
 	for helper.Next() {
@@ -36,7 +36,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 // QueryCatalogByID 查询指定分类
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}
-	sql := fmt.Sprintf(`select id, name, description, createdate, creater from catalog where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
@@ -61,7 +61,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, name,createdate,creater from catalog where id =%d`, r.RId())
+		sql := fmt.Sprintf(`select id, name,createdate,creater from content_catalog where id =%d`, r.RId())
 		helper.Query(sql)
 
 		if helper.Next() {
@@ -85,7 +85,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 // DeleteCatalog 删除指定类
 func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from catalog where id=%d`, id)
+	sql := fmt.Sprintf(`delete from content_catalog where id=%d`, id)
 
 	num, result := helper.Execute(sql)
 	if num >= 1 && result {
@@ -105,11 +105,11 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate strin
 	catalog.CreateDate = createdate
 
 	// insert
-	sql := fmt.Sprintf(`insert into catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createdate, creater)
+	sql := fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createdate, creater)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
-		sql = fmt.Sprintf(`select id from catalog where name='%s' and creater=%d`, name, creater)
+		sql = fmt.Sprintf(`select id from content_catalog where name='%s' and creater=%d`, name, creater)
 		helper.Query(sql)
 		if helper.Next() {
 			helper.GetValue(&catalog.ID)
@@ -131,7 +131,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate strin
 // SaveCatalog 保存分类
 func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
+	sql := fmt.Sprintf(`update content_catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {

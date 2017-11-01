@@ -11,7 +11,7 @@ import (
 // QueryAllArticleSummary 查询所有文章摘要
 func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, title,createdate,creater from article`)
+	sql := fmt.Sprintf(`select id, title,createdate,creater from content_article`)
 	helper.Query(sql)
 
 	for helper.Next() {
@@ -36,7 +36,7 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bool) {
 	ar := model.ArticleDetail{}
 
-	sql := fmt.Sprintf(`select id, title, content, creater, createdate from article where id = %d`, id)
+	sql := fmt.Sprintf(`select id, title, content, creater, createdate from content_article where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
@@ -60,7 +60,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 	summaryList := []model.Summary{}
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, title, createdate,creater from article where id =%d`, r.RId())
+		sql := fmt.Sprintf(`select id, title, createdate,creater from content_article where id =%d`, r.RId())
 		helper.Query(sql)
 
 		if helper.Next() {
@@ -91,13 +91,13 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 	article.Catalog = catalogs
 
 	// insert
-	sql := fmt.Sprintf(`insert into article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
+	sql := fmt.Sprintf(`insert into content_article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
 	num, result := helper.Execute(sql)
 	if num != 1 || !result {
 		return article, false
 	}
 
-	sql = fmt.Sprintf(`select id from article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
+	sql = fmt.Sprintf(`select id from content_article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
 
 	helper.Query(sql)
 	result = false
@@ -121,7 +121,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
+	sql := fmt.Sprintf(`update content_article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
@@ -140,7 +140,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 
 // DeleteArticle 删除文章
 func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from article where id=%d`, id)
+	sql := fmt.Sprintf(`delete from content_article where id=%d`, id)
 
 	num, result := helper.Execute(sql)
 	if num >= 1 && result {

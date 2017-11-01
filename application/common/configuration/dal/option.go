@@ -8,7 +8,7 @@ import (
 
 //SetOption 保存配置项
 func SetOption(helper dbhelper.DBHelper, owner, key, value string) bool {
-	sql := fmt.Sprintf("select id, value from `option` where `key`='%s' and owner='%s'", key, owner)
+	sql := fmt.Sprintf("select id, value from common_option where `key`='%s' and owner='%s'", key, owner)
 	helper.Query(sql)
 
 	id := -1
@@ -24,9 +24,9 @@ func SetOption(helper dbhelper.DBHelper, owner, key, value string) bool {
 	}
 
 	if found {
-		sql = fmt.Sprintf("update `option` set value='%s' where id=%d and owner='%s'", value, id, owner)
+		sql = fmt.Sprintf("update common_option set value='%s' where id=%d and owner='%s'", value, id, owner)
 	} else {
-		sql = fmt.Sprintf("insert into `option`(`key`,value, owner) values ('%s','%s','%s')", key, value, owner)
+		sql = fmt.Sprintf("insert into common_option(`key`,value, owner) values ('%s','%s','%s')", key, value, owner)
 	}
 
 	num, ret := helper.Execute(sql)
@@ -35,7 +35,7 @@ func SetOption(helper dbhelper.DBHelper, owner, key, value string) bool {
 
 // GetOption 获取配置项
 func GetOption(helper dbhelper.DBHelper, owner, key string) (string, bool) {
-	sql := fmt.Sprintf("select value from `option` where `key`='%s' and owner='%s'", key, owner)
+	sql := fmt.Sprintf("select value from common_option where `key`='%s' and owner='%s'", key, owner)
 	helper.Query(sql)
 
 	value := ""

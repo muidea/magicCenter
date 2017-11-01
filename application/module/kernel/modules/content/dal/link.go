@@ -11,7 +11,7 @@ import (
 // QueryAllLink 查询全部Link
 func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, name,createdate,creater from link`)
+	sql := fmt.Sprintf(`select id, name,createdate,creater from content_link`)
 	helper.Query(sql)
 
 	for helper.Next() {
@@ -38,7 +38,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, name,createdate,creater from link where id =%d`, r.RId())
+		sql := fmt.Sprintf(`select id, name,createdate,creater from content_link where id =%d`, r.RId())
 		helper.Query(sql)
 
 		if helper.Next() {
@@ -62,7 +62,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 // QueryLinkByID 查询指定Link
 func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 	link := model.LinkDetail{}
-	sql := fmt.Sprintf(`select id, name, url, logo, createdate, creater from link where id =%d`, id)
+	sql := fmt.Sprintf(`select id, name, url, logo, createdate, creater from content_link where id =%d`, id)
 	helper.Query(sql)
 
 	result := false
@@ -83,7 +83,7 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 
 // DeleteLinkByID 删除指定Link
 func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from link where id =%d`, id)
+	sql := fmt.Sprintf(`delete from content_link where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
 		lnk := resource.CreateSimpleRes(id, model.LINK, "")
@@ -102,10 +102,10 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 	lnk.Creater = uID
 
 	// insert
-	sql := fmt.Sprintf(`insert into link (name,url,logo, createDate, creater) values ('%s','%s','%s','%s', %d)`, name, url, logo, createDate, uID)
+	sql := fmt.Sprintf(`insert into content_link (name,url,logo, createDate, creater) values ('%s','%s','%s','%s', %d)`, name, url, logo, createDate, uID)
 	_, result := helper.Execute(sql)
 	if result {
-		sql = fmt.Sprintf(`select id from link where name='%s' and url ='%s' and creater=%d`, name, url, uID)
+		sql = fmt.Sprintf(`select id from content_link where name='%s' and url ='%s' and creater=%d`, name, url, uID)
 
 		helper.Query(sql)
 		if helper.Next() {
@@ -128,7 +128,7 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 // SaveLink 保存Link
 func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update link set name ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
+	sql := fmt.Sprintf(`update content_link set name ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
 	num, result := helper.Execute(sql)
 
 	if result && num == 1 {

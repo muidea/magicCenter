@@ -11,7 +11,7 @@ import (
 //QueryAllUser 查询全部用户信息
 func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id, account, nickname, email, status from user")
+	sql := fmt.Sprintf("select id, account, nickname, email, status from account_user")
 	helper.Query(sql)
 	for helper.Next() {
 		user := model.UserDetail{}
@@ -25,7 +25,7 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 // QueryUsers 查询指定用户
 func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.UserDetail {
 	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id, account, nickname, email, status from user where id in(%s)", util.IntArray2Str(ids))
+	sql := fmt.Sprintf("select id, account, nickname, email, status from account_user where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 	for helper.Next() {
 		user := model.UserDetail{}
@@ -40,7 +40,7 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.UserDetail {
 func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, nickname, email, status from user where account='%s' and password='%s'", account, password)
+	sql := fmt.Sprintf("select id, account, nickname, email, status from account_user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
 
 	result := false
@@ -56,7 +56,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, nickname, email, status from user where id=%d", id)
+	sql := fmt.Sprintf("select id, account, nickname, email, status from account_user where id=%d", id)
 	helper.Query(sql)
 
 	result := false
@@ -70,14 +70,14 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 
 // DeleteUser 删除用户，根据用户ID
 func DeleteUser(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf("delete from user where id =%d", id)
+	sql := fmt.Sprintf("delete from account_user where id =%d", id)
 	_, ret := helper.Execute(sql)
 	return ret
 }
 
 // DeleteUserByAccount 删除用户，根据用户账号&密码
 func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) bool {
-	sql := fmt.Sprintf("delete from user where account ='%s' and password='%s'", account, password)
+	sql := fmt.Sprintf("delete from account_user where account ='%s' and password='%s'", account, password)
 	_, ret := helper.Execute(sql)
 	return ret
 }
@@ -85,7 +85,7 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 // CreateUser 创建新用户，根据用户信息和密码
 func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (model.UserDetail, bool) {
 	user := model.UserDetail{Account: account, Email: email, Groups: groups}
-	sql := fmt.Sprintf("select id from user where account='%s'", account)
+	sql := fmt.Sprintf("select id from account_user where account='%s'", account)
 	helper.Query(sql)
 	if helper.Next() {
 		return user, false
@@ -94,10 +94,10 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 	gVal := util.IntArray2Str(groups)
 
 	// insert
-	sql = fmt.Sprintf("insert into user(account, password, nickname, email, groups, status) values ('%s', '%s', '%s', '%s', '%s', %d)", account, "", "", email, gVal, 0)
+	sql = fmt.Sprintf("insert into account_user(account, password, nickname, email, groups, status) values ('%s', '%s', '%s', '%s', '%s', %d)", account, "", "", email, gVal, 0)
 	_, result := helper.Execute(sql)
 	if result {
-		sql = fmt.Sprintf("select id from user where account='%s' and email='%s'", account, email)
+		sql = fmt.Sprintf("select id from account_user where account='%s' and email='%s'", account, email)
 		helper.Query(sql)
 
 		result = false
@@ -117,7 +117,7 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
 	gVal := util.IntArray2Str(user.Groups)
 	// modify
-	sql := fmt.Sprintf("update user set nickname='%s', email='%s', groups='%s', status=%d where id =%d", user.Name, user.Email, gVal, user.Status, user.ID)
+	sql := fmt.Sprintf("update account_user set nickname='%s', email='%s', groups='%s', status=%d where id =%d", user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1
@@ -127,7 +127,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
 	gVal := util.IntArray2Str(user.Groups)
 	// modify
-	sql := fmt.Sprintf("update user set password='%s', nickname='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Name, user.Email, gVal, user.Status, user.ID)
+	sql := fmt.Sprintf("update account_user set password='%s', nickname='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1
