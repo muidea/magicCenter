@@ -13,6 +13,8 @@ type AuthorityHandler interface {
 
 	// 查询指定Module的ACL
 	QueryModuleACL(module string) []model.ACL
+	// 查询指定ACL
+	QueryACL(url, method string) (model.ACL, bool)
 	// 新增ACL
 	InsertACL(url, method, module string, status int) (model.ACL, bool)
 	// 删除ACL

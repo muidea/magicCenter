@@ -61,12 +61,29 @@ func DisableACL(helper dbhelper.DBHelper, ids []int) bool {
 	return ok && (int(num) == len(ids))
 }
 
-// QueryACL 查询指定的ACL
-func QueryACL(helper dbhelper.DBHelper, id int) (model.ACL, bool) {
+// QueryACLByID 查询指定的ACL
+func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACL, bool) {
 	acl := model.ACL{}
 	retVal := false
 
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where id=%d", id)
+	helper.Query(sql)
+	if helper.Next() {
+		authGroups := ""
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &authGroups)
+		acl.AuthGroup, _ = util.Str2IntArray(authGroups)
+		retVal = true
+	}
+
+	return acl, retVal
+}
+
+// QueryACL 查询指定的ACL
+func QueryACL(helper dbhelper.DBHelper, url, method string) (model.ACL, bool) {
+	acl := model.ACL{}
+	retVal := false
+
+	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where url='%s' and method='%s'", url, method)
 	helper.Query(sql)
 	if helper.Next() {
 		authGroups := ""

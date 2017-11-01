@@ -15,3 +15,12 @@ func JoinURL(prefix, subfix string) string {
 func SplitRESTAPI(url string) (string, string) {
 	return path.Split(url)
 }
+
+// FormatRoutePattern 格式化RoutePattern
+func FormatRoutePattern(url, id string) string {
+	if len(id) == 0 {
+		return JoinURL(url, "")
+	}
+
+	return path.Join(url, ":id")
+}

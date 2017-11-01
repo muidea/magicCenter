@@ -61,3 +61,33 @@ func TestParseRestAPIUrl(t *testing.T) {
 		t.Errorf("SplitRESTAPI failed, dir:%s,name:%s", dir, name)
 	}
 }
+
+func TestFormatRoutePattern(t *testing.T) {
+	url := "/user/"
+	id := "abc"
+	pattern := FormatRoutePattern(url, id)
+	if pattern != "/user/:id" {
+		t.Errorf("FormatRoutePattern failed, url:%s, id:%s", url, id)
+	}
+
+	url = "/user/abc"
+	id = "ef"
+	pattern = FormatRoutePattern(url, id)
+	if pattern != "/user/abc/:id" {
+		t.Errorf("FormatRoutePattern failed, url:%s, id:%s", url, id)
+	}
+
+	url = "/user/abc"
+	id = ""
+	pattern = FormatRoutePattern(url, id)
+	if pattern != "/user/abc/" {
+		t.Errorf("FormatRoutePattern failed, url:%s, id:%s", url, id)
+	}
+
+	url = "/user/"
+	id = ""
+	pattern = FormatRoutePattern(url, id)
+	if pattern != "/user/" {
+		t.Errorf("FormatRoutePattern failed, url:%s, id:%s", url, id)
+	}
+}

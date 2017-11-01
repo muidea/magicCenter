@@ -205,7 +205,6 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	result := accountStatusResult{}
 	for true {
 		token := r.URL.Query().Get(common.AuthTokenID)
-		log.Printf("authToken:%s", token)
 		authToken, ok := session.GetOption(common.AuthTokenID)
 		if !ok || authToken.(string) != token {
 			result.ErrCode = 1

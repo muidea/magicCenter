@@ -7,7 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
-	"muidea.com/magicCenter/foundation/cache"
+	"muidea.com/magicCenter/foundation/net"
 )
 
 // CreateAuthorityHandler 新建CASHandler
@@ -16,14 +16,15 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 
 	i := impl{
 		dbhelper:        dbhelper,
-		sessionRegistry: sessionRegistry,
-		cacheData:       cache.NewCache()}
+		sessionRegistry: sessionRegistry}
 
 	casModule, _ := moduleHub.FindModule(common.CASModuleID)
 	entryPoint := casModule.EntryPoint()
 	switch entryPoint.(type) {
 	case common.CASHandler:
 		i.casHandler = entryPoint.(common.CASHandler)
+	default:
+		panic("can\\'t find CASModule")
 	}
 
 	return &i
@@ -33,42 +34,80 @@ type impl struct {
 	dbhelper        dbhelper.DBHelper
 	sessionRegistry common.SessionRegistry
 	casHandler      common.CASHandler
-	cacheData       cache.Cache
+}
+
+func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
+	obj, ok := session.GetOption(common.AuthTokenID)
+	if !ok {
+		panic("")
+	}
+
+	// 找到sessionToken了，则说明该用户已经登录了，这里就必须保证两端的token一致否则也要认为鉴权非法
+	// 用户登录过Token必然不为空
+	// req.RemoteAddr
+	sessionToken := obj.(string)
+
+	if i.casHandler != nil {
+		i.casHandler.RefreshToken(sessionToken, remoteAddr)
+	}
 }
 
 /*
-1、先判断authToken是否一致，如果不一致则，认为无权限
+1、先获取当前route对应的授权组
 */
 func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
-	//url := req.URL.Path
+	url, id := net.SplitRESTAPI(req.URL.Path)
+	urlPattern := net.FormatRoutePattern(url, id)
+	urlMethod := req.Method
 
-	session := i.sessionRegistry.GetSession(res, req)
-
-	_, ok := session.GetAccount()
+	acl, ok := dal.QueryACL(i.dbhelper, urlPattern, urlMethod)
 	if !ok {
+		// 找不到ACL，当成没有权限来处理
 		return false
 	}
 
-	urlToken := req.URL.Query().Get(common.AuthTokenID)
-	sessionToken := ""
-	obj, ok := session.GetOption(common.AuthTokenID)
-	if ok {
-		// 找到sessionToken了，则说明该用户已经登录了，这里就必须保证两端的token一致否则也要认为鉴权非法
-		// 用户登录过Token必然不为空
-		sessionToken = obj.(string)
-
-		if i.casHandler != nil {
-			i.casHandler.RefreshToken(sessionToken, req.RemoteAddr)
+	retVal := false
+	for _, cur := range acl.AuthGroup {
+		if cur == common.VisitorAuthGroup.ID {
+			// 如果当前URL的授权组包含VisitorAuthGroup，则直接认为有授权
+			retVal = true
+			break
 		}
-
-		return urlToken == sessionToken
 	}
 
-	return true
+	session := i.sessionRegistry.GetSession(res, req)
+	user, loginOK := session.GetAccount()
+	if loginOK {
+		i.refreshUserStatus(session, req.RemoteAddr)
+	}
+
+	if retVal || !loginOK {
+		return retVal
+	}
+
+	authGroups := dal.QueryUserAuthGroup(i.dbhelper, user.ID)
+	for _, cur := range acl.AuthGroup {
+		for _, item := range authGroups {
+			if cur == item {
+				retVal = true
+				break
+			}
+		}
+
+		if retVal {
+			break
+		}
+	}
+
+	return retVal
 }
 
 func (i *impl) QueryModuleACL(module string) []model.ACL {
 	return dal.QueryModuleACL(i.dbhelper, module)
+}
+
+func (i *impl) QueryACL(url, method string) (model.ACL, bool) {
+	return dal.QueryACL(i.dbhelper, url, method)
 }
 
 func (i *impl) InsertACL(url, method, module string, status int) (model.ACL, bool) {
@@ -89,7 +128,7 @@ func (i *impl) DisableACL(ids []int) bool {
 
 func (i *impl) QueryACLAuthGroup(id int) []int {
 	authGroups := []int{}
-	acl, ok := dal.QueryACL(i.dbhelper, id)
+	acl, ok := dal.QueryACLByID(i.dbhelper, id)
 	if !ok {
 		return authGroups
 	}
@@ -98,7 +137,7 @@ func (i *impl) QueryACLAuthGroup(id int) []int {
 }
 
 func (i *impl) UpdateACLAuthGroup(id int, authGroups []int) bool {
-	acl, ok := dal.QueryACL(i.dbhelper, id)
+	acl, ok := dal.QueryACLByID(i.dbhelper, id)
 	if !ok {
 		return ok
 	}
