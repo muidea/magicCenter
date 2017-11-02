@@ -20,7 +20,7 @@ class CatalogTest(MagicSession.MagicSession):
     def create(self, name, description, catalogs):
         'create'
         params = {'catalog-name': name, 'catalog-description': description, 'catalog-parent': catalogs}
-        val = self.post('/content/catalog/?token=%s'%self.authority_token, params)
+        val = self.post('/content/catalog/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create catalog success'
             return val['Catalog']
@@ -30,7 +30,7 @@ class CatalogTest(MagicSession.MagicSession):
 
     def destroy(self, catalog_id):
         'destroy'
-        val = self.delete('/content/catalog/%s/?token=%s'%(catalog_id, self.authority_token))
+        val = self.delete('/content/catalog/%s?authToken=%s'%(catalog_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'destroy catalog success'
             return True
@@ -42,7 +42,7 @@ class CatalogTest(MagicSession.MagicSession):
         'update'
         catalogs = join_str(catalog['Catalog'])
         params = {'catalog-name': catalog['Name'], 'catalog-description': catalog['Description'], 'catalog-parent': catalogs}
-        val = self.put('/content/catalog/%s/?token=%s'%(catalog['ID'], self.authority_token), params)
+        val = self.put('/content/catalog/%s?authToken=%s'%(catalog['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update catalog success'
             return val['Catalog']
@@ -52,7 +52,7 @@ class CatalogTest(MagicSession.MagicSession):
 
     def query(self, catalog_id):
         'query'
-        val = self.get('/content/catalog/%d/?token=%s'%(catalog_id, self.authority_token))
+        val = self.get('/content/catalog/%d?authToken=%s'%(catalog_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'query catalog success'
             return val['Catalog']
@@ -62,7 +62,7 @@ class CatalogTest(MagicSession.MagicSession):
 
     def query_all(self):
         'query_all'
-        val = self.get('/content/catalog/?token=%s'%self.authority_token)
+        val = self.get('/content/catalog/?authToken=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
             print 'query_all catalog success'
             return val['Catalog']
@@ -71,11 +71,11 @@ class CatalogTest(MagicSession.MagicSession):
         return None
 
 if __name__ == '__main__':
-    LOGIN = LoginTest.LoginTest('http://localhost:8888/api/v1')
+    LOGIN = LoginTest.LoginTest('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print 'login failed'
     else:
-        APP = CatalogTest('http://localhost:8888/api/v1', LOGIN.authority_token)
+        APP = CatalogTest('http://localhost:8888', LOGIN.authority_token)
         CATALOG = APP.create('testCatalog', 'testDescription', '8,9')
         if CATALOG:
             CATALOG_ID = CATALOG['ID']

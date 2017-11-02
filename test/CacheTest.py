@@ -11,7 +11,7 @@ class CacheTest(MagicSession.MagicSession):
     def put_in(self, data):
         'put_in'
         params = {'cache-value': data, 'cache-age': 100}
-        val = self.post('/cache/', params)
+        val = self.post('/cache/item/', params)
         if val and val['ErrCode'] == 0:
             self.authority_token = val['Token']
             print 'put in success'
@@ -22,7 +22,7 @@ class CacheTest(MagicSession.MagicSession):
 
     def fetch_out(self, token):
         'fetch_out'
-        val = self.get('/cache/%s/'%token)
+        val = self.get('/cache/item/%s'%token)
         if val and val['ErrCode'] == 0:
             print 'fetch out success'
         else:
@@ -30,14 +30,14 @@ class CacheTest(MagicSession.MagicSession):
 
     def remove(self, token):
         'query'
-        val = self.delete('/cache/%s/'%token)
+        val = self.delete('/cache/item/%s'%token)
         if val and val['ErrCode'] == 0:
             print 'remove cache success'
         else:
             print 'remove cache failed'
 
 if __name__ == '__main__':
-    APP = CacheTest('http://localhost:8888/api/v1')
+    APP = CacheTest('http://localhost:8888')
     if APP.put_in("Test"):
         APP.fetch_out(APP.authority_token)
 

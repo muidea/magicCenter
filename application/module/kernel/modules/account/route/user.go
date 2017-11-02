@@ -196,7 +196,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		err := r.ParseForm()
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -214,8 +214,8 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		user, ok := i.accountHandler.CreateUser(account, email, gValues)
 		if !ok {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
+			result.ErrCode = common.Failed
+			result.Reason = "创建新用户失败"
 			break
 		}
 

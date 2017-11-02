@@ -20,7 +20,7 @@ class ArticleTest(MagicSession.MagicSession):
     def create(self, title, content, catalogs):
         'create'
         params = {'article-title': title, 'article-content': content, 'article-catalog': catalogs}
-        val = self.post('/content/article/?token=%s'%(self.authority_token), params)
+        val = self.post('/content/article/?authToken=%s'%(self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'create article success'
             return val['Article']
@@ -30,7 +30,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def destroy(self, article_id):
         'destroy'
-        val = self.delete('/content/article/%s/?token=%s'%(article_id, self.authority_token))
+        val = self.delete('/content/article/%s?authToken=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'destroy article success'
             return True
@@ -42,7 +42,7 @@ class ArticleTest(MagicSession.MagicSession):
         'update'
         catalogs = join_str(article['Catalog'])
         params = {'article-title': article['Name'], 'article-content': article['Content'], 'article-catalog': catalogs}
-        val = self.put('/content/article/%s/?token=%s'%(article['ID'], self.authority_token), params)
+        val = self.put('/content/article/%s?authToken=%s'%(article['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update article success'
             return val['Article']
@@ -52,7 +52,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def query(self, article_id):
         'query'
-        val = self.get('/content/article/%d/?token=%s'%(article_id, self.authority_token))
+        val = self.get('/content/article/%d?authToken=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'query article success'
             return val['Article']
@@ -62,7 +62,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def query_all(self):
         'query_all'
-        val = self.get('/content/article/?token=%s'%self.authority_token)
+        val = self.get('/content/article/?authToken=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
             print 'query_all article success'
             return val['Article']
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
             if len(APP.query_all()) <= 0:
                 print 'query_all article failed'
-            
+             
             APP.destroy(ARTICLE_ID)
         else:
             print 'create article failed'

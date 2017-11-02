@@ -19,7 +19,7 @@ class LinkTest(MagicSession.MagicSession):
     def create(self, name, url, logo, catalogs):
         'create'
         params = {'link-name': name, 'link-url': url, 'link-logo': logo, 'link-catalog': catalogs}
-        val = self.post('/content/link/?token=%s'%self.authority_token, params)
+        val = self.post('/content/link/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create link success'
             return val['Link']
@@ -29,7 +29,7 @@ class LinkTest(MagicSession.MagicSession):
 
     def destroy(self, link_id):
         'destroy'
-        val = self.delete('/content/link/%s/?token=%s'%(link_id, self.authority_token))
+        val = self.delete('/content/link/%s?authToken=%s'%(link_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'destroy link success'
             return True
@@ -41,7 +41,7 @@ class LinkTest(MagicSession.MagicSession):
         'update'
         catalogs = join_str(link['Catalog'])
         params = {'link-name': link['Name'], 'link-url': link['URL'], 'link-logo': link['Logo'], 'link-catalog': catalogs}
-        val = self.put('/content/link/%s/?token=%s'%(link['ID'], self.authority_token), params)
+        val = self.put('/content/link/%s?authToken=%s'%(link['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update link success'
             return val['Link']
@@ -51,7 +51,7 @@ class LinkTest(MagicSession.MagicSession):
 
     def query(self, link_id):
         'query'
-        val = self.get('/content/link/%d/?token=%s'%(link_id, self.authority_token))
+        val = self.get('/content/link/%d?authToken=%s'%(link_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'query link success'
             return val['Link']
@@ -61,7 +61,7 @@ class LinkTest(MagicSession.MagicSession):
 
     def query_all(self):
         'query_all'
-        val = self.get('/content/link/?token=%s'%self.authority_token)
+        val = self.get('/content/link/?authToken=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
             print 'query_all link success'
             return val['Link']
@@ -70,11 +70,11 @@ class LinkTest(MagicSession.MagicSession):
         return None
 
 if __name__ == '__main__':
-    LOGIN = LoginTest.LoginTest('http://localhost:8888/api/v1')
+    LOGIN = LoginTest.LoginTest('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print 'login failed'
     else:
-        APP = LinkTest('http://localhost:8888/api/v1', LOGIN.authority_token)
+        APP = LinkTest('http://localhost:8888', LOGIN.authority_token)
         LINK = APP.create('testLink', 'test link url', 'test link logo', '8,9')
         if LINK:
             LINK_ID = LINK['ID']

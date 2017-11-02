@@ -1,17 +1,19 @@
 "GruopTest"
 
 import MagicSession
+import LoginTest
 
 
 class GroupTest(MagicSession.MagicSession):
     "GroupTest"
-    def __init__(self, base_url):
+    def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
+        self.authority_token = auth_token
 
     def create(self, name, description):
         "CreateGroup"
         params = {'group-name': name, 'group-description': description}
-        val = self.post('/account/group/', params)
+        val = self.post('/account/group/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create group success'
             return val['Group']
@@ -22,7 +24,7 @@ class GroupTest(MagicSession.MagicSession):
     def save(self, group):
         "UpdateGroup"
         params = {'group-name': group['Name'], 'group-description': group['Description']}
-        val = self.put('/account/group/%d/'%group['ID'], params)
+        val = self.put('/account/group/%d?authToken=%s'%(group['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update group success'
             return val['Group']
@@ -32,7 +34,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def find(self, group_id):
         "FindGroup"
-        val = self.get('/account/group/%d/'%group_id)
+        val = self.get('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'find group success'
             return val['Group']
@@ -55,7 +57,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def destroy(self, group_id):
         "DestroyGroup"
-        val = self.delete('/account/group/%d/'%group_id)
+        val = self.delete('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['ErrCode'] == 0:
             print 'destroy group success'
             return True
@@ -64,27 +66,33 @@ class GroupTest(MagicSession.MagicSession):
             return False
 
 if __name__ == '__main__':
-    APP = GroupTest('http://localhost:8888/api/v1')
-    GROUP = APP.create('testGorup1', 'test description')
-    if GROUP:
-        GROUP_ID = GROUP['ID']
-        GROUP['Description'] = 'aaaaaa'
-        GROUP = APP.save(GROUP)
-        if GROUP and cmp(GROUP['Description'], 'aaaaaa') != 0:
-            print 'update group failed'
-
-        GROUP = APP.find(GROUP_ID)
+    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    if not LOGIN.login('rangh@126.com', '123'):
+        print 'login failed'
+    else:    
+        APP = GroupTest('http://localhost:8888', LOGIN.authority_token)
+        GROUP = APP.create('testGorup1', 'test description')
         if GROUP:
-            print GROUP
-            if cmp(GROUP['Description'],'aaaaaa') != 0:
+            GROUP_ID = GROUP['ID']
+            GROUP['Description'] = 'aaaaaa'
+            GROUP = APP.save(GROUP)
+            if GROUP and cmp(GROUP['Description'], 'aaaaaa') != 0:
+                print 'update group failed'
+
+            GROUP = APP.find(GROUP_ID)
+            if GROUP:
+                print GROUP
+                if cmp(GROUP['Description'], 'aaaaaa') != 0:
+                    print 'find group failed'
+            else:
                 print 'find group failed'
+
+            APP.find_all()
+
+            if not APP.destroy(GROUP_ID):
+                print 'destroy group failed'
+
         else:
-            print 'find group failed'
-
-        APP.find_all()
-
-        if not APP.destroy(GROUP_ID):
-            print 'destroy group failed'
-
-    else:
-        print 'create group failed'
+            print 'create group failed'
+        
+        LOGIN.logout(LOGIN.authority_token)
