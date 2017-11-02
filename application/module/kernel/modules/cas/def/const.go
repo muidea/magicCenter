@@ -21,4 +21,4 @@ const PostUserLogin = "/user/"
 const DeleteUserLogout = "/user/"
 
 // GetUserStatus 用户状态
-const GetUserStatus = "/user/:id"
+const GetUserStatus = "/user/"

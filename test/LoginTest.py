@@ -38,7 +38,7 @@ class LoginTest(MagicSession.MagicSession):
             print 'get user status failed'
 
 if __name__ == '__main__':
-    APP = LoginTest('http://localhost:8888/api/v1')
+    APP = LoginTest('http://localhost:8888')
     APP.login('rangh@126.com', '123')
     APP.status(APP.authority_token)
     APP.logout('123')

@@ -74,8 +74,20 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 			break
 		}
 	}
+	if retVal {
+		return true
+	}
 
+	// 到这里就说明必须要求访问用户要求属于UserAuthGroup或者MaintainerAuthGroup
+	// 这里这里需要判断token是否合法
 	session := i.sessionRegistry.GetSession(res, req)
+	urlToken := req.URL.Query().Get(common.AuthTokenID)
+	sessionToken, ok := session.GetOption(common.AuthTokenID)
+	if !ok || sessionToken.(string) != urlToken {
+		// 如果用户没有登录，或者urlToken与sessionToken不一致，则说明权限非法
+		return false
+	}
+
 	user, loginOK := session.GetAccount()
 	if loginOK {
 		i.refreshUserStatus(session, req.RemoteAddr)

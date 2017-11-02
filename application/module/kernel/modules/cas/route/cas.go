@@ -149,21 +149,14 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := accountLogoutResult{}
 	for true {
-		token, ok := r.URL.Query()[common.AuthTokenID]
-		if !ok || len(token) < 1 {
-			result.ErrCode = 1
-			result.Reason = "非法请求"
-			break
-		}
-
 		authToken, ok := session.GetOption(common.AuthTokenID)
-		if !ok || authToken != token[0] {
+		if !ok {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		if !i.casHandler.Logout(token[0], r.RemoteAddr) {
+		if !i.casHandler.Logout(authToken.(string), r.RemoteAddr) {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
@@ -216,15 +209,14 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := accountStatusResult{}
 	for true {
-		token := r.URL.Query().Get(common.AuthTokenID)
 		authToken, ok := session.GetOption(common.AuthTokenID)
-		if !ok || authToken.(string) != token {
+		if !ok {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		info, found := i.casHandler.VerifyToken(token)
+		info, found := i.casHandler.VerifyToken(authToken.(string))
 		if !found {
 			result.ErrCode = 1
 			result.Reason = "无效Token"

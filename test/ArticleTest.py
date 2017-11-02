@@ -71,11 +71,11 @@ class ArticleTest(MagicSession.MagicSession):
         return None
 
 if __name__ == '__main__':
-    LOGIN = LoginTest.LoginTest('http://localhost:8888/api/v1')
+    LOGIN = LoginTest.LoginTest('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print 'login failed'
     else:
-        APP = ArticleTest('http://localhost:8888/api/v1', LOGIN.authority_token)
+        APP = ArticleTest('http://localhost:8888', LOGIN.authority_token)
         ARTICLE = APP.create('testArticle', 'test article content', '8,9')
         if ARTICLE:
             ARTICLE_ID = ARTICLE['ID']
