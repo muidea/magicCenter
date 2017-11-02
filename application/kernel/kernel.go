@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
@@ -51,8 +52,22 @@ func NewKernel(loader common.ModuleLoader, configuration common.Configuration) K
 	return i
 }
 
+func (i *impl) isStartup() bool {
+	_, ok := i.configurationImpl.GetOption(model.AppStartupData)
+	return ok
+}
+
 func (i *impl) StartUp() error {
 	i.loaderImpl.LoadAllModules(i.configurationImpl, i.sessionRegistryImpl, i.moduleHubImpl)
+
+	isStartup := i.isStartup()
+	var authorityHandler common.AuthorityHandler
+	if !isStartup {
+		mod, ok := i.moduleHubImpl.FindModule(common.AuthorityModuleID)
+		if ok {
+			authorityHandler = mod.EntryPoint().(common.AuthorityHandler)
+		}
+	}
 
 	allModules := i.moduleHubImpl.QueryAllModule()
 	for _, m := range allModules {
@@ -63,6 +78,12 @@ func (i *impl) StartUp() error {
 		}
 		for _, rt := range routes {
 			i.routerImpl.AddRoute(rt)
+
+			if !isStartup && authorityHandler != nil {
+				authGroups := []int{rt.AuthGroup()}
+
+				authorityHandler.InsertACL(rt.Pattern(), rt.Method(), m.ID(), 0, authGroups)
+			}
 		}
 	}
 

@@ -110,8 +110,8 @@ func (i *impl) QueryACL(url, method string) (model.ACL, bool) {
 	return dal.QueryACL(i.dbhelper, url, method)
 }
 
-func (i *impl) InsertACL(url, method, module string, status int) (model.ACL, bool) {
-	return dal.InsertACL(i.dbhelper, url, method, module, status)
+func (i *impl) InsertACL(url, method, module string, status int, authGroups []int) (model.ACL, bool) {
+	return dal.InsertACL(i.dbhelper, url, method, module, status, authGroups)
 }
 
 func (i *impl) DeleteACL(id int) bool {

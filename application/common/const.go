@@ -2,9 +2,6 @@ package common
 
 import "muidea.com/magicCenter/application/common/model"
 
-// APIPrefix API前缀
-const APIPrefix = "/api/v1"
-
 // SessionID 会话ID
 const SessionID = "sessionID"
 

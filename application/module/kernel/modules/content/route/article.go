@@ -87,6 +87,10 @@ func (i *articleGetByIDRoute) Handler() interface{} {
 	return i.getArticleHandler
 }
 
+func (i *articleGetByIDRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getArticleHandler")
 
@@ -138,6 +142,10 @@ func (i *articleGetListRoute) Pattern() string {
 
 func (i *articleGetListRoute) Handler() interface{} {
 	return i.getArticleListHandler
+}
+
+func (i *articleGetListRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
 }
 
 func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *http.Request) {
@@ -192,6 +200,10 @@ func (i *articleCreateRoute) Pattern() string {
 
 func (i *articleCreateRoute) Handler() interface{} {
 	return i.createArticleHandler
+}
+
+func (i *articleCreateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -252,6 +264,10 @@ func (i *articleUpdateRoute) Pattern() string {
 
 func (i *articleUpdateRoute) Handler() interface{} {
 	return i.updateArticleHandler
+}
+
+func (i *articleUpdateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -321,6 +337,10 @@ func (i *articleDestroyRoute) Pattern() string {
 
 func (i *articleDestroyRoute) Handler() interface{} {
 	return i.deleteArticleHandler
+}
+
+func (i *articleDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *http.Request) {

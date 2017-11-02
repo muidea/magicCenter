@@ -85,6 +85,10 @@ func (i *catalogGetByIDRoute) Handler() interface{} {
 	return i.getCatalogHandler
 }
 
+func (i *catalogGetByIDRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getCatalogHandler")
 
@@ -136,6 +140,10 @@ func (i *catalogGetListRoute) Pattern() string {
 
 func (i *catalogGetListRoute) Handler() interface{} {
 	return i.getCatalogListHandler
+}
+
+func (i *catalogGetListRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
 }
 
 func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *http.Request) {
@@ -190,6 +198,10 @@ func (i *catalogCreateRoute) Pattern() string {
 
 func (i *catalogCreateRoute) Handler() interface{} {
 	return i.createCatalogHandler
+}
+
+func (i *catalogCreateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -250,6 +262,10 @@ func (i *catalogUpdateRoute) Pattern() string {
 
 func (i *catalogUpdateRoute) Handler() interface{} {
 	return i.updateCatalogHandler
+}
+
+func (i *catalogUpdateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -319,6 +335,10 @@ func (i *catalogDestroyRoute) Pattern() string {
 
 func (i *catalogDestroyRoute) Handler() interface{} {
 	return i.deleteCatalogHandler
+}
+
+func (i *catalogDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {

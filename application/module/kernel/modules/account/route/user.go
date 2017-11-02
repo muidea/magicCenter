@@ -85,6 +85,10 @@ func (i *userGetRoute) Handler() interface{} {
 	return i.getUserHandler
 }
 
+func (i *userGetRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getUserHandler")
 
@@ -138,6 +142,10 @@ func (i *userGetAllRoute) Handler() interface{} {
 	return i.getAllUserHandler
 }
 
+func (i *userGetAllRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getAllUserHandler")
 
@@ -175,6 +183,10 @@ func (i *userCreateRoute) Pattern() string {
 
 func (i *userCreateRoute) Handler() interface{} {
 	return i.createUserHandler
+}
+
+func (i *userCreateRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
 }
 
 func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -239,6 +251,10 @@ func (i *userSaveRoute) Pattern() string {
 
 func (i *userSaveRoute) Handler() interface{} {
 	return i.saveUserHandler
+}
+
+func (i *userSaveRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -331,6 +347,10 @@ func (i *userDestroyRoute) Pattern() string {
 
 func (i *userDestroyRoute) Handler() interface{} {
 	return i.destroyUserHandler
+}
+
+func (i *userDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Request) {

@@ -51,6 +51,10 @@ func (i *uploadFileRoute) Handler() interface{} {
 	return i.uploadFileHandler
 }
 
+func (i *uploadFileRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *uploadFileRoute) uploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("uploadFileHandler")
 
@@ -73,6 +77,10 @@ func (i *downloadFileRoute) Handler() interface{} {
 	return i.downloadFileHandler
 }
 
+func (i *downloadFileRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *downloadFileRoute) downloadFileHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("downloadFileHandler")
 
@@ -93,6 +101,10 @@ func (i *deleteFileRoute) Pattern() string {
 
 func (i *deleteFileRoute) Handler() interface{} {
 	return i.deleteFileHandler
+}
+
+func (i *deleteFileRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *deleteFileRoute) deleteFileHandler(w http.ResponseWriter, r *http.Request) {

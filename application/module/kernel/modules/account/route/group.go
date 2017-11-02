@@ -84,6 +84,10 @@ func (i *groupGetRoute) Handler() interface{} {
 	return i.getGroupHandler
 }
 
+func (i *groupGetRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getGroupHandler")
 
@@ -137,6 +141,10 @@ func (i *groupGetAllRoute) Handler() interface{} {
 	return i.getAllGroupHandler
 }
 
+func (i *groupGetAllRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getAllGroupHandler")
 
@@ -174,6 +182,10 @@ func (i *groupCreateRoute) Pattern() string {
 
 func (i *groupCreateRoute) Handler() interface{} {
 	return i.createGroupHandler
+}
+
+func (i *groupCreateRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -230,6 +242,10 @@ func (i *groupSaveRoute) Pattern() string {
 
 func (i *groupSaveRoute) Handler() interface{} {
 	return i.saveGroupHandler
+}
+
+func (i *groupSaveRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -294,6 +310,10 @@ func (i *groupDestroyRoute) Pattern() string {
 
 func (i *groupDestroyRoute) Handler() interface{} {
 	return i.destroyGroupHandler
+}
+
+func (i *groupDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.Request) {

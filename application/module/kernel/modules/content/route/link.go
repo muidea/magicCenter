@@ -88,6 +88,10 @@ func (i *linkGetByIDRoute) Handler() interface{} {
 	return i.getLinkHandler
 }
 
+func (i *linkGetByIDRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getLinkHandler")
 
@@ -142,6 +146,10 @@ func (i *linkGetListRoute) Handler() interface{} {
 	return i.getLinkListHandler
 }
 
+func (i *linkGetListRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getLinkListHandler")
 
@@ -194,6 +202,10 @@ func (i *linkCreateRoute) Pattern() string {
 
 func (i *linkCreateRoute) Handler() interface{} {
 	return i.createLinkHandler
+}
+
+func (i *linkCreateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Request) {
@@ -255,6 +267,10 @@ func (i *linkUpdateRoute) Pattern() string {
 
 func (i *linkUpdateRoute) Handler() interface{} {
 	return i.updateLinkHandler
+}
+
+func (i *linkUpdateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Request) {
@@ -325,6 +341,10 @@ func (i *linkDestroyRoute) Pattern() string {
 
 func (i *linkDestroyRoute) Handler() interface{} {
 	return i.deleteLinkHandler
+}
+
+func (i *linkDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Request) {

@@ -60,6 +60,10 @@ func (i *getSystemConfigRoute) Handler() interface{} {
 	return i.getSystemConfigHandler
 }
 
+func (i *getSystemConfigRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
+}
+
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	result := getSystemConfigResult{}
 	result.SystemInfo = i.systemHandler.GetSystemConfig()
@@ -91,6 +95,10 @@ func (i *setSystemConfigRoute) Pattern() string {
 
 func (i *setSystemConfigRoute) Handler() interface{} {
 	return i.setSystemConfigHandler
+}
+
+func (i *setSystemConfigRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
@@ -145,6 +153,10 @@ func (i *getModulesRoute) Pattern() string {
 
 func (i *getModulesRoute) Handler() interface{} {
 	return i.getModulesHandler
+}
+
+func (i *getModulesRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Request) {

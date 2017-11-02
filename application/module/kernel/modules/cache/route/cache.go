@@ -56,6 +56,10 @@ func (i *queryCacheRoute) Handler() interface{} {
 	return i.queryCacheHandler
 }
 
+func (i *queryCacheRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
+}
+
 func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("queryCacheHandler")
 
@@ -103,6 +107,10 @@ func (i *postCacheRoute) Pattern() string {
 
 func (i *postCacheRoute) Handler() interface{} {
 	return i.postCacheHandler
+}
+
+func (i *postCacheRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request) {
@@ -163,6 +171,10 @@ func (i *deleteCacheRoute) Pattern() string {
 
 func (i *deleteCacheRoute) Handler() interface{} {
 	return i.deleteCacheHandler
+}
+
+func (i *deleteCacheRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *deleteCacheRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Request) {

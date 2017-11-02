@@ -73,6 +73,10 @@ func (i *accountLoginRoute) Handler() interface{} {
 	return i.loginHandler
 }
 
+func (i *accountLoginRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("loginHandler")
 
@@ -133,6 +137,10 @@ func (i *accountLogoutRoute) Pattern() string {
 
 func (i *accountLogoutRoute) Handler() interface{} {
 	return i.logoutHandler
+}
+
+func (i *accountLogoutRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -196,6 +204,10 @@ func (i *accountStatusRoute) Pattern() string {
 
 func (i *accountStatusRoute) Handler() interface{} {
 	return i.statusHandler
+}
+
+func (i *accountStatusRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Request) {

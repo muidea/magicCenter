@@ -21,11 +21,14 @@ type Route interface {
 	Pattern() string
 	// Handler 路由处理器
 	Handler() interface{}
+	// AuthGroup 路由所需的授权组
+	AuthGroup() int
 }
 
 type route struct {
-	rRoute   model.Route
-	rHandler interface{}
+	rRoute     model.Route
+	rHandler   interface{}
+	rAuthGroup int
 }
 
 // Type 路由行为GET/POST
@@ -43,9 +46,13 @@ func (r *route) Handler() interface{} {
 	return r.rHandler
 }
 
+func (r *route) AuthGroup() int {
+	return r.rAuthGroup
+}
+
 // NewRoute 新建一个路由对象
-func NewRoute(method, pattern string, rHandler interface{}) Route {
-	r := route{rRoute: model.Route{Method: method, Pattern: pattern}, rHandler: rHandler}
+func NewRoute(method, pattern string, rHandler interface{}, authGroup int) Route {
+	r := route{rRoute: model.Route{Method: method, Pattern: pattern}, rHandler: rHandler, rAuthGroup: authGroup}
 
 	return &r
 }

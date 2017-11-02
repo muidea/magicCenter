@@ -88,6 +88,10 @@ func (i *mediaGetByIDRoute) Handler() interface{} {
 	return i.getMediaHandler
 }
 
+func (i *mediaGetByIDRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getMediaHandler")
 
@@ -139,6 +143,10 @@ func (i *mediaGetListRoute) Pattern() string {
 
 func (i *mediaGetListRoute) Handler() interface{} {
 	return i.getMediaListHandler
+}
+
+func (i *mediaGetListRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
 }
 
 func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.Request) {
@@ -193,6 +201,10 @@ func (i *mediaCreateRoute) Pattern() string {
 
 func (i *mediaCreateRoute) Handler() interface{} {
 	return i.createMediaHandler
+}
+
+func (i *mediaCreateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Request) {
@@ -253,6 +265,10 @@ func (i *mediaUpdateRoute) Pattern() string {
 
 func (i *mediaUpdateRoute) Handler() interface{} {
 	return i.updateMediaHandler
+}
+
+func (i *mediaUpdateRoute) AuthGroup() int {
+	return common.UserAuthGroup.ID
 }
 
 func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Request) {
@@ -323,6 +339,10 @@ func (i *mediaDestroyRoute) Pattern() string {
 
 func (i *mediaDestroyRoute) Handler() interface{} {
 	return i.deleteMediaHandler
+}
+
+func (i *mediaDestroyRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
 }
 
 func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Request) {

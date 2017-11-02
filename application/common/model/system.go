@@ -13,6 +13,9 @@ const (
 	// AppLogo 应用Logo
 	AppLogo = "@application_logo"
 
+	// AppStartupData 应用初始化数据
+	AppStartupData = "@application_startupData"
+
 	// MailServer 邮件服务器地址
 	MailServer = "@system_mailServer"
 

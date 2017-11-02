@@ -32,6 +32,10 @@ func (i *staticResRoute) Handler() interface{} {
 	return i.getStaticResHandler
 }
 
+func (i *staticResRoute) AuthGroup() int {
+	return common.VisitorAuthGroup.ID
+}
+
 func (i *staticResRoute) getStaticResHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("getStaticResHandler, path:%s", r.URL.Path)
 
