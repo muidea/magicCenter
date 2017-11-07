@@ -130,12 +130,8 @@ func (i *impl) DeleteACL(id int) bool {
 	return dal.DeleteACL(i.dbhelper, id)
 }
 
-func (i *impl) EnableACL(ids []int) bool {
-	return dal.EnableACL(i.dbhelper, ids)
-}
-
-func (i *impl) DisableACL(ids []int) bool {
-	return dal.DisableACL(i.dbhelper, ids)
+func (i *impl) UpdateACLStatus(enableList []int, disableList []int) bool {
+	return dal.UpdateACLStatus(i.dbhelper, enableList, disableList)
 }
 
 func (i *impl) QueryACLAuthGroup(id int) []int {
@@ -172,4 +168,12 @@ func (i *impl) QueryUserModule(user int) []string {
 
 func (i *impl) UpdateUserModule(user int, modules []string) bool {
 	return dal.UpdateUserModule(i.dbhelper, user, modules)
+}
+
+func (i *impl) QueryModuleUser(module string) []int {
+	return dal.QueryModuleUser(i.dbhelper, module)
+}
+
+func (i *impl) UpdateModuleUser(module string, users []int) bool {
+	return dal.UpdateModuleUser(i.dbhelper, module, users)
 }

@@ -35,30 +35,33 @@ func DeleteACL(helper dbhelper.DBHelper, id int) bool {
 	return ok && num == 1
 }
 
-// EnableACL 启用ACL
-func EnableACL(helper dbhelper.DBHelper, ids []int) bool {
-	if len(ids) == 0 {
+// UpdateACLStatus 更新ACL状态
+func UpdateACLStatus(helper dbhelper.DBHelper, enableList []int, disableList []int) bool {
+	if len(enableList) == 0 && len(disableList) == 0 {
 		return true
 	}
 
-	str := util.IntArray2Str(ids)
-	sql := fmt.Sprintf("update authority_acl set status=1 where id in(%s)", str)
-	num, ok := helper.Execute(sql)
-
-	return ok && (int(num) == len(ids))
-}
-
-// DisableACL 禁用ACL
-func DisableACL(helper dbhelper.DBHelper, ids []int) bool {
-	if len(ids) == 0 {
-		return true
+	enableOK := true
+	disableOK := true
+	helper.BeginTransaction()
+	if len(enableList) > 0 {
+		str := util.IntArray2Str(enableList)
+		sql := fmt.Sprintf("update authority_acl set status=1 where id in(%s)", str)
+		_, enableOK = helper.Execute(sql)
+	}
+	if len(disableList) > 0 {
+		str := util.IntArray2Str(disableList)
+		sql := fmt.Sprintf("update authority_acl set status=0 where id in(%s)", str)
+		_, disableOK = helper.Execute(sql)
 	}
 
-	str := util.IntArray2Str(ids)
-	sql := fmt.Sprintf("update authority_acl set status=0 where id in(%s)", str)
-	num, ok := helper.Execute(sql)
+	if enableOK && disableOK {
+		helper.Commit()
+	} else {
+		helper.Rollback()
+	}
 
-	return ok && (int(num) == len(ids))
+	return enableOK && disableOK
 }
 
 // QueryACLByID 查询指定的ACL
