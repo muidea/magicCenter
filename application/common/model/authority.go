@@ -14,5 +14,5 @@ type ACL struct {
 	Method    string
 	Module    string
 	Status    int
-	AuthGroup []int
+	AuthGroup int
 }

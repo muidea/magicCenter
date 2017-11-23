@@ -14,9 +14,6 @@ const Description = "Magic 权限管理模块"
 // URL 模块Url
 const URL = "/authority"
 
-// GetModuleACL 查询指定Module的ACL
-const GetModuleACL = "/module/acl/"
-
 // GetACL 查询指定的ACL
 const GetACL = "/acl/"
 
@@ -35,14 +32,26 @@ const GetACLAuthGroup = "/acl/authgroup/"
 // PutACLAuthGroup 更新指定acl的权限组
 const PutACLAuthGroup = "/acl/authgroup/"
 
-// GetUserModule 查询指定用户拥有的Module
-const GetUserModule = "/user/module/"
-
-// PutUserModule 更新指定用户拥有的Module
-const PutUserModule = "/user/module/"
+// GetModuleACL 查询指定Module的ACL
+const GetModuleACL = "/module/acl/"
 
 // GetModuleUser 查询拥有指定Module的用户
 const GetModuleUser = "/module/user/"
 
 // PutModuleUser 更新拥有指定Module的用户
 const PutModuleUser = "/module/user/"
+
+// GetUserModule 查询指定用户拥有的Module
+const GetUserModule = "/user/module/"
+
+// PutUserModule 更新指定用户拥有的Module
+const PutUserModule = "/user/module/"
+
+// GetUserAuthGroup 获取指定用户的授权组
+const GetUserAuthGroup = "/user/authgroup/"
+
+// PutUserAuthGroup 更新指定用户的授权组
+const PutUserAuthGroup = "/user/authgroup/"
+
+// GetUserACL 获取指定用户可访问的ACL
+const GetUserACL = "/user/acl/"

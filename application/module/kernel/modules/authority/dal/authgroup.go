@@ -3,28 +3,25 @@ package dal
 import (
 	"fmt"
 
+	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryUserAuthGroup 获取指定用户的授权组
-func QueryUserAuthGroup(helper dbhelper.DBHelper, user int) []int {
-	retValue := []int{}
+func QueryUserAuthGroup(helper dbhelper.DBHelper, user int) int {
+	retValue := common.VisitorAuthGroup.ID
 
-	groups := ""
-	sql := fmt.Sprintf("select groups from authority_authgroup where user=%d", user)
+	sql := fmt.Sprintf("select authgroup from authority_authgroup where user=%d", user)
 	helper.Query(sql)
 	if helper.Next() {
-		helper.GetValue(&groups)
-
-		retValue, _ = util.Str2IntArray(groups)
+		helper.GetValue(&retValue)
 	}
 
 	return retValue
 }
 
 // UpdateUserAuthGroup 更新指定用户的授权组
-func UpdateUserAuthGroup(helper dbhelper.DBHelper, user int, authGroups []int) bool {
+func UpdateUserAuthGroup(helper dbhelper.DBHelper, user int, authGroup int) bool {
 	retVal := false
 
 	sql := fmt.Sprintf("select id from authority_authgroup where user=%d", user)
@@ -33,8 +30,7 @@ func UpdateUserAuthGroup(helper dbhelper.DBHelper, user int, authGroups []int) b
 		id := -1
 		helper.GetValue(&id)
 
-		groups := util.IntArray2Str(authGroups)
-		sql = fmt.Sprintf("update authority_authgroup set groups='%s' where id=%d", groups, id)
+		sql = fmt.Sprintf("update authority_authgroup set authgroup=%d where id=%d", authGroup, id)
 		num, ok := helper.Execute(sql)
 		retVal = (num == 1 && ok)
 	}

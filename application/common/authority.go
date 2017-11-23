@@ -16,7 +16,7 @@ type AuthorityHandler interface {
 	// 查询指定ACL
 	QueryACL(url, method string) (model.ACL, bool)
 	// 新增ACL
-	InsertACL(url, method, module string, status int, authGroups []int) (model.ACL, bool)
+	InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool)
 
 	// 删除ACL
 	DeleteACL(id int) bool
@@ -24,14 +24,17 @@ type AuthorityHandler interface {
 	UpdateACLStatus(enableList []int, disableList []int) bool
 
 	// 查询指定ACL的授权组信息
-	QueryACLAuthGroup(id int) []int
+	QueryACLAuthGroup(id int) int
 	// 更新指定ACL的授权组信息
-	UpdateACLAuthGroup(id int, authGroups []int) bool
+	UpdateACLAuthGroup(id int, authGroup int) bool
 
 	// 查询指定用户的授权组信息
-	QueryUserAuthGroup(user int) []int
+	QueryUserAuthGroup(user int) model.AuthGroup
 	// 更新指定用户的授权信息
-	UpdateUserAuthGroup(user int, authGroups []int) bool
+	UpdateUserAuthGroup(user int, authGroup int) bool
+
+	// 查询指定用户的ACL列表
+	QueryUserACL(user int) []model.ACL
 
 	// 查询指定用户使用的模块信息
 	QueryUserModule(user int) []string

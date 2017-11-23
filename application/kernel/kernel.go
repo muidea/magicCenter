@@ -80,9 +80,7 @@ func (i *impl) StartUp() error {
 			i.routerImpl.AddRoute(rt)
 
 			if !isStartup && authorityHandler != nil {
-				authGroups := []int{rt.AuthGroup()}
-
-				authorityHandler.InsertACL(rt.Pattern(), rt.Method(), m.ID(), 0, authGroups)
+				authorityHandler.InsertACL(rt.Pattern(), rt.Method(), m.ID(), 0, rt.AuthGroup())
 			}
 		}
 	}
