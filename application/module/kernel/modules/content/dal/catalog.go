@@ -89,7 +89,7 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 
 	num, result := helper.Execute(sql)
 	if num >= 1 && result {
-		ca := resource.CreateSimpleRes(id, model.CATALOG, "")
+		ca := resource.CreateSimpleRes(id, model.CATALOG, "", "")
 		result = resource.DeleteResource(helper, ca)
 	}
 
@@ -117,9 +117,9 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate strin
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name)
+		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate)
 		for _, c := range parent {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
@@ -135,9 +135,9 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.S
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
-		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name)
+		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate)
 		for _, c := range catalog.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)

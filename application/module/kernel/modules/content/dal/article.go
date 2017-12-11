@@ -107,9 +107,9 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate)
 		for _, c := range article.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
@@ -125,9 +125,9 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate)
 		for _, c := range article.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
@@ -145,7 +145,7 @@ func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
 	num, result := helper.Execute(sql)
 	if num >= 1 && result {
 		// 删除资源时，名称时不用关注的，所以这里填“”好了
-		res := resource.CreateSimpleRes(id, model.ARTICLE, "")
+		res := resource.CreateSimpleRes(id, model.ARTICLE, "", "")
 		result = resource.DeleteResource(helper, res)
 	}
 

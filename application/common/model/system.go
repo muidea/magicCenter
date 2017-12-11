@@ -48,3 +48,38 @@ type SystemInfo struct {
 	MailAccount  string
 	MailPassword string
 }
+
+// SummaryItem 摘要信息
+type SummaryItem struct {
+	Name  string
+	Type  string
+	Count int
+}
+
+// TrendItem 趋势项
+type TrendItem struct {
+	Value     float32
+	TimeStamp int
+}
+
+// ContentItem 内容项
+type ContentItem struct {
+	Title      string
+	Type       string
+	CreateDate string
+}
+
+// AccountItem 账号项
+type AccountItem struct {
+	Name          string
+	RegisterDate  string
+	LastLoginDate string
+}
+
+// DashBoardInfo 系统统计信息
+type DashBoardInfo struct {
+	SummaryInfo []SummaryItem
+	TrendInfo   []TrendItem
+	LastContent []ContentItem
+	LastAccount []AccountItem
+}
