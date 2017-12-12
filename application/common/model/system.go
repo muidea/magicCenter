@@ -56,28 +56,20 @@ type SummaryItem struct {
 	Count int
 }
 
-// TrendItem 趋势项
-type TrendItem struct {
+// TrendValue 趋势值
+type TrendValue struct {
 	Value     float32
 	TimeStamp int
 }
 
-// ContentItem 内容项
-type ContentItem struct {
-	Title      string
-	Type       string
-	CreateDate string
+// TrendItem 趋势项
+type TrendItem struct {
+	ItemName  string
+	ItemValue []TrendValue
 }
 
-// AccountItem 账号项
-type AccountItem struct {
-	Name          string
-	RegisterDate  string
-	LastLoginDate string
-}
-
-// DashBoardInfo 系统统计信息
-type DashBoardInfo struct {
+// StatisticsInfo 系统统计信息
+type StatisticsInfo struct {
 	SummaryInfo []SummaryItem
 	TrendInfo   []TrendItem
 	LastContent []ContentItem

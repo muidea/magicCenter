@@ -19,4 +19,7 @@ type AccountHandler interface {
 	CreateGroup(name, description string) (model.Group, bool)
 	SaveGroup(group model.Group) (model.Group, bool)
 	DestroyGroup(id int) bool
+
+	GetSummaryInfo() model.AccountSummary
+	GetLastAccount(count int) []model.AccountItem
 }

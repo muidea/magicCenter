@@ -44,3 +44,7 @@ func (i *userActionHandler) destroyUserByID(id int) bool {
 func (i *userActionHandler) destroyUserByAccount(account, password string) bool {
 	return dal.DeleteUserByAccount(i.dbhelper, account, password)
 }
+
+func (i *userActionHandler) GetLastRegisterUser(count int) []model.UserDetail {
+	return dal.GetLastRegisterUser(i.dbhelper, count)
+}

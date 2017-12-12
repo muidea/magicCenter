@@ -1,6 +1,5 @@
 package common
 
-
 import (
 	"muidea.com/magicCenter/application/common/model"
 )
@@ -34,4 +33,7 @@ type ContentHandler interface {
 	CreateMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
+
+	GetSummaryInfo() model.ContentSummary
+	GetLastContent(count int) []model.ContentItem
 }

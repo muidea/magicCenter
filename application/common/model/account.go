@@ -37,6 +37,10 @@ type UserDetail struct {
 	Groups []int
 	// Status 用户状态，预留字段，暂时没有用到
 	Status int
+	// 注册时间
+	RegisterTime string
+	// 最新登陆时间
+	LastLoginTime string
 }
 
 const (
@@ -67,4 +71,14 @@ type AccountMeta struct {
 	Subject     string
 	Description string
 	URL         string
+}
+
+// AccountSummary 账号摘要信息
+type AccountSummary []SummaryItem
+
+// AccountItem 账号项
+type AccountItem struct {
+	Name          string
+	RegisterDate  string
+	LastLoginDate string
 }

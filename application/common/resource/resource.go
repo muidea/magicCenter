@@ -214,3 +214,18 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 
 	return result
 }
+
+// GetLastResource 获取最新的资源
+func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
+	sql := fmt.Sprintf(`select id, name, type, createtime from common_resource order by createtime desc limit %d`, count)
+	helper.Query(sql)
+
+	resultList := []Resource{}
+	for helper.Next() {
+		res := &simpleRes{}
+		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate)
+		resultList = append(resultList, res)
+	}
+
+	return resultList
+}

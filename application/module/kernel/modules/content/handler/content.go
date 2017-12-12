@@ -4,12 +4,14 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCenter/application/common/resource"
 )
 
 // CreateContentHandler 新建ContentHandler
 func CreateContentHandler() common.ContentHandler {
 	dbhelper, _ := dbhelper.NewHelper()
 	i := impl{
+		dbhelper:       dbhelper,
 		articleHandler: articleActionHandler{dbhelper: dbhelper},
 		catalogHandler: catalogActionHandler{dbhelper: dbhelper},
 		linkHandler:    linkActionHandler{dbhelper: dbhelper},
@@ -19,6 +21,7 @@ func CreateContentHandler() common.ContentHandler {
 }
 
 type impl struct {
+	dbhelper       dbhelper.DBHelper
 	articleHandler articleActionHandler
 	catalogHandler catalogActionHandler
 	linkHandler    linkActionHandler
@@ -119,4 +122,37 @@ func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {
 
 func (i *impl) DestroyMedia(id int) bool {
 	return i.mediaHandler.destroyMedia(id)
+}
+
+func (i *impl) GetSummaryInfo() model.ContentSummary {
+	result := model.ContentSummary{}
+
+	articleCount := len(i.articleHandler.getAllArticleSummary())
+	articleItem := model.SummaryItem{Name: "文章", Type: "article", Count: articleCount}
+	result = append(result, articleItem)
+
+	catalogCount := len(i.catalogHandler.getAllCatalog())
+	catalogItem := model.SummaryItem{Name: "分类", Type: "catalog", Count: catalogCount}
+	result = append(result, catalogItem)
+
+	linkCount := len(i.linkHandler.getAllLink())
+	linkItem := model.SummaryItem{Name: "链接", Type: "link", Count: linkCount}
+	result = append(result, linkItem)
+
+	mediaCount := len(i.mediaHandler.getAllMedia())
+	mediaItem := model.SummaryItem{Name: "文件", Type: "media", Count: mediaCount}
+	result = append(result, mediaItem)
+
+	return result
+}
+
+func (i *impl) GetLastContent(count int) []model.ContentItem {
+	resultList := []model.ContentItem{}
+	res := resource.GetLastResource(i.dbhelper, count)
+	for _, v := range res {
+		item := model.ContentItem{Title: v.RName(), Type: v.RType(), CreateDate: v.RCreateDate()}
+
+		resultList = append(resultList, item)
+	}
+	return resultList
 }

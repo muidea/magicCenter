@@ -9,4 +9,6 @@ type SystemHandler interface {
 	UpdateSystemConfig(sysInfo model.SystemInfo) bool
 
 	GetModuleList() []model.Module
+
+	GetStatisticsInfo() model.StatisticsInfo
 }

@@ -74,3 +74,26 @@ func (i *impl) SaveGroup(group model.Group) (model.Group, bool) {
 func (i *impl) DestroyGroup(id int) bool {
 	return i.groupHandler.destroyGroup(id)
 }
+
+func (i *impl) GetSummaryInfo() model.AccountSummary {
+	result := model.AccountSummary{}
+	userCount := len(i.userHandler.getAllUser())
+	userItem := model.SummaryItem{Name: "用户", Type: "user", Count: userCount}
+	result = append(result, userItem)
+	groupCount := len(i.groupHandler.getAllGroups())
+	groupItem := model.SummaryItem{Name: "分组", Type: "group", Count: groupCount}
+	result = append(result, groupItem)
+
+	return result
+}
+
+func (i *impl) GetLastAccount(count int) []model.AccountItem {
+	result := []model.AccountItem{}
+	users := i.userHandler.GetLastRegisterUser(count)
+	for _, v := range users {
+		item := model.AccountItem{Name: v.Account, RegisterDate: v.RegisterTime, LastLoginDate: v.LastLoginTime}
+
+		result = append(result, item)
+	}
+	return result
+}

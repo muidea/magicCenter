@@ -43,3 +43,25 @@ func (s *impl) UpdateSystemConfig(sysInfo model.SystemInfo) bool {
 func (s *impl) GetModuleList() []model.Module {
 	return s.moduleList
 }
+
+func (s *impl) GetStatisticsInfo() model.StatisticsInfo {
+	info := model.StatisticsInfo{}
+	contentModule, ok := s.moduleHub.FindModule(common.CotentModuleID)
+	if ok {
+		contentHandler := contentModule.EntryPoint().(common.ContentHandler)
+		info.LastContent = contentHandler.GetLastContent(10)
+
+		contentSummary := contentHandler.GetSummaryInfo()
+		info.SummaryInfo = append(info.SummaryInfo, contentSummary...)
+	}
+	accountModule, ok := s.moduleHub.FindModule(common.AccountModuleID)
+	if ok {
+		accountHandler := accountModule.EntryPoint().(common.AccountHandler)
+		info.LastAccount = accountHandler.GetLastAccount(10)
+
+		accountSummary := accountHandler.GetSummaryInfo()
+		info.SummaryInfo = append(info.SummaryInfo, accountSummary...)
+	}
+
+	return info
+}

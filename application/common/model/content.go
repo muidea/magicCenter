@@ -49,3 +49,13 @@ type MediaDetail struct {
 	URL  string
 	Desc string
 }
+
+// ContentSummary 内容摘要信息
+type ContentSummary []SummaryItem
+
+// ContentItem 内容项
+type ContentItem struct {
+	Title      string
+	Type       string
+	CreateDate string
+}
