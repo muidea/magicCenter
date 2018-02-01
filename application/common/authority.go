@@ -24,9 +24,9 @@ type AuthorityHandler interface {
 	UpdateACLStatus(enableList []int, disableList []int) bool
 
 	// 查询指定ACL的授权组信息
-	QueryACLAuthGroup(id int) int
+	QueryACLAuthGroup(id int) (int, bool)
 	// 更新指定ACL的授权组信息
-	UpdateACLAuthGroup(id int, authGroup int) bool
+	UpdateACLAuthGroup(id, authGroup int) bool
 
 	// 查询指定模块的拥有者
 	QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroupInfo

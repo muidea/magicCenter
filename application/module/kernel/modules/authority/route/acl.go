@@ -382,7 +382,13 @@ func (i *aclGetAclAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, 
 
 		result.ACL = id
 		result.ErrCode = common.Success
-		authGroup := i.authorityHandler.QueryACLAuthGroup(id)
+		authGroup, ok := i.authorityHandler.QueryACLAuthGroup(id)
+		if !ok {
+			result.ErrCode = common.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
 		switch authGroup {
 		case common.VisitorAuthGroup.ID:
 			result.AuthGroup = common.VisitorAuthGroup

@@ -121,16 +121,16 @@ func (i *impl) UpdateACLStatus(enableList []int, disableList []int) bool {
 	return dal.UpdateACLStatus(i.dbhelper, enableList, disableList)
 }
 
-func (i *impl) QueryACLAuthGroup(id int) int {
+func (i *impl) QueryACLAuthGroup(id int) (int, bool) {
 	acl, ok := dal.QueryACLByID(i.dbhelper, id)
 	if !ok {
-		return 0
+		return 0, ok
 	}
 
-	return acl.AuthGroup
+	return acl.AuthGroup, ok
 }
 
-func (i *impl) UpdateACLAuthGroup(id int, authGroup int) bool {
+func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
 	acl, ok := dal.QueryACLByID(i.dbhelper, id)
 	if !ok {
 		return ok
