@@ -13,75 +13,65 @@ import (
 	"muidea.com/magicCenter/foundation/net"
 )
 
-// CreateUserModuleGetRoute 新建UserModuleGetRoute
-func CreateUserModuleGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userModuleGetRoute{authorityHandler: authorityHandler}
+// CreateGetUserModuleAuthGroupRoute 新建GetUserModuleAuthGroupRoute
+func CreateGetUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := userGetModuleAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateUserModulePutRoute 新建UserModulePutRoute
-func CreateUserModulePutRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userModulePutRoute{authorityHandler: authorityHandler}
+// CreatePutUserModuleAuthGroupRoute 新建UserModulePutRoute
+func CreatePutUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := userPutModuleAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateUserAuthGroupGetRoute 新建UserAuthGroupGetRoute
-func CreateUserAuthGroupGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userAuthGroupGetRoute{authorityHandler: authorityHandler}
+// CreateGetUserACLRoute 新建UserACLGetRoute
+func CreateGetUserACLRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := userGetACLRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateUserAuthGroupPutRoute 新建UserAuthGroupPutRoute
-func CreateUserAuthGroupPutRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userAuthGroupPutRoute{authorityHandler: authorityHandler}
-	return &i
-}
-
-// CreateUserACLGetRoute 新建UserACLGetRoute
-func CreateUserACLGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userACLGetRoute{authorityHandler: authorityHandler}
-	return &i
-}
-
-type userModuleGetRoute struct {
+type userGetModuleAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type userModuleGetResult struct {
+type userGetModuleAuthGroupResult struct {
 	common.Result
-	User    int
-	Modules []string
+	model.UserModuleAuthGroupInfo
 }
 
-func (i *userModuleGetRoute) Method() string {
+func (i *userGetModuleAuthGroupRoute) Method() string {
 	return common.GET
 }
 
-func (i *userModuleGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetUserModule)
+func (i *userGetModuleAuthGroupRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetUserModuleAuthGroup)
 }
 
-func (i *userModuleGetRoute) Handler() interface{} {
-	return i.getUserModuleHandler
+func (i *userGetModuleAuthGroupRoute) Handler() interface{} {
+	return i.getUserModuleAuthGroupHandler
 }
 
-func (i *userModuleGetRoute) AuthGroup() int {
+func (i *userGetModuleAuthGroupRoute) AuthGroup() int {
 	return common.UserAuthGroup.ID
 }
 
-func (i *userModuleGetRoute) getUserModuleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getUserModuleHandler")
+func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getUserModuleAuthGroupHandler")
 
-	result := userModuleGetResult{}
+	result := userGetModuleAuthGroupResult{}
 	for true {
-		id, err := strconv.Atoi(r.URL.Query().Get("user"))
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
-		result.Modules = i.authorityHandler.QueryUserModuleAuthGroup(id)
+		val := i.authorityHandler.QueryUserModuleAuthGroup(id)
+		result.User = id
+		result.ModuleAuthGroups = val.ModuleAuthGroups
 
 		result.ErrCode = common.Success
 		break
@@ -95,34 +85,34 @@ func (i *userModuleGetRoute) getUserModuleHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type userModulePutRoute struct {
+type userPutModuleAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type userModulePutResult struct {
+type userPutModuleAuthGroupResult struct {
 	common.Result
 }
 
-func (i *userModulePutRoute) Method() string {
+func (i *userPutModuleAuthGroupRoute) Method() string {
 	return common.PUT
 }
 
-func (i *userModulePutRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.PutUserModule)
+func (i *userPutModuleAuthGroupRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PutUserModuleAuthGroup)
 }
 
-func (i *userModulePutRoute) Handler() interface{} {
-	return i.putUserModuleHandler
+func (i *userPutModuleAuthGroupRoute) Handler() interface{} {
+	return i.putUserModuleAuthGroupHandler
 }
 
-func (i *userModulePutRoute) AuthGroup() int {
+func (i *userPutModuleAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *userModulePutRoute) putUserModuleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putUserModuleHandler")
+func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putUserModuleAuthGroupHandler")
 
-	result := userModulePutResult{}
+	result := userPutModuleAuthGroupResult{}
 	for true {
 		err := r.ParseForm()
 		if err != nil {
@@ -130,14 +120,14 @@ func (i *userModulePutRoute) putUserModuleHandler(w http.ResponseWriter, r *http
 			result.Reason = "非法参数"
 			break
 		}
-
-		id, err := strconv.Atoi(r.FormValue("user-id"))
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
-		modules := strings.Split(r.FormValue("user-module"), ",")
+		modules := strings.Split(r.FormValue("module"), ",")
 
 		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, modules)
 		if ok {
@@ -158,158 +148,39 @@ func (i *userModulePutRoute) putUserModuleHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type userAuthGroupGetRoute struct {
+type userGetACLRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type userAuthGroupGetResult struct {
-	common.Result
-	User      int
-	AuthGroup model.AuthGroup
-}
-
-func (i *userAuthGroupGetRoute) Method() string {
-	return common.GET
-}
-
-func (i *userAuthGroupGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetUserAuthGroup)
-}
-
-func (i *userAuthGroupGetRoute) Handler() interface{} {
-	return i.getUserAuthGroupHandler
-}
-
-func (i *userAuthGroupGetRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
-}
-
-func (i *userAuthGroupGetRoute) getUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getUserAuthGroupHandler")
-
-	result := userAuthGroupGetResult{}
-	for true {
-		id, err := strconv.Atoi(r.URL.Query().Get("user"))
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-
-		result.User = id
-		result.AuthGroup = i.authorityHandler.QueryUserModuleAuthGroup(id)
-		result.ErrCode = common.Success
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type userAuthGroupPutRoute struct {
-	authorityHandler common.AuthorityHandler
-}
-
-type userAuthGroupPutResult struct {
-	common.Result
-}
-
-func (i *userAuthGroupPutRoute) Method() string {
-	return common.PUT
-}
-
-func (i *userAuthGroupPutRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.PutUserAuthGroup)
-}
-
-func (i *userAuthGroupPutRoute) Handler() interface{} {
-	return i.putUserAuthGroupHandler
-}
-
-func (i *userAuthGroupPutRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
-}
-
-func (i *userAuthGroupPutRoute) putUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putUserAuthGroupHandler")
-
-	result := userModulePutResult{}
-	for true {
-		err := r.ParseForm()
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-
-		id, err := strconv.Atoi(r.FormValue("user-id"))
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-		authGroup, err := strconv.Atoi(r.FormValue("user-authgroup"))
-		if err != nil || (authGroup != common.VisitorAuthGroup.ID && authGroup != common.UserAuthGroup.ID && authGroup != common.MaintainerAuthGroup.ID) {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-
-		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, authGroup)
-		if ok {
-			result.ErrCode = common.Success
-		} else {
-			result.ErrCode = common.Failed
-			result.Reason = "更新用户授权组失败"
-		}
-
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type userACLGetRoute struct {
-	authorityHandler common.AuthorityHandler
-}
-
-type userACLGetResult struct {
+type userGetACLResult struct {
 	common.Result
 	User int
 	ACLs []model.ACL
 }
 
-func (i *userACLGetRoute) Method() string {
+func (i *userGetACLRoute) Method() string {
 	return common.GET
 }
 
-func (i *userACLGetRoute) Pattern() string {
+func (i *userGetACLRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetUserACL)
 }
 
-func (i *userACLGetRoute) Handler() interface{} {
+func (i *userGetACLRoute) Handler() interface{} {
 	return i.getUserACLHandler
 }
 
-func (i *userACLGetRoute) AuthGroup() int {
+func (i *userGetACLRoute) AuthGroup() int {
 	return common.UserAuthGroup.ID
 }
 
-func (i *userACLGetRoute) getUserACLHandler(w http.ResponseWriter, r *http.Request) {
+func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getUserACLHandler")
 
-	result := userACLGetResult{}
+	result := userGetACLResult{}
 	for true {
-		id, err := strconv.Atoi(r.URL.Query().Get("user"))
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"

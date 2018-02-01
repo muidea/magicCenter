@@ -28,28 +28,22 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	rt = CreatePutACLAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateModuleACLGetRoute(authorityHandler)
+	rt = CreateGetModuleACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateModuleUserGetRoute(authorityHandler)
+	rt = CreateGetModuleUserAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateModuleUserPutRoute(authorityHandler)
+	rt = CreatePutModuleUserAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateUserModuleGetRoute(authorityHandler)
+	rt = CreateGetUserModuleAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateUserModulePutRoute(authorityHandler)
+	rt = CreatePutUserModuleAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateUserAuthGroupGetRoute(authorityHandler)
-	routes = append(routes, rt)
-
-	rt = CreateUserAuthGroupPutRoute(authorityHandler)
-	routes = append(routes, rt)
-
-	rt = CreateUserACLGetRoute(authorityHandler)
+	rt = CreateGetUserACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
 	return routes

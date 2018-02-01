@@ -58,9 +58,8 @@ func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
 func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
 	url, id := net.SplitRESTAPI(req.URL.Path)
 	urlPattern := net.FormatRoutePattern(url, id)
-	urlMethod := req.Method
 
-	acl, ok := dal.QueryACLByID(i.dbhelper, urlPattern, urlMethod, "")
+	acl, ok := dal.FilterACL(i.dbhelper, urlPattern)
 	if !ok {
 		// 找不到ACL，当成没有权限来处理
 		return false

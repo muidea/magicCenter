@@ -12,59 +12,59 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
-// CreateModuleACLGetRoute 新建ModuleACLGetRoute
-func CreateModuleACLGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := moduleACLGetRoute{authorityHandler: authorityHandler}
+// CreateGetModuleACLRoute 新建ModuleACLGetRoute
+func CreateGetModuleACLRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := moduleGetACLRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateModuleUserGetRoute 新建ModuleUserGetRoute
-func CreateModuleUserGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := moduleUserGetRoute{authorityHandler: authorityHandler}
+// CreateGetModuleUserAuthGroupRoute 新建ModuleUserGetRoute
+func CreateGetModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := moduleGetUserAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateModuleUserPutRoute 新建ModuleUserPutRoute
-func CreateModuleUserPutRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := moduleUserPutRoute{authorityHandler: authorityHandler}
+// CreatePutModuleUserAuthGroupRoute 新建PutModuleUserRoute
+func CreatePutModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := modulePutUserAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-type moduleACLGetRoute struct {
+type moduleGetACLRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type moduleACLGetResult struct {
+type moduleGetACLResult struct {
 	common.Result
 	module string
 	ACLs   []model.ACL
 }
 
-func (i *moduleACLGetRoute) Method() string {
+func (i *moduleGetACLRoute) Method() string {
 	return common.GET
 }
 
-func (i *moduleACLGetRoute) Pattern() string {
+func (i *moduleGetACLRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetModuleACL)
 }
 
-func (i *moduleACLGetRoute) Handler() interface{} {
+func (i *moduleGetACLRoute) Handler() interface{} {
 	return i.getModuleACLHandler
 }
 
-func (i *moduleACLGetRoute) AuthGroup() int {
+func (i *moduleGetACLRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *moduleACLGetRoute) getModuleACLHandler(w http.ResponseWriter, r *http.Request) {
+func (i *moduleGetACLRoute) getModuleACLHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getModuleACLHandler")
-	result := moduleACLGetResult{}
+	result := moduleGetACLResult{}
 
 	for true {
-		module := r.URL.Query().Get("module")
-		result.module = module
+		_, id := net.SplitRESTAPI(r.URL.Path)
+		result.module = id
 
-		result.ACLs = i.authorityHandler.QueryACLByModule(module)
+		result.ACLs = i.authorityHandler.QueryACLByModule(id)
 		result.ErrCode = common.Success
 
 		break
@@ -78,40 +78,40 @@ func (i *moduleACLGetRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 	w.Write(b)
 }
 
-type moduleUserGetRoute struct {
+type moduleGetUserAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type moduleUserGetResult struct {
+type moduleGetUserAuthGroupResult struct {
 	common.Result
-	Module string
-	Users  []int
+	model.ModuleUserAuthGroupInfo
 }
 
-func (i *moduleUserGetRoute) Method() string {
+func (i *moduleGetUserAuthGroupRoute) Method() string {
 	return common.GET
 }
 
-func (i *moduleUserGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetModuleUser)
+func (i *moduleGetUserAuthGroupRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetModuleUserAuthGroup)
 }
 
-func (i *moduleUserGetRoute) Handler() interface{} {
-	return i.getModuleUserHandler
+func (i *moduleGetUserAuthGroupRoute) Handler() interface{} {
+	return i.getModuleUserAuthGroupHandler
 }
 
-func (i *moduleUserGetRoute) AuthGroup() int {
+func (i *moduleGetUserAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *moduleUserGetRoute) getModuleUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getModuleUserHandler")
+func (i *moduleGetUserAuthGroupRoute) getModuleUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getModuleUserAuthGroupHandler")
 
-	result := moduleUserGetResult{}
+	result := moduleGetUserAuthGroupResult{}
 	for true {
-		module := r.URL.Query().Get("module")
-		result.Module = module
-		result.Users = i.authorityHandler.QueryModuleUserAuthGroup(module)
+		_, id := net.SplitRESTAPI(r.URL.Path)
+		info := i.authorityHandler.QueryModuleUserAuthGroup(id)
+		result.Module = id
+		result.UserAuthGroups = info.UserAuthGroups
 		result.ErrCode = common.Success
 
 		break
@@ -125,34 +125,34 @@ func (i *moduleUserGetRoute) getModuleUserHandler(w http.ResponseWriter, r *http
 	w.Write(b)
 }
 
-type moduleUserPutRoute struct {
+type modulePutUserAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type moduleUserPutResult struct {
+type modulePutUserAuthGroupResult struct {
 	common.Result
 }
 
-func (i *moduleUserPutRoute) Method() string {
+func (i *modulePutUserAuthGroupRoute) Method() string {
 	return common.PUT
 }
 
-func (i *moduleUserPutRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.PutModuleUser)
+func (i *modulePutUserAuthGroupRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PutModuleUserAuthGroup)
 }
 
-func (i *moduleUserPutRoute) Handler() interface{} {
-	return i.putModuleUserHandler
+func (i *modulePutUserAuthGroupRoute) Handler() interface{} {
+	return i.putModuleUserAuthGroupHandler
 }
 
-func (i *moduleUserPutRoute) AuthGroup() int {
+func (i *modulePutUserAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *moduleUserPutRoute) putModuleUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putModuleUserHandler")
+func (i *modulePutUserAuthGroupRoute) putModuleUserAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putModuleUserAuthGroupHandler")
 
-	result := moduleUserPutResult{}
+	result := modulePutUserAuthGroupResult{}
 	for true {
 		err := r.ParseForm()
 		if err != nil {
@@ -161,8 +161,8 @@ func (i *moduleUserPutRoute) putModuleUserHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		id := r.FormValue("module-id")
-		users, ok := util.Str2IntArray(r.FormValue("module-user"))
+		_, id := net.SplitRESTAPI(r.URL.Path)
+		users, ok := util.Str2IntArray(r.FormValue("user"))
 
 		ok = i.authorityHandler.UpdateModuleUserAuthGroup(id, users)
 		if ok {

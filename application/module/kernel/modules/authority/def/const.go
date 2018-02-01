@@ -36,25 +36,19 @@ const GetACLAuthGroup = "/acl/authgroup/:id"
 const PutACLAuthGroup = "/acl/authgroup/:id"
 
 // GetModuleACL 查询指定Module的ACL
-const GetModuleACL = "/module/acl/"
+const GetModuleACL = "/module/acl/:id"
 
-// GetModuleUser 查询拥有指定Module的用户
-const GetModuleUser = "/module/user/"
+// GetModuleUserAuthGroup 查询拥有指定Module的用户
+const GetModuleUserAuthGroup = "/module/user/:id"
 
-// PutModuleUser 更新拥有指定Module的用户
-const PutModuleUser = "/module/user/"
+// PutModuleUserAuthGroup 更新拥有指定Module的用户
+const PutModuleUserAuthGroup = "/module/user/:id"
 
-// GetUserModule 查询指定用户拥有的Module
-const GetUserModule = "/user/module/"
+// GetUserModuleAuthGroup 查询指定用户拥有的Module
+const GetUserModuleAuthGroup = "/user/module/:id"
 
-// PutUserModule 更新指定用户拥有的Module
-const PutUserModule = "/user/module/"
-
-// GetUserAuthGroup 获取指定用户的授权组
-const GetUserAuthGroup = "/user/authgroup/"
-
-// PutUserAuthGroup 更新指定用户的授权组
-const PutUserAuthGroup = "/user/authgroup/"
+// PutUserModuleAuthGroup 更新指定用户拥有的Module
+const PutUserModuleAuthGroup = "/user/module/:id"
 
 // GetUserACL 获取指定用户可访问的ACL
-const GetUserACL = "/user/acl/"
+const GetUserACL = "/user/acl/:id"
