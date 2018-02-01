@@ -39,8 +39,6 @@ type UserDetail struct {
 	Status int
 	// 注册时间
 	RegisterTime string
-	// 最新登陆时间
-	LastLoginTime string
 }
 
 const (
@@ -53,24 +51,17 @@ const (
 // Group 分组信息
 // Name 名称
 // Description 描述
-// Type 类型（管理员组，普通组
+// Catalog 类型（管理员组，普通组
 type Group struct {
 	ID          int
 	Name        string
 	Description string
-	Type        int
+	Catalog     int
 }
 
 // AdminGroup 是否是管理员组
 func (g *Group) AdminGroup() bool {
-	return g.Type == AdminGroup
-}
-
-// AccountMeta 账号元数据
-type AccountMeta struct {
-	Subject     string
-	Description string
-	URL         string
+	return g.Catalog == AdminGroup
 }
 
 // AccountSummary 账号摘要信息

@@ -16,7 +16,7 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 
 	for helper.Next() {
 		g := model.Group{}
-		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Type)
+		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
 
 		groupList = append(groupList, g)
 	}
@@ -32,7 +32,7 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 
 	for helper.Next() {
 		g := model.Group{}
-		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Type)
+		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
 
 		groupList = append(groupList, g)
 	}
@@ -48,7 +48,7 @@ func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.Group, bool) {
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&group.ID, &group.Name, &group.Description, &group.Type)
+		helper.GetValue(&group.ID, &group.Name, &group.Description, &group.Catalog)
 		result = true
 	}
 
@@ -63,7 +63,7 @@ func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&group.ID, &group.Name, &group.Description, &group.Type)
+		helper.GetValue(&group.ID, &group.Name, &group.Description, &group.Catalog)
 		result = true
 	}
 
@@ -91,7 +91,7 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string) (model.Grou
 		helper.GetValue(&group.ID)
 		group.Name = name
 		group.Description = description
-		group.Type = 0
+		group.Catalog = 0
 		result = true
 	} else {
 		result = false

@@ -87,7 +87,7 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from content_media where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
-		img := resource.CreateSimpleRes(id, model.MEDIA, "", "")
+		img := resource.CreateSimpleRes(id, model.MEDIA, "", "", -1)
 		result = resource.DeleteResource(helper, img)
 	}
 
@@ -118,9 +118,9 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createdate string, u
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate)
+		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
@@ -135,9 +135,9 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 	sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Desc, media.CreateDate, media.Creater, media.ID)
 	num, result := helper.Execute(sql)
 	if num == 1 && result {
-		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate)
+		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)

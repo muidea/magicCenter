@@ -17,14 +17,14 @@ func TestGroup(t *testing.T) {
 	g1 := model.Group{}
 	g1.Name = "test1"
 	g1.Description = "Description"
-	g1.Type = model.AdminGroup
+	g1.Catalog = model.AdminGroup
 
 	SaveGroup(helper, g1)
 
 	g2 := model.Group{}
 	g2.Name = "test2"
 	g2.Description = "Desc"
-	g2.Type = model.CommonGroup
+	g2.Catalog = model.CommonGroup
 	SaveGroup(helper, g2)
 
 	groups := QueryAllGroup(helper)

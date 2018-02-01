@@ -86,7 +86,7 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 	sql := fmt.Sprintf(`delete from content_link where id =%d`, id)
 	num, result := helper.Execute(sql)
 	if num > 0 && result {
-		lnk := resource.CreateSimpleRes(id, model.LINK, "", "")
+		lnk := resource.CreateSimpleRes(id, model.LINK, "", "", -1)
 		result = resource.DeleteResource(helper, lnk)
 	}
 
@@ -114,9 +114,9 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate)
+		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)
@@ -132,9 +132,9 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 	num, result := helper.Execute(sql)
 
 	if result && num == 1 {
-		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate)
+		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "")
+			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
 			res.AppendRelative(ca)
 		}
 		result = resource.SaveResource(helper, res)

@@ -19,17 +19,20 @@ type Resource interface {
 	RCreateDate() string
 	// RRelative 关联的资源
 	Relative() []Resource
+	// ROwner 资源拥有者
+	ROwner() int
 	// AppendRelative 追加关联资源
 	AppendRelative(r Resource)
 }
 
 // CreateSimpleRes 创建新的资源
-func CreateSimpleRes(rID int, rType, rName, rCreateDate string) Resource {
+func CreateSimpleRes(rID int, rType, rName, rCreateDate string, rOwner int) Resource {
 	res := &simpleRes{}
 	res.rid = rID
 	res.rType = rType
 	res.rName = rName
 	res.rCreateDate = rCreateDate
+	res.rOwner = rOwner
 
 	return res
 }
@@ -40,6 +43,7 @@ type simpleRes struct {
 	rName       string
 	rType       string
 	rCreateDate string
+	rOwner      int
 	relative    []Resource
 }
 
@@ -68,6 +72,11 @@ func (s *simpleRes) Relative() []Resource {
 	return s.relative
 }
 
+// ROwner 资源拥有者
+func (s *simpleRes) ROwner() int {
+	return s.rOwner
+}
+
 // AppendRelative 追加关联对象
 func (s *simpleRes) AppendRelative(r Resource) {
 	s.relative = append(s.relative, r)
@@ -75,13 +84,13 @@ func (s *simpleRes) AppendRelative(r Resource) {
 
 // QueryResource 查询资源
 func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, bool) {
-	sql := fmt.Sprintf(`select id, name, type, createtime from common_resource where id =%d and type ='%s'`, rid, rType)
+	sql := fmt.Sprintf(`select id, name, type, createtime, owner from common_resource where id =%d and type ='%s'`, rid, rType)
 	helper.Query(sql)
 
 	res := simpleRes{}
 	result := false
 	if helper.Next() {
-		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate)
+		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		result = true
 	}
 
@@ -94,14 +103,14 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, b
 
 // QueryRelativeResource 查询关联的资源
 func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
-	sql := fmt.Sprintf(`select distinct(r.oid), r.id, r.name, r.type, r.createtime from common_resource r, common_resource_relative rr where r.id = rr.dst and r.type = rr.dsttype and rr.src =%d and rr.srctype ='%s'`, rid, rType)
+	sql := fmt.Sprintf(`select distinct(r.oid), r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.dst and r.type = rr.dsttype and rr.src =%d and rr.srctype ='%s'`, rid, rType)
 	helper.Query(sql)
 
 	resultList := []Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
 		oid := 0
-		helper.GetValue(&oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate)
+		helper.GetValue(&oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		resultList = append(resultList, res)
 	}
 
@@ -115,16 +124,16 @@ func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Re
 func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []Resource {
 	sql := ""
 	if referenceType == "" {
-		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s'`, rID, rType)
+		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s'`, rID, rType)
 	} else {
-		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s' and rr.srctype ='%s'`, rID, rType, referenceType)
+		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s' and rr.srctype ='%s'`, rID, rType, referenceType)
 	}
 	helper.Query(sql)
 
 	resultList := []Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
-		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate)
+		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		resultList = append(resultList, res)
 	}
 
@@ -145,7 +154,7 @@ func SaveResource(helper dbhelper.DBHelper, res Resource) bool {
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf(`insert into common_resource (id,name,type,createtime) values (%d, '%s','%s', '%s')`, res.RId(), res.RName(), res.RType(), res.RCreateDate())
+		sql = fmt.Sprintf(`insert into common_resource (id,name,type,createtime,owner) values (%d, '%s','%s', '%s', %d)`, res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
 	} else {
 		// modify
 		sql = fmt.Sprintf(`update common_resource set name ='%s' where type='%s' and id=%d`, res.RName(), res.RType(), res.RId())
@@ -217,7 +226,7 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 
 // GetLastResource 获取最新的资源
 func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
-	sql := fmt.Sprintf(`select id, name, type, createtime from common_resource order by createtime desc limit %d`, count)
+	sql := fmt.Sprintf(`select id, name, type, createtime, owner from common_resource order by createtime desc limit %d`, count)
 	helper.Query(sql)
 
 	resultList := []Resource{}
