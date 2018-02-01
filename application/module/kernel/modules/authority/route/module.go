@@ -111,7 +111,7 @@ func (i *moduleUserGetRoute) getModuleUserHandler(w http.ResponseWriter, r *http
 	for true {
 		module := r.URL.Query().Get("module")
 		result.Module = module
-		result.Users = i.authorityHandler.QueryModuleUser(module)
+		result.Users = i.authorityHandler.QueryModuleUserAuthGroup(module)
 		result.ErrCode = common.Success
 
 		break
@@ -164,7 +164,7 @@ func (i *moduleUserPutRoute) putModuleUserHandler(w http.ResponseWriter, r *http
 		id := r.FormValue("module-id")
 		users, ok := util.Str2IntArray(r.FormValue("module-user"))
 
-		ok = i.authorityHandler.UpdateModuleUser(id, users)
+		ok = i.authorityHandler.UpdateModuleUserAuthGroup(id, users)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

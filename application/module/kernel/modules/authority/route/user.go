@@ -81,7 +81,7 @@ func (i *userModuleGetRoute) getUserModuleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		result.Modules = i.authorityHandler.QueryUserModule(id)
+		result.Modules = i.authorityHandler.QueryUserModuleAuthGroup(id)
 
 		result.ErrCode = common.Success
 		break
@@ -139,7 +139,7 @@ func (i *userModulePutRoute) putUserModuleHandler(w http.ResponseWriter, r *http
 		}
 		modules := strings.Split(r.FormValue("user-module"), ",")
 
-		ok := i.authorityHandler.UpdateUserModule(id, modules)
+		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, modules)
 		if ok {
 			result.ErrCode = common.Success
 		} else {
@@ -197,7 +197,7 @@ func (i *userAuthGroupGetRoute) getUserAuthGroupHandler(w http.ResponseWriter, r
 		}
 
 		result.User = id
-		result.AuthGroup = i.authorityHandler.QueryUserAuthGroup(id)
+		result.AuthGroup = i.authorityHandler.QueryUserModuleAuthGroup(id)
 		result.ErrCode = common.Success
 		break
 	}
@@ -259,7 +259,7 @@ func (i *userAuthGroupPutRoute) putUserAuthGroupHandler(w http.ResponseWriter, r
 			break
 		}
 
-		ok := i.authorityHandler.UpdateUserAuthGroup(id, authGroup)
+		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, authGroup)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

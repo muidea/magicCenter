@@ -91,7 +91,7 @@ func (i *impl) GetLastAccount(count int) []model.AccountItem {
 	result := []model.AccountItem{}
 	users := i.userHandler.GetLastRegisterUser(count)
 	for _, v := range users {
-		item := model.AccountItem{Name: v.Account, RegisterDate: v.RegisterTime, LastLoginDate: v.LastLoginTime}
+		item := model.AccountItem{Name: v.Account, RegisterDate: v.RegisterTime}
 
 		result = append(result, item)
 	}

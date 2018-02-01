@@ -7,8 +7,8 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 )
 
-// QueryUserModule 获取指定用户拥有的模块
-func QueryUserModule(helper dbhelper.DBHelper, user int) model.UserModuleAuthGroupInfo {
+// QueryUserModuleAuthGroup 获取指定用户拥有的模块
+func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) model.UserModuleAuthGroupInfo {
 	retValue := model.UserModuleAuthGroupInfo{User: user}
 
 	sql := fmt.Sprintf("select module, authgroup from authority_module where user=%d", user)
@@ -23,8 +23,8 @@ func QueryUserModule(helper dbhelper.DBHelper, user int) model.UserModuleAuthGro
 	return retValue
 }
 
-// UpdateUserModule 更新指定用户拥有的模块
-func UpdateUserModule(helper dbhelper.DBHelper, user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
+// UpdateUserModuleAuthGroup 更新指定用户拥有的模块
+func UpdateUserModuleAuthGroup(helper dbhelper.DBHelper, user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
 	retVal := false
 
 	helper.BeginTransaction()
@@ -51,8 +51,8 @@ func UpdateUserModule(helper dbhelper.DBHelper, user int, moduleAuthGroups []mod
 	return retVal
 }
 
-// QueryModuleUser 查询拥有指定Module的User
-func QueryModuleUser(helper dbhelper.DBHelper, module string) model.ModuleUserAuthGroupInfo {
+// QueryModuleUserAuthGroup 查询拥有指定Module的User
+func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) model.ModuleUserAuthGroupInfo {
 	retValue := model.ModuleUserAuthGroupInfo{Module: module}
 	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
 	helper.Query(sql)
@@ -65,8 +65,8 @@ func QueryModuleUser(helper dbhelper.DBHelper, module string) model.ModuleUserAu
 	return retValue
 }
 
-// UpdateModuleUser 更新指定Module的拥有着
-func UpdateModuleUser(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
+// UpdateModuleUserAuthGroup 更新指定Module的拥有着
+func UpdateModuleUserAuthGroup(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
 	retVal := false
 
 	helper.BeginTransaction()

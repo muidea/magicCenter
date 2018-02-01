@@ -270,7 +270,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 
 		name := r.FormValue("group-name")
 		description := r.FormValue("group-description")
-		group := model.Group{ID: id, Name: name, Description: description, Type: 0}
+		group := model.Group{ID: id, Name: name, Description: description, Catalog: 0}
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {

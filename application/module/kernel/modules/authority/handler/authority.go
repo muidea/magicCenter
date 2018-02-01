@@ -60,7 +60,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	urlPattern := net.FormatRoutePattern(url, id)
 	urlMethod := req.Method
 
-	acl, ok := dal.QueryACL(i.dbhelper, urlPattern, urlMethod)
+	acl, ok := dal.QueryACL(i.dbhelper, urlPattern, urlMethod, "")
 	if !ok {
 		// 找不到ACL，当成没有权限来处理
 		return false
@@ -81,7 +81,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return false
 	}
 
-	user, loginOK := session.GetAccount()
+	_, loginOK := session.GetAccount()
 	if loginOK {
 		i.refreshUserStatus(session, req.RemoteAddr)
 	}
@@ -90,12 +90,14 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return retVal
 	}
 
-	authGroup := dal.QueryUserAuthGroup(i.dbhelper, user.ID)
-	if authGroup >= acl.AuthGroup {
-		retVal = true
-	} else {
-		retVal = false
-	}
+	/*
+		authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user.ID)
+		if authGroup >= acl.AuthGroup {
+			retVal = true
+		} else {
+			retVal = false
+		}
+	*/
 
 	return retVal
 }
@@ -104,8 +106,8 @@ func (i *impl) QueryModuleACL(module string) []model.ACL {
 	return dal.QueryModuleACL(i.dbhelper, module)
 }
 
-func (i *impl) QueryACL(url, method string) (model.ACL, bool) {
-	return dal.QueryACL(i.dbhelper, url, method)
+func (i *impl) QueryACL(url, method, module string) (model.ACL, bool) {
+	return dal.QueryACL(i.dbhelper, url, method, module)
 }
 
 func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool) {
@@ -139,49 +141,27 @@ func (i *impl) UpdateACLAuthGroup(id int, authGroup int) bool {
 	return dal.UpateACL(i.dbhelper, acl)
 }
 
-func (i *impl) QueryUserAuthGroup(user int) model.AuthGroup {
-	authGroup := model.AuthGroup{}
-
-	id := dal.QueryUserAuthGroup(i.dbhelper, user)
-	switch id {
-	case common.VisitorAuthGroup.ID:
-		authGroup = common.VisitorAuthGroup
-	case common.UserAuthGroup.ID:
-		authGroup = common.UserAuthGroup
-	case common.MaintainerAuthGroup.ID:
-		authGroup = common.MaintainerAuthGroup
-	default:
-		authGroup = common.VisitorAuthGroup
-	}
-
-	return authGroup
+func (i *impl) QueryUserModuleAuthGroup(user int) model.UserModuleAuthGroupInfo {
+	return dal.QueryUserModuleAuthGroup(i.dbhelper, user)
 }
 
-func (i *impl) UpdateUserAuthGroup(user int, authGroup int) bool {
-	return dal.UpdateUserAuthGroup(i.dbhelper, user, authGroup)
+func (i *impl) UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
+	return dal.UpdateUserModuleAuthGroup(i.dbhelper, user, moduleAuthGroups)
 }
 
 func (i *impl) QueryUserACL(user int) []model.ACL {
 	acls := []model.ACL{}
 
-	authGroup := dal.QueryUserAuthGroup(i.dbhelper, user)
-	acls = dal.QueryAvalibleACLByAuthGroup(i.dbhelper, authGroup)
+	//authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user)
+	//acls = dal.QueryAvalibleACLByAuthGroup(i.dbhelper, authGroup)
 
 	return acls
 }
 
-func (i *impl) QueryUserModule(user int) []string {
-	return dal.QueryUserModule(i.dbhelper, user)
+func (i *impl) QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroupInfo {
+	return dal.QueryModuleUserAuthGroup(i.dbhelper, module)
 }
 
-func (i *impl) UpdateUserModule(user int, modules []string) bool {
-	return dal.UpdateUserModule(i.dbhelper, user, modules)
-}
-
-func (i *impl) QueryModuleUser(module string) []int {
-	return dal.QueryModuleUser(i.dbhelper, module)
-}
-
-func (i *impl) UpdateModuleUser(module string, users []int) bool {
-	return dal.UpdateModuleUser(i.dbhelper, module, users)
+func (i *impl) UpdateModuleUserAuthGroup(module string, userAuthGroups []model.UserAuthGroup) bool {
+	return dal.UpdateModuleUserAuthGroup(i.dbhelper, module, userAuthGroups)
 }
