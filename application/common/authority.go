@@ -12,9 +12,9 @@ type AuthorityHandler interface {
 	VerifyAuthority(res http.ResponseWriter, req *http.Request) bool
 
 	// 查询指定Module的ACL
-	QueryModuleACL(module string) []model.ACL
+	QueryACLByModule(module string) []model.ACL
 	// 查询指定ACL
-	QueryACL(url, method, module string) (model.ACL, bool)
+	QueryACLByID(id int) (model.ACL, bool)
 	// 新增ACL
 	InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool)
 

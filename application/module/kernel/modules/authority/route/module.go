@@ -64,7 +64,7 @@ func (i *moduleACLGetRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 		module := r.URL.Query().Get("module")
 		result.module = module
 
-		result.ACLs = i.authorityHandler.QueryModuleACL(module)
+		result.ACLs = i.authorityHandler.QueryACLByModule(module)
 		result.ErrCode = common.Success
 
 		break

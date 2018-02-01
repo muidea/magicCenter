@@ -14,8 +14,11 @@ const Description = "Magic 权限管理模块"
 // URL 模块Url
 const URL = "/authority"
 
-// GetACL 查询指定的ACL
-const GetACL = "/acl/"
+// GetACLByID 查询指定的ACL
+const GetACLByID = "/acl/:id"
+
+// QueryACLByModule 查询指定的ACL
+const QueryACLByModule = "/acl/"
 
 // PostACL 新增ACL
 const PostACL = "/acl/"
@@ -27,10 +30,10 @@ const DeleteACL = "/acl/:id"
 const PutACL = "/acl/"
 
 // GetACLAuthGroup 查询指定acl的权限组
-const GetACLAuthGroup = "/acl/authgroup/"
+const GetACLAuthGroup = "/acl/authgroup/:id"
 
 // PutACLAuthGroup 更新指定acl的权限组
-const PutACLAuthGroup = "/acl/authgroup/"
+const PutACLAuthGroup = "/acl/authgroup/:id"
 
 // GetModuleACL 查询指定Module的ACL
 const GetModuleACL = "/module/acl/"

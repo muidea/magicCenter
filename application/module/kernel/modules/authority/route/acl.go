@@ -13,49 +13,49 @@ import (
 	"muidea.com/magicCenter/foundation/util"
 )
 
-// CreateACLGetRoute 新建ACLGetRoute
-func CreateACLGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclGetRoute{authorityHandler: authorityHandler}
+// CreateGetACLByIDRoute GetAclByID
+func CreateGetACLByIDRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := aclGetByIDRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLGetByModuleRoute 新建ACLGetByModuleRoute
-func CreateACLGetByModuleRoute(authorityHandler common.AuthorityHandler) common.Route {
+// CreateGetACLByModuleRoute GetAclByModule
+func CreateGetACLByModuleRoute(authorityHandler common.AuthorityHandler) common.Route {
 	i := aclGetByModuleRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLPostRoute 新建ACLPostRoute
-func CreateACLPostRoute(authorityHandler common.AuthorityHandler) common.Route {
+// CreatePostACLRoute CreateAcl
+func CreatePostACLRoute(authorityHandler common.AuthorityHandler) common.Route {
 	i := aclPostRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLDeleteRoute 新建ACLDeleteRoute
-func CreateACLDeleteRoute(authorityHandler common.AuthorityHandler) common.Route {
+// CreateDeleteACLRoute DeleteAcl
+func CreateDeleteACLRoute(authorityHandler common.AuthorityHandler) common.Route {
 	i := aclDeleteRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLPutRoute 新建ACLPutRoute
-func CreateACLPutRoute(authorityHandler common.AuthorityHandler) common.Route {
+// CreatePutACLRoute UpdateAcl
+func CreatePutACLRoute(authorityHandler common.AuthorityHandler) common.Route {
 	i := aclPutRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLAuthGroupGetRoute 新建ACLAuthGroupGetRoute
-func CreateACLAuthGroupGetRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclAuthGroupGetRoute{authorityHandler: authorityHandler}
+// CreateGetACLAuthGroupRoute GetAclAuthGroup
+func CreateGetACLAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := aclGetAclAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-// CreateACLAuthGroupPutRoute 新建ACLAuthGroupPutRoute
-func CreateACLAuthGroupPutRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclAuthGroupPutRoute{authorityHandler: authorityHandler}
+// CreatePutACLAuthGroupRoute UpdateAclAuthGroup
+func CreatePutACLAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+	i := aclPutACLAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
-type aclGetRoute struct {
+type aclGetByIDRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
@@ -64,31 +64,36 @@ type aclGetResult struct {
 	ACL model.ACL
 }
 
-func (i *aclGetRoute) Method() string {
+func (i *aclGetByIDRoute) Method() string {
 	return common.GET
 }
 
-func (i *aclGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetACL)
+func (i *aclGetByIDRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetACLByID)
 }
 
-func (i *aclGetRoute) Handler() interface{} {
+func (i *aclGetByIDRoute) Handler() interface{} {
 	return i.getACLHandler
 }
 
-func (i *aclGetRoute) AuthGroup() int {
+func (i *aclGetByIDRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclGetRoute) getACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getACLHandler")
+func (i *aclGetByIDRoute) getACLHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getACLByIDHandler")
 	result := aclGetResult{}
 
 	for true {
-		url := r.URL.Query().Get("url")
-		method := r.URL.Query().Get("method")
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			result.ErrCode = common.Failed
+			result.Reason = "参数非法"
+			break
+		}
 
-		acl, ok := i.authorityHandler.QueryACL(url, method)
+		acl, ok := i.authorityHandler.QueryACLByID(id)
 		if ok {
 			result.ACL = acl
 			result.ErrCode = common.Success
@@ -122,7 +127,7 @@ func (i *aclGetByModuleRoute) Method() string {
 }
 
 func (i *aclGetByModuleRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetACL)
+	return net.JoinURL(def.URL, def.QueryACLByModule)
 }
 
 func (i *aclGetByModuleRoute) Handler() interface{} {
@@ -134,14 +139,14 @@ func (i *aclGetByModuleRoute) AuthGroup() int {
 }
 
 func (i *aclGetByModuleRoute) getACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getACLHandler")
+	log.Print("getACLByModuleHandler")
 	result := aclGetByModuleResult{}
 
 	for true {
 		module := r.URL.Query().Get("module")
 
 		result.Module = module
-		result.ACLs = i.authorityHandler.QueryModuleACL(module)
+		result.ACLs = i.authorityHandler.QueryACLByModule(module)
 		result.ErrCode = common.Success
 
 		break
@@ -192,10 +197,10 @@ func (i *aclPostRoute) postACLHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		url := r.FormValue("acl-url")
-		method := r.FormValue("acl-method")
-		module := r.FormValue("acl-module")
-		authGroup, err := strconv.Atoi(r.FormValue("acl-authgroup"))
+		url := r.FormValue("url")
+		method := r.FormValue("method")
+		module := r.FormValue("module")
+		authGroup, err := strconv.Atoi(r.FormValue("authgroup"))
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "参数非法"
@@ -314,8 +319,8 @@ func (i *aclPutRoute) putACLHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		enableList, _ := util.Str2IntArray(r.FormValue("acl-enablelist"))
-		disableList, _ := util.Str2IntArray(r.FormValue("acl-disablelist"))
+		enableList, _ := util.Str2IntArray(r.FormValue("enablelist"))
+		disableList, _ := util.Str2IntArray(r.FormValue("disablelist"))
 
 		ok := i.authorityHandler.UpdateACLStatus(enableList, disableList)
 		if ok {
@@ -336,45 +341,47 @@ func (i *aclPutRoute) putACLHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-type aclAuthGroupGetRoute struct {
+type aclGetAclAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type aclAuthGroupGetResult struct {
+type aclGetAclAuthGroupResult struct {
 	common.Result
 	ACL       int
 	AuthGroup model.AuthGroup
 }
 
-func (i *aclAuthGroupGetRoute) Method() string {
+func (i *aclGetAclAuthGroupRoute) Method() string {
 	return common.GET
 }
 
-func (i *aclAuthGroupGetRoute) Pattern() string {
+func (i *aclGetAclAuthGroupRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetACLAuthGroup)
 }
 
-func (i *aclAuthGroupGetRoute) Handler() interface{} {
+func (i *aclGetAclAuthGroupRoute) Handler() interface{} {
 	return i.getACLAuthGroupHandler
 }
 
-func (i *aclAuthGroupGetRoute) AuthGroup() int {
+func (i *aclGetAclAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclAuthGroupGetRoute) getACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+func (i *aclGetAclAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getACLAuthGroupHandler")
 
-	result := aclAuthGroupGetResult{}
+	result := aclGetAclAuthGroupResult{}
 	for true {
-		id, err := strconv.Atoi(r.URL.Query().Get("acl"))
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
 		if err != nil {
 			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
+			result.Reason = "参数非法"
 			break
 		}
 
 		result.ACL = id
+		result.ErrCode = common.Success
 		authGroup := i.authorityHandler.QueryACLAuthGroup(id)
 		switch authGroup {
 		case common.VisitorAuthGroup.ID:
@@ -383,9 +390,11 @@ func (i *aclAuthGroupGetRoute) getACLAuthGroupHandler(w http.ResponseWriter, r *
 			result.AuthGroup = common.UserAuthGroup
 		case common.MaintainerAuthGroup.ID:
 			result.AuthGroup = common.MaintainerAuthGroup
+		default:
+			result.ErrCode = common.Failed
+			result.Reason = "非法授权组"
 		}
 
-		result.ErrCode = common.Success
 		break
 	}
 
@@ -397,49 +406,44 @@ func (i *aclAuthGroupGetRoute) getACLAuthGroupHandler(w http.ResponseWriter, r *
 	w.Write(b)
 }
 
-type aclAuthGroupPutRoute struct {
+type aclPutACLAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
-type aclAuthGroupPutResult struct {
+type aclPutACLAuthGroupResult struct {
 	common.Result
 }
 
-func (i *aclAuthGroupPutRoute) Method() string {
+func (i *aclPutACLAuthGroupRoute) Method() string {
 	return common.PUT
 }
 
-func (i *aclAuthGroupPutRoute) Pattern() string {
+func (i *aclPutACLAuthGroupRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.PutACLAuthGroup)
 }
 
-func (i *aclAuthGroupPutRoute) Handler() interface{} {
+func (i *aclPutACLAuthGroupRoute) Handler() interface{} {
 	return i.putACLAuthGroupHandler
 }
 
-func (i *aclAuthGroupPutRoute) AuthGroup() int {
+func (i *aclPutACLAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclAuthGroupPutRoute) putACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+func (i *aclPutACLAuthGroupRoute) putACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("putACLAuthGroupHandler")
 
-	result := aclAuthGroupPutResult{}
+	result := aclPutACLAuthGroupResult{}
 	for true {
-		err := r.ParseForm()
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
 		if err != nil {
 			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-		id, err := strconv.Atoi(r.FormValue("acl-id"))
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
+			result.Reason = "参数非法"
 			break
 		}
 
-		authGroup, err := strconv.Atoi(r.FormValue("acl-authgroup"))
+		authGroup, err := strconv.Atoi(r.FormValue("authgroup"))
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"

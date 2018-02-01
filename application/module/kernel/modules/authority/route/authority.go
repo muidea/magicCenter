@@ -7,25 +7,25 @@ import (
 // AppendAuthorityRoute append authority route
 func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler) []common.Route {
 
-	rt := CreateACLGetRoute(authorityHandler)
+	rt := CreateGetACLByIDRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLGetByModuleRoute(authorityHandler)
+	rt = CreateGetACLByModuleRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLPostRoute(authorityHandler)
+	rt = CreatePostACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLDeleteRoute(authorityHandler)
+	rt = CreateDeleteACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLPutRoute(authorityHandler)
+	rt = CreatePutACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLAuthGroupGetRoute(authorityHandler)
+	rt = CreateGetACLAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateACLAuthGroupPutRoute(authorityHandler)
+	rt = CreatePutACLAuthGroupRoute(authorityHandler)
 	routes = append(routes, rt)
 
 	rt = CreateModuleACLGetRoute(authorityHandler)

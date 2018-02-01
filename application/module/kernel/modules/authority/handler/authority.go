@@ -60,7 +60,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	urlPattern := net.FormatRoutePattern(url, id)
 	urlMethod := req.Method
 
-	acl, ok := dal.QueryACL(i.dbhelper, urlPattern, urlMethod, "")
+	acl, ok := dal.QueryACLByID(i.dbhelper, urlPattern, urlMethod, "")
 	if !ok {
 		// 找不到ACL，当成没有权限来处理
 		return false
@@ -102,12 +102,12 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	return retVal
 }
 
-func (i *impl) QueryModuleACL(module string) []model.ACL {
-	return dal.QueryModuleACL(i.dbhelper, module)
+func (i *impl) QueryACLByModule(module string) []model.ACL {
+	return dal.QueryACLByModule(i.dbhelper, module)
 }
 
-func (i *impl) QueryACL(url, method, module string) (model.ACL, bool) {
-	return dal.QueryACL(i.dbhelper, url, method, module)
+func (i *impl) QueryACLByID(id int) (model.ACL, bool) {
+	return dal.QueryACLByID(i.dbhelper, id)
 }
 
 func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool) {
