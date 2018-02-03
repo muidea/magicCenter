@@ -19,7 +19,7 @@ class CatalogTest(MagicSession.MagicSession):
 
     def create(self, name, description, catalogs):
         'create'
-        params = {'name': name, 'description': description, 'parent': catalogs}
+        params = {'name': name, 'description': description, 'catalog': catalogs}
         val = self.post('/content/catalog/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create catalog success'
@@ -41,7 +41,7 @@ class CatalogTest(MagicSession.MagicSession):
     def update(self, catalog):
         'update'
         catalogs = join_str(catalog['Catalog'])
-        params = {'name': catalog['Name'], 'description': catalog['Description'], 'parent': catalogs}
+        params = {'name': catalog['Name'], 'description': catalog['Description'], 'catalog': catalogs}
         val = self.put('/content/catalog/%s?authToken=%s'%(catalog['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update catalog success'

@@ -13,7 +13,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendLinkRoute 追加User Route
@@ -226,7 +225,13 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		name := r.FormValue("name")
 		url := r.FormValue("url")
 		logo := r.FormValue("logo")
-		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		link, ok := i.contentHandler.CreateLink(name, url, logo, createDate, catalogs, user.ID)
 		if !ok {
@@ -300,7 +305,14 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link.Name = r.FormValue("name")
 		link.URL = r.FormValue("url")
 		link.Logo = r.FormValue("logo")
-		link.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+		link.Catalog = catalogs
 		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)

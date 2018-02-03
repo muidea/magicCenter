@@ -13,7 +13,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendMediaRoute 追加User Route
@@ -224,7 +223,13 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		name := r.FormValue("name")
 		url := r.FormValue("url")
 		desc := r.FormValue("desc")
-		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		media, ok := i.contentHandler.CreateMedia(name, url, desc, createDate, catalogs, user.ID)
 		if !ok {
@@ -298,7 +303,14 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Name = r.FormValue("name")
 		media.URL = r.FormValue("url")
 		media.Desc = r.FormValue("desc")
-		media.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+		media.Catalog = catalogs
 		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)

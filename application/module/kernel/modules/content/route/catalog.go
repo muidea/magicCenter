@@ -11,7 +11,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendCatalogRoute 追加User Route
@@ -222,7 +221,13 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 		name := r.FormValue("name")
 		description := r.FormValue("description")
 		createdate := time.Now().Format("2006-01-02 15:04:05")
-		catalogs, _ := util.Str2IntArray(r.FormValue("parent"))
+		var catalogs []int
+		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
 		catalog, ok := i.contentHandler.CreateCatalog(name, description, createdate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
@@ -295,7 +300,14 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		catalog.Name = r.FormValue("name")
 		catalog.Description = r.FormValue("description")
 		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("parent"))
+		var catalogs []int
+		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+		catalog.Catalog = catalogs
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {

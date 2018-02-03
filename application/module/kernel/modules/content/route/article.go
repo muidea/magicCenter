@@ -13,7 +13,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendArticleRoute 追加User Route
@@ -220,10 +219,16 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		r.ParseForm()
-
 		title := r.FormValue("title")
 		content := r.FormValue("content")
-		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		article, ok := i.contentHandler.CreateArticle(title, content, createDate, catalogs, user.ID)
 		if !ok {
@@ -296,7 +301,14 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		article.ID = id
 		article.Name = r.FormValue("title")
 		article.Content = r.FormValue("content")
-		article.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
+		var catalogs []int
+		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
+			break
+		}
+		article.Catalog = catalogs
 		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
