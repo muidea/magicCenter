@@ -201,9 +201,9 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		account := r.FormValue("user-account")
-		email := r.FormValue("user-email")
-		groups := r.FormValue("user-groups")
+		account := r.FormValue("account")
+		email := r.FormValue("email")
+		groups := r.FormValue("groups")
 
 		gValues, ok := util.Str2IntArray(groups)
 		if !ok {
@@ -284,15 +284,15 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		email := r.FormValue("user-email")
+		email := r.FormValue("email")
 		if email != "" {
 			user.Email = email
 		}
-		nickName := r.FormValue("user-name")
+		nickName := r.FormValue("name")
 		if nickName != "" {
 			user.Name = nickName
 		}
-		groups := r.FormValue("user-groups")
+		groups := r.FormValue("groups")
 		if groups != "" {
 			gValues, ok := util.Str2IntArray(groups)
 			if !ok {
@@ -303,7 +303,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			user.Groups = gValues
 		}
 
-		password := r.FormValue("user-password")
+		password := r.FormValue("password")
 		if len(password) > 0 {
 			user, ok = i.accountHandler.SaveUserWithPassword(user, password)
 		} else {

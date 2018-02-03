@@ -221,9 +221,9 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 
 		r.ParseForm()
 
-		title := r.FormValue("article-title")
-		content := r.FormValue("article-content")
-		catalogs, _ := util.Str2IntArray(r.FormValue("article-catalog"))
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		article, ok := i.contentHandler.CreateArticle(title, content, createDate, catalogs, user.ID)
 		if !ok {
@@ -294,9 +294,9 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		r.ParseForm()
 		article := model.ArticleDetail{}
 		article.ID = id
-		article.Name = r.FormValue("article-title")
-		article.Content = r.FormValue("article-content")
-		article.Catalog, _ = util.Str2IntArray(r.FormValue("article-catalog"))
+		article.Name = r.FormValue("title")
+		article.Content = r.FormValue("content")
+		article.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
 		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)

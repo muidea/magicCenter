@@ -125,8 +125,8 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		value := r.FormValue("cache-value")
-		age, err := strconv.Atoi(r.FormValue("cache-age"))
+		value := r.FormValue("value")
+		age, err := strconv.Atoi(r.FormValue("age"))
 		if err != nil {
 			age = 10
 		} else if age > 100.0 || age < 0 {

@@ -223,10 +223,10 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 
 		r.ParseForm()
 
-		name := r.FormValue("link-name")
-		url := r.FormValue("link-url")
-		logo := r.FormValue("link-logo")
-		catalogs, _ := util.Str2IntArray(r.FormValue("link-catalog"))
+		name := r.FormValue("name")
+		url := r.FormValue("url")
+		logo := r.FormValue("logo")
+		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		link, ok := i.contentHandler.CreateLink(name, url, logo, createDate, catalogs, user.ID)
 		if !ok {
@@ -297,10 +297,10 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		r.ParseForm()
 		link := model.LinkDetail{}
 		link.ID = id
-		link.Name = r.FormValue("link-name")
-		link.URL = r.FormValue("link-url")
-		link.Logo = r.FormValue("link-logo")
-		link.Catalog, _ = util.Str2IntArray(r.FormValue("link-catalog"))
+		link.Name = r.FormValue("name")
+		link.URL = r.FormValue("url")
+		link.Logo = r.FormValue("logo")
+		link.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
 		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)

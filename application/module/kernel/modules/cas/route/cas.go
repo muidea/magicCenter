@@ -90,8 +90,8 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
-		account := r.FormValue("user_account")
-		password := r.FormValue("user_password")
+		account := r.FormValue("account")
+		password := r.FormValue("password")
 		remoteAddr := r.RemoteAddr
 		log.Printf("account:%s,password:%s,remoteaddr:%s", account, password, remoteAddr)
 		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)

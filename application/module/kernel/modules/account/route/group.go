@@ -200,8 +200,8 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		name := r.FormValue("group-name")
-		description := r.FormValue("group-description")
+		name := r.FormValue("name")
+		description := r.FormValue("description")
 
 		group, ok := i.accountHandler.CreateGroup(name, description)
 		if !ok {
@@ -268,8 +268,8 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		name := r.FormValue("group-name")
-		description := r.FormValue("group-description")
+		name := r.FormValue("name")
+		description := r.FormValue("description")
 		group := model.Group{ID: id, Name: name, Description: description, Catalog: 0}
 		group, ok := i.accountHandler.SaveGroup(group)
 

@@ -219,10 +219,10 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 
 		r.ParseForm()
 
-		name := r.FormValue("catalog-name")
-		description := r.FormValue("catalog-description")
+		name := r.FormValue("name")
+		description := r.FormValue("description")
 		createdate := time.Now().Format("2006-01-02 15:04:05")
-		catalogs, _ := util.Str2IntArray(r.FormValue("catalog-parent"))
+		catalogs, _ := util.Str2IntArray(r.FormValue("parent"))
 		catalog, ok := i.contentHandler.CreateCatalog(name, description, createdate, catalogs, user.ID)
 		if !ok {
 			result.ErrCode = 1
@@ -292,10 +292,10 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		r.ParseForm()
 		catalog := model.CatalogDetail{}
 		catalog.ID = id
-		catalog.Name = r.FormValue("catalog-name")
-		catalog.Description = r.FormValue("catalog-description")
+		catalog.Name = r.FormValue("name")
+		catalog.Description = r.FormValue("description")
 		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("catalog-parent"))
+		catalog.Catalog, _ = util.Str2IntArray(r.FormValue("parent"))
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {

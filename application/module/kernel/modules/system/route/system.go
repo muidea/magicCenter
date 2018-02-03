@@ -108,13 +108,13 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 		r.ParseForm()
 
 		systemInfo := model.SystemInfo{}
-		systemInfo.Name = r.FormValue("system-name")
-		systemInfo.Description = r.FormValue("system-description")
-		systemInfo.Logo = r.FormValue("system-logo")
-		systemInfo.Domain = r.FormValue("system-domain")
-		systemInfo.MailServer = r.FormValue("system-mailsvr")
-		systemInfo.MailAccount = r.FormValue("system-mailaccount")
-		systemInfo.MailPassword = r.FormValue("system-mailpassword")
+		systemInfo.Name = r.FormValue("name")
+		systemInfo.Description = r.FormValue("description")
+		systemInfo.Logo = r.FormValue("logo")
+		systemInfo.Domain = r.FormValue("domain")
+		systemInfo.MailServer = r.FormValue("mailsvr")
+		systemInfo.MailAccount = r.FormValue("mailaccount")
+		systemInfo.MailPassword = r.FormValue("mailpassword")
 
 		if i.systemHandler.UpdateSystemConfig(systemInfo) {
 			result.ErrCode = common.Success

@@ -221,10 +221,10 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		r.ParseForm()
-		name := r.FormValue("media-name")
-		url := r.FormValue("media-url")
-		desc := r.FormValue("media-desc")
-		catalogs, _ := util.Str2IntArray(r.FormValue("media-catalog"))
+		name := r.FormValue("name")
+		url := r.FormValue("url")
+		desc := r.FormValue("desc")
+		catalogs, _ := util.Str2IntArray(r.FormValue("catalog"))
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		media, ok := i.contentHandler.CreateMedia(name, url, desc, createDate, catalogs, user.ID)
 		if !ok {
@@ -295,10 +295,10 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		r.ParseForm()
 		media := model.MediaDetail{}
 		media.ID = id
-		media.Name = r.FormValue("media-name")
-		media.URL = r.FormValue("media-url")
-		media.Desc = r.FormValue("media-desc")
-		media.Catalog, _ = util.Str2IntArray(r.FormValue("media-catalog"))
+		media.Name = r.FormValue("name")
+		media.URL = r.FormValue("url")
+		media.Desc = r.FormValue("desc")
+		media.Catalog, _ = util.Str2IntArray(r.FormValue("catalog"))
 		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
