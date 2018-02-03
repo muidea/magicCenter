@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/model"
@@ -127,9 +126,17 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 			result.Reason = "非法参数"
 			break
 		}
-		modules := strings.Split(r.FormValue("module"), ",")
 
-		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, modules)
+		var moduleAuthGroups []model.ModuleAuthGroup
+		content := r.FormValue("moduleAuthGroup")
+		err = json.Unmarshal([]byte(content), &moduleAuthGroups)
+		if err != nil {
+			result.ErrCode = common.Failed
+			result.Reason = "非法参数"
+			break
+		}
+
+		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, moduleAuthGroups)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

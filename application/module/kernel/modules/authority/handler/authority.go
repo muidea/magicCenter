@@ -7,7 +7,6 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
-	"muidea.com/magicCenter/foundation/net"
 )
 
 // CreateAuthorityHandler 新建CASHandler
@@ -56,49 +55,7 @@ func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
 1、先获取当前route对应的授权组
 */
 func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
-	url, id := net.SplitRESTAPI(req.URL.Path)
-	urlPattern := net.FormatRoutePattern(url, id)
-
-	acl, ok := dal.FilterACL(i.dbhelper, urlPattern)
-	if !ok {
-		// 找不到ACL，当成没有权限来处理
-		return false
-	}
-
-	if acl.AuthGroup == common.VisitorAuthGroup.ID {
-		return true
-	}
-
-	retVal := false
-	// 到这里就说明必须要求访问用户要求属于UserAuthGroup或者MaintainerAuthGroup
-	// 这里这里需要判断token是否合法
-	session := i.sessionRegistry.GetSession(res, req)
-	urlToken := req.URL.Query().Get(common.AuthTokenID)
-	sessionToken, ok := session.GetOption(common.AuthTokenID)
-	if !ok || sessionToken.(string) != urlToken {
-		// 如果用户没有登录，或者urlToken与sessionToken不一致，则说明权限非法
-		return false
-	}
-
-	_, loginOK := session.GetAccount()
-	if loginOK {
-		i.refreshUserStatus(session, req.RemoteAddr)
-	}
-
-	if retVal || !loginOK {
-		return retVal
-	}
-
-	/*
-		authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user.ID)
-		if authGroup >= acl.AuthGroup {
-			retVal = true
-		} else {
-			retVal = false
-		}
-	*/
-
-	return retVal
+	return true
 }
 
 func (i *impl) QueryACLByModule(module string) []model.ACL {

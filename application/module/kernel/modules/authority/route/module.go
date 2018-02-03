@@ -9,7 +9,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // CreateGetModuleACLRoute 新建ModuleACLGetRoute
@@ -162,9 +161,17 @@ func (i *modulePutUserAuthGroupRoute) putModuleUserAuthGroupHandler(w http.Respo
 		}
 
 		_, id := net.SplitRESTAPI(r.URL.Path)
-		users, ok := util.Str2IntArray(r.FormValue("user"))
 
-		ok = i.authorityHandler.UpdateModuleUserAuthGroup(id, users)
+		var userAuthGroups []model.UserAuthGroup
+		content := r.FormValue("userAuthGroup")
+		err = json.Unmarshal([]byte(content), &userAuthGroups)
+		if err != nil {
+			result.ErrCode = common.Failed
+			result.Reason = "非法参数"
+			break
+		}
+
+		ok := i.authorityHandler.UpdateModuleUserAuthGroup(id, userAuthGroups)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

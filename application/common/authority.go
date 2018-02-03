@@ -31,12 +31,12 @@ type AuthorityHandler interface {
 	// 查询指定模块的拥有者
 	QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroupInfo
 	// 更新指定模块的拥有者
-	UpdateModuleUserAuthGroup(module string, users []model.UserAuthGroup) bool
+	UpdateModuleUserAuthGroup(module string, userAuthGroups []model.UserAuthGroup) bool
 
 	// 查询指定用户的ACL列表
 	QueryUserACL(user int) []model.ACL
 	// 查询指定用户使用的模块信息
 	QueryUserModuleAuthGroup(user int) model.UserModuleAuthGroupInfo
 	// 更新指定用户使用的模块信息
-	UpdateUserModuleAuthGroup(user int, modules []model.ModuleAuthGroup) bool
+	UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.ModuleAuthGroup) bool
 }
