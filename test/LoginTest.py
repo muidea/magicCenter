@@ -11,7 +11,7 @@ class LoginTest(MagicSession.MagicSession):
 
     def login(self, account, password):
         'login'
-        params = {'user_account': account, 'user_password': password}
+        params = {'account': account, 'password': password}
         val = self.post('/cas/user/', params)
         if val and val['ErrCode'] == 0:
             self.authority_token = val['AuthToken']

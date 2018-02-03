@@ -18,7 +18,7 @@ class LinkTest(MagicSession.MagicSession):
 
     def create(self, name, url, logo, catalogs):
         'create'
-        params = {'link-name': name, 'link-url': url, 'link-logo': logo, 'link-catalog': catalogs}
+        params = {'name': name, 'url': url, 'logo': logo, 'catalog': catalogs}
         val = self.post('/content/link/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create link success'
@@ -40,7 +40,7 @@ class LinkTest(MagicSession.MagicSession):
     def update(self, link):
         'update'
         catalogs = join_str(link['Catalog'])
-        params = {'link-name': link['Name'], 'link-url': link['URL'], 'link-logo': link['Logo'], 'link-catalog': catalogs}
+        params = {'name': link['Name'], 'url': link['URL'], 'logo': link['Logo'], 'catalog': catalogs}
         val = self.put('/content/link/%s?authToken=%s'%(link['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update link success'

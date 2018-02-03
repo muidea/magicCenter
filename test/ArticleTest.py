@@ -19,7 +19,7 @@ class ArticleTest(MagicSession.MagicSession):
 
     def create(self, title, content, catalogs):
         'create'
-        params = {'article-title': title, 'article-content': content, 'article-catalog': catalogs}
+        params = {'title': title, 'content': content, 'catalog': catalogs}
         val = self.post('/content/article/?authToken=%s'%(self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'create article success'
@@ -41,7 +41,7 @@ class ArticleTest(MagicSession.MagicSession):
     def update(self, article):
         'update'
         catalogs = join_str(article['Catalog'])
-        params = {'article-title': article['Name'], 'article-content': article['Content'], 'article-catalog': catalogs}
+        params = {'title': article['Name'], 'content': article['Content'], 'catalog': catalogs}
         val = self.put('/content/article/%s?authToken=%s'%(article['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update article success'

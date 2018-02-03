@@ -18,7 +18,7 @@ class MediaTest(MagicSession.MagicSession):
 
     def create(self, name, url, desc, catalogs):
         'create'
-        params = {'media-name': name, 'media-url': url, 'media-desc': desc, 'media-catalog': catalogs}
+        params = {'name': name, 'url': url, 'desc': desc, 'catalog': catalogs}
         val = self.post('/content/media/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create media success'
@@ -40,7 +40,7 @@ class MediaTest(MagicSession.MagicSession):
     def update(self, media):
         'update'
         catalogs = join_str(media['Catalog'])
-        params = {'media-name': media['Name'], 'media-url': media['URL'], 'media-desc': media['Desc'], 'media-catalog': catalogs}
+        params = {'name': media['Name'], 'url': media['URL'], 'desc': media['Desc'], 'catalog': catalogs}
         val = self.put('/content/media/%s?authToken=%s'%(media['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update media success'

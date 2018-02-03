@@ -11,7 +11,7 @@ class UserTest(MagicSession.MagicSession):
 
     def create(self, account, email):
         "CreateUser"
-        params = {'user-account': account, 'user-email': email, 'user-groups': "1,2"}
+        params = {'account': account, 'email': email, 'groups': "1,2"}
         val = self.post('/account/user/', params)
         if val and val['ErrCode'] == 0:
             print 'create user success'
@@ -23,7 +23,7 @@ class UserTest(MagicSession.MagicSession):
 
     def update(self, user):
         'UpdateUser'
-        params = {'user-email': user['Email'], 'user-name': user['Name']}
+        params = {'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update user success'
@@ -33,7 +33,7 @@ class UserTest(MagicSession.MagicSession):
 
     def updatepassword(self, user, pwd):
         'UpdateUserPassword'
-        params = {'user-password': pwd, 'user-email': user['Email'], 'user-name': user['Name']}
+        params = {'password': pwd, 'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update user password success'

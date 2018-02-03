@@ -10,14 +10,14 @@ class CacheTest(MagicSession.MagicSession):
 
     def put_in(self, data):
         'put_in'
-        params = {'cache-value': data, 'cache-age': 100}
+        params = {'value': data, 'age': 100}
         val = self.post('/cache/item/', params)
         if val and val['ErrCode'] == 0:
             self.authority_token = val['Token']
             print 'put in success'
             return True
 
-        print 'put in failed'
+        print('put in failed')
         return False        
 
     def fetch_out(self, token):

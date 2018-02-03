@@ -12,7 +12,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def create(self, name, description):
         "CreateGroup"
-        params = {'group-name': name, 'group-description': description}
+        params = {'name': name, 'description': description}
         val = self.post('/account/group/?authToken=%s'%self.authority_token, params)
         if val and val['ErrCode'] == 0:
             print 'create group success'
@@ -23,7 +23,7 @@ class GroupTest(MagicSession.MagicSession):
 
     def save(self, group):
         "UpdateGroup"
-        params = {'group-name': group['Name'], 'group-description': group['Description']}
+        params = {'name': group['Name'], 'description': group['Description']}
         val = self.put('/account/group/%d?authToken=%s'%(group['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'update group success'

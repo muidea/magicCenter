@@ -12,8 +12,8 @@ class FileRegistryTest(MagicSession.MagicSession):
     
     def upload_file(self, file_name):
         'upload file'
-        key_name = "test-name"
-        params = {"test-name": open(file_name, 'rb')}
+        key_name = "name"
+        params = {"name": open(file_name, 'rb')}
         val = self.upload('/fileregistry/file/?key-name=%s&authToken=%s'%(key_name, self.authority_token), params)
         if val and val['ErrCode'] == 0:
             print 'upload file success'
