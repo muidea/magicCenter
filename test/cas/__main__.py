@@ -1,0 +1,3 @@
+import LoginTest
+
+LoginTest.main()

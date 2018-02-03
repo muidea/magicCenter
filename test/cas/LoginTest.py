@@ -1,6 +1,7 @@
 'LoginTest'
 
-import MagicSession
+from session import MagicSession
+import sys
 
 class LoginTest(MagicSession.MagicSession):
     'LoginTest'
@@ -37,7 +38,7 @@ class LoginTest(MagicSession.MagicSession):
         else:
             print 'get user status failed'
 
-if __name__ == '__main__':
+def main():
     APP = LoginTest('http://localhost:8888')
     APP.login('rangh@126.com', '123')
     APP.status(APP.authority_token)
