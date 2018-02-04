@@ -17,26 +17,26 @@ class LoginTest(MagicSession.MagicSession):
         if val and val['ErrCode'] == 0:
             self.authority_token = val['AuthToken']
             self.current_user = val['User']
-            print 'login success'
+            print('login success')
             return True
-        print 'login failed'
+        print('login failed')
         return False
 
     def logout(self, auth_token):
         'logout'
         val = self.delete('/cas/user/?authToken=%s'%auth_token)
         if val and val['ErrCode'] == 0:
-            print 'logout success'
+            print('logout success')
         else:
-            print 'logout failed'
+            print('logout failed')
 
     def status(self, auth_token):
         'status'
         val = self.get('/cas/user/?authToken=%s'%auth_token)
         if val and val['ErrCode'] == 0:
-            print 'get user status success'
+            print('get user status success')
         else:
-            print 'get user status failed'
+            print('get user status failed')
 
 def main():
     APP = LoginTest('http://localhost:8888')
