@@ -1,7 +1,7 @@
 "ArticleTest"
 
-import MagicSession
-import LoginTest
+from session import MagicSession
+from cas import LoginTest
 
 def join_str(catalog):
     'JoinStr'
@@ -18,13 +18,11 @@ class ArticleTest(MagicSession.MagicSession):
 
     def create(self, title, content, catalogs):
         'create article'
-        params = {'title': title, 'content': content, 'catalog': catalogs}
+        params = {'title': title, 'content': content, 'catalog': str(catalogs)}
         val = self.post('/content/article/?authToken=%s'%(self.authority_token), params)
-        print(val)
         if val and val['ErrCode'] == 0:
-            article = val['Article']
-            return article['Name'] == title and article['Catalog'] == catalogs
-        return False
+            return val['Article']
+        return None
 
     def destroy(self, article_id):
         'destroy'
@@ -38,14 +36,10 @@ class ArticleTest(MagicSession.MagicSession):
 
     def update(self, article):
         'update'
-        catalogs = join_str(article['Catalog'])
-        params = {'title': article['Name'], 'content': article['Content'], 'catalog': catalogs}
+        params = {'title': article['Name'], 'content': article['Content'], 'catalog': str(article['Catalog'])}
         val = self.put('/content/article/%s?authToken=%s'%(article['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
-            print('update article success')
             return val['Article']
-
-        print('update article failed')
         return None
 
     def query(self, article_id):
@@ -68,7 +62,7 @@ class ArticleTest(MagicSession.MagicSession):
         print('query_all article failed')
         return None
 
-if __name__ == '__main__':
+def main():
     LOGIN = LoginTest.LoginTest('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
@@ -89,7 +83,7 @@ if __name__ == '__main__':
             ARTICLE = APP.query(ARTICLE_ID)
             if not ARTICLE:
                 print('query article failed')
-            elif cmp(ARTICLE['Content'],'aaaaaa, bb dsfsdf  erewre') != 0:
+            elif not (ARTICLE['Content'] == 'aaaaaa, bb dsfsdf  erewre'):
                 print('update article failed, content invalid')
 
             if len(APP.query_all()) <= 0:

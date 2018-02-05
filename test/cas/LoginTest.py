@@ -1,7 +1,6 @@
 'LoginTest'
 
 from session import MagicSession
-import sys
 
 class LoginTest(MagicSession.MagicSession):
     'LoginTest'
@@ -12,7 +11,6 @@ class LoginTest(MagicSession.MagicSession):
 
     def login(self, account, password):
         'login'
-        print('login')
         params = {'account': account, 'password': password}
         val = self.post('/cas/user/', params)
         if val and val['ErrCode'] == 0:
@@ -23,7 +21,6 @@ class LoginTest(MagicSession.MagicSession):
 
     def logout(self, auth_token):
         'logout'
-        print('logout')
         val = self.delete('/cas/user/?authToken=%s'%auth_token)
         if val and val['ErrCode'] == 0:
             return True
@@ -31,7 +28,6 @@ class LoginTest(MagicSession.MagicSession):
 
     def status(self, auth_token):
         'status'
-        print('status')
         val = self.get('/cas/user/?authToken=%s'%auth_token)
         if val and val['ErrCode'] == 0:
             return val['AccountInfo']

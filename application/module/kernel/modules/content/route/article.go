@@ -228,7 +228,6 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		article, ok := i.contentHandler.CreateArticle(title, content, createDate, catalogs, user.ID)
 		if !ok {
