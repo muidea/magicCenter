@@ -80,10 +80,18 @@ func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACL, bool) {
 }
 
 // FilterACL 查询指定的ACL
-func FilterACL(helper dbhelper.DBHelper, url string) []model.ACL {
-	acl := []model.ACL{}
+func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACL, bool) {
+	acl := model.ACL{}
+	retVal := false
 
-	return acl
+	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where url='%s' and method='%s'", url, method)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &acl.AuthGroup)
+		retVal = true
+	}
+
+	return acl, retVal
 }
 
 // UpateACL 更新ACL记录

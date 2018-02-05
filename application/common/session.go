@@ -15,8 +15,8 @@ type Session interface {
 	RemoveOption(key string)
 
 	// 获取当前登陆账号
-	GetAccount() (model.UserDetail, bool)
-	SetAccount(user model.UserDetail)
+	GetAccount() (model.User, bool)
+	SetAccount(user model.User)
 	ClearAccount()
 
 	OptionKey() []string

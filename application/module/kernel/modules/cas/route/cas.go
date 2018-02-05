@@ -93,16 +93,12 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		account := r.FormValue("account")
 		password := r.FormValue("password")
 		remoteAddr := r.RemoteAddr
-		log.Printf("account:%s,password:%s,remoteaddr:%s", account, password, remoteAddr)
 		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "登入失败"
 			break
 		}
-
-		session.SetOption(common.AuthTokenID, token)
-		session.SetAccount(user)
 
 		result.ErrCode = 0
 		result.User = user
@@ -161,9 +157,6 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			result.Reason = "非法请求"
 			break
 		}
-
-		session.ClearAccount()
-		session.RemoveOption(common.AuthTokenID)
 
 		result.ErrCode = 0
 		break

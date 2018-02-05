@@ -39,17 +39,17 @@ func (s *sessionImpl) RemoveOption(key string) {
 	s.save()
 }
 
-func (s *sessionImpl) GetAccount() (model.UserDetail, bool) {
-	account := model.UserDetail{}
+func (s *sessionImpl) GetAccount() (model.User, bool) {
+	account := model.User{}
 	user, found := s.context["$$userAccount"]
 	if found {
-		account = user.(model.UserDetail)
+		account = user.(model.User)
 	}
 
 	return account, found
 }
 
-func (s *sessionImpl) SetAccount(user model.UserDetail) {
+func (s *sessionImpl) SetAccount(user model.User) {
 	s.context["$$userAccount"] = user
 
 	s.save()

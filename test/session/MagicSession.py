@@ -16,9 +16,9 @@ class MagicSession(object):
         "Post"
         ret = None
         try:
-            result = self.currentSesion.post('%s%s'%(self.base_url, url), params)
-            print(result.text)
-            ret = json.loads(result.text)
+            response = self.currentSesion.post('%s%s'%(self.base_url, url), params)
+            print(response.text)
+            ret = json.loads(response.text)
         except ValueError as e:
             print(e)
 
@@ -28,9 +28,9 @@ class MagicSession(object):
         "Get"
         ret = None
         try:
-            result = self.currentSesion.get('%s%s'%(self.base_url, url))
-            print(result.text)
-            ret = json.loads(result.text)
+            response = self.currentSesion.get('%s%s'%(self.base_url, url))
+            print(response.text)
+            ret = json.loads(response.text)
         except ValueError as e:
             print(e)
 
@@ -40,9 +40,9 @@ class MagicSession(object):
         "Put"
         ret = None
         try:
-            result = self.currentSesion.put('%s%s'%(self.base_url, url), params)
-            print(result.text)
-            ret = json.loads(result.text)
+            response = self.currentSesion.put('%s%s'%(self.base_url, url), params)
+            print(response.text)
+            ret = json.loads(response.text)
         except ValueError as e:
             print(e)
 
@@ -52,9 +52,9 @@ class MagicSession(object):
         "Delete"
         ret = None
         try:
-            result = self.currentSesion.delete('%s%s'%(self.base_url, url))
-            print(result.text)
-            ret = json.loads(result.text)
+            response = self.currentSesion.delete('%s%s'%(self.base_url, url))
+            print(response.text)
+            ret = json.loads(response.text)
         except ValueError as e:
             print(e)
 
@@ -64,9 +64,9 @@ class MagicSession(object):
         "Upload"
         ret = None
         try:
-            result = self.currentSesion.post('%s%s'%(self.base_url, url), params)
-            print(result.text)
-            ret = json.loads(result.text)
+            response = self.currentSesion.post('%s%s'%(self.base_url, url), params)
+            print(response.text)
+            ret = json.loads(response.text)
         except ValueError as e:
             print(e)
 
