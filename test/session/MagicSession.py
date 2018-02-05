@@ -2,7 +2,6 @@
 
 import requests
 import json
-
 class MagicSession(object):
     "MagicSession"
     def __init__(self, base_url):
@@ -29,7 +28,7 @@ class MagicSession(object):
         "Get"
         ret = None
         try:
-            result = self.currentSesion.post('%s%s'%(self.base_url, url))
+            result = self.currentSesion.get('%s%s'%(self.base_url, url))
             print(result.text)
             ret = json.loads(result.text)
         except ValueError as e:
