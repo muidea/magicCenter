@@ -3,13 +3,6 @@
 from session import MagicSession
 from cas import LoginTest
 
-def join_str(catalog):
-    'JoinStr'
-    ret = ''
-    for v in catalog:
-        ret = '%s,%d'%(ret, v)
-    return ret
-
 class ArticleTest(MagicSession.MagicSession):
     'ArticleTest'
     def __init__(self, base_url, auth_token):
@@ -28,7 +21,6 @@ class ArticleTest(MagicSession.MagicSession):
         'destroy'
         val = self.delete('/content/article/%s?authToken=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print('destroy article success')
             return True
 
         print('destroy article failed')
@@ -46,20 +38,14 @@ class ArticleTest(MagicSession.MagicSession):
         'query'
         val = self.get('/content/article/%d?authToken=%s'%(article_id, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print('query article success')
             return val['Article']
-
-        print('query article failed')
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/article/?authToken=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
-            print('query_all article success')
             return val['Article']
-
-        print('query_all article failed')
         return None
 
 def main():
