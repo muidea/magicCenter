@@ -10,7 +10,6 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
 )
 
 // AppendUserRoute 追加User Route
@@ -203,16 +202,15 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		account := r.FormValue("account")
 		email := r.FormValue("email")
-		groups := r.FormValue("groups")
-
-		gValues, ok := util.Str2IntArray(groups)
-		if !ok {
-			result.ErrCode = common.Failed
-			result.Reason = "非法用户分组信息"
+		var groups []int
+		err = json.Unmarshal([]byte(r.FormValue("group")), &groups)
+		if err != nil {
+			result.ErrCode = 1
+			result.Reason = "无效参数"
 			break
 		}
 
-		user, ok := i.accountHandler.CreateUser(account, email, gValues)
+		user, ok := i.accountHandler.CreateUser(account, email, groups)
 		if !ok {
 			result.ErrCode = common.Failed
 			result.Reason = "创建新用户失败"
@@ -292,15 +290,17 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		if nickName != "" {
 			user.Name = nickName
 		}
-		groups := r.FormValue("groups")
-		if groups != "" {
-			gValues, ok := util.Str2IntArray(groups)
-			if !ok {
-				result.ErrCode = common.Failed
-				result.Reason = "非法用户分组信息"
+
+		strGroup := r.FormValue("group")
+		if len(strGroup) > 0 {
+			var groups []int
+			err = json.Unmarshal([]byte(strGroup), &groups)
+			if err != nil {
+				result.ErrCode = 1
+				result.Reason = "无效参数"
 				break
 			}
-			user.Groups = gValues
+			user.Groups = groups
 		}
 
 		password := r.FormValue("password")

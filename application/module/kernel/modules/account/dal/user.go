@@ -106,7 +106,7 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 	user.RegisterTime = createTime
 
 	// insert
-	sql = fmt.Sprintf("insert into account_user(account, password, nickname, email, groups, status, createtime) values ('%s', '%s', '%s', '%s', '%s', %d, '%s')", account, "", "", email, gVal, 0, createTime)
+	sql = fmt.Sprintf("insert into account_user(account, password, nickname, email, groups, status, registertime) values ('%s', '%s', '%s', '%s', '%s', %d, '%s')", account, "", "", email, gVal, 0, createTime)
 	_, result := helper.Execute(sql)
 	if result {
 		sql = fmt.Sprintf("select id from account_user where account='%s' and email='%s'", account, email)

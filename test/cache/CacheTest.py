@@ -1,44 +1,51 @@
 "CacheTest"
 
-import MagicSession
+from session import MagicSession
+from cas import LoginTest
 
 class CacheTest(MagicSession.MagicSession):
     'CacheTest'
-    def __init__(self, base_url):
+    def __init__(self, base_url, authorityToken):
         MagicSession.MagicSession.__init__(self, base_url)
-        self.authority_token = ''
+        self.authority_token = authorityToken
 
     def put_in(self, data):
         'put_in'
         params = {'value': data, 'age': 100}
-        val = self.post('/cache/item/', params)
+        val = self.post('/cache/item/?authToken=%s'%(self.authority_token), params)
         if val and val['ErrCode'] == 0:
-            self.authority_token = val['Token']
-            print 'put in success'
-            return True
-
-        print('put in failed')
-        return False        
+            return val['Token']
+        return None
 
     def fetch_out(self, token):
         'fetch_out'
-        val = self.get('/cache/item/%s'%token)
+        val = self.get('/cache/item/%s?authToken=%s'%(token, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print 'fetch out success'
+            return val['Cache']
         else:
-            print 'fetch out failed'
+            return None
 
     def remove(self, token):
         'query'
-        val = self.delete('/cache/item/%s'%token)
+        val = self.delete('/cache/item/%s?authToken=%s'%(token, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print 'remove cache success'
+            return True
         else:
-            print 'remove cache failed'
+            return False
 
-if __name__ == '__main__':
-    APP = CacheTest('http://localhost:8888')
-    if APP.put_in("Test"):
-        APP.fetch_out(APP.authority_token)
+def main():
+    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    if not LOGIN.login('rangh@126.com', '123'):
+        print('login failed')
+    else:    
+        APP = CacheTest('http://localhost:8888', LOGIN.authority_token)
+        token = APP.put_in("Test")
+        if token:
+            if not APP.fetch_out(token):
+                print("fetch out failed")
 
-        APP.remove(APP.authority_token)
+            if not APP.remove(token):
+                print("remove failed")
+        else:
+            print("put in cache failed")
+    LOGIN.logout(LOGIN.authority_token)

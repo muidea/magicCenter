@@ -1,7 +1,7 @@
 "UserTest"
 
-import MagicSession
-import LoginTest
+from session import MagicSession
+from cas import LoginTest
 
 class UserTest(MagicSession.MagicSession):
     "UserTest"
@@ -11,14 +11,10 @@ class UserTest(MagicSession.MagicSession):
 
     def create(self, account, email):
         "CreateUser"
-        params = {'account': account, 'email': email, 'groups': "1,2"}
+        params = {'account': account, 'email': email, 'group': str([1,2])}
         val = self.post('/account/user/', params)
         if val and val['ErrCode'] == 0:
-            print 'create user success'
             return val['User']
-
-        print 'create user failed'
-        print val
         return None
 
     def update(self, user):
@@ -26,9 +22,7 @@ class UserTest(MagicSession.MagicSession):
         params = {'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
-            print 'update user success'
             return val['User']
-        print 'update user failed'
         return None
 
     def updatepassword(self, user, pwd):
@@ -36,18 +30,14 @@ class UserTest(MagicSession.MagicSession):
         params = {'password': pwd, 'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
         if val and val['ErrCode'] == 0:
-            print 'update user password success'
             return val['User']
-        print 'update user password failed'
         return None
 
     def find(self, user_id):
         'FindUser'
         val = self.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print 'find user success'
             return val['User']
-        print 'find user failed'
         return None
 
     def find_all(self):
@@ -55,11 +45,8 @@ class UserTest(MagicSession.MagicSession):
         val = self.get('/account/user/?authToken=%s'%self.authority_token)
         if val and val['ErrCode'] == 0:
             if len(val['User']) != 2:
-                print 'find all user failed'
                 return False
-
             return True
-
         return False
 
 
@@ -67,49 +54,40 @@ class UserTest(MagicSession.MagicSession):
         'DestroyUser'
         val = self.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['ErrCode'] == 0:
-            print 'destroy user success'
             return True
-        print 'destroy user failed'
         return False
 
-if __name__ == '__main__':
+def main():
     LOGIN = LoginTest.LoginTest('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
-        print 'login failed'
+        print('login failed')
     else:    
         APP = UserTest('http://localhost:8888', LOGIN.authority_token)
         USER = APP.create('testUser12', 'rangh@test.com')
         if USER:
             USER_ID = USER['ID']
-            print USER
-            USER_NEW = APP.updatepassword(USER, '123')
-            #if USER_NEW:
-                #LOGIN = LoginTest.LoginTest('http://localhost:8888')
-                #if not LOGIN.login(USER['Account'], '123'):
-                #    print 'update user password failed'
-            USER_NEW = None
+            if not APP.updatepassword(USER, '123'):
+                print("updatepassword failed")
 
             USER['Name'] = '11223'
             USER = APP.update(USER)
             if USER:
-                print USER
-                if cmp(USER['Name'], '11223') != 0:
-                    print 'update user failed'
+                if not (USER['Name'] == '11223'):
+                    print('update user failed')
             else:
-                print 'update user failed'
+                print('update user failed')
 
             USER = APP.find(USER_ID)
             if USER:
-                print USER
-                if cmp(USER['Name'], '11223') != 0:
-                    print 'find user failed'
+                if not (USER['Name'] == '11223'):
+                    print('find user failed')
             else:
-                print 'find user failed'
+                print('find user failed')
 
             APP.destroy(USER_ID)
 
             APP.find_all()
         else:
-            print 'create user failed'
+            print('create user failed')
 
         LOGIN.logout(LOGIN.authority_token)
