@@ -1,9 +1,9 @@
-'LoginTest'
+'Login'
 
 from session import MagicSession
 
-class LoginTest(MagicSession.MagicSession):
-    'LoginTest'
+class Login(MagicSession.MagicSession):
+    'Login'
     def __init__(self, base_url):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = ''
@@ -34,7 +34,7 @@ class LoginTest(MagicSession.MagicSession):
         return None
 
 def main():
-    APP = LoginTest('http://localhost:8888')
+    APP = Login('http://localhost:8888')
     APP.login('rangh@126.com', '123')
     APP.status(APP.authority_token)
     APP.logout('123')

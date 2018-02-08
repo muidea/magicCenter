@@ -1,3 +1,3 @@
-from cache import CacheTest
+from cache import Cache
 
-CacheTest.main()
+Cache.main()

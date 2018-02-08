@@ -1,9 +1,9 @@
-"GruopTest"
+"Gruop"
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class GroupTest(MagicSession.MagicSession):
-    "GroupTest"
+class Group(MagicSession.MagicSession):
+    "Group"
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -53,11 +53,11 @@ class GroupTest(MagicSession.MagicSession):
             return False
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:    
-        APP = GroupTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Group('http://localhost:8888', LOGIN.authority_token)
         GROUP = APP.create('testGorup1', 'test description')
         if GROUP:
             GROUP_ID = GROUP['ID']

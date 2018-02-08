@@ -1,10 +1,10 @@
-"CatalogTest"
+"Catalog"
 
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class CatalogTest(MagicSession.MagicSession):
-    'CatalogTest'
+class Catalog(MagicSession.MagicSession):
+    'Catalog'
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -48,11 +48,11 @@ class CatalogTest(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:
-        APP = CatalogTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Catalog('http://localhost:8888', LOGIN.authority_token)
         CATALOG = APP.create('testCatalog', 'testDescription', [8,9])
         if CATALOG:
             CATALOG_ID = CATALOG['ID']

@@ -1,3 +1,3 @@
-from cas import LoginTest
+from cas import Login
 
-LoginTest.main()
+Login.main()

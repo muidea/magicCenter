@@ -1,10 +1,10 @@
-"CacheTest"
+"Cache"
 
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class CacheTest(MagicSession.MagicSession):
-    'CacheTest'
+class Cache(MagicSession.MagicSession):
+    'Cache'
     def __init__(self, base_url, authorityToken):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = authorityToken
@@ -34,11 +34,11 @@ class CacheTest(MagicSession.MagicSession):
             return False
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:    
-        APP = CacheTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Cache('http://localhost:8888', LOGIN.authority_token)
         token = APP.put_in("Test")
         if token:
             if not APP.fetch_out(token):

@@ -1,9 +1,9 @@
-"LinkTest"
+"Link"
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class LinkTest(MagicSession.MagicSession):
-    'LinkTest'
+class Link(MagicSession.MagicSession):
+    'Link'
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -46,11 +46,11 @@ class LinkTest(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:
-        APP = LinkTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Link('http://localhost:8888', LOGIN.authority_token)
         LINK = APP.create('testLink', 'test link url', 'test link logo', [8,9])
         if LINK:
             LINK_ID = LINK['ID']

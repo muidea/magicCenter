@@ -1,9 +1,9 @@
-from content import ArticleTest
-from content import CatalogTest
-from content import LinkTest
-from content import MediaTest
+from content import Article
+from content import Catalog
+from content import Link
+from content import Media
 
-ArticleTest.main()
-CatalogTest.main()
-LinkTest.main()
-MediaTest.main()
+Article.main()
+Catalog.main()
+Link.main()
+Media.main()

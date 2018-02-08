@@ -1,5 +1,5 @@
-from account import UserTest
-from account import GroupTest
+from account import User
+from account import Group
 
-UserTest.main()
-GroupTest.main()
+User.main()
+Group.main()

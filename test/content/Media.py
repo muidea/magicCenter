@@ -1,10 +1,10 @@
-"MediaTest"
+"Media"
 
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class MediaTest(MagicSession.MagicSession):
-    'MediaTest'
+class Media(MagicSession.MagicSession):
+    'Media'
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -47,11 +47,11 @@ class MediaTest(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:
-        APP = MediaTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Media('http://localhost:8888', LOGIN.authority_token)
         MEDIA = APP.create('testMedia', 'test media url', 'test media desc', [8,9])
         if MEDIA:
             MEDIA_ID = MEDIA['ID']

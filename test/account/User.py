@@ -1,10 +1,10 @@
-"UserTest"
+"User"
 
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class UserTest(MagicSession.MagicSession):
-    "UserTest"
+class User(MagicSession.MagicSession):
+    "User"
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -58,11 +58,11 @@ class UserTest(MagicSession.MagicSession):
         return False
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:    
-        APP = UserTest('http://localhost:8888', LOGIN.authority_token)
+        APP = User('http://localhost:8888', LOGIN.authority_token)
         USER = APP.create('testUser12', 'rangh@test.com')
         if USER:
             USER_ID = USER['ID']

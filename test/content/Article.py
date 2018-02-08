@@ -1,10 +1,10 @@
-"ArticleTest"
+"Article"
 
 from session import MagicSession
-from cas import LoginTest
+from cas import Login
 
-class ArticleTest(MagicSession.MagicSession):
-    'ArticleTest'
+class Article(MagicSession.MagicSession):
+    'Article'
     def __init__(self, base_url, auth_token):
         MagicSession.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
@@ -49,11 +49,11 @@ class ArticleTest(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = LoginTest.LoginTest('http://localhost:8888')
+    LOGIN = Login.Login('http://localhost:8888')
     if not LOGIN.login('rangh@126.com', '123'):
         print('login failed')
     else:
-        APP = ArticleTest('http://localhost:8888', LOGIN.authority_token)
+        APP = Article('http://localhost:8888', LOGIN.authority_token)
         ARTICLE = APP.create('testArticle', 'test article content', [8,9])
         if ARTICLE:
             ARTICLE_ID = ARTICLE['ID']
