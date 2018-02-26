@@ -54,6 +54,11 @@ type accountLoginRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
+type accountLoginParam struct {
+	Account  string
+	Password string
+}
+
 type accountLoginResult struct {
 	common.Result
 	User      model.UserDetail
@@ -83,17 +88,16 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 	session := i.sessionRegistry.GetSession(w, r)
 	result := accountLoginResult{}
 	for true {
-		err := r.ParseForm()
+		param := &accountLoginParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		account := r.FormValue("account")
-		password := r.FormValue("password")
 		remoteAddr := r.RemoteAddr
-		user, token, ok := i.casHandler.LoginAccount(account, password, remoteAddr)
+		user, token, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "登入失败"
