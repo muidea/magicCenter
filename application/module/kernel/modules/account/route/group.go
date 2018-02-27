@@ -167,6 +167,11 @@ type groupCreateRoute struct {
 	accountHandler common.AccountHandler
 }
 
+type groupCreateParam struct {
+	Name        string
+	Description string
+}
+
 type groupCreateResult struct {
 	common.Result
 	Group model.Group
@@ -193,17 +198,15 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 
 	result := groupCreateResult{}
 	for true {
-		err := r.ParseForm()
+		param := &groupCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "非法参数"
 			break
 		}
 
-		name := r.FormValue("name")
-		description := r.FormValue("description")
-
-		group, ok := i.accountHandler.CreateGroup(name, description)
+		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
@@ -225,6 +228,11 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 
 type groupSaveRoute struct {
 	accountHandler common.AccountHandler
+}
+
+type groupSaveParam struct {
+	Name        string
+	Description string
 }
 
 type groupSaveResult struct {
@@ -261,16 +269,15 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		err = r.ParseForm()
+		param := &groupSaveParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "非法参数"
 			break
 		}
 
-		name := r.FormValue("name")
-		description := r.FormValue("description")
-		group := model.Group{ID: id, Name: name, Description: description, Catalog: 0}
+		group := model.Group{ID: id, Name: param.Name, Description: param.Description, Catalog: 0}
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {

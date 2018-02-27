@@ -128,6 +128,10 @@ type modulePutUserAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
+type modulePutUserAuthGroupParam struct {
+	UserAuthGroup []model.UserAuthGroup
+}
+
 type modulePutUserAuthGroupResult struct {
 	common.Result
 }
@@ -153,25 +157,17 @@ func (i *modulePutUserAuthGroupRoute) putModuleUserAuthGroupHandler(w http.Respo
 
 	result := modulePutUserAuthGroupResult{}
 	for true {
-		err := r.ParseForm()
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-
 		_, id := net.SplitRESTAPI(r.URL.Path)
 
-		var userAuthGroups []model.UserAuthGroup
-		content := r.FormValue("userAuthGroup")
-		err = json.Unmarshal([]byte(content), &userAuthGroups)
+		param := &modulePutUserAuthGroupParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
-		ok := i.authorityHandler.UpdateModuleUserAuthGroup(id, userAuthGroups)
+		ok := i.authorityHandler.UpdateModuleUserAuthGroup(id, param.UserAuthGroup)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

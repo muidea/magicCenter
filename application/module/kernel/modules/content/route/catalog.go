@@ -182,6 +182,12 @@ type catalogCreateRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
+type catalogCreateParam struct {
+	Name        string
+	Description string
+	Catalog     []int
+}
+
 type catalogCreateResult struct {
 	common.Result
 	Catalog model.Summary
@@ -216,19 +222,15 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		r.ParseForm()
-
-		name := r.FormValue("name")
-		description := r.FormValue("description")
-		createdate := time.Now().Format("2006-01-02 15:04:05")
-		var catalogs []int
-		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &catalogCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
-		catalog, ok := i.contentHandler.CreateCatalog(name, description, createdate, catalogs, user.ID)
+		createdate := time.Now().Format("2006-01-02 15:04:05")
+		catalog, ok := i.contentHandler.CreateCatalog(param.Name, param.Description, createdate, param.Catalog, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -251,6 +253,8 @@ type catalogUpdateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
+
+type catalogUpdateParam catalogCreateParam
 
 type catalogUpdateResult struct {
 	common.Result
@@ -294,20 +298,19 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		r.ParseForm()
-		catalog := model.CatalogDetail{}
-		catalog.ID = id
-		catalog.Name = r.FormValue("name")
-		catalog.Description = r.FormValue("description")
-		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		var catalogs []int
-		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &catalogUpdateParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
-		catalog.Catalog = catalogs
+		catalog := model.CatalogDetail{}
+		catalog.ID = id
+		catalog.Name = param.Name
+		catalog.Description = param.Description
+		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		catalog.Catalog = param.Catalog
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {

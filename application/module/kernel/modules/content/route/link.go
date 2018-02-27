@@ -154,14 +154,14 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 	result := linkGetListResult{}
 	for true {
-		catalog := r.URL.Query()["catalog"]
-		if len(catalog) < 1 {
+		catalog := r.URL.Query().Get("catalog")
+		if catalog == "" {
 			result.Link = i.contentHandler.GetAllLink()
 			result.ErrCode = 0
 			break
 		}
 
-		id, err := strconv.Atoi(catalog[0])
+		id, err := strconv.Atoi(catalog)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
@@ -184,6 +184,13 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 type linkCreateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
+}
+
+type linkCreateParam struct {
+	Name    string
+	URL     string
+	Logo    string
+	Catalog []int
 }
 
 type linkCreateResult struct {
@@ -220,20 +227,16 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		r.ParseForm()
-
-		name := r.FormValue("name")
-		url := r.FormValue("url")
-		logo := r.FormValue("logo")
-		var catalogs []int
-		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &linkCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
+
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		link, ok := i.contentHandler.CreateLink(name, url, logo, createDate, catalogs, user.ID)
+		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, param.Catalog, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -256,6 +259,8 @@ type linkUpdateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
+
+type linkUpdateParam linkCreateParam
 
 type linkUpdateResult struct {
 	common.Result
@@ -299,20 +304,19 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		r.ParseForm()
-		link := model.LinkDetail{}
-		link.ID = id
-		link.Name = r.FormValue("name")
-		link.URL = r.FormValue("url")
-		link.Logo = r.FormValue("logo")
-		var catalogs []int
-		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &linkUpdateParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
-		link.Catalog = catalogs
+		link := model.LinkDetail{}
+		link.ID = id
+		link.Name = param.Name
+		link.URL = param.URL
+		link.Logo = param.Logo
+		link.Catalog = param.Catalog
 		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)

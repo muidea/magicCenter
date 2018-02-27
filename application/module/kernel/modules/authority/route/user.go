@@ -88,6 +88,10 @@ type userPutModuleAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
 }
 
+type userPutModuleAuthGroupParam struct {
+	ModuleAuthGroup []model.ModuleAuthGroup
+}
+
 type userPutModuleAuthGroupResult struct {
 	common.Result
 }
@@ -113,7 +117,8 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 
 	result := userPutModuleAuthGroupResult{}
 	for true {
-		err := r.ParseForm()
+		param := &userPutModuleAuthGroupParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
@@ -127,16 +132,7 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 			break
 		}
 
-		var moduleAuthGroups []model.ModuleAuthGroup
-		content := r.FormValue("moduleAuthGroup")
-		err = json.Unmarshal([]byte(content), &moduleAuthGroups)
-		if err != nil {
-			result.ErrCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
-
-		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, moduleAuthGroups)
+		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
 		if ok {
 			result.ErrCode = common.Success
 		} else {

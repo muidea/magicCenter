@@ -184,6 +184,12 @@ type articleCreateRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
+type articleCreateParam struct {
+	Title   string
+	Content string
+	Catalog []int
+}
+
 type articleCreateResult struct {
 	common.Result
 	Article model.Summary
@@ -218,18 +224,16 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		r.ParseForm()
-		title := r.FormValue("title")
-		content := r.FormValue("content")
-		var catalogs []int
-		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &articleCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
+
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		article, ok := i.contentHandler.CreateArticle(title, content, createDate, catalogs, user.ID)
+		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, param.Catalog, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -252,6 +256,8 @@ type articleUpdateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
+
+type articleUpdateParam articleCreateParam
 
 type articleUpdateResult struct {
 	common.Result
@@ -295,19 +301,18 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		r.ParseForm()
-		article := model.ArticleDetail{}
-		article.ID = id
-		article.Name = r.FormValue("title")
-		article.Content = r.FormValue("content")
-		var catalogs []int
-		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &articleUpdateParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
-		article.Catalog = catalogs
+		article := model.ArticleDetail{}
+		article.ID = id
+		article.Name = param.Title
+		article.Content = param.Content
+		article.Catalog = param.Catalog
 		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)

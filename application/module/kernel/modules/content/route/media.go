@@ -185,6 +185,13 @@ type mediaCreateRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
+type mediaCreateParam struct {
+	Name        string
+	URL         string
+	Description string
+	Catalog     []int
+}
+
 type mediaCreateResult struct {
 	common.Result
 	Media model.Summary
@@ -219,19 +226,16 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		r.ParseForm()
-		name := r.FormValue("name")
-		url := r.FormValue("url")
-		desc := r.FormValue("desc")
-		var catalogs []int
-		err := json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &mediaCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
+
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		media, ok := i.contentHandler.CreateMedia(name, url, desc, createDate, catalogs, user.ID)
+		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, param.Catalog, user.ID)
 		if !ok {
 			result.ErrCode = 1
 			result.Reason = "新建失败"
@@ -254,6 +258,8 @@ type mediaUpdateRoute struct {
 	contentHandler  common.ContentHandler
 	sessionRegistry common.SessionRegistry
 }
+
+type mediaUpdateParam mediaCreateParam
 
 type mediaUpdateResult struct {
 	common.Result
@@ -297,20 +303,20 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		r.ParseForm()
-		media := model.MediaDetail{}
-		media.ID = id
-		media.Name = r.FormValue("name")
-		media.URL = r.FormValue("url")
-		media.Desc = r.FormValue("desc")
-		var catalogs []int
-		err = json.Unmarshal([]byte(r.FormValue("catalog")), &catalogs)
+		param := &mediaUpdateParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "无效参数"
 			break
 		}
-		media.Catalog = catalogs
+
+		media := model.MediaDetail{}
+		media.ID = id
+		media.Name = param.Name
+		media.URL = param.URL
+		media.Desc = param.Description
+		media.Catalog = param.Catalog
 		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)

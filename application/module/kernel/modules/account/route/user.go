@@ -167,6 +167,12 @@ type userCreateRoute struct {
 	accountHandler common.AccountHandler
 }
 
+type userCreateParam struct {
+	Account  string
+	Password string
+	Group    []int
+}
+
 type userCreateResult struct {
 	common.Result
 	User model.UserDetail
@@ -193,24 +199,15 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 	result := userCreateResult{}
 	for true {
-		err := r.ParseForm()
+		param := &userCreateParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
-		account := r.FormValue("account")
-		email := r.FormValue("email")
-		var groups []int
-		err = json.Unmarshal([]byte(r.FormValue("group")), &groups)
-		if err != nil {
-			result.ErrCode = 1
-			result.Reason = "无效参数"
-			break
-		}
-
-		user, ok := i.accountHandler.CreateUser(account, email, groups)
+		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.Group)
 		if !ok {
 			result.ErrCode = common.Failed
 			result.Reason = "创建新用户失败"
@@ -232,6 +229,13 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 type userSaveRoute struct {
 	accountHandler common.AccountHandler
+}
+
+type userSaveParam struct {
+	Email    string
+	Name     string
+	Password string
+	Group    []int
 }
 
 type userSaveResult struct {
@@ -268,7 +272,8 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		err = r.ParseForm()
+		param := &userSaveParam{}
+		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "非法参数"
@@ -282,30 +287,19 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		email := r.FormValue("email")
-		if email != "" {
-			user.Email = email
+		if param.Email != "" {
+			user.Email = param.Email
 		}
-		nickName := r.FormValue("name")
-		if nickName != "" {
-			user.Name = nickName
+		if param.Name != "" {
+			user.Name = param.Name
 		}
 
-		strGroup := r.FormValue("group")
-		if len(strGroup) > 0 {
-			var groups []int
-			err = json.Unmarshal([]byte(strGroup), &groups)
-			if err != nil {
-				result.ErrCode = 1
-				result.Reason = "无效参数"
-				break
-			}
-			user.Groups = groups
+		if len(param.Group) > 0 {
+			user.Groups = param.Group
 		}
 
-		password := r.FormValue("password")
-		if len(password) > 0 {
-			user, ok = i.accountHandler.SaveUserWithPassword(user, password)
+		if param.Password != "" {
+			user, ok = i.accountHandler.SaveUserWithPassword(user, param.Password)
 		} else {
 			user, ok = i.accountHandler.SaveUser(user)
 		}

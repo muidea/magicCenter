@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
@@ -92,6 +91,11 @@ type postCacheRoute struct {
 	cacheHandler common.CacheHandler
 }
 
+type cachePostParam struct {
+	Value string
+	Age   int
+}
+
 type cachePostResult struct {
 	common.Result
 	Token string
@@ -118,22 +122,19 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 
 	result := cachePostResult{}
 	for true {
-		err := r.ParseForm()
+		param := &cachePostParam{}
+		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrCode = 1
 			result.Reason = "非法参数"
 			break
 		}
 
-		value := r.FormValue("value")
-		age, err := strconv.Atoi(r.FormValue("age"))
-		if err != nil {
-			age = 10
-		} else if age > 100.0 || age < 0 {
-			age = 10
+		if param.Age > 100.0 || param.Age < 0 {
+			param.Age = 10
 		}
 
-		result.Token = i.cacheHandler.PutIn(value, float64(age))
+		result.Token = i.cacheHandler.PutIn(param.Value, float64(param.Age))
 		result.ErrCode = 0
 		break
 	}
