@@ -71,7 +71,7 @@ type articleGetByIDRoute struct {
 
 type articleGetByIDResult struct {
 	common.Result
-	Article model.ArticleDetail
+	Article model.ArticleDetail `json:"article"`
 }
 
 func (i *articleGetByIDRoute) Method() string {
@@ -128,7 +128,7 @@ type articleGetListRoute struct {
 
 type articleGetListResult struct {
 	common.Result
-	Article []model.Summary
+	Article []model.Summary `json:"article"`
 }
 
 func (i *articleGetListRoute) Method() string {
@@ -185,14 +185,14 @@ type articleCreateRoute struct {
 }
 
 type articleCreateParam struct {
-	Title   string
-	Content string
-	Catalog []int
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Catalog []int  `json:"catalog"`
 }
 
 type articleCreateResult struct {
 	common.Result
-	Article model.Summary
+	Article model.Summary `json:"article"`
 }
 
 func (i *articleCreateRoute) Method() string {
@@ -261,7 +261,7 @@ type articleUpdateParam articleCreateParam
 
 type articleUpdateResult struct {
 	common.Result
-	Article model.Summary
+	Article model.Summary `json:"article"`
 }
 
 func (i *articleUpdateRoute) Method() string {

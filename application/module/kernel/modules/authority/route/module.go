@@ -35,8 +35,8 @@ type moduleGetACLRoute struct {
 
 type moduleGetACLResult struct {
 	common.Result
-	module string
-	ACLs   []model.ACL
+	Module string      `json:"module"`
+	ACL    []model.ACL `json:"acl"`
 }
 
 func (i *moduleGetACLRoute) Method() string {
@@ -61,9 +61,9 @@ func (i *moduleGetACLRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 
 	for true {
 		_, id := net.SplitRESTAPI(r.URL.Path)
-		result.module = id
+		result.Module = id
 
-		result.ACLs = i.authorityHandler.QueryACLByModule(id)
+		result.ACL = i.authorityHandler.QueryACLByModule(id)
 		result.ErrorCode = common.Success
 
 		break

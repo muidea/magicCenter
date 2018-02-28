@@ -69,7 +69,7 @@ type userGetRoute struct {
 
 type userGetResult struct {
 	common.Result
-	User model.UserDetail
+	User model.UserDetail `json:"user"`
 }
 
 func (i *userGetRoute) Method() string {
@@ -126,7 +126,7 @@ type userGetAllRoute struct {
 
 type userGetAllResult struct {
 	common.Result
-	User []model.UserDetail
+	User []model.UserDetail `json:"user"`
 }
 
 func (i *userGetAllRoute) Method() string {
@@ -168,14 +168,14 @@ type userCreateRoute struct {
 }
 
 type userCreateParam struct {
-	Account  string
-	Password string
-	Group    []int
+	Account  string `json:"account"`
+	Password string `json:"password"`
+	Group    []int  `json:"group"`
 }
 
 type userCreateResult struct {
 	common.Result
-	User model.UserDetail
+	User model.UserDetail `json:"user"`
 }
 
 func (i *userCreateRoute) Method() string {
@@ -232,15 +232,15 @@ type userSaveRoute struct {
 }
 
 type userSaveParam struct {
-	Email    string
-	Name     string
-	Password string
-	Group    []int
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Group    []int  `json:"group"`
 }
 
 type userSaveResult struct {
 	common.Result
-	User model.UserDetail
+	User model.UserDetail `json:"user"`
 }
 
 func (i *userSaveRoute) Method() string {

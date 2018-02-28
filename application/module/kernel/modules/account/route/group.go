@@ -69,7 +69,7 @@ type groupGetRoute struct {
 
 type groupGetResult struct {
 	common.Result
-	Group model.Group
+	Group model.Group `json:"group"`
 }
 
 func (i *groupGetRoute) Method() string {
@@ -126,7 +126,7 @@ type groupGetAllRoute struct {
 
 type groupGetAllResult struct {
 	common.Result
-	Group []model.Group
+	Group []model.Group `json:"group"`
 }
 
 func (i *groupGetAllRoute) Method() string {
@@ -174,7 +174,7 @@ type groupCreateParam struct {
 
 type groupCreateResult struct {
 	common.Result
-	Group model.Group
+	Group model.Group `json:"group"`
 }
 
 func (i *groupCreateRoute) Method() string {
@@ -237,7 +237,7 @@ type groupSaveParam struct {
 
 type groupSaveResult struct {
 	common.Result
-	Group model.Group
+	Group model.Group `json:"group"`
 }
 
 func (i *groupSaveRoute) Method() string {

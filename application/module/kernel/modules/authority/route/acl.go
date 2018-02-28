@@ -60,7 +60,7 @@ type aclGetByIDRoute struct {
 
 type aclGetResult struct {
 	common.Result
-	ACL model.ACL
+	ACL model.ACL `json:"acl"`
 }
 
 func (i *aclGetByIDRoute) Method() string {
@@ -117,8 +117,8 @@ type aclGetByModuleRoute struct {
 
 type aclGetByModuleResult struct {
 	common.Result
-	Module string
-	ACLs   []model.ACL
+	Module string      `json:"module"`
+	ACLs   []model.ACL `json:"acl"`
 }
 
 func (i *aclGetByModuleRoute) Method() string {
@@ -172,7 +172,7 @@ type aclPostParam struct {
 
 type aclPostResult struct {
 	common.Result
-	ACL model.ACL
+	ACL model.ACL `json:"acl"`
 }
 
 func (i *aclPostRoute) Method() string {
@@ -285,8 +285,8 @@ type aclPutRoute struct {
 }
 
 type aclPutParam struct {
-	EnableList  []int
-	DisableList []int
+	EnableList  []int `json:"enablelist"`
+	DisableList []int `json:"disablelist"`
 }
 
 type aclPutResult struct {
@@ -347,8 +347,8 @@ type aclGetACLAuthGroupRoute struct {
 
 type aclGetACLAuthGroupResult struct {
 	common.Result
-	ACL       int
-	AuthGroup model.AuthGroup
+	ACL       int             `json:"acl"`
+	AuthGroup model.AuthGroup `json:"authGroup"`
 }
 
 func (i *aclGetACLAuthGroupRoute) Method() string {

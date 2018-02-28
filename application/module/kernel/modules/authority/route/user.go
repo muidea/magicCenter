@@ -157,8 +157,8 @@ type userGetACLRoute struct {
 
 type userGetACLResult struct {
 	common.Result
-	User int
-	ACLs []model.ACL
+	User int         `json:"user"`
+	ACL  []model.ACL `json:"acl"`
 }
 
 func (i *userGetACLRoute) Method() string {
@@ -191,7 +191,7 @@ func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		result.User = id
-		result.ACLs = i.authorityHandler.QueryUserACL(id)
+		result.ACL = i.authorityHandler.QueryUserACL(id)
 		result.ErrorCode = common.Success
 		break
 	}

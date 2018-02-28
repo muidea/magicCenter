@@ -69,7 +69,7 @@ type catalogGetByIDRoute struct {
 
 type catalogGetByIDResult struct {
 	common.Result
-	Catalog model.CatalogDetail
+	Catalog model.CatalogDetail `json:"catalog"`
 }
 
 func (i *catalogGetByIDRoute) Method() string {
@@ -126,7 +126,7 @@ type catalogGetListRoute struct {
 
 type catalogGetListResult struct {
 	common.Result
-	Catalog []model.Summary
+	Catalog []model.Summary `json:"catalog"`
 }
 
 func (i *catalogGetListRoute) Method() string {
@@ -185,12 +185,12 @@ type catalogCreateRoute struct {
 type catalogCreateParam struct {
 	Name        string `json:"name"`
 	Description string `json:"id"`
-	Catalog     []int
+	Catalog     []int  `json:"catalog"`
 }
 
 type catalogCreateResult struct {
 	common.Result
-	Catalog model.Summary
+	Catalog model.Summary `json:"catalog"`
 }
 
 func (i *catalogCreateRoute) Method() string {
@@ -258,7 +258,7 @@ type catalogUpdateParam catalogCreateParam
 
 type catalogUpdateResult struct {
 	common.Result
-	Catalog model.Summary
+	Catalog model.Summary `json:"catalog"`
 }
 
 func (i *catalogUpdateRoute) Method() string {

@@ -72,7 +72,7 @@ type linkGetByIDRoute struct {
 
 type linkGetByIDResult struct {
 	common.Result
-	Link model.LinkDetail
+	Link model.LinkDetail `json:"link"`
 }
 
 func (i *linkGetByIDRoute) Method() string {
@@ -130,7 +130,7 @@ type linkGetListRoute struct {
 
 type linkGetListResult struct {
 	common.Result
-	Link []model.Summary
+	Link []model.Summary `json:"link"`
 }
 
 func (i *linkGetListRoute) Method() string {
@@ -187,15 +187,15 @@ type linkCreateRoute struct {
 }
 
 type linkCreateParam struct {
-	Name    string
-	URL     string
-	Logo    string
-	Catalog []int
+	Name    string `json:"name"`
+	URL     string `json:"url"`
+	Logo    string `json:"logo"`
+	Catalog []int  `json:"catalog"`
 }
 
 type linkCreateResult struct {
 	common.Result
-	Link model.Summary
+	Link model.Summary `json:"link"`
 }
 
 func (i *linkCreateRoute) Method() string {
@@ -264,7 +264,7 @@ type linkUpdateParam linkCreateParam
 
 type linkUpdateResult struct {
 	common.Result
-	Link model.Summary
+	Link model.Summary `json:"link"`
 }
 
 func (i *linkUpdateRoute) Method() string {

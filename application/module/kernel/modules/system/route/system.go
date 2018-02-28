@@ -45,7 +45,7 @@ type getSystemConfigRoute struct {
 
 type getSystemConfigResult struct {
 	common.Result
-	SystemInfo model.SystemInfo
+	SystemInfo model.SystemInfo `json:"systemInfo"`
 }
 
 func (i *getSystemConfigRoute) Method() string {
@@ -140,7 +140,7 @@ type getModulesRoute struct {
 
 type getModulesResult struct {
 	common.Result
-	Modules []model.Module
+	Module []model.Module `json:"module"`
 }
 
 func (i *getModulesRoute) Method() string {
@@ -162,7 +162,7 @@ func (i *getModulesRoute) AuthGroup() int {
 func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Request) {
 	result := getModulesResult{}
 
-	result.Modules = i.systemHandler.GetModuleList()
+	result.Module = i.systemHandler.GetModuleList()
 	result.ErrorCode = common.Success
 
 	b, err := json.Marshal(result)

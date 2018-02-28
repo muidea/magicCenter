@@ -40,7 +40,7 @@ type queryCacheRoute struct {
 
 type cacheQueryResult struct {
 	common.Result
-	Cache interface{}
+	Cache interface{} `json:"cache"`
 }
 
 func (i *queryCacheRoute) Method() string {
@@ -92,13 +92,13 @@ type postCacheRoute struct {
 }
 
 type cachePostParam struct {
-	Value string
-	Age   int
+	Value string `json:"value"`
+	Age   int    `json:"age"`
 }
 
 type cachePostResult struct {
 	common.Result
-	Token string
+	Token string `json:"token"`
 }
 
 func (i *postCacheRoute) Method() string {

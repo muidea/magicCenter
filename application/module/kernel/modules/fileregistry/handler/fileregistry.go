@@ -37,12 +37,12 @@ type impl struct {
 
 type uploadFileResult struct {
 	common.Result
-	AccessToken string
+	AccessToken string `json:"accessToken"`
 }
 
 type downloadFileResult struct {
 	common.Result
-	RedirectURL string
+	RedirectURL string `json:"redirectUrl"`
 }
 
 type deleteFileResult struct {

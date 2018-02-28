@@ -72,7 +72,7 @@ type mediaGetByIDRoute struct {
 
 type mediaGetByIDResult struct {
 	common.Result
-	Media model.MediaDetail
+	Media model.MediaDetail `json:"media"`
 }
 
 func (i *mediaGetByIDRoute) Method() string {
@@ -129,7 +129,7 @@ type mediaGetListRoute struct {
 
 type mediaGetListResult struct {
 	common.Result
-	Media []model.Summary
+	Media []model.Summary `json:"media"`
 }
 
 func (i *mediaGetListRoute) Method() string {
@@ -187,14 +187,14 @@ type mediaCreateRoute struct {
 
 type mediaCreateParam struct {
 	Name        string `json:"name"`
-	URL         string
+	URL         string `json:"url"`
 	Description string `json:"id"`
-	Catalog     []int
+	Catalog     []int  `json:"catalog"`
 }
 
 type mediaCreateResult struct {
 	common.Result
-	Media model.Summary
+	Media model.Summary `json:"media"`
 }
 
 func (i *mediaCreateRoute) Method() string {
@@ -263,7 +263,7 @@ type mediaUpdateParam mediaCreateParam
 
 type mediaUpdateResult struct {
 	common.Result
-	Media model.Summary
+	Media model.Summary `json:"media"`
 }
 
 func (i *mediaUpdateRoute) Method() string {

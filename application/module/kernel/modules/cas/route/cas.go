@@ -55,15 +55,15 @@ type accountLoginRoute struct {
 }
 
 type accountLoginParam struct {
-	Account  string
-	Password string
+	Account  string `json:"account"`
+	Password string `json:"password"`
 }
 
 type accountLoginResult struct {
 	common.Result
-	User      model.UserDetail
-	SessionID string
-	AuthToken string
+	User      model.UserDetail `json:"user"`
+	SessionID string           `json:"sessionID"`
+	AuthToken string           `json:"authToken"`
 }
 
 func (i *accountLoginRoute) Method() string {
@@ -181,7 +181,7 @@ type accountStatusRoute struct {
 
 type accountStatusResult struct {
 	common.Result
-	AccountInfo model.OnlineAccountInfo
+	AccountInfo model.OnlineAccountInfo `json:"accountInfo"`
 }
 
 func (i *accountStatusRoute) Method() string {
