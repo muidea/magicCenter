@@ -13,14 +13,14 @@ class Media(MagicSession.MagicSession):
         'create'
         params = {'name': name, 'url': url, 'desc': desc, 'catalog': str(catalogs)}
         val = self.post('/content/media/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Media']
         return None
 
     def destroy(self, media_id):
         'destroy'
         val = self.delete('/content/media/%s?authToken=%s'%(media_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 
@@ -28,21 +28,21 @@ class Media(MagicSession.MagicSession):
         'update'
         params = {'name': media['Name'], 'url': media['URL'], 'desc': media['Desc'], 'catalog': str(media['Catalog'])}
         val = self.put('/content/media/%s?authToken=%s'%(media['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Media']
         return None
 
     def query(self, media_id):
         'query'
         val = self.get('/content/media/%d?authToken=%s'%(media_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Media']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/media/?authToken=%s'%self.authority_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Media']
         return None
 

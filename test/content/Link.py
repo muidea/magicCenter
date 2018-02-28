@@ -12,14 +12,14 @@ class Link(MagicSession.MagicSession):
         'create'
         params = {'name': name, 'url': url, 'logo': logo, 'catalog': str(catalogs)}
         val = self.post('/content/link/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Link']
         return None
 
     def destroy(self, link_id):
         'destroy'
         val = self.delete('/content/link/%s?authToken=%s'%(link_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 
@@ -27,21 +27,21 @@ class Link(MagicSession.MagicSession):
         'update'
         params = {'name': link['Name'], 'url': link['URL'], 'logo': link['Logo'], 'catalog': str(link['Catalog'])}
         val = self.put('/content/link/%s?authToken=%s'%(link['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Link']
         return None
 
     def query(self, link_id):
         'query'
         val = self.get('/content/link/%d?authToken=%s'%(link_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Link']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/link/?authToken=%s'%self.authority_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Link']
         return None
 

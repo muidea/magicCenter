@@ -13,7 +13,7 @@ class User(MagicSession.MagicSession):
         "CreateUser"
         params = {'account': account, 'email': email, 'group': str([1,2])}
         val = self.post('/account/user/', params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['User']
         return None
 
@@ -21,7 +21,7 @@ class User(MagicSession.MagicSession):
         'UpdateUser'
         params = {'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['User']
         return None
 
@@ -29,21 +29,21 @@ class User(MagicSession.MagicSession):
         'UpdateUserPassword'
         params = {'password': pwd, 'email': user['Email'], 'name': user['Name']}
         val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['User']
         return None
 
     def find(self, user_id):
         'FindUser'
         val = self.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['User']
         return None
 
     def find_all(self):
         'FindAllUser'
         val = self.get('/account/user/?authToken=%s'%self.authority_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             if len(val['User']) != 2:
                 return False
             return True
@@ -53,7 +53,7 @@ class User(MagicSession.MagicSession):
     def destroy(self, user_id):
         'DestroyUser'
         val = self.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 

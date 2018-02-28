@@ -12,7 +12,7 @@ class Group(MagicSession.MagicSession):
         "CreateGroup"
         params = {'name': name, 'description': description}
         val = self.post('/account/group/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Group']
         else:
             return None
@@ -21,7 +21,7 @@ class Group(MagicSession.MagicSession):
         "UpdateGroup"
         params = {'name': group['Name'], 'description': group['Description']}
         val = self.put('/account/group/%d?authToken=%s'%(group['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Group']
         else:
             return None
@@ -29,7 +29,7 @@ class Group(MagicSession.MagicSession):
     def find(self, group_id):
         "FindGroup"
         val = self.get('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Group']
         else:
             return None
@@ -37,7 +37,7 @@ class Group(MagicSession.MagicSession):
     def find_all(self):
         "FindAllGroup"
         val = self.get('/account/group/')
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             if len(val['Group']) < 0:
                 return False
             return True
@@ -47,7 +47,7 @@ class Group(MagicSession.MagicSession):
     def destroy(self, group_id):
         "DestroyGroup"
         val = self.delete('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         else:
             return False

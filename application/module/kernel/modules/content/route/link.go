@@ -99,7 +99,7 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -107,9 +107,9 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 		link, ok := i.contentHandler.GetLinkByID(id)
 		if ok {
 			result.Link = link
-			result.ErrCode = 0
+			result.ErrorCode = 0
 		} else {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "对象不存在"
 		}
 
@@ -157,19 +157,19 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 		catalog := r.URL.Query().Get("catalog")
 		if catalog == "" {
 			result.Link = i.contentHandler.GetAllLink()
-			result.ErrCode = 0
+			result.ErrorCode = 0
 			break
 		}
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		result.Link = i.contentHandler.GetLinkByCatalog(id)
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -222,7 +222,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -230,7 +230,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -238,11 +238,11 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Link = link
 		break
 	}
@@ -292,14 +292,14 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -307,7 +307,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -321,11 +321,11 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Link = summmary
 		break
 	}
@@ -372,24 +372,24 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyLink(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 

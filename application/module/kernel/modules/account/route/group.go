@@ -96,7 +96,7 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -104,9 +104,9 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 		group, ok := i.accountHandler.FindGroupByID(id)
 		if ok {
 			result.Group = group
-			result.ErrCode = 0
+			result.ErrorCode = 0
 		} else {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "对象不存在"
 		}
 		break
@@ -151,7 +151,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 	result := groupGetAllResult{}
 	for true {
 		result.Group = i.accountHandler.GetAllGroup()
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -168,8 +168,8 @@ type groupCreateRoute struct {
 }
 
 type groupCreateParam struct {
-	Name        string
-	Description string
+	Name        string `json:"name"`
+	Description string `json:"id"`
 }
 
 type groupCreateResult struct {
@@ -201,20 +201,20 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 		param := &groupCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法参数"
 			break
 		}
 
 		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		result.Group = group
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -231,8 +231,8 @@ type groupSaveRoute struct {
 }
 
 type groupSaveParam struct {
-	Name        string
-	Description string
+	Name        string `json:"name"`
+	Description string `json:"id"`
 }
 
 type groupSaveResult struct {
@@ -264,7 +264,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -272,7 +272,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		param := &groupSaveParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法参数"
 			break
 		}
@@ -281,13 +281,13 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "更新失败"
 			break
 		}
 
 		result.Group = group
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -331,19 +331,19 @@ func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyGroup(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 

@@ -91,7 +91,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		param := &accountLoginParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法请求"
 			break
 		}
@@ -99,12 +99,12 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		remoteAddr := r.RemoteAddr
 		user, token, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "登入失败"
 			break
 		}
 
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.User = user
 		result.SessionID = session.ID()
 		result.AuthToken = token
@@ -151,18 +151,18 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 	for true {
 		authToken, ok := session.GetOption(common.AuthTokenID)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
 		if !i.casHandler.Logout(authToken.(string), r.RemoteAddr) {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -208,20 +208,20 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	for true {
 		authToken, ok := session.GetOption(common.AuthTokenID)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法请求"
 			break
 		}
 
 		info, found := i.casHandler.VerifyToken(authToken.(string))
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效Token"
 			break
 		}
 
 		result.AccountInfo = info
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 

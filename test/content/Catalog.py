@@ -14,14 +14,14 @@ class Catalog(MagicSession.MagicSession):
         'create'
         params = {'name': name, 'description': description, 'catalog': str(catalogs)}
         val = self.post('/content/catalog/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Catalog']
         return None
 
     def destroy(self, catalog_id):
         'destroy'
         val = self.delete('/content/catalog/%s?authToken=%s'%(catalog_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 
@@ -29,21 +29,21 @@ class Catalog(MagicSession.MagicSession):
         'update'
         params = {'name': catalog['Name'], 'description': catalog['Description'], 'catalog': str(catalog['Catalog'])}
         val = self.put('/content/catalog/%s?authToken=%s'%(catalog['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Catalog']
         return None
 
     def query(self, catalog_id):
         'query'
         val = self.get('/content/catalog/%d?authToken=%s'%(catalog_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Catalog']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/catalog/?authToken=%s'%self.authority_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Catalog']
         return None
 

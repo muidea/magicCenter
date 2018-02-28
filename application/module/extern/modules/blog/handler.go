@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 	"magiccenter/common"
-	"magiccenter/common/model"
 	"net/http"
 )
 
@@ -21,8 +20,8 @@ type PageView struct {
 
 // MaintainView Maintain视图
 type MaintainView struct {
-	Title       string
-	Description string
+	Title       string `json:"titile"`
+	Description string `json:"description"`
 }
 
 func indexHandler(res http.ResponseWriter, req *http.Request) {
@@ -160,12 +159,12 @@ func MaintainActionHandler(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Print("parseform failed")
 
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效请求数据"
 			break
 		}
 
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Reason = "更新成功"
 		break
 	}

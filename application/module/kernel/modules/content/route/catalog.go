@@ -96,7 +96,7 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -104,9 +104,9 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 		catalog, ok := i.contentHandler.GetCatalogByID(id)
 		if ok {
 			result.Catalog = catalog
-			result.ErrCode = 0
+			result.ErrorCode = 0
 		} else {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "对象不存在"
 		}
 		break
@@ -153,19 +153,19 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 		catalog := r.URL.Query()["catalog"]
 		if len(catalog) < 1 {
 			result.Catalog = i.contentHandler.GetAllCatalog()
-			result.ErrCode = 0
+			result.ErrorCode = 0
 			break
 		}
 
 		id, err := strconv.Atoi(catalog[0])
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		result.Catalog = i.contentHandler.GetCatalogByCatalog(id)
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -183,8 +183,8 @@ type catalogCreateRoute struct {
 }
 
 type catalogCreateParam struct {
-	Name        string
-	Description string
+	Name        string `json:"name"`
+	Description string `json:"id"`
 	Catalog     []int
 }
 
@@ -217,7 +217,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -225,18 +225,18 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 		param := &catalogCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 		createdate := time.Now().Format("2006-01-02 15:04:05")
 		catalog, ok := i.contentHandler.CreateCatalog(param.Name, param.Description, createdate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Catalog = catalog
 		break
 	}
@@ -286,14 +286,14 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -301,7 +301,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		param := &catalogUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -314,11 +314,11 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Catalog = summmary
 		break
 	}
@@ -365,24 +365,24 @@ func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *htt
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyCatalog(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 

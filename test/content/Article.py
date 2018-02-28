@@ -13,14 +13,14 @@ class Article(MagicSession.MagicSession):
         'create article'
         params = {'title': title, 'content': content, 'catalog': str(catalogs)}
         val = self.post('/content/article/?authToken=%s'%(self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Article']
         return None
 
     def destroy(self, article_id):
         'destroy'
         val = self.delete('/content/article/%s?authToken=%s'%(article_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
 
         print('destroy article failed')
@@ -30,21 +30,21 @@ class Article(MagicSession.MagicSession):
         'update'
         params = {'title': article['Name'], 'content': article['Content'], 'catalog': str(article['Catalog'])}
         val = self.put('/content/article/%s?authToken=%s'%(article['ID'], self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Article']
         return None
 
     def query(self, article_id):
         'query'
         val = self.get('/content/article/%d?authToken=%s'%(article_id, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Article']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/article/?authToken=%s'%self.authority_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Article']
         return None
 

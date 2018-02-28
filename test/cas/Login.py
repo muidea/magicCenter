@@ -13,7 +13,7 @@ class Login(MagicSession.MagicSession):
         'login'
         params = {'account': account, 'password': password}
         val = self.post('/cas/user/', params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             self.authority_token = val['AuthToken']
             self.current_user = val['User']
             return True
@@ -22,14 +22,14 @@ class Login(MagicSession.MagicSession):
     def logout(self, auth_token):
         'logout'
         val = self.delete('/cas/user/?authToken=%s'%auth_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 
     def status(self, auth_token):
         'status'
         val = self.get('/cas/user/?authToken=%s'%auth_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['AccountInfo']
         return None
 

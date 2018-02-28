@@ -40,38 +40,38 @@ const (
 
 // SystemInfo 系统信息
 type SystemInfo struct {
-	Name         string
-	Description  string
-	Logo         string
-	Domain       string
-	MailServer   string
-	MailAccount  string
-	MailPassword string
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Logo         string `json:"logo"`
+	Domain       string `json:"domain"`
+	MailServer   string `json:"mailServer"`
+	MailAccount  string `json:"mailAccount"`
+	MailPassword string `json:"mailPassword"`
 }
 
 // SummaryItem 摘要信息
 type SummaryItem struct {
-	Name  string
-	Type  string
-	Count int
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Count int    `json:"count"`
 }
 
 // TrendValue 趋势值
 type TrendValue struct {
-	Value     float32
-	TimeStamp int
+	Value     float32 `json:"value"`
+	TimeStamp int     `json:"timeStamp"`
 }
 
 // TrendItem 趋势项
 type TrendItem struct {
-	ItemName  string
-	ItemValue []TrendValue
+	ItemName  string       `json:"itemName"`
+	ItemValue []TrendValue `json:"itemValue"`
 }
 
 // StatisticsInfo 系统统计信息
 type StatisticsInfo struct {
-	SummaryInfo []SummaryItem
-	TrendInfo   []TrendItem
-	LastContent []ContentItem
-	LastAccount []AccountItem
+	SummaryInfo []SummaryItem `json:"summaryInfo"`
+	TrendInfo   []TrendItem   `json:"trendInfo"`
+	LastContent []ContentItem `json:"lastContent"`
+	LastAccount []AccountItem `json:"lastAccount"`
 }

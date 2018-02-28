@@ -14,40 +14,40 @@ const MEDIA = "media"
 
 // Summary 摘要信息
 type Summary struct {
-	ID         int
-	Name       string
-	Catalog    []int
-	CreateDate string
-	Creater    int
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Catalog    []int  `json:"catalog"`
+	CreateDate string `json:"createDate"`
+	Creater    int    `json:"creater"`
 }
 
 // ArticleDetail 文章
 type ArticleDetail struct {
 	Summary
 
-	Content string
+	Content string `json:"content"`
 }
 
 // CatalogDetail 分类详细信息
 type CatalogDetail struct {
 	Summary
 
-	Description string
+	Description string `json:"id"`
 }
 
 // LinkDetail 链接
 type LinkDetail struct {
 	Summary
 
-	URL  string
-	Logo string
+	URL  string `json:"url"`
+	Logo string `json:"logo"`
 }
 
 // MediaDetail 文件信息
 type MediaDetail struct {
 	Summary
-	URL  string
-	Desc string
+	URL  string `json:"url"`
+	Desc string `json:"desc"`
 }
 
 // ContentSummary 内容摘要信息
@@ -55,7 +55,7 @@ type ContentSummary []SummaryItem
 
 // ContentItem 内容项
 type ContentItem struct {
-	Title      string
-	Type       string
-	CreateDate string
+	Title      string `json:"title"`
+	Type       string `json:"type"`
+	CreateDate string `json:"createDate"`
 }

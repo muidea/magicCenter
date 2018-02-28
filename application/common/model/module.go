@@ -15,10 +15,10 @@ Type:该Module类型
 Status:是否启用该Module
 */
 type Module struct {
-	ID          string
-	Name        string
-	Description string
-	Type        int
-	Status      int
-	Route       []Route
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Type        int     `json:"type"`
+	Status      int     `json:"status"`
+	Route       []Route `json:"route"`
 }

@@ -64,7 +64,7 @@ func (i *moduleGetACLRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 		result.module = id
 
 		result.ACLs = i.authorityHandler.QueryACLByModule(id)
-		result.ErrCode = common.Success
+		result.ErrorCode = common.Success
 
 		break
 	}
@@ -111,7 +111,7 @@ func (i *moduleGetUserAuthGroupRoute) getModuleUserAuthGroupHandler(w http.Respo
 		info := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		result.Module = id
 		result.UserAuthGroups = info.UserAuthGroups
-		result.ErrCode = common.Success
+		result.ErrorCode = common.Success
 
 		break
 	}
@@ -162,16 +162,16 @@ func (i *modulePutUserAuthGroupRoute) putModuleUserAuthGroupHandler(w http.Respo
 		param := &modulePutUserAuthGroupParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateModuleUserAuthGroup(id, param.UserAuthGroup)
 		if ok {
-			result.ErrCode = common.Success
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "更新模块用户信息失败"
 		}
 

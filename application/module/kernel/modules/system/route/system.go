@@ -67,7 +67,7 @@ func (i *getSystemConfigRoute) AuthGroup() int {
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	result := getSystemConfigResult{}
 	result.SystemInfo = i.systemHandler.GetSystemConfig()
-	result.ErrCode = common.Success
+	result.ErrorCode = common.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -117,9 +117,9 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 		systemInfo.MailPassword = r.FormValue("mailpassword")
 
 		if i.systemHandler.UpdateSystemConfig(systemInfo) {
-			result.ErrCode = common.Success
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "更新系统信息失败"
 		}
 
@@ -163,7 +163,7 @@ func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Reque
 	result := getModulesResult{}
 
 	result.Modules = i.systemHandler.GetModuleList()
-	result.ErrCode = common.Success
+	result.ErrorCode = common.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {

@@ -20,9 +20,9 @@ const (
 // User 用户信息
 type User struct {
 	//ID 用户ID,唯一标示该用户
-	ID int
+	ID int `json:"id"`
 	// Name 用户名称，允许用户修改也允许重名, 如果没有修改，则显示成账号
-	Name string
+	Name string `json:"name"`
 }
 
 // UserDetail 用户详细信息
@@ -30,15 +30,15 @@ type UserDetail struct {
 	User
 
 	// Account 用户账号，不允许重复，唯一标示该用户
-	Account string
+	Account string `json:"account"`
 	//EMail 用户邮箱
-	Email string
+	Email string `json:"email"`
 	//Groups 所属分组
-	Groups []int
+	Groups []int `json:"groups"`
 	// Status 用户状态，预留字段，暂时没有用到
-	Status int
+	Status int `json:"status"`
 	// 注册时间
-	RegisterTime string
+	RegisterTime string `json:"registerTime"`
 }
 
 const (
@@ -53,10 +53,10 @@ const (
 // Description 描述
 // Catalog 类型（管理员组，普通组
 type Group struct {
-	ID          int
-	Name        string
-	Description string
-	Catalog     int
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Catalog     int    `json:"catalog"`
 }
 
 // AdminGroup 是否是管理员组
@@ -69,7 +69,7 @@ type AccountSummary []SummaryItem
 
 // AccountItem 账号项
 type AccountItem struct {
-	Name          string
-	RegisterDate  string
-	LastLoginDate string
+	Name          string `json:"name"`
+	RegisterDate  string `json:"registerDate"`
+	LastLoginDate string `json:"lastLoginDate"`
 }

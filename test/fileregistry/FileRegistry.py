@@ -15,21 +15,21 @@ class FileRegistry(MagicSession.MagicSession):
         key_name = "name"
         params = {"name": open(file_name, 'rb')}
         val = self.upload('/fileregistry/file/?key-name=%s&authToken=%s'%(key_name, self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['AccessToken']
         return None
 
     def download_file(self, access_token):
         'download file'
         val = self.get('/fileregistry/file/%s'%access_token)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['RedirectURL']
         return None
 
     def delete_file(self, access_token):
         'delete file'
         val = self.delete('/fileregistry/file/%s?authToken=%s'%(access_token, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         return False
 

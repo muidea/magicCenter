@@ -13,14 +13,14 @@ class Cache(MagicSession.MagicSession):
         'put_in'
         params = {'value': data, 'age': 100}
         val = self.post('/cache/item/?authToken=%s'%(self.authority_token), params)
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Token']
         return None
 
     def fetch_out(self, token):
         'fetch_out'
         val = self.get('/cache/item/%s?authToken=%s'%(token, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return val['Cache']
         else:
             return None
@@ -28,7 +28,7 @@ class Cache(MagicSession.MagicSession):
     def remove(self, token):
         'query'
         val = self.delete('/cache/item/%s?authToken=%s'%(token, self.authority_token))
-        if val and val['ErrCode'] == 0:
+        if val and val['ErrorCode'] == 0:
             return True
         else:
             return False

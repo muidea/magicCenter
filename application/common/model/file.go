@@ -2,9 +2,9 @@ package model
 
 // FileInfo 文件信息
 type FileInfo struct {
-	AccessToken string
-	FileName    string
-	FilePath    string
-	UploadDate  string
-	ReserveFlag int
+	AccessToken string `json:"accessToken"`
+	FileName    string `json:"fileName"`
+	FilePath    string `json:"filePath"`
+	UploadDate  string `json:"uploadDate"`
+	ReserveFlag int    `json:"reserveFlag"`
 }

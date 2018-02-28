@@ -63,7 +63,7 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -72,7 +72,7 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 		result.User = id
 		result.ModuleAuthGroups = val.ModuleAuthGroups
 
-		result.ErrCode = common.Success
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -120,23 +120,23 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 		param := &userPutModuleAuthGroupParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
 		if ok {
-			result.ErrCode = common.Success
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "更新用户管理模块信息失败"
 		}
 
@@ -185,14 +185,14 @@ func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Reque
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		result.User = id
 		result.ACLs = i.authorityHandler.QueryUserACL(id)
-		result.ErrCode = common.Success
+		result.ErrorCode = common.Success
 		break
 	}
 

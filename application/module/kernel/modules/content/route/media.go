@@ -99,7 +99,7 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -107,9 +107,9 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 		media, ok := i.contentHandler.GetMediaByID(id)
 		if ok {
 			result.Media = media
-			result.ErrCode = 0
+			result.ErrorCode = 0
 		} else {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "对象不存在"
 		}
 		break
@@ -156,19 +156,19 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 		catalog := r.URL.Query()["catalog"]
 		if len(catalog) < 1 {
 			result.Media = i.contentHandler.GetAllMedia()
-			result.ErrCode = 0
+			result.ErrorCode = 0
 			break
 		}
 
 		id, err := strconv.Atoi(catalog[0])
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		result.Media = i.contentHandler.GetMediaByCatalog(id)
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -186,9 +186,9 @@ type mediaCreateRoute struct {
 }
 
 type mediaCreateParam struct {
-	Name        string
+	Name        string `json:"name"`
 	URL         string
-	Description string
+	Description string `json:"id"`
 	Catalog     []int
 }
 
@@ -221,7 +221,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -229,7 +229,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -237,11 +237,11 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Media = media
 		break
 	}
@@ -291,14 +291,14 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
@@ -306,7 +306,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -321,11 +321,11 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		result.Media = summmary
 		break
 	}
@@ -372,24 +372,24 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyMedia(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 

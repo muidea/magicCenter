@@ -96,7 +96,7 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -104,9 +104,9 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		user, ok := i.accountHandler.FindUserByID(id)
 		if ok {
 			result.User = user
-			result.ErrCode = 0
+			result.ErrorCode = 0
 		} else {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "对象不存在"
 		}
 		break
@@ -151,7 +151,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 	result := userGetAllResult{}
 	for true {
 		result.User = i.accountHandler.GetAllUser()
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -202,20 +202,20 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 		param := &userCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.Group)
 		if !ok {
-			result.ErrCode = common.Failed
+			result.ErrorCode = common.Failed
 			result.Reason = "创建新用户失败"
 			break
 		}
 
 		result.User = user
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -267,7 +267,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
@@ -275,14 +275,14 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		param := &userSaveParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法参数"
 			break
 		}
 
 		user, ok := i.accountHandler.FindUserByID(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "非法参数"
 			break
 		}
@@ -305,13 +305,13 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		}
 
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "更新失败"
 			break
 		}
 
 		result.User = user
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
@@ -355,19 +355,19 @@ func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyUserByID(id)
 		if !ok {
-			result.ErrCode = 1
+			result.ErrorCode = 1
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrCode = 0
+		result.ErrorCode = 0
 		break
 	}
 
