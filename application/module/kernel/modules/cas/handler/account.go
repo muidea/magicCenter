@@ -31,27 +31,31 @@ func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
 
 // model.UserDetail 登陆用户
 // bool 是否登陆成功
-func (s *accountManager) userLogin(account, password, remoteAddr string) (model.UserDetail, bool) {
+func (s *accountManager) userLogin(account, password, remoteAddr, authToken string) (model.OnlineAccountInfo, bool) {
+	info := model.OnlineAccountInfo{}
+
 	user, ok := s.accountHandler.FindUserByAccount(account, password)
 	if !ok {
-		return user, ok
+		return info, ok
 	}
 
-	info, ok := s.onlineUser[user.ID]
+	info, ok = s.onlineUser[user.ID]
 	if ok {
 		if info.Address != remoteAddr {
 			log.Printf("duplicate user[%d] logining,pre address:%s, cur address:%s", info.ID, info.Address, remoteAddr)
 		}
+
+		return info, ok
 	}
 
-	info = model.OnlineAccountInfo{}
 	info.ID = user.ID
 	info.Name = user.Name
 	info.Address = remoteAddr
 	info.LoginTime = time.Now().Unix()
 	info.UpdateTime = info.LoginTime
+	info.AuthToken = authToken
 	s.onlineUser[user.ID] = info
-	return user, true
+	return info, true
 }
 
 func (s *accountManager) userRefresh(id int, remoteAddr string) {

@@ -61,9 +61,8 @@ type accountLoginParam struct {
 
 type accountLoginResult struct {
 	common.Result
-	User      model.UserDetail `json:"user"`
-	SessionID string           `json:"sessionID"`
-	AuthToken string           `json:"authToken"`
+	UserInfo  model.OnlineAccountInfo `json:"userInfo"`
+	SessionID string                  `json:"sessionID"`
 }
 
 func (i *accountLoginRoute) Method() string {
@@ -97,7 +96,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		remoteAddr := r.RemoteAddr
-		user, token, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
+		userInfo, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
 			result.ErrorCode = 1
 			result.Reason = "登入失败"
@@ -105,9 +104,8 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		result.ErrorCode = 0
-		result.User = user
+		result.UserInfo = userInfo
 		result.SessionID = session.ID()
-		result.AuthToken = token
 		break
 	}
 	b, err := json.Marshal(result)
@@ -181,7 +179,7 @@ type accountStatusRoute struct {
 
 type accountStatusResult struct {
 	common.Result
-	AccountInfo model.OnlineAccountInfo `json:"accountInfo"`
+	UserInfo model.OnlineAccountInfo `json:"userInfo"`
 }
 
 func (i *accountStatusRoute) Method() string {
@@ -220,7 +218,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 			break
 		}
 
-		result.AccountInfo = info
+		result.UserInfo = info
 		result.ErrorCode = 0
 		break
 	}

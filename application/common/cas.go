@@ -9,10 +9,9 @@ type CASHandler interface {
 	//@in account 账号
 	//@in password 密码
 	//@in remoteAddr 登陆地址
-	//@ret model.UserDetail 登陆用户
-	//@ret string 本次登陆的鉴权token
+	//@ret model.OnlineAccountInfo 登陆用户信息
 	//@ret bool 是否登陆成功
-	LoginAccount(account, password, remoteAddr string) (model.UserDetail, string, bool)
+	LoginAccount(account, password, remoteAddr string) (model.OnlineAccountInfo, bool)
 
 	LoginToken(authToken, remoteAddr string) (string, bool)
 

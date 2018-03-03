@@ -40,16 +40,10 @@ func (i *impl) getIP(remoteAddr string) string {
 	return ip
 }
 
-func (i *impl) LoginAccount(account, password, remoteAddr string) (model.UserDetail, string, bool) {
-	user, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr))
-	if !ok {
-		return user, "", ok
-	}
-
+func (i *impl) LoginAccount(account, password, remoteAddr string) (model.OnlineAccountInfo, bool) {
 	token := i.allocAuthToken()
-	i.token2IDMap[token] = user.ID
-
-	return user, token, ok
+	userInfo, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr), token)
+	return userInfo, ok
 }
 
 func (i *impl) LoginToken(authToken, remoteAddr string) (string, bool) {
