@@ -43,6 +43,10 @@ func (i *impl) getIP(remoteAddr string) string {
 func (i *impl) LoginAccount(account, password, remoteAddr string) (model.OnlineAccountInfo, bool) {
 	token := i.allocAuthToken()
 	userInfo, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr), token)
+	if ok {
+		i.token2IDMap[userInfo.AuthToken] = userInfo.ID
+	}
+
 	return userInfo, ok
 }
 

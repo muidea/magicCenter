@@ -179,7 +179,8 @@ type accountStatusRoute struct {
 
 type accountStatusResult struct {
 	common.Result
-	UserInfo model.OnlineAccountInfo `json:"userInfo"`
+	UserInfo  model.OnlineAccountInfo `json:"userInfo"`
+	SessionID string                  `json:"sessionID"`
 }
 
 func (i *accountStatusRoute) Method() string {
@@ -219,6 +220,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		result.UserInfo = info
+		result.SessionID = session.ID()
 		result.ErrorCode = 0
 		break
 	}
