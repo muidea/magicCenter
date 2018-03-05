@@ -69,7 +69,7 @@ type groupGetRoute struct {
 
 type groupGetResult struct {
 	common.Result
-	GroupDetail model.GroupDetail `json:"group"`
+	Group model.GroupDetailView `json:"group"`
 }
 
 func (i *groupGetRoute) Method() string {
@@ -103,7 +103,12 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 
 		group, ok := i.accountHandler.FindGroupByID(id)
 		if ok {
-			result.GroupDetail = group
+			result.Group.GroupDetail = group
+
+			catalog, _ := i.accountHandler.FindGroupByID(group.Catalog)
+			result.Group.Catalog.ID = catalog.ID
+			result.Group.Catalog.Name = catalog.Name
+
 			result.ErrorCode = 0
 		} else {
 			result.ErrorCode = 1
@@ -126,7 +131,7 @@ type groupGetAllRoute struct {
 
 type groupGetAllResult struct {
 	common.Result
-	GroupDetail []model.GroupDetail `json:"group"`
+	Group []model.GroupDetailView `json:"group"`
 }
 
 func (i *groupGetAllRoute) Method() string {
@@ -150,7 +155,16 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 	result := groupGetAllResult{}
 	for true {
-		result.GroupDetail = i.accountHandler.GetAllGroup()
+		allGroups := i.accountHandler.GetAllGroup()
+		for _, val := range allGroups {
+			groupView := model.GroupDetailView{}
+			groupView.GroupDetail = val
+			catalog, _ := i.accountHandler.FindGroupByID(val.Catalog)
+			groupView.Catalog.ID = catalog.ID
+			groupView.Catalog.Name = catalog.Name
+
+			result.Group = append(result.Group, groupView)
+		}
 		result.ErrorCode = 0
 		break
 	}
@@ -175,7 +189,7 @@ type groupCreateParam struct {
 
 type groupCreateResult struct {
 	common.Result
-	GroupDetail model.GroupDetail `json:"group"`
+	Group model.GroupDetailView `json:"group"`
 }
 
 func (i *groupCreateRoute) Method() string {
@@ -214,7 +228,10 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		result.GroupDetail = group
+		result.Group.GroupDetail = group
+		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
+		result.Group.Catalog.ID = catalog.ID
+		result.Group.Catalog.Name = catalog.Name
 		result.ErrorCode = 0
 		break
 	}
@@ -239,7 +256,7 @@ type groupSaveParam struct {
 
 type groupSaveResult struct {
 	common.Result
-	GroupDetail model.GroupDetail `json:"group"`
+	Group model.GroupDetailView `json:"group"`
 }
 
 func (i *groupSaveRoute) Method() string {
@@ -290,7 +307,10 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		result.GroupDetail = group
+		result.Group.GroupDetail = group
+		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
+		result.Group.Catalog.ID = catalog.ID
+		result.Group.Catalog.Name = catalog.Name
 		result.ErrorCode = 0
 		break
 	}

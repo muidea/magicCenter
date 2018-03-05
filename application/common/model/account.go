@@ -50,7 +50,7 @@ type UserDetail struct {
 type UserDetailView struct {
 	UserDetail
 
-	Group []Unit `json:"group"`
+	Group []Group `json:"group"`
 }
 
 const (
@@ -88,7 +88,7 @@ type GroupDetail struct {
 // GroupDetailView 分组详情显示信息
 type GroupDetailView struct {
 	GroupDetail
-	Catalog Unit `json:"catalog"`
+	Catalog Group `json:"catalog"`
 }
 
 // AdminGroup 是否是管理员组

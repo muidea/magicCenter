@@ -23,6 +23,10 @@ func (i *impl) GetAllUser() []model.UserDetail {
 	return i.userHandler.getAllUser()
 }
 
+func (i *impl) GetUsers(ids []int) []model.User {
+	return i.userHandler.getUsers(ids)
+}
+
 func (i *impl) FindUserByID(id int) (model.UserDetail, bool) {
 	return i.userHandler.findUserByID(id)
 }
@@ -53,6 +57,10 @@ func (i *impl) DestroyUserByAccount(account, password string) bool {
 
 func (i *impl) GetAllGroup() []model.GroupDetail {
 	return i.groupHandler.getAllGroups()
+}
+
+func (i *impl) GetGroups(ids []int) []model.Group {
+	return i.groupHandler.getGroups(ids)
 }
 
 func (i *impl) FindGroupByID(id int) (model.GroupDetail, bool) {

@@ -27,15 +27,13 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 }
 
 // QueryUsers 查询指定用户
-func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.UserDetail {
-	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user where id in(%s)", util.IntArray2Str(ids))
+func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
+	userList := []model.User{}
+	sql := fmt.Sprintf("select id, nickname from account_user where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 	for helper.Next() {
-		user := model.UserDetail{}
-		groups := ""
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user := model.User{}
+		helper.GetValue(&user.ID, &user.Name)
 		userList = append(userList, user)
 	}
 

@@ -25,14 +25,14 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
 }
 
 // QueryGroups 查询分组信息
-func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.GroupDetail {
-	groupList := []model.GroupDetail{}
-	sql := fmt.Sprintf("select id, name, description, catalog from account_group where id in(%s)", util.IntArray2Str(ids))
+func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
+	groupList := []model.Group{}
+	sql := fmt.Sprintf("select id, name from account_group where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {
-		g := model.GroupDetail{}
-		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
+		g := model.Group{}
+		helper.GetValue(&g.ID, &g.Name)
 
 		groupList = append(groupList, g)
 	}

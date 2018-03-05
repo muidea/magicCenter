@@ -69,7 +69,7 @@ type userGetRoute struct {
 
 type userGetResult struct {
 	common.Result
-	User model.UserDetail `json:"user"`
+	User model.UserDetailView `json:"user"`
 }
 
 func (i *userGetRoute) Method() string {
@@ -103,7 +103,8 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, ok := i.accountHandler.FindUserByID(id)
 		if ok {
-			result.User = user
+			result.User.UserDetail = user
+			result.User.Group = i.accountHandler.GetGroups(user.Group)
 			result.ErrorCode = 0
 		} else {
 			result.ErrorCode = 1
@@ -126,7 +127,7 @@ type userGetAllRoute struct {
 
 type userGetAllResult struct {
 	common.Result
-	User []model.UserDetail `json:"user"`
+	User []model.UserDetailView `json:"user"`
 }
 
 func (i *userGetAllRoute) Method() string {
@@ -150,7 +151,14 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 
 	result := userGetAllResult{}
 	for true {
-		result.User = i.accountHandler.GetAllUser()
+		allUsers := i.accountHandler.GetAllUser()
+		for _, val := range allUsers {
+			user := model.UserDetailView{}
+			user.UserDetail = val
+			user.Group = i.accountHandler.GetGroups(val.Group)
+
+			result.User = append(result.User, user)
+		}
 		result.ErrorCode = 0
 		break
 	}
@@ -175,7 +183,7 @@ type userCreateParam struct {
 
 type userCreateResult struct {
 	common.Result
-	User model.UserDetail `json:"user"`
+	User model.UserDetailView `json:"user"`
 }
 
 func (i *userCreateRoute) Method() string {
@@ -214,7 +222,8 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		result.User = user
+		result.User.UserDetail = user
+		result.User.Group = i.accountHandler.GetGroups(user.Group)
 		result.ErrorCode = 0
 		break
 	}
@@ -310,8 +319,9 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		result.User = user
-		result.ErrorCode = 0
+		result.User.UserDetail = user
+		result.User.Group = i.accountHandler.GetGroups(user.Group)
+		result.ErrorCode = common.Success
 		break
 	}
 

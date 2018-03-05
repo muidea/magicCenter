@@ -14,6 +14,10 @@ func (i *userActionHandler) getAllUser() []model.UserDetail {
 	return dal.QueryAllUser(i.dbhelper)
 }
 
+func (i *userActionHandler) getUsers(ids []int) []model.User {
+	return dal.QueryUsers(i.dbhelper, ids)
+}
+
 func (i *userActionHandler) findUserByID(id int) (model.UserDetail, bool) {
 	return dal.QueryUserByID(i.dbhelper, id)
 }
