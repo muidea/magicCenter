@@ -75,7 +75,7 @@ func (i *impl) DestroyGroup(id int) bool {
 	return i.groupHandler.destroyGroup(id)
 }
 
-func (i *impl) GetSummaryInfo() model.AccountSummary {
+func (i *impl) GetAccountSummary() model.AccountSummary {
 	result := model.AccountSummary{}
 	userCount := len(i.userHandler.getAllUser())
 	userItem := model.UnitSummary{Name: "用户", Type: "user", Count: userCount}

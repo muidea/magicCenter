@@ -38,8 +38,8 @@ const (
 	UploadPath = "@system_uploadPath"
 )
 
-// SystemInfo 系统信息
-type SystemInfo struct {
+// SystemProperty 系统信息
+type SystemProperty struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	Logo         string `json:"logo"`

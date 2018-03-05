@@ -4,11 +4,11 @@ import "muidea.com/magicCenter/application/common/model"
 
 // SystemHandler 系统管理接口
 type SystemHandler interface {
-	GetSystemConfig() model.SystemInfo
+	GetSystemProperty() model.SystemProperty
 
-	UpdateSystemConfig(sysInfo model.SystemInfo) bool
+	UpdateSystemProperty(sysProperty model.SystemProperty) bool
 
 	GetModuleList() []model.Module
 
-	GetStatisticsInfo() model.StatisticsInfo
+	GetSystemStatistics() model.StatisticsView
 }

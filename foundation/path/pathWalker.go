@@ -8,7 +8,7 @@ import (
 // WalkPath 遍历指定目录
 func WalkPath(filePath string) ([]string, error) {
 	fileList := []string{}
-	err := filepath.Walk(filePath, func(path string, f os.FileInfo, err error) error {
+	err := filepath.Walk(filePath, func(path string, f os.FileSummary, err error) error {
 		if f == nil {
 			return err
 		}

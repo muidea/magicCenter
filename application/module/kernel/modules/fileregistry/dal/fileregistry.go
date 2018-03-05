@@ -7,47 +7,47 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 )
 
-// SaveFileInfo 保存文件信息
-func SaveFileInfo(helper dbhelper.DBHelper, fileInfo model.FileInfo) bool {
-	sql := fmt.Sprintf("insert into common_fileregistry (accesstoken, filename, filepath, uploaddate) values ('%s','%s','%s','%s')", fileInfo.AccessToken, fileInfo.FileName, fileInfo.FilePath, fileInfo.UploadDate)
+// SaveFileSummary 保存文件信息
+func SaveFileSummary(helper dbhelper.DBHelper, fileSummary model.FileSummary) bool {
+	sql := fmt.Sprintf("insert into common_fileregistry (accesstoken, filename, filepath, uploaddate) values ('%s','%s','%s','%s')", fileSummary.AccessToken, fileSummary.FileName, fileSummary.FilePath, fileSummary.UploadDate)
 	num, result := helper.Execute(sql)
 	return num == 1 && result
 }
 
-// RemoveFileInfo 删除文件信息
-func RemoveFileInfo(helper dbhelper.DBHelper, accessToken string) bool {
+// RemoveFileSummary 删除文件信息
+func RemoveFileSummary(helper dbhelper.DBHelper, accessToken string) bool {
 	sql := fmt.Sprintf("delete from common_fileregistry where accesstoken = '%s' and reserveflag = 0", accessToken)
 
 	_, result := helper.Execute(sql)
 	return result
 }
 
-// ReserveFileInfo 预留文件信息
-func ReserveFileInfo(helper dbhelper.DBHelper, accessToken string) bool {
+// ReserveFileSummary 预留文件信息
+func ReserveFileSummary(helper dbhelper.DBHelper, accessToken string) bool {
 	sql := fmt.Sprintf("update common_fileregistry set reserveflag = 1 where accesstoken ='%s'", accessToken)
 	num, result := helper.Execute(sql)
 	return num == 1 && result
 }
 
-// DisReserveFileInfo 取消预留文件信息
-func DisReserveFileInfo(helper dbhelper.DBHelper, accessToken string) bool {
+// DisReserveFileSummary 取消预留文件信息
+func DisReserveFileSummary(helper dbhelper.DBHelper, accessToken string) bool {
 	sql := fmt.Sprintf("update common_fileregistry set reserveflag = 0 where accesstoken ='%s'", accessToken)
 	num, result := helper.Execute(sql)
 	return num == 1 && result
 }
 
-// FindFileInfo 查找指定文件信息
-func FindFileInfo(helper dbhelper.DBHelper, accesstoken string) (model.FileInfo, bool) {
+// FindFileSummary 查找指定文件信息
+func FindFileSummary(helper dbhelper.DBHelper, accesstoken string) (model.FileSummary, bool) {
 	sql := fmt.Sprintf("select filename, filepath, uploaddate, reserveflag from common_fileregistry where accesstoken = '%s'", accesstoken)
 	helper.Query(sql)
 
-	fileInfo := model.FileInfo{}
+	fileSummary := model.FileSummary{}
 	retVal := false
 	if helper.Next() {
-		fileInfo.AccessToken = accesstoken
-		helper.GetValue(&fileInfo.FileName, &fileInfo.FilePath, &fileInfo.UploadDate, &fileInfo.ReserveFlag)
+		fileSummary.AccessToken = accesstoken
+		helper.GetValue(&fileSummary.FileName, &fileSummary.FilePath, &fileSummary.UploadDate, &fileSummary.ReserveFlag)
 		retVal = true
 	}
 
-	return fileInfo, retVal
+	return fileSummary, retVal
 }

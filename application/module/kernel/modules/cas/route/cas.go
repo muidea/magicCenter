@@ -61,8 +61,8 @@ type accountLoginParam struct {
 
 type accountLoginResult struct {
 	common.Result
-	UserInfo  model.OnlineAccountInfo `json:"userInfo"`
-	SessionID string                  `json:"sessionID"`
+	OnlineUser model.AccountOnlineView `json:"onlineUser"`
+	SessionID  string                  `json:"sessionID"`
 }
 
 func (i *accountLoginRoute) Method() string {
@@ -96,7 +96,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		remoteAddr := r.RemoteAddr
-		userInfo, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
+		onlineUser, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
 			result.ErrorCode = 1
 			result.Reason = "登入失败"
@@ -104,7 +104,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		result.ErrorCode = 0
-		result.UserInfo = userInfo
+		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
 		break
 	}
@@ -179,8 +179,8 @@ type accountStatusRoute struct {
 
 type accountStatusResult struct {
 	common.Result
-	UserInfo  model.OnlineAccountInfo `json:"userInfo"`
-	SessionID string                  `json:"sessionID"`
+	OnlineUser model.AccountOnlineView `json:"onlineUser"`
+	SessionID  string                  `json:"sessionID"`
 }
 
 func (i *accountStatusRoute) Method() string {
@@ -212,14 +212,14 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 			break
 		}
 
-		info, found := i.casHandler.VerifyToken(authToken.(string))
+		onlineUser, found := i.casHandler.VerifyToken(authToken.(string))
 		if !found {
 			result.ErrorCode = 1
 			result.Reason = "无效Token"
 			break
 		}
 
-		result.UserInfo = info
+		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
 		result.ErrorCode = 0
 		break

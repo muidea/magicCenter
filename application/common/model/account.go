@@ -24,7 +24,7 @@ func NewEmptyUser() UserDetail {
 
 // NewUser 新建用户
 func NewUser(account, email string, groups []int, status int) UserDetail {
-	return UserDetail{Account: account, Email: email, Groups: groups, Status: status}
+	return UserDetail{Account: account, Email: email, Group: groups, Status: status}
 }
 
 // User 用户信息
@@ -39,11 +39,18 @@ type UserDetail struct {
 	//EMail 用户邮箱
 	Email string `json:"email"`
 	//Groups 所属分组
-	Groups []int `json:"groups"`
+	Group []int `json:"group"`
 	// Status 用户状态，预留字段，暂时没有用到
 	Status int `json:"status"`
 	// 注册时间
 	RegisterTime string `json:"registerTime"`
+}
+
+// UserDetailView 用户详情显示信息
+type UserDetailView struct {
+	UserDetail
+
+	Group []Unit `json:"group"`
 }
 
 const (
@@ -76,6 +83,12 @@ type GroupDetail struct {
 	Unit
 	Description string `json:"description"`
 	Catalog     int    `json:"catalog"`
+}
+
+// GroupDetailView 分组详情显示信息
+type GroupDetailView struct {
+	GroupDetail
+	Catalog Unit `json:"catalog"`
 }
 
 // AdminGroup 是否是管理员组

@@ -40,14 +40,14 @@ func (i *impl) getIP(remoteAddr string) string {
 	return ip
 }
 
-func (i *impl) LoginAccount(account, password, remoteAddr string) (model.OnlineAccountInfo, bool) {
+func (i *impl) LoginAccount(account, password, remoteAddr string) (model.AccountOnlineView, bool) {
 	token := i.allocAuthToken()
-	userInfo, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr), token)
+	onlineUser, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr), token)
 	if ok {
-		i.token2IDMap[userInfo.AuthToken] = userInfo.ID
+		i.token2IDMap[onlineUser.AuthToken] = onlineUser.ID
 	}
 
-	return userInfo, ok
+	return onlineUser, ok
 }
 
 func (i *impl) LoginToken(authToken, remoteAddr string) (string, bool) {
@@ -72,8 +72,8 @@ func (i *impl) RefreshToken(authToken, remoteAddr string) bool {
 	return ok
 }
 
-func (i *impl) VerifyToken(authToken string) (model.OnlineAccountInfo, bool) {
-	var info model.OnlineAccountInfo
+func (i *impl) VerifyToken(authToken string) (model.AccountOnlineView, bool) {
+	var info model.AccountOnlineView
 	id, ok := i.token2IDMap[authToken]
 	if ok {
 		info, ok = i.accountManager.userVerify(id)

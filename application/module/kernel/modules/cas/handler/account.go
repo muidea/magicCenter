@@ -10,11 +10,11 @@ import (
 
 type accountManager struct {
 	accountHandler common.AccountHandler
-	onlineUser     map[int]model.OnlineAccountInfo
+	onlineUser     map[int]model.AccountOnlineView
 }
 
 func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
-	s := accountManager{accountHandler: nil, onlineUser: make(map[int]model.OnlineAccountInfo)}
+	s := accountManager{accountHandler: nil, onlineUser: make(map[int]model.AccountOnlineView)}
 	mod, ok := moduleHub.FindModule(common.AccountModuleID)
 	if !ok {
 		return s, false
@@ -31,8 +31,8 @@ func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
 
 // model.UserDetail 登陆用户
 // bool 是否登陆成功
-func (s *accountManager) userLogin(account, password, remoteAddr, authToken string) (model.OnlineAccountInfo, bool) {
-	info := model.OnlineAccountInfo{}
+func (s *accountManager) userLogin(account, password, remoteAddr, authToken string) (model.AccountOnlineView, bool) {
+	info := model.AccountOnlineView{}
 
 	user, ok := s.accountHandler.FindUserByAccount(account, password)
 	if !ok {
@@ -71,7 +71,7 @@ func (s *accountManager) userRefresh(id int, remoteAddr string) {
 	}
 }
 
-func (s accountManager) userVerify(id int) (model.OnlineAccountInfo, bool) {
+func (s accountManager) userVerify(id int) (model.AccountOnlineView, bool) {
 	info, ok := s.onlineUser[id]
 	return info, ok
 }

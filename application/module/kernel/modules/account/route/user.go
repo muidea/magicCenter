@@ -295,7 +295,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		}
 
 		if len(param.GroupDetail) > 0 {
-			user.Groups = param.GroupDetail
+			user.Group = param.GroupDetail
 		}
 
 		if param.Password != "" {

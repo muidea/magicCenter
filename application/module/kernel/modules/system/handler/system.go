@@ -32,35 +32,35 @@ type impl struct {
 	moduleList []model.Module
 }
 
-func (s *impl) GetSystemConfig() model.SystemInfo {
-	return configuration.GetSystemInfo()
+func (s *impl) GetSystemProperty() model.SystemProperty {
+	return configuration.GetSystemProperty()
 }
 
-func (s *impl) UpdateSystemConfig(sysInfo model.SystemInfo) bool {
-	return configuration.UpdateSystemInfo(sysInfo)
+func (s *impl) UpdateSystemProperty(sysProperty model.SystemProperty) bool {
+	return configuration.UpdateSystemProperty(sysProperty)
 }
 
 func (s *impl) GetModuleList() []model.Module {
 	return s.moduleList
 }
 
-func (s *impl) GetStatisticsInfo() model.StatisticsInfo {
-	info := model.StatisticsInfo{}
+func (s *impl) GetSystemStatistics() model.StatisticsView {
+	info := model.StatisticsView{}
 	contentModule, ok := s.moduleHub.FindModule(common.CotentModuleID)
 	if ok {
 		contentHandler := contentModule.EntryPoint().(common.ContentHandler)
 		info.LastContent = contentHandler.GetLastContent(10)
 
-		contentSummary := contentHandler.GetSummaryInfo()
-		info.SummaryInfo = append(info.SummaryInfo, contentSummary...)
+		contentSummary := contentHandler.GetAccountSummary()
+		info.SystemSummary = append(info.SystemSummary, contentSummary...)
 	}
 	accountModule, ok := s.moduleHub.FindModule(common.AccountModuleID)
 	if ok {
 		accountHandler := accountModule.EntryPoint().(common.AccountHandler)
 		info.LastAccount = accountHandler.GetLastAccount(10)
 
-		accountSummary := accountHandler.GetSummaryInfo()
-		info.SummaryInfo = append(info.SummaryInfo, accountSummary...)
+		accountSummary := accountHandler.GetAccountSummary()
+		info.SystemSummary = append(info.SystemSummary, accountSummary...)
 	}
 
 	return info

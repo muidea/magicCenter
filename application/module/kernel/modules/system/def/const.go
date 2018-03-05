@@ -14,8 +14,8 @@ const Description = "Magic 系统配置管理"
 // URL 模块Url
 const URL = "/system"
 
-// GetSystemConfig 获取系统配置
-const GetSystemConfig = "/config/"
+// GetSystemProperty 获取系统配置
+const GetSystemProperty = "/config/"
 
 // PutSystemConfig 更新系统配置
 const PutSystemConfig = "/config/"

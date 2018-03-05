@@ -45,7 +45,7 @@ type getSystemConfigRoute struct {
 
 type getSystemConfigResult struct {
 	common.Result
-	SystemInfo model.SystemInfo `json:"systemInfo"`
+	SystemProperty model.SystemProperty `json:"systemProperty"`
 }
 
 func (i *getSystemConfigRoute) Method() string {
@@ -53,7 +53,7 @@ func (i *getSystemConfigRoute) Method() string {
 }
 
 func (i *getSystemConfigRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetSystemConfig)
+	return net.JoinURL(def.URL, def.GetSystemProperty)
 }
 
 func (i *getSystemConfigRoute) Handler() interface{} {
@@ -66,7 +66,7 @@ func (i *getSystemConfigRoute) AuthGroup() int {
 
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	result := getSystemConfigResult{}
-	result.SystemInfo = i.systemHandler.GetSystemConfig()
+	result.SystemProperty = i.systemHandler.GetSystemProperty()
 	result.ErrorCode = common.Success
 
 	b, err := json.Marshal(result)
@@ -107,16 +107,16 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 	for true {
 		r.ParseForm()
 
-		systemInfo := model.SystemInfo{}
-		systemInfo.Name = r.FormValue("name")
-		systemInfo.Description = r.FormValue("description")
-		systemInfo.Logo = r.FormValue("logo")
-		systemInfo.Domain = r.FormValue("domain")
-		systemInfo.MailServer = r.FormValue("mailsvr")
-		systemInfo.MailAccount = r.FormValue("mailaccount")
-		systemInfo.MailPassword = r.FormValue("mailpassword")
+		systemProperty := model.SystemProperty{}
+		systemProperty.Name = r.FormValue("name")
+		systemProperty.Description = r.FormValue("description")
+		systemProperty.Logo = r.FormValue("logo")
+		systemProperty.Domain = r.FormValue("domain")
+		systemProperty.MailServer = r.FormValue("mailsvr")
+		systemProperty.MailAccount = r.FormValue("mailaccount")
+		systemProperty.MailPassword = r.FormValue("mailpassword")
 
-		if i.systemHandler.UpdateSystemConfig(systemInfo) {
+		if i.systemHandler.UpdateSystemProperty(systemProperty) {
 			result.ErrorCode = common.Success
 		} else {
 			result.ErrorCode = common.Failed

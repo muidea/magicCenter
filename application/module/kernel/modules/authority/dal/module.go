@@ -8,8 +8,8 @@ import (
 )
 
 // QueryUserModuleAuthGroup 获取指定用户拥有的模块
-func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) model.UserModuleAuthGroupInfo {
-	retValue := model.UserModuleAuthGroupInfo{User: user}
+func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) model.UserModuleAuthGroup {
+	retValue := model.UserModuleAuthGroup{User: user}
 
 	sql := fmt.Sprintf("select module, authgroup from authority_module where user=%d", user)
 	helper.Query(sql)
@@ -17,7 +17,7 @@ func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) model.UserModu
 		moduleAuthGroup := model.ModuleAuthGroup{}
 		helper.GetValue(&moduleAuthGroup.Module, &moduleAuthGroup.AuthGroup)
 
-		retValue.ModuleAuthGroups = append(retValue.ModuleAuthGroups, moduleAuthGroup)
+		retValue.ModuleAuthGroup = append(retValue.ModuleAuthGroup, moduleAuthGroup)
 	}
 
 	return retValue
@@ -52,14 +52,14 @@ func UpdateUserModuleAuthGroup(helper dbhelper.DBHelper, user int, moduleAuthGro
 }
 
 // QueryModuleUserAuthGroup 查询拥有指定Module的User
-func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) model.ModuleUserAuthGroupInfo {
-	retValue := model.ModuleUserAuthGroupInfo{Module: module}
+func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) model.ModuleUserAuthGroup {
+	retValue := model.ModuleUserAuthGroup{Module: module}
 	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
 	helper.Query(sql)
 	for helper.Next() {
 		userAuthGroup := model.UserAuthGroup{}
 		helper.GetValue(&userAuthGroup.User, &userAuthGroup.AuthGroup)
-		retValue.UserAuthGroups = append(retValue.UserAuthGroups, userAuthGroup)
+		retValue.UserAuthGroup = append(retValue.UserAuthGroup, userAuthGroup)
 	}
 
 	return retValue

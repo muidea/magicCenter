@@ -18,7 +18,7 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Groups, _ = util.Str2IntArray(groups)
+		user.Group, _ = util.Str2IntArray(groups)
 
 		userList = append(userList, user)
 	}
@@ -35,7 +35,7 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.UserDetail {
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Groups, _ = util.Str2IntArray(groups)
+		user.Group, _ = util.Str2IntArray(groups)
 		userList = append(userList, user)
 	}
 
@@ -53,7 +53,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 	if helper.Next() {
 		groups := ""
 		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Groups, _ = util.Str2IntArray(groups)
+		user.Group, _ = util.Str2IntArray(groups)
 		result = true
 	}
 
@@ -71,7 +71,7 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 	if helper.Next() {
 		groups := ""
 		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Groups, _ = util.Str2IntArray(groups)
+		user.Group, _ = util.Str2IntArray(groups)
 		result = true
 	}
 
@@ -94,7 +94,7 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 
 // CreateUser 创建新用户，根据用户信息和密码
 func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (model.UserDetail, bool) {
-	user := model.UserDetail{Account: account, Email: email, Groups: groups}
+	user := model.UserDetail{Account: account, Email: email, Group: groups}
 	sql := fmt.Sprintf("select id from account_user where account='%s'", account)
 	helper.Query(sql)
 	if helper.Next() {
@@ -127,7 +127,7 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 
 // SaveUser 保存用户信息
 func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
-	gVal := util.IntArray2Str(user.Groups)
+	gVal := util.IntArray2Str(user.Group)
 	// modify
 	sql := fmt.Sprintf("update account_user set nickname='%s', email='%s', groups='%s', status=%d where id =%d", user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
@@ -137,7 +137,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 
 // SaveUserWithPassword 保存用户信息
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
-	gVal := util.IntArray2Str(user.Groups)
+	gVal := util.IntArray2Str(user.Group)
 	// modify
 	sql := fmt.Sprintf("update account_user set password='%s', nickname='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Name, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
@@ -154,7 +154,7 @@ func GetLastRegisterUser(helper dbhelper.DBHelper, count int) []model.UserDetail
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Groups, _ = util.Str2IntArray(groups)
+		user.Group, _ = util.Str2IntArray(groups)
 
 		userList = append(userList, user)
 	}

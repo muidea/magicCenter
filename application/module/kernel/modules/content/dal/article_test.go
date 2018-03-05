@@ -30,19 +30,19 @@ func TestArticle(t *testing.T) {
 		return
 	}
 
-	arInfo, found := QueryArticleByID(helper, summary.ID)
+	arDetail, found := QueryArticleByID(helper, summary.ID)
 	if !found {
 		t.Error("QueryArticleByID failed")
 		return
 	}
 
-	if arInfo.CreateDate != "2016-08-08 00:00:00" {
+	if arDetail.CreateDate != "2016-08-08 00:00:00" {
 		t.Error("QueryArticleByID failed, invalid createDate")
 		return
 	}
 
-	arInfo.Content = "0987654321"
-	summary, ret = SaveArticle(helper, arInfo)
+	arDetail.Content = "0987654321"
+	summary, ret = SaveArticle(helper, arDetail)
 	if !ret {
 		t.Error("SaveArticle failed")
 		return
@@ -53,7 +53,7 @@ func TestArticle(t *testing.T) {
 		t.Error("QueryAllArticleSummary failed")
 	}
 
-	ret = DeleteArticle(helper, arInfo.ID)
+	ret = DeleteArticle(helper, arDetail.ID)
 	if !ret {
 		t.Error("DeleteArticle failed")
 		return

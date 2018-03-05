@@ -194,27 +194,27 @@ func (right commandChanImpl) count() int {
 }
 
 func (right commandChanImpl) run() {
-	sessionInfo := make(map[string]interface{})
+	sessionContextMap := make(map[string]interface{})
 	for command := range right {
 		switch command.action {
 		case insert:
 			session := command.value.(sessionImpl)
-			sessionInfo[session.id] = &session
+			sessionContextMap[session.id] = &session
 		case remove:
 			id := command.value.(string)
-			delete(sessionInfo, id)
+			delete(sessionContextMap, id)
 		case update:
 			session := command.value.(sessionImpl)
-			_, found := sessionInfo[session.id]
+			_, found := sessionContextMap[session.id]
 			if found {
-				sessionInfo[session.id] = &session
+				sessionContextMap[session.id] = &session
 			}
 
 			command.result <- found
 		case find:
 			id := command.value.(string)
 			session := sessionImpl{}
-			cur, found := sessionInfo[id]
+			cur, found := sessionContextMap[id]
 			if found {
 				cur.(*sessionImpl).refresh()
 				session = *(cur.(*sessionImpl))
@@ -222,7 +222,7 @@ func (right commandChanImpl) run() {
 			command.result <- findResult{session, found}
 		case checkTimeOut:
 			removeList := []string{}
-			for k, v := range sessionInfo {
+			for k, v := range sessionContextMap {
 				session := v.(*sessionImpl)
 				if session.timeOut() {
 					removeList = append(removeList, k)
@@ -230,13 +230,13 @@ func (right commandChanImpl) run() {
 			}
 
 			for key := range removeList {
-				delete(sessionInfo, removeList[key])
+				delete(sessionContextMap, removeList[key])
 			}
 		case length:
-			command.result <- len(sessionInfo)
+			command.result <- len(sessionContextMap)
 		case end:
 			close(right)
-			command.data <- sessionInfo
+			command.data <- sessionContextMap
 		}
 	}
 

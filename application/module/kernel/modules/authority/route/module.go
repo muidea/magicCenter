@@ -83,7 +83,7 @@ type moduleGetUserAuthGroupRoute struct {
 
 type moduleGetUserAuthGroupResult struct {
 	common.Result
-	model.ModuleUserAuthGroupInfo
+	model.ModuleUserAuthGroup
 }
 
 func (i *moduleGetUserAuthGroupRoute) Method() string {
@@ -110,7 +110,7 @@ func (i *moduleGetUserAuthGroupRoute) getModuleUserAuthGroupHandler(w http.Respo
 		_, id := net.SplitRESTAPI(r.URL.Path)
 		info := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		result.Module = id
-		result.UserAuthGroups = info.UserAuthGroups
+		result.UserAuthGroup = info.UserAuthGroup
 		result.ErrorCode = common.Success
 
 		break

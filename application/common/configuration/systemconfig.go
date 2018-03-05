@@ -35,8 +35,8 @@ func LoadSystemConfiguration() {
 	systemConfig = cfg
 }
 
-// UpdateSystemInfo 更新系统信息
-func UpdateSystemInfo(info model.SystemInfo) bool {
+// UpdateSystemProperty 更新系统信息
+func UpdateSystemProperty(info model.SystemProperty) bool {
 	configs := map[string]string{}
 	configs[model.AppName] = info.Name
 	configs[model.AppDescription] = info.Description
@@ -49,9 +49,9 @@ func UpdateSystemInfo(info model.SystemInfo) bool {
 	return systemConfig.UpdateOptions(configs)
 }
 
-// GetSystemInfo 获取系统信息
-func GetSystemInfo() model.SystemInfo {
-	info := model.SystemInfo{}
+// GetSystemProperty 获取系统信息
+func GetSystemProperty() model.SystemProperty {
+	info := model.SystemProperty{}
 	val, ok := systemConfig.GetOption(model.AppName)
 	if ok {
 		info.Name = val

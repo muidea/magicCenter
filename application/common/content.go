@@ -34,6 +34,6 @@ type ContentHandler interface {
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 
-	GetSummaryInfo() model.ContentSummary
+	GetAccountSummary() model.ContentSummary
 	GetLastContent(count int) []model.ContentUnit
 }

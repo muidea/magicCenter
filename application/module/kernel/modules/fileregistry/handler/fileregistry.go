@@ -49,9 +49,9 @@ type deleteFileResult struct {
 	common.Result
 }
 
-func (s *impl) FindFile(accessToken string) (string, model.FileInfo, bool) {
-	fileInfo, ok := dal.FindFileInfo(s.dbhelper, accessToken)
-	return s.uploadPath, fileInfo, ok
+func (s *impl) FindFile(accessToken string) (string, model.FileSummary, bool) {
+	fileSummary, ok := dal.FindFileSummary(s.dbhelper, accessToken)
+	return s.uploadPath, fileSummary, ok
 }
 
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
@@ -107,13 +107,13 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		filePath := path.Join(accessToken, fileName)
-		fileInfo := model.FileInfo{FileName: fileName, FilePath: filePath}
-		fileInfo.AccessToken = accessToken
-		fileInfo.UploadDate = time.Now().Format("2006-01-02 15:04:05")
+		fileSummary := model.FileSummary{FileName: fileName, FilePath: filePath}
+		fileSummary.AccessToken = accessToken
+		fileSummary.UploadDate = time.Now().Format("2006-01-02 15:04:05")
 
-		ret := dal.SaveFileInfo(s.dbhelper, fileInfo)
+		ret := dal.SaveFileSummary(s.dbhelper, fileSummary)
 		if ret {
-			result.AccessToken = fileInfo.AccessToken
+			result.AccessToken = fileSummary.AccessToken
 			result.ErrorCode = 0
 		} else {
 			result.ErrorCode = 1
@@ -141,7 +141,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		_, id := net.SplitRESTAPI(req.URL.Path)
-		_, ok := dal.FindFileInfo(s.dbhelper, id)
+		_, ok := dal.FindFileSummary(s.dbhelper, id)
 		if !ok {
 			result.ErrorCode = 1
 			result.Reason = "指定文件不存在"
@@ -171,10 +171,10 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		_, id := net.SplitRESTAPI(req.URL.Path)
-		fileInfo, ok := dal.FindFileInfo(s.dbhelper, id)
+		fileSummary, ok := dal.FindFileSummary(s.dbhelper, id)
 		if ok {
-			dal.RemoveFileInfo(s.dbhelper, id)
-			finalFilePath := path.Join(s.uploadPath, fileInfo.FilePath)
+			dal.RemoveFileSummary(s.dbhelper, id)
+			finalFilePath := path.Join(s.uploadPath, fileSummary.FilePath)
 			_, err := os.Stat(finalFilePath)
 			if err == nil {
 				os.Remove(finalFilePath)

@@ -83,15 +83,15 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return sessionToken.(string) == authToken
 	}
 
-	accountInfo, ok := i.casHandler.VerifyToken(authToken)
+	onlineAccount, ok := i.casHandler.VerifyToken(authToken)
 	if !ok {
 		// 如果提供了authToken，但是校验不通过，则认为没有权限
 		return false
 	}
 
 	avalibleFlag := false
-	userModuleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, accountInfo.User.ID)
-	for _, val := range userModuleAuthGroup.ModuleAuthGroups {
+	userModuleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineAccount.User.ID)
+	for _, val := range userModuleAuthGroup.ModuleAuthGroup {
 		if val.Module == acl.Module && val.AuthGroup >= acl.AuthGroup {
 			avalibleFlag = true
 			break
@@ -100,7 +100,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 
 	if avalibleFlag {
 		// 如果校验通过，则更新session里的相关信息
-		session.SetAccount(accountInfo.User)
+		session.SetAccount(onlineAccount.User)
 		session.SetOption(common.AuthTokenID, authToken)
 	}
 
@@ -146,7 +146,7 @@ func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
 	return dal.UpateACL(i.dbhelper, acl)
 }
 
-func (i *impl) QueryUserModuleAuthGroup(user int) model.UserModuleAuthGroupInfo {
+func (i *impl) QueryUserModuleAuthGroup(user int) model.UserModuleAuthGroup {
 	return dal.QueryUserModuleAuthGroup(i.dbhelper, user)
 }
 
@@ -163,7 +163,7 @@ func (i *impl) QueryUserACL(user int) []model.ACL {
 	return acls
 }
 
-func (i *impl) QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroupInfo {
+func (i *impl) QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroup {
 	return dal.QueryModuleUserAuthGroup(i.dbhelper, module)
 }
 

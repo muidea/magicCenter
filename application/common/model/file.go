@@ -1,7 +1,7 @@
 package model
 
-// FileInfo 文件信息
-type FileInfo struct {
+// FileSummary 文件信息
+type FileSummary struct {
 	AccessToken string `json:"accessToken"`
 	FileName    string `json:"fileName"`
 	FilePath    string `json:"filePath"`

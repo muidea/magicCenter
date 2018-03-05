@@ -124,7 +124,7 @@ func (i *impl) DestroyMedia(id int) bool {
 	return i.mediaHandler.destroyMedia(id)
 }
 
-func (i *impl) GetSummaryInfo() model.ContentSummary {
+func (i *impl) GetAccountSummary() model.ContentSummary {
 	result := model.ContentSummary{}
 
 	articleCount := len(i.articleHandler.getAllArticleSummary())

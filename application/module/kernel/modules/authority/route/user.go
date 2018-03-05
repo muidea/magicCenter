@@ -36,7 +36,7 @@ type userGetModuleAuthGroupRoute struct {
 
 type userGetModuleAuthGroupResult struct {
 	common.Result
-	model.UserModuleAuthGroupInfo
+	model.UserModuleAuthGroup
 }
 
 func (i *userGetModuleAuthGroupRoute) Method() string {
@@ -70,7 +70,7 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 
 		val := i.authorityHandler.QueryUserModuleAuthGroup(id)
 		result.User = id
-		result.ModuleAuthGroups = val.ModuleAuthGroups
+		result.ModuleAuthGroup = val.ModuleAuthGroup
 
 		result.ErrorCode = common.Success
 		break

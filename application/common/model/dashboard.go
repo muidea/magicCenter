@@ -19,10 +19,10 @@ type UnitTrend struct {
 	UnitValue []UnitValue `json:"itemValue"`
 }
 
-// StatisticsInfo 系统统计信息
-type StatisticsInfo struct {
-	SummaryInfo []UnitSummary `json:"summaryInfo"`
-	TrendInfo   []UnitTrend   `json:"trendInfo"`
-	LastContent []ContentUnit `json:"lastContent"`
-	LastAccount []AccountUnit `json:"lastAccount"`
+// StatisticsView 系统统计信息
+type StatisticsView struct {
+	SystemSummary []UnitSummary `json:"systemSummary"`
+	SystemTrend   []UnitTrend   `json:"systemTrend"`
+	LastContent   []ContentUnit `json:"lastContent"`
+	LastAccount   []AccountUnit `json:"lastAccount"`
 }

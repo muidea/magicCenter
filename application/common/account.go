@@ -20,6 +20,6 @@ type AccountHandler interface {
 	SaveGroup(group model.GroupDetail) (model.GroupDetail, bool)
 	DestroyGroup(id int) bool
 
-	GetSummaryInfo() model.AccountSummary
+	GetAccountSummary() model.AccountSummary
 	GetLastAccount(count int) model.AccountRecord
 }

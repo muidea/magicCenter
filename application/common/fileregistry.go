@@ -9,7 +9,7 @@ import (
 // FileRegistryHandler 文件管理处理器
 type FileRegistryHandler interface {
 	// FindFile 查找指定文件
-	FindFile(accessToken string) (string, model.FileInfo, bool)
+	FindFile(accessToken string) (string, model.FileSummary, bool)
 	// UploadFile 上传文件
 	UploadFile(res http.ResponseWriter, req *http.Request)
 	// DownloadFile 下载文件
