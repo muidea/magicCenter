@@ -145,5 +145,5 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.S
 		result = false
 	}
 
-	return model.Summary{ID: catalog.ID, Name: catalog.Name, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}, result
+	return model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}, result
 }

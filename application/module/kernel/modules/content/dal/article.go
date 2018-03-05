@@ -135,7 +135,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 		result = false
 	}
 
-	return model.Summary{ID: article.ID, Name: article.Name, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}, result
+	return model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}, result
 }
 
 // DeleteArticle 删除文章

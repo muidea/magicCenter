@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
 )
 
 func TestUser(t *testing.T) {
@@ -14,31 +13,20 @@ func TestUser(t *testing.T) {
 	}
 	defer helper.Release()
 
-	user := model.UserDetail{}
-	user.Account = "test"
-	user.Name = "nickName"
-	user.Email = "test@126.com"
-	user.Groups = []int{}
-	user.Status = 0
-
-	user2 := user
-	user2.Account = "t2"
-
 	groups := []int{}
-
-	_, ret := CreateUser(helper, "user", "test", groups)
+	user, ret := CreateUser(helper, "user", "test@126.com", groups)
 	if !ret {
 		t.Error("CreateUser failed")
 		return
 	}
 
-	_, ret = CreateUser(helper, "user2", "test", groups)
-	if !ret {
-		t.Error("CreateUser failed")
-		return
+	user.Name = "nickName"
+	user, ok := SaveUserWithPassword(helper, user, "test")
+	if !ok {
+		t.Error("SaveUserWithPassword failed")
 	}
 
-	usr, found := QueryUserByAccount(helper, "test", "test")
+	usr, found := QueryUserByAccount(helper, "user", "test")
 	if !found {
 		t.Errorf("QueryUserByAccount failed, account:%s", "test")
 		return

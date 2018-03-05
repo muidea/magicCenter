@@ -168,9 +168,9 @@ type userCreateRoute struct {
 }
 
 type userCreateParam struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
-	Group    []int  `json:"group"`
+	Account     string `json:"account"`
+	Password    string `json:"password"`
+	GroupDetail []int  `json:"group"`
 }
 
 type userCreateResult struct {
@@ -207,7 +207,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.Group)
+		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.GroupDetail)
 		if !ok {
 			result.ErrorCode = common.Failed
 			result.Reason = "创建新用户失败"
@@ -232,10 +232,10 @@ type userSaveRoute struct {
 }
 
 type userSaveParam struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Group    []int  `json:"group"`
+	Email       string `json:"email"`
+	Name        string `json:"name"`
+	Password    string `json:"password"`
+	GroupDetail []int  `json:"group"`
 }
 
 type userSaveResult struct {
@@ -294,8 +294,8 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			user.Name = param.Name
 		}
 
-		if len(param.Group) > 0 {
-			user.Groups = param.Group
+		if len(param.GroupDetail) > 0 {
+			user.Groups = param.GroupDetail
 		}
 
 		if param.Password != "" {

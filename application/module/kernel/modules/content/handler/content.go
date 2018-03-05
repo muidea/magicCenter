@@ -128,29 +128,29 @@ func (i *impl) GetSummaryInfo() model.ContentSummary {
 	result := model.ContentSummary{}
 
 	articleCount := len(i.articleHandler.getAllArticleSummary())
-	articleItem := model.SummaryItem{Name: "文章", Type: "article", Count: articleCount}
+	articleItem := model.UnitSummary{Name: "文章", Type: "article", Count: articleCount}
 	result = append(result, articleItem)
 
 	catalogCount := len(i.catalogHandler.getAllCatalog())
-	catalogItem := model.SummaryItem{Name: "分类", Type: "catalog", Count: catalogCount}
+	catalogItem := model.UnitSummary{Name: "分类", Type: "catalog", Count: catalogCount}
 	result = append(result, catalogItem)
 
 	linkCount := len(i.linkHandler.getAllLink())
-	linkItem := model.SummaryItem{Name: "链接", Type: "link", Count: linkCount}
+	linkItem := model.UnitSummary{Name: "链接", Type: "link", Count: linkCount}
 	result = append(result, linkItem)
 
 	mediaCount := len(i.mediaHandler.getAllMedia())
-	mediaItem := model.SummaryItem{Name: "文件", Type: "media", Count: mediaCount}
+	mediaItem := model.UnitSummary{Name: "文件", Type: "media", Count: mediaCount}
 	result = append(result, mediaItem)
 
 	return result
 }
 
-func (i *impl) GetLastContent(count int) []model.ContentItem {
-	resultList := []model.ContentItem{}
+func (i *impl) GetLastContent(count int) []model.ContentUnit {
+	resultList := []model.ContentUnit{}
 	res := resource.GetLastResource(i.dbhelper, count)
 	for _, v := range res {
-		item := model.ContentItem{Title: v.RName(), Type: v.RType(), CreateDate: v.RCreateDate()}
+		item := model.ContentUnit{Title: v.RName(), Type: v.RType(), CreateDate: v.RCreateDate()}
 
 		resultList = append(resultList, item)
 	}

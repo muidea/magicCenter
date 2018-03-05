@@ -48,30 +48,3 @@ type SystemInfo struct {
 	MailAccount  string `json:"mailAccount"`
 	MailPassword string `json:"mailPassword"`
 }
-
-// SummaryItem 摘要信息
-type SummaryItem struct {
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	Count int    `json:"count"`
-}
-
-// TrendValue 趋势值
-type TrendValue struct {
-	Value     float32 `json:"value"`
-	TimeStamp int     `json:"timeStamp"`
-}
-
-// TrendItem 趋势项
-type TrendItem struct {
-	ItemName  string       `json:"itemName"`
-	ItemValue []TrendValue `json:"itemValue"`
-}
-
-// StatisticsInfo 系统统计信息
-type StatisticsInfo struct {
-	SummaryInfo []SummaryItem `json:"summaryInfo"`
-	TrendInfo   []TrendItem   `json:"trendInfo"`
-	LastContent []ContentItem `json:"lastContent"`
-	LastAccount []AccountItem `json:"lastAccount"`
-}

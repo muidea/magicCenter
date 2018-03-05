@@ -1,5 +1,5 @@
 from account import User
-from account import Group
+from account import GroupDetail
 
 User.main()
-Group.main()
+GroupDetail.main()

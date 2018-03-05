@@ -14,8 +14,7 @@ const MEDIA = "media"
 
 // Summary 摘要信息
 type Summary struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
+	Unit
 	Catalog    []int  `json:"catalog"`
 	CreateDate string `json:"createDate"`
 	Creater    int    `json:"creater"`
@@ -51,10 +50,10 @@ type MediaDetail struct {
 }
 
 // ContentSummary 内容摘要信息
-type ContentSummary []SummaryItem
+type ContentSummary []UnitSummary
 
-// ContentItem 内容项
-type ContentItem struct {
+// ContentUnit 内容项
+type ContentUnit struct {
 	Title      string `json:"title"`
 	Type       string `json:"type"`
 	CreateDate string `json:"createDate"`

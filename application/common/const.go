@@ -9,10 +9,10 @@ const SessionID = "sessionID"
 const AuthTokenID = "authToken"
 
 // VisitorAuthGroup 访客权限组
-var VisitorAuthGroup = model.AuthGroup{ID: 0, Name: "访客权限组", Description: "允许查看公开权限的内容，无须登录"}
+var VisitorAuthGroup = model.AuthGroup{Unit: model.Unit{ID: 0, Name: "访客权限组"}, Description: "允许查看公开权限的内容，无须登录"}
 
 // UserAuthGroup 用户权限组
-var UserAuthGroup = model.AuthGroup{ID: 1, Name: "用户权限组", Description: "允许查看用户权限的内容以及公开权限的内容，要求预先进行登录"}
+var UserAuthGroup = model.AuthGroup{Unit: model.Unit{ID: 1, Name: "用户权限组"}, Description: "允许查看用户权限的内容以及公开权限的内容，要求预先进行登录"}
 
 // MaintainerAuthGroup 维护权限组
-var MaintainerAuthGroup = model.AuthGroup{ID: 2, Name: "维护权限组", Description: "允许查看和编辑内容，要求预先进行登录"}
+var MaintainerAuthGroup = model.AuthGroup{Unit: model.Unit{ID: 2, Name: "维护权限组"}, Description: "允许查看和编辑内容，要求预先进行登录"}

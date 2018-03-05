@@ -145,5 +145,5 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 		result = false
 	}
 
-	return model.Summary{ID: media.ID, Name: media.Name, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}, result
+	return model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}, result
 }

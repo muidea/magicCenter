@@ -9,13 +9,13 @@ import (
 )
 
 // QueryAllGroup 查询所有的分组
-func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
-	groupList := []model.Group{}
+func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
+	groupList := []model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group")
 	helper.Query(sql)
 
 	for helper.Next() {
-		g := model.Group{}
+		g := model.GroupDetail{}
 		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
 
 		groupList = append(groupList, g)
@@ -25,13 +25,13 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 }
 
 // QueryGroups 查询分组信息
-func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
-	groupList := []model.Group{}
+func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.GroupDetail {
+	groupList := []model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {
-		g := model.Group{}
+		g := model.GroupDetail{}
 		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
 
 		groupList = append(groupList, g)
@@ -41,8 +41,8 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 }
 
 // QueryGroupByID 查询指定分组
-func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.Group, bool) {
-	group := model.Group{}
+func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.GroupDetail, bool) {
+	group := model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description,catalog from account_group where id=%d", id)
 	helper.Query(sql)
 
@@ -56,8 +56,8 @@ func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.Group, bool) {
 }
 
 // QueryGroupByName 查询指定分组
-func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool) {
-	group := model.Group{}
+func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.GroupDetail, bool) {
+	group := model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group where name='%s'", name)
 	helper.Query(sql)
 
@@ -71,21 +71,21 @@ func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.Group, bool)
 }
 
 // CreateGroup 新建分组
-func CreateGroup(helper dbhelper.DBHelper, name, description string) (model.Group, bool) {
-	group := model.Group{Name: name, Description: description}
+func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int) (model.GroupDetail, bool) {
+	group := model.NewGroup(name, description, catalog)
 	sql := fmt.Sprintf("select id from account_group where name='%s' and catalog=%d", name, 0)
 	helper.Query(sql)
 	if helper.Next() {
 		return group, false
 	}
 
-	sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s',%d)", name, description, 0)
+	sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s',%d)", name, description, catalog)
 	_, result := helper.Execute(sql)
 	if !result {
 		return group, result
 	}
 
-	sql = fmt.Sprintf("select id from account_group where name='%s' and description='%s' and catalog=%d", name, description, 0)
+	sql = fmt.Sprintf("select id from account_group where name='%s' and description='%s' and catalog=%d", name, description, catalog)
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&group.ID)
@@ -109,7 +109,7 @@ func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
 }
 
 // SaveGroup 保存分组
-func SaveGroup(helper dbhelper.DBHelper, group model.Group) (model.Group, bool) {
+func SaveGroup(helper dbhelper.DBHelper, group model.GroupDetail) (model.GroupDetail, bool) {
 	sql := fmt.Sprintf("select id from account_group where id=%d", group.ID)
 	helper.Query(sql)
 
@@ -122,10 +122,10 @@ func SaveGroup(helper dbhelper.DBHelper, group model.Group) (model.Group, bool) 
 
 	if !result {
 		// insert
-		sql = fmt.Sprintf("insert into account_group (name, description) values ('%s','%s')", group.Name, group.Description)
+		sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s', %d)", group.Name, group.Description, group.Catalog)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update account_group set name ='%s', description='%s' where id=%d", group.Name, group.Description, group.ID)
+		sql = fmt.Sprintf("update account_group set name ='%s', description='%s', catalog=%d where id=%d", group.Name, group.Description, group.ID, group.Catalog)
 	}
 
 	_, ret := helper.Execute(sql)

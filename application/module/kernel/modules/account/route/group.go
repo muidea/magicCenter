@@ -69,7 +69,7 @@ type groupGetRoute struct {
 
 type groupGetResult struct {
 	common.Result
-	Group model.Group `json:"group"`
+	GroupDetail model.GroupDetail `json:"group"`
 }
 
 func (i *groupGetRoute) Method() string {
@@ -103,7 +103,7 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 
 		group, ok := i.accountHandler.FindGroupByID(id)
 		if ok {
-			result.Group = group
+			result.GroupDetail = group
 			result.ErrorCode = 0
 		} else {
 			result.ErrorCode = 1
@@ -126,7 +126,7 @@ type groupGetAllRoute struct {
 
 type groupGetAllResult struct {
 	common.Result
-	Group []model.Group `json:"group"`
+	GroupDetail []model.GroupDetail `json:"group"`
 }
 
 func (i *groupGetAllRoute) Method() string {
@@ -150,7 +150,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 	result := groupGetAllResult{}
 	for true {
-		result.Group = i.accountHandler.GetAllGroup()
+		result.GroupDetail = i.accountHandler.GetAllGroup()
 		result.ErrorCode = 0
 		break
 	}
@@ -169,12 +169,13 @@ type groupCreateRoute struct {
 
 type groupCreateParam struct {
 	Name        string `json:"name"`
-	Description string `json:"id"`
+	Description string `json:"description"`
+	Catalog     int    `json:"catalog"`
 }
 
 type groupCreateResult struct {
 	common.Result
-	Group model.Group `json:"group"`
+	GroupDetail model.GroupDetail `json:"group"`
 }
 
 func (i *groupCreateRoute) Method() string {
@@ -206,14 +207,14 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description)
+		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description, param.Catalog)
 		if !ok {
 			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
-		result.Group = group
+		result.GroupDetail = group
 		result.ErrorCode = 0
 		break
 	}
@@ -232,12 +233,13 @@ type groupSaveRoute struct {
 
 type groupSaveParam struct {
 	Name        string `json:"name"`
-	Description string `json:"id"`
+	Description string `json:"description"`
+	Catalog     int    `json:"catalog"`
 }
 
 type groupSaveResult struct {
 	common.Result
-	Group model.Group `json:"group"`
+	GroupDetail model.GroupDetail `json:"group"`
 }
 
 func (i *groupSaveRoute) Method() string {
@@ -277,7 +279,9 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		group := model.Group{ID: id, Name: param.Name, Description: param.Description, Catalog: 0}
+		group := model.NewGroup(param.Name, param.Description, param.Catalog)
+		group.ID = id
+
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {
@@ -286,7 +290,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		result.Group = group
+		result.GroupDetail = group
 		result.ErrorCode = 0
 		break
 	}

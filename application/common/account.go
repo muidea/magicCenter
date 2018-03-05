@@ -13,13 +13,13 @@ type AccountHandler interface {
 	DestroyUserByID(id int) bool
 	DestroyUserByAccount(account, password string) bool
 
-	GetAllGroup() []model.Group
-	FindGroupByID(id int) (model.Group, bool)
-	FindGroupByName(name string) (model.Group, bool)
-	CreateGroup(name, description string) (model.Group, bool)
-	SaveGroup(group model.Group) (model.Group, bool)
+	GetAllGroup() []model.GroupDetail
+	FindGroupByID(id int) (model.GroupDetail, bool)
+	FindGroupByName(name string) (model.GroupDetail, bool)
+	CreateGroup(name, description string, catalog int) (model.GroupDetail, bool)
+	SaveGroup(group model.GroupDetail) (model.GroupDetail, bool)
 	DestroyGroup(id int) bool
 
 	GetSummaryInfo() model.AccountSummary
-	GetLastAccount(count int) []model.AccountItem
+	GetLastAccount(count int) model.AccountRecord
 }

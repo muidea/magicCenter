@@ -14,14 +14,14 @@ func TestGroup(t *testing.T) {
 	}
 	defer helper.Release()
 
-	g1 := model.Group{}
+	g1 := model.GroupDetail{}
 	g1.Name = "test1"
 	g1.Description = "Description"
 	g1.Catalog = model.AdminGroup
 
 	SaveGroup(helper, g1)
 
-	g2 := model.Group{}
+	g2 := model.GroupDetail{}
 	g2.Name = "test2"
 	g2.Description = "Desc"
 	g2.Catalog = model.CommonGroup

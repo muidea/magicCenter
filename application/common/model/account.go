@@ -17,13 +17,18 @@ const (
 	DISABLE
 )
 
-// User 用户信息
-type User struct {
-	//ID 用户ID,唯一标示该用户
-	ID int `json:"id"`
-	// Name 用户名称，允许用户修改也允许重名, 如果没有修改，则显示成账号
-	Name string `json:"name"`
+// NewEmptyUser 新建空用户
+func NewEmptyUser() UserDetail {
+	return UserDetail{}
 }
+
+// NewUser 新建用户
+func NewUser(account, email string, groups []int, status int) UserDetail {
+	return UserDetail{Account: account, Email: email, Groups: groups, Status: status}
+}
+
+// User 用户信息
+type User Unit
 
 // UserDetail 用户详细信息
 type UserDetail struct {
@@ -42,34 +47,51 @@ type UserDetail struct {
 }
 
 const (
-	// CommonGroup 普通组
-	CommonGroup = iota
-	// AdminGroup 管理员组
+	// InvalidGroup 无效组
+	InvalidGroup = iota
+	// AdminGroup 管理组
 	AdminGroup
+	// CommonGroup 普通组
+	CommonGroup
 )
 
+// NewEmptyGroup 新建空组
+func NewEmptyGroup() GroupDetail {
+	return GroupDetail{Unit: Unit{ID: InvalidGroup}}
+}
+
+// NewGroup 新建组
+func NewGroup(name, description string, catalog int) GroupDetail {
+	return GroupDetail{Unit: Unit{ID: InvalidGroup, Name: name}, Description: description, Catalog: catalog}
+}
+
 // Group 分组信息
+type Group Unit
+
+// GroupDetail 分组详情
 // Name 名称
 // Description 描述
-// Catalog 类型（管理员组，普通组
-type Group struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
+// Catalog 类型（管理组，普通组)
+type GroupDetail struct {
+	Unit
 	Description string `json:"description"`
 	Catalog     int    `json:"catalog"`
 }
 
 // AdminGroup 是否是管理员组
-func (g *Group) AdminGroup() bool {
+func (g *GroupDetail) AdminGroup() bool {
 	return g.Catalog == AdminGroup
 }
 
 // AccountSummary 账号摘要信息
-type AccountSummary []SummaryItem
+type AccountSummary []UnitSummary
 
-// AccountItem 账号项
-type AccountItem struct {
+// AccountUnit 账号项
+type AccountUnit struct {
 	Name          string `json:"name"`
 	RegisterDate  string `json:"registerDate"`
 	LastLoginDate string `json:"lastLoginDate"`
 }
+
+// AccountRecord 账号记录
+type AccountRecord []AccountUnit

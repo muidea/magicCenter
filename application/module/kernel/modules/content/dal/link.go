@@ -142,5 +142,5 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 		result = false
 	}
 
-	return model.Summary{ID: lnk.ID, Name: lnk.Name, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}, result
+	return model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}, result
 }

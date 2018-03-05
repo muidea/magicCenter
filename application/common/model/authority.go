@@ -2,8 +2,7 @@ package model
 
 // AuthGroup 授权组
 type AuthGroup struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
+	Unit
 	Description string `json:"description"`
 }
 

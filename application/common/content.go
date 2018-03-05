@@ -35,5 +35,5 @@ type ContentHandler interface {
 	DestroyMedia(id int) bool
 
 	GetSummaryInfo() model.ContentSummary
-	GetLastContent(count int) []model.ContentItem
+	GetLastContent(count int) []model.ContentUnit
 }

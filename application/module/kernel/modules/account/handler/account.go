@@ -51,23 +51,23 @@ func (i *impl) DestroyUserByAccount(account, password string) bool {
 	return i.userHandler.destroyUserByAccount(account, password)
 }
 
-func (i *impl) GetAllGroup() []model.Group {
+func (i *impl) GetAllGroup() []model.GroupDetail {
 	return i.groupHandler.getAllGroups()
 }
 
-func (i *impl) FindGroupByID(id int) (model.Group, bool) {
+func (i *impl) FindGroupByID(id int) (model.GroupDetail, bool) {
 	return i.groupHandler.findGroupByID(id)
 }
 
-func (i *impl) FindGroupByName(name string) (model.Group, bool) {
+func (i *impl) FindGroupByName(name string) (model.GroupDetail, bool) {
 	return i.groupHandler.findGroupByName(name)
 }
 
-func (i *impl) CreateGroup(name, description string) (model.Group, bool) {
-	return i.groupHandler.createGroup(name, description)
+func (i *impl) CreateGroup(name, description string, catalog int) (model.GroupDetail, bool) {
+	return i.groupHandler.createGroup(name, description, catalog)
 }
 
-func (i *impl) SaveGroup(group model.Group) (model.Group, bool) {
+func (i *impl) SaveGroup(group model.GroupDetail) (model.GroupDetail, bool) {
 	return i.groupHandler.saveGroup(group)
 }
 
@@ -78,20 +78,20 @@ func (i *impl) DestroyGroup(id int) bool {
 func (i *impl) GetSummaryInfo() model.AccountSummary {
 	result := model.AccountSummary{}
 	userCount := len(i.userHandler.getAllUser())
-	userItem := model.SummaryItem{Name: "用户", Type: "user", Count: userCount}
+	userItem := model.UnitSummary{Name: "用户", Type: "user", Count: userCount}
 	result = append(result, userItem)
 	groupCount := len(i.groupHandler.getAllGroups())
-	groupItem := model.SummaryItem{Name: "分组", Type: "group", Count: groupCount}
+	groupItem := model.UnitSummary{Name: "分组", Type: "group", Count: groupCount}
 	result = append(result, groupItem)
 
 	return result
 }
 
-func (i *impl) GetLastAccount(count int) []model.AccountItem {
-	result := []model.AccountItem{}
+func (i *impl) GetLastAccount(count int) model.AccountRecord {
+	result := model.AccountRecord{}
 	users := i.userHandler.GetLastRegisterUser(count)
 	for _, v := range users {
-		item := model.AccountItem{Name: v.Account, RegisterDate: v.RegisterTime}
+		item := model.AccountUnit{Name: v.Account, RegisterDate: v.RegisterTime}
 
 		result = append(result, item)
 	}

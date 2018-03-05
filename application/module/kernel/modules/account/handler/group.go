@@ -10,23 +10,23 @@ type groupActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *groupActionHandler) getAllGroups() []model.Group {
+func (i *groupActionHandler) getAllGroups() []model.GroupDetail {
 	return dal.QueryAllGroup(i.dbhelper)
 }
 
-func (i *groupActionHandler) findGroupByID(id int) (model.Group, bool) {
+func (i *groupActionHandler) findGroupByID(id int) (model.GroupDetail, bool) {
 	return dal.QueryGroupByID(i.dbhelper, id)
 }
 
-func (i *groupActionHandler) findGroupByName(name string) (model.Group, bool) {
+func (i *groupActionHandler) findGroupByName(name string) (model.GroupDetail, bool) {
 	return dal.QueryGroupByName(i.dbhelper, name)
 }
 
-func (i *groupActionHandler) createGroup(name, description string) (model.Group, bool) {
-	return dal.CreateGroup(i.dbhelper, name, description)
+func (i *groupActionHandler) createGroup(name, description string, catalog int) (model.GroupDetail, bool) {
+	return dal.CreateGroup(i.dbhelper, name, description, catalog)
 }
 
-func (i *groupActionHandler) saveGroup(group model.Group) (model.Group, bool) {
+func (i *groupActionHandler) saveGroup(group model.GroupDetail) (model.GroupDetail, bool) {
 	return dal.SaveGroup(i.dbhelper, group)
 }
 
