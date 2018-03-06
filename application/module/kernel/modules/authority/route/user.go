@@ -13,30 +13,31 @@ import (
 )
 
 // CreateGetUserModuleAuthGroupRoute 新建GetUserModuleAuthGroupRoute
-func CreateGetUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userGetModuleAuthGroupRoute{authorityHandler: authorityHandler}
+func CreateGetUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+	i := userGetModuleAuthGroupRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreatePutUserModuleAuthGroupRoute 新建UserModulePutRoute
-func CreatePutUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userPutModuleAuthGroupRoute{authorityHandler: authorityHandler}
+func CreatePutUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+	i := userPutModuleAuthGroupRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetUserACLRoute 新建UserACLGetRoute
-func CreateGetUserACLRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := userGetACLRoute{authorityHandler: authorityHandler}
+func CreateGetUserACLRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+	i := userGetACLRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
 	return &i
 }
 
 type userGetModuleAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
+	accountHandler   common.AccountHandler
 }
 
 type userGetModuleAuthGroupResult struct {
 	common.Result
-	model.UserModuleAuthGroup
+	model.UserModuleAuthGroupView
 }
 
 func (i *userGetModuleAuthGroupRoute) Method() string {
@@ -69,8 +70,24 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 		}
 
 		val := i.authorityHandler.QueryUserModuleAuthGroup(id)
-		result.User = id
-		result.ModuleAuthGroup = val.ModuleAuthGroup
+		for _, v := range val.ModuleAuthGroup {
+			group := model.ModuleAuthGroupView{}
+			group.ModuleAuthGroup = v
+
+			if v.AuthGroup == common.UserAuthGroup.ID {
+				group.AuthGroup = common.UserAuthGroup.Unit
+			} else if v.AuthGroup == common.MaintainerAuthGroup.ID {
+				group.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				group.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+
+			result.ModuleAuthGroup = append(result.ModuleAuthGroup, group)
+		}
+
+		user, _ := i.accountHandler.FindUserByID(val.User)
+		result.User.ID = user.ID
+		result.User.Name = user.Name
 
 		result.ErrorCode = common.Success
 		break
@@ -86,6 +103,7 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 
 type userPutModuleAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
+	accountHandler   common.AccountHandler
 }
 
 type userPutModuleAuthGroupParam struct {
@@ -153,12 +171,13 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 
 type userGetACLRoute struct {
 	authorityHandler common.AuthorityHandler
+	accountHandler   common.AccountHandler
 }
 
 type userGetACLResult struct {
 	common.Result
-	User int         `json:"user"`
-	ACL  []model.ACL `json:"acl"`
+	User model.User            `json:"user"`
+	ACL  []model.ACLDetailView `json:"acl"`
 }
 
 func (i *userGetACLRoute) Method() string {
@@ -190,8 +209,18 @@ func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		result.User = id
-		result.ACL = i.authorityHandler.QueryUserACL(id)
+		acls := i.authorityHandler.QueryUserACL(id)
+		for _, val := range acls {
+			acl := model.ACLDetailView{}
+			acl.ACLDetail = val
+
+			result.ACL = append(result.ACL, acl)
+		}
+
+		user, _ := i.accountHandler.FindUserByID(id)
+		result.User.ID = user.ID
+		result.User.Name = user.Name
+
 		result.ErrorCode = common.Success
 		break
 	}

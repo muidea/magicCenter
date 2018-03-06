@@ -107,15 +107,15 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	return avalibleFlag
 }
 
-func (i *impl) QueryACLByModule(module string) []model.ACL {
+func (i *impl) QueryACLByModule(module string) []model.ACLDetail {
 	return dal.QueryACLByModule(i.dbhelper, module)
 }
 
-func (i *impl) QueryACLByID(id int) (model.ACL, bool) {
+func (i *impl) QueryACLByID(id int) (model.ACLDetail, bool) {
 	return dal.QueryACLByID(i.dbhelper, id)
 }
 
-func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool) {
+func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACLDetail, bool) {
 	return dal.InsertACL(i.dbhelper, url, method, module, status, authGroup)
 }
 
@@ -127,13 +127,23 @@ func (i *impl) UpdateACLStatus(enableList []int, disableList []int) bool {
 	return dal.UpdateACLStatus(i.dbhelper, enableList, disableList)
 }
 
-func (i *impl) QueryACLAuthGroup(id int) (int, bool) {
+func (i *impl) QueryACLAuthGroup(id int) (model.AuthGroup, bool) {
+	authGroup := model.AuthGroup{}
 	acl, ok := dal.QueryACLByID(i.dbhelper, id)
 	if !ok {
-		return 0, ok
+		return authGroup, ok
 	}
 
-	return acl.AuthGroup, ok
+	switch acl.AuthGroup {
+	case common.VisitorAuthGroup.ID:
+		authGroup = common.VisitorAuthGroup
+	case common.UserAuthGroup.ID:
+		authGroup = common.UserAuthGroup
+	case common.MaintainerAuthGroup.ID:
+		authGroup = common.MaintainerAuthGroup
+	}
+
+	return authGroup, ok
 }
 
 func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
@@ -154,8 +164,8 @@ func (i *impl) UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.Modu
 	return dal.UpdateUserModuleAuthGroup(i.dbhelper, user, moduleAuthGroups)
 }
 
-func (i *impl) QueryUserACL(user int) []model.ACL {
-	acls := []model.ACL{}
+func (i *impl) QueryUserACL(user int) []model.ACLDetail {
+	acls := []model.ACLDetail{}
 
 	//authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user)
 	//acls = dal.QueryAvalibleACLByAuthGroup(i.dbhelper, authGroup)

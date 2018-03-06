@@ -60,7 +60,7 @@ type aclGetByIDRoute struct {
 
 type aclGetResult struct {
 	common.Result
-	ACL model.ACL `json:"acl"`
+	ACLDetail model.ACLDetailView `json:"acl"`
 }
 
 func (i *aclGetByIDRoute) Method() string {
@@ -94,7 +94,15 @@ func (i *aclGetByIDRoute) getACLHandler(w http.ResponseWriter, r *http.Request) 
 
 		acl, ok := i.authorityHandler.QueryACLByID(id)
 		if ok {
-			result.ACL = acl
+			result.ACLDetail.ACLDetail = acl
+			if acl.AuthGroup == common.UserAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
+			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+
 			result.ErrorCode = common.Success
 		} else {
 			result.ErrorCode = common.Failed
@@ -117,8 +125,8 @@ type aclGetByModuleRoute struct {
 
 type aclGetByModuleResult struct {
 	common.Result
-	Module string      `json:"module"`
-	ACLs   []model.ACL `json:"acl"`
+	Module    string                `json:"module"`
+	ACLDetail []model.ACLDetailView `json:"acl"`
 }
 
 func (i *aclGetByModuleRoute) Method() string {
@@ -145,7 +153,20 @@ func (i *aclGetByModuleRoute) getACLHandler(w http.ResponseWriter, r *http.Reque
 		module := r.URL.Query().Get("module")
 
 		result.Module = module
-		result.ACLs = i.authorityHandler.QueryACLByModule(module)
+		acls := i.authorityHandler.QueryACLByModule(module)
+		for _, val := range acls {
+			acl := model.ACLDetailView{}
+			acl.ACLDetail = val
+
+			if val.AuthGroup == common.UserAuthGroup.ID {
+				acl.AuthGroup = common.UserAuthGroup.Unit
+			} else if val.AuthGroup == common.MaintainerAuthGroup.ID {
+				acl.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				acl.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+			result.ACLDetail = append(result.ACLDetail, acl)
+		}
 		result.ErrorCode = common.Success
 
 		break
@@ -172,7 +193,7 @@ type aclPostParam struct {
 
 type aclPostResult struct {
 	common.Result
-	ACL model.ACL `json:"acl"`
+	ACLDetail model.ACLDetailView `json:"acl"`
 }
 
 func (i *aclPostRoute) Method() string {
@@ -206,7 +227,14 @@ func (i *aclPostRoute) postACLHandler(w http.ResponseWriter, r *http.Request) {
 
 		acl, ok := i.authorityHandler.InsertACL(param.URL, param.Method, param.Module, 0, param.AuthGroup)
 		if ok {
-			result.ACL = acl
+			result.ACLDetail.ACLDetail = acl
+			if acl.AuthGroup == common.UserAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
+			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
+			}
 			result.ErrorCode = common.Success
 		} else {
 			result.ErrorCode = common.Failed
@@ -347,7 +375,7 @@ type aclGetACLAuthGroupRoute struct {
 
 type aclGetACLAuthGroupResult struct {
 	common.Result
-	ACL       int             `json:"acl"`
+	ACL       model.ACL       `json:"acl"`
 	AuthGroup model.AuthGroup `json:"authGroup"`
 }
 
@@ -380,8 +408,13 @@ func (i *aclGetACLAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, 
 			break
 		}
 
-		result.ACL = id
-		result.ErrorCode = common.Success
+		acl, ok := i.authorityHandler.QueryACLByID(id)
+		if !ok {
+			result.ErrorCode = common.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
 		authGroup, ok := i.authorityHandler.QueryACLAuthGroup(id)
 		if !ok {
 			result.ErrorCode = common.Failed
@@ -389,17 +422,9 @@ func (i *aclGetACLAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, 
 			break
 		}
 
-		switch authGroup {
-		case common.VisitorAuthGroup.ID:
-			result.AuthGroup = common.VisitorAuthGroup
-		case common.UserAuthGroup.ID:
-			result.AuthGroup = common.UserAuthGroup
-		case common.MaintainerAuthGroup.ID:
-			result.AuthGroup = common.MaintainerAuthGroup
-		default:
-			result.ErrorCode = common.Failed
-			result.Reason = "非法授权组"
-		}
+		result.ACL = acl.ACL
+		result.AuthGroup = authGroup
+		result.ErrorCode = common.Success
 
 		break
 	}

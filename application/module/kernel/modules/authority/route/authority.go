@@ -5,7 +5,7 @@ import (
 )
 
 // AppendAuthorityRoute append authority route
-func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler) []common.Route {
+func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) []common.Route {
 
 	rt := CreateGetACLByIDRoute(authorityHandler)
 	routes = append(routes, rt)
@@ -31,19 +31,19 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	rt = CreateGetModuleACLRoute(authorityHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetModuleUserAuthGroupRoute(authorityHandler)
+	rt = CreateGetModuleUserAuthGroupRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreatePutModuleUserAuthGroupRoute(authorityHandler)
+	rt = CreatePutModuleUserAuthGroupRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetUserModuleAuthGroupRoute(authorityHandler)
+	rt = CreateGetUserModuleAuthGroupRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreatePutUserModuleAuthGroupRoute(authorityHandler)
+	rt = CreatePutUserModuleAuthGroupRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetUserACLRoute(authorityHandler)
+	rt = CreateGetUserACLRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
 	return routes

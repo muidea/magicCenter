@@ -14,6 +14,10 @@ func (i *linkActionHandler) getAllLink() []model.Summary {
 	return dal.QueryAllLink(i.dbhelper)
 }
 
+func (i *linkActionHandler) getLinks(ids []int) []model.Link {
+	return dal.QueryLinks(i.dbhelper, ids)
+}
+
 func (i *linkActionHandler) findLinkByID(id int) (model.LinkDetail, bool) {
 	return dal.QueryLinkByID(i.dbhelper, id)
 }

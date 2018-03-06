@@ -10,16 +10,20 @@ import (
 type content struct {
 	routes         []common.Route
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 // LoadModule 加载模块
 func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
-	instance := &content{contentHandler: handler.CreateContentHandler()}
+	accountModule, _ := moduleHub.FindModule(common.AccountModuleID)
+	accountHandler := accountModule.EntryPoint().(common.AccountHandler)
 
-	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, sessionRegistry)
-	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, sessionRegistry)
-	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, sessionRegistry)
-	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, sessionRegistry)
+	instance := &content{contentHandler: handler.CreateContentHandler(), accountHandler: accountHandler}
+
+	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
+	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
+	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
+	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 
 	moduleHub.RegisterModule(instance)
 }

@@ -6,19 +6,24 @@ type AuthGroup struct {
 	Description string `json:"description"`
 }
 
-// ACL 访问控制列表
+// ACL 访问控制
 type ACL struct {
-	ID        int    `json:"id"`
-	URL       string `json:"url"`
-	Method    string `json:"method"`
+	ID     int    `json:"id"`
+	URL    string `json:"url"`
+	Method string `json:"method"`
+}
+
+// ACLDetail 访问控制列表
+type ACLDetail struct {
+	ACL
 	Module    string `json:"module"`
 	Status    int    `json:"status"`
 	AuthGroup int    `json:"authGroup"`
 }
 
-// ACLView ACL显示信息
-type ACLView struct {
-	ACL
+// ACLDetailView ACL显示信息
+type ACLDetailView struct {
+	ACLDetail
 	AuthGroup Unit `json:"authGroup"`
 }
 

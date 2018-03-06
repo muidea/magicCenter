@@ -32,6 +32,10 @@ func (i *impl) GetAllArticle() []model.Summary {
 	return i.articleHandler.getAllArticleSummary()
 }
 
+func (i *impl) GetArticles(ids []int) []model.Article {
+	return i.articleHandler.getArticles(ids)
+}
+
 func (i *impl) GetArticleByID(id int) (model.ArticleDetail, bool) {
 	return i.articleHandler.findArticleByID(id)
 }
@@ -54,6 +58,10 @@ func (i *impl) DestroyArticle(id int) bool {
 
 func (i *impl) GetAllCatalog() []model.Summary {
 	return i.catalogHandler.getAllCatalog()
+}
+
+func (i *impl) GetCatalogs(ids []int) []model.Catalog {
+	return i.catalogHandler.getCatalogs(ids)
 }
 
 func (i *impl) GetCatalogByID(id int) (model.CatalogDetail, bool) {
@@ -80,6 +88,10 @@ func (i *impl) GetAllLink() []model.Summary {
 	return i.linkHandler.getAllLink()
 }
 
+func (i *impl) GetLinks(ids []int) []model.Link {
+	return i.linkHandler.getLinks(ids)
+}
+
 func (i *impl) GetLinkByID(id int) (model.LinkDetail, bool) {
 	return i.linkHandler.findLinkByID(id)
 }
@@ -102,6 +114,10 @@ func (i *impl) DestroyLink(id int) bool {
 
 func (i *impl) GetAllMedia() []model.Summary {
 	return i.mediaHandler.getAllMedia()
+}
+
+func (i *impl) GetMedias(ids []int) []model.Media {
+	return i.mediaHandler.getMedias(ids)
 }
 
 func (i *impl) GetMediaByID(id int) (model.MediaDetail, bool) {

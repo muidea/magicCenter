@@ -7,6 +7,7 @@ import (
 // ContentHandler 内容处理Handler
 type ContentHandler interface {
 	GetAllArticle() []model.Summary
+	GetArticles(ids []int) []model.Article
 	GetArticleByID(id int) (model.ArticleDetail, bool)
 	GetArticleByCatalog(catalog int) []model.Summary
 	CreateArticle(title, content, createDate string, catalog []int, author int) (model.Summary, bool)
@@ -14,6 +15,7 @@ type ContentHandler interface {
 	DestroyArticle(id int) bool
 
 	GetAllCatalog() []model.Summary
+	GetCatalogs(ids []int) []model.Catalog
 	GetCatalogByID(id int) (model.CatalogDetail, bool)
 	GetCatalogByCatalog(id int) []model.Summary
 	CreateCatalog(name, description, createdate string, catalog []int, author int) (model.Summary, bool)
@@ -21,6 +23,7 @@ type ContentHandler interface {
 	DestroyCatalog(id int) bool
 
 	GetAllLink() []model.Summary
+	GetLinks(ids []int) []model.Link
 	GetLinkByID(id int) (model.LinkDetail, bool)
 	GetLinkByCatalog(catalog int) []model.Summary
 	CreateLink(name, url, logo, createdate string, catalog []int, author int) (model.Summary, bool)
@@ -28,6 +31,7 @@ type ContentHandler interface {
 	DestroyLink(id int) bool
 
 	GetAllMedia() []model.Summary
+	GetMedias(ids []int) []model.Media
 	GetMediaByID(id int) (model.MediaDetail, bool)
 	GetMediaByCatalog(catalog int) []model.Summary
 	CreateMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool)

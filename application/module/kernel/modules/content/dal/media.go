@@ -32,6 +32,22 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 	return summaryList
 }
 
+// QueryMedias 查询指定文章
+func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
+	mediaList := []model.Media{}
+	sql := fmt.Sprintf(`select id, name from content_media`)
+	helper.Query(sql)
+
+	for helper.Next() {
+		media := model.Media{}
+		helper.GetValue(&media.ID, &media.Name)
+
+		mediaList = append(mediaList, media)
+	}
+
+	return mediaList
+}
+
 // QueryMediaByCatalog 查询指定分类的图像
 func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 	summaryList := []model.Summary{}
@@ -68,7 +84,7 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&media.ID, &media.Name, &media.URL, &media.Desc, &media.CreateDate, &media.Creater)
+		helper.GetValue(&media.ID, &media.Name, &media.URL, &media.Description, &media.CreateDate, &media.Creater)
 		result = true
 	}
 
@@ -132,7 +148,7 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createdate string, u
 // SaveMedia 保存文件
 func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary, bool) {
 	// modify
-	sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Desc, media.CreateDate, media.Creater, media.ID)
+	sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Description, media.CreateDate, media.Creater, media.ID)
 	num, result := helper.Execute(sql)
 	if num == 1 && result {
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)

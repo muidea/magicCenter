@@ -11,17 +11,22 @@ type authority struct {
 	moduleHub        common.ModuleHub
 	sessionRegistry  common.SessionRegistry
 	routes           []common.Route
+	accountHandler   common.AccountHandler
 	authorityHandler common.AuthorityHandler
 }
 
 // LoadModule 加载模块
 func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+	accountModule, _ := moduleHub.FindModule(common.AccountModuleID)
+	accountHandler := accountModule.EntryPoint().(common.AccountHandler)
+
 	instance := &authority{
 		moduleHub:        moduleHub,
 		sessionRegistry:  sessionRegistry,
+		accountHandler:   accountHandler,
 		authorityHandler: handler.CreateAuthorityHandler(moduleHub, sessionRegistry)}
 
-	instance.routes = route.AppendAuthorityRoute(instance.routes, instance.authorityHandler)
+	instance.routes = route.AppendAuthorityRoute(instance.routes, instance.authorityHandler, instance.accountHandler)
 
 	moduleHub.RegisterModule(instance)
 }

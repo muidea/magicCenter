@@ -14,6 +14,10 @@ func (i *articleActionHandler) getAllArticleSummary() []model.Summary {
 	return dal.QueryAllArticleSummary(i.dbhelper)
 }
 
+func (i *articleActionHandler) getArticles(ids []int) []model.Article {
+	return dal.QueryArticles(i.dbhelper, ids)
+}
+
 func (i *articleActionHandler) findArticleByID(id int) (model.ArticleDetail, bool) {
 	return dal.QueryArticleByID(i.dbhelper, id)
 }

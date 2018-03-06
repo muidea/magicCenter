@@ -16,62 +16,63 @@ import (
 )
 
 // AppendArticleRoute 追加User Route
-func AppendArticleRoute(routes []common.Route, contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt := CreateGetArticleByIDRoute(contentHandler)
+func AppendArticleRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt := CreateGetArticleByIDRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetArticleListRoute(contentHandler)
+	rt = CreateGetArticleListRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateCreateArticleRoute(contentHandler, sessionRegistry)
+	rt = CreateCreateArticleRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateUpdateArticleRoute(contentHandler, sessionRegistry)
+	rt = CreateUpdateArticleRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDestroyArticleRoute(contentHandler, sessionRegistry)
+	rt = CreateDestroyArticleRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateGetArticleByIDRoute 新建GetArticle Route
-func CreateGetArticleByIDRoute(contentHandler common.ContentHandler) common.Route {
-	i := articleGetByIDRoute{contentHandler: contentHandler}
+func CreateGetArticleByIDRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := articleGetByIDRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetArticleListRoute 新建GetArticle Route
-func CreateGetArticleListRoute(contentHandler common.ContentHandler) common.Route {
+func CreateGetArticleListRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
 	i := articleGetListRoute{contentHandler: contentHandler}
 	return &i
 }
 
 // CreateCreateArticleRoute 新建CreateArticleRoute Route
-func CreateCreateArticleRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateCreateArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := articleCreateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateUpdateArticleRoute UpdateArticleRoute Route
-func CreateUpdateArticleRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateUpdateArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := articleUpdateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateDestroyArticleRoute DestroyArticleRoute Route
-func CreateDestroyArticleRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateDestroyArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := articleDestroyRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 type articleGetByIDRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type articleGetByIDResult struct {
 	common.Result
-	Article model.ArticleDetail `json:"article"`
+	Article model.ArticleDetailView `json:"article"`
 }
 
 func (i *articleGetByIDRoute) Method() string {
@@ -105,8 +106,13 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 
 		article, ok := i.contentHandler.GetArticleByID(id)
 		if ok {
-			result.Article = article
-			result.ErrorCode = 0
+			user, _ := i.accountHandler.FindUserByID(article.Creater)
+			catalogs := i.contentHandler.GetCatalogs(article.Catalog)
+
+			result.Article.ArticleDetail = article
+			result.Article.Creater = user.User
+			result.Article.Catalog = catalogs
+			result.ErrorCode = common.Success
 		} else {
 			result.ErrorCode = 1
 			result.Reason = "对象不存在"
@@ -124,11 +130,12 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 
 type articleGetListRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type articleGetListResult struct {
 	common.Result
-	Article []model.Summary `json:"article"`
+	Article []model.SummaryView `json:"article"`
 }
 
 func (i *articleGetListRoute) Method() string {
@@ -152,21 +159,45 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 
 	result := articleGetListResult{}
 	for true {
-		catalog := r.URL.Query()["catalog"]
-		if len(catalog) < 1 {
-			result.Article = i.contentHandler.GetAllArticle()
+		catalog := r.URL.Query().Get("catalog")
+		if catalog == "" {
+			articles := i.contentHandler.GetAllArticle()
+			for _, val := range articles {
+				article := model.SummaryView{}
+				user, _ := i.accountHandler.FindUserByID(val.Creater)
+				catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+				article.Summary = val
+				article.Creater = user.User
+				article.Catalog = catalogs
+
+				result.Article = append(result.Article, article)
+			}
+
 			result.ErrorCode = 0
 			break
 		}
 
-		id, err := strconv.Atoi(catalog[0])
+		id, err := strconv.Atoi(catalog)
 		if err != nil {
 			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
-		result.Article = i.contentHandler.GetArticleByCatalog(id)
+		articles := i.contentHandler.GetArticleByCatalog(id)
+		for _, val := range articles {
+			article := model.SummaryView{}
+			user, _ := i.accountHandler.FindUserByID(val.Creater)
+			catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+			article.Summary = val
+			article.Creater = user.User
+			article.Catalog = catalogs
+
+			result.Article = append(result.Article, article)
+		}
+
 		result.ErrorCode = 0
 		break
 	}
@@ -181,6 +212,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 
 type articleCreateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -192,7 +224,7 @@ type articleCreateParam struct {
 
 type articleCreateResult struct {
 	common.Result
-	Article model.Summary `json:"article"`
+	Article model.SummaryView `json:"article"`
 }
 
 func (i *articleCreateRoute) Method() string {
@@ -239,8 +271,13 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Article = article
+
+		catalogs := i.contentHandler.GetCatalogs(article.Catalog)
+
+		result.Article.Summary = article
+		result.Article.Creater = user
+		result.Article.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -254,6 +291,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 
 type articleUpdateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -261,7 +299,7 @@ type articleUpdateParam articleCreateParam
 
 type articleUpdateResult struct {
 	common.Result
-	Article model.Summary `json:"article"`
+	Article model.SummaryView `json:"article"`
 }
 
 func (i *articleUpdateRoute) Method() string {
@@ -321,8 +359,13 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Article = summmary
+
+		catalogs := i.contentHandler.GetCatalogs(summmary.Catalog)
+
+		result.Article.Summary = summmary
+		result.Article.Creater = user
+		result.Article.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -336,6 +379,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 
 type articleDestroyRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 

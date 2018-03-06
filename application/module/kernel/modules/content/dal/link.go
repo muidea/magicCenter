@@ -32,6 +32,22 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 	return summaryList
 }
 
+// QueryLinks 查询指定链接
+func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
+	linkList := []model.Link{}
+	sql := fmt.Sprintf(`select id, name from content_link`)
+	helper.Query(sql)
+
+	for helper.Next() {
+		link := model.Link{}
+		helper.GetValue(&link.ID, &link.Name)
+
+		linkList = append(linkList, link)
+	}
+
+	return linkList
+}
+
 // QueryLinkByCatalog 查询指定分类下的Link
 func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 	summaryList := []model.Summary{}

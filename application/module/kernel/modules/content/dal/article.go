@@ -32,6 +32,22 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 	return summaryList
 }
 
+// QueryArticles 查询指定文章
+func QueryArticles(helper dbhelper.DBHelper, ids []int) []model.Article {
+	articleList := []model.Article{}
+	sql := fmt.Sprintf(`select id, title from content_article`)
+	helper.Query(sql)
+
+	for helper.Next() {
+		summary := model.Article{}
+		helper.GetValue(&summary.ID, &summary.Name)
+
+		articleList = append(articleList, summary)
+	}
+
+	return articleList
+}
+
 // QueryArticleByID 查询指定文章
 func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bool) {
 	ar := model.ArticleDetail{}

@@ -12,6 +12,18 @@ const LINK = "link"
 // MEDIA 图像类型
 const MEDIA = "media"
 
+// Article 文章
+type Article Unit
+
+// Catalog 分类
+type Catalog Unit
+
+// Link 链接
+type Link Unit
+
+// Media 文件
+type Media Unit
+
 // Summary 摘要信息
 type Summary struct {
 	Unit
@@ -20,11 +32,11 @@ type Summary struct {
 	Creater    int    `json:"creater"`
 }
 
-// SystemSummary 摘要信息显示信息
-type SystemSummary struct {
+// SummaryView 摘要信息显示视图
+type SummaryView struct {
 	Summary
-	Catalog []Unit `json:"catalog"`
-	Creater Unit   `json:"creater"`
+	Catalog []Catalog `json:"catalog"`
+	Creater User      `json:"creater"`
 }
 
 // ArticleDetail 文章
@@ -36,22 +48,24 @@ type ArticleDetail struct {
 
 // ArticleDetailView 文章显示信息
 type ArticleDetailView struct {
-	SystemSummary
-	Content string `json:"content"`
+	ArticleDetail
+	Catalog []Catalog `json:"catalog"`
+	Creater User      `json:"creater"`
 }
 
 // CatalogDetail 分类详细信息
 type CatalogDetail struct {
 	Summary
 
-	Description string `json:"id"`
+	Description string `json:"description"`
 }
 
 // CatalogDetailView 分类详细信息显示信息
 type CatalogDetailView struct {
-	SystemSummary
+	CatalogDetail
 
-	Description string `json:"id"`
+	Catalog []Catalog `json:"catalog"`
+	Creater User      `json:"creater"`
 }
 
 // LinkDetail 链接
@@ -64,24 +78,25 @@ type LinkDetail struct {
 
 // LinkDetailView 链接显示信息
 type LinkDetailView struct {
-	SystemSummary
+	LinkDetail
 
-	URL  string `json:"url"`
-	Logo string `json:"logo"`
+	Catalog []Catalog `json:"catalog"`
+	Creater User      `json:"creater"`
 }
 
 // MediaDetail 文件信息
 type MediaDetail struct {
 	Summary
-	URL  string `json:"url"`
-	Desc string `json:"desc"`
+	URL         string `json:"url"`
+	Description string `json:"description"`
 }
 
 // MediaDetailView 文件信息显示信息
 type MediaDetailView struct {
-	SystemSummary
-	URL  string `json:"url"`
-	Desc string `json:"desc"`
+	MediaDetail
+
+	Catalog []Catalog `json:"catalog"`
+	Creater User      `json:"creater"`
 }
 
 // ContentSummary 内容摘要信息

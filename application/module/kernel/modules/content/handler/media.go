@@ -14,6 +14,10 @@ func (i *mediaActionHandler) getAllMedia() []model.Summary {
 	return dal.QueryAllMedia(i.dbhelper)
 }
 
+func (i *mediaActionHandler) getMedias(ids []int) []model.Media {
+	return dal.QueryMedias(i.dbhelper, ids)
+}
+
 func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
 	return dal.QueryMediaByID(i.dbhelper, id)
 }

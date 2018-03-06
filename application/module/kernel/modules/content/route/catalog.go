@@ -14,62 +14,63 @@ import (
 )
 
 // AppendCatalogRoute 追加User Route
-func AppendCatalogRoute(routes []common.Route, contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt := CreateGetCatalogByIDRoute(contentHandler)
+func AppendCatalogRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
+	rt := CreateGetCatalogByIDRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetCatalogListRoute(contentHandler)
+	rt = CreateGetCatalogListRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateCreateCatalogRoute(contentHandler, sessionRegistry)
+	rt = CreateCreateCatalogRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateUpdateCatalogRoute(contentHandler, sessionRegistry)
+	rt = CreateUpdateCatalogRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDestroyCatalogRoute(contentHandler, sessionRegistry)
+	rt = CreateDestroyCatalogRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateGetCatalogByIDRoute 新建GetCatalog Route
-func CreateGetCatalogByIDRoute(contentHandler common.ContentHandler) common.Route {
-	i := catalogGetByIDRoute{contentHandler: contentHandler}
+func CreateGetCatalogByIDRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := catalogGetByIDRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetCatalogListRoute 新建GetAllCatalog Route
-func CreateGetCatalogListRoute(contentHandler common.ContentHandler) common.Route {
-	i := catalogGetListRoute{contentHandler: contentHandler}
+func CreateGetCatalogListRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := catalogGetListRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateCreateCatalogRoute 新建CreateCatalogRoute Route
-func CreateCreateCatalogRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := catalogCreateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateCreateCatalogRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := catalogCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateUpdateCatalogRoute UpdateCatalogRoute Route
-func CreateUpdateCatalogRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := catalogUpdateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateUpdateCatalogRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := catalogUpdateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateDestroyCatalogRoute DestroyCatalogRoute Route
-func CreateDestroyCatalogRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := catalogDestroyRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateDestroyCatalogRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := catalogDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 type catalogGetByIDRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type catalogGetByIDResult struct {
 	common.Result
-	Catalog model.CatalogDetail `json:"catalog"`
+	Catalog model.CatalogDetailView `json:"catalog"`
 }
 
 func (i *catalogGetByIDRoute) Method() string {
@@ -103,8 +104,13 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 
 		catalog, ok := i.contentHandler.GetCatalogByID(id)
 		if ok {
-			result.Catalog = catalog
-			result.ErrorCode = 0
+			user, _ := i.accountHandler.FindUserByID(catalog.Creater)
+			catalogs := i.contentHandler.GetCatalogs(catalog.Catalog)
+
+			result.Catalog.CatalogDetail = catalog
+			result.Catalog.Creater = user.User
+			result.Catalog.Catalog = catalogs
+			result.ErrorCode = common.Success
 		} else {
 			result.ErrorCode = 1
 			result.Reason = "对象不存在"
@@ -122,11 +128,12 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 
 type catalogGetListRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type catalogGetListResult struct {
 	common.Result
-	Catalog []model.Summary `json:"catalog"`
+	Catalog []model.SummaryView `json:"catalog"`
 }
 
 func (i *catalogGetListRoute) Method() string {
@@ -150,22 +157,44 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 	result := catalogGetListResult{}
 	for true {
-		catalog := r.URL.Query()["catalog"]
-		if len(catalog) < 1 {
-			result.Catalog = i.contentHandler.GetAllCatalog()
-			result.ErrorCode = 0
+		catalog := r.URL.Query().Get("catalog")
+		if catalog == "" {
+			catalogs := i.contentHandler.GetAllCatalog()
+			for _, val := range catalogs {
+				catalog := model.SummaryView{}
+				user, _ := i.accountHandler.FindUserByID(val.Creater)
+				catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+				catalog.Summary = val
+				catalog.Creater = user.User
+				catalog.Catalog = catalogs
+
+				result.Catalog = append(result.Catalog, catalog)
+			}
+			result.ErrorCode = common.Success
 			break
 		}
 
-		id, err := strconv.Atoi(catalog[0])
+		id, err := strconv.Atoi(catalog)
 		if err != nil {
 			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
-		result.Catalog = i.contentHandler.GetCatalogByCatalog(id)
-		result.ErrorCode = 0
+		catalogs := i.contentHandler.GetCatalogByCatalog(id)
+		for _, val := range catalogs {
+			catalog := model.SummaryView{}
+			user, _ := i.accountHandler.FindUserByID(val.Creater)
+			catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+			catalog.Summary = val
+			catalog.Creater = user.User
+			catalog.Catalog = catalogs
+
+			result.Catalog = append(result.Catalog, catalog)
+		}
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -179,6 +208,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 type catalogCreateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -190,7 +220,7 @@ type catalogCreateParam struct {
 
 type catalogCreateResult struct {
 	common.Result
-	Catalog model.Summary `json:"catalog"`
+	Catalog model.SummaryView `json:"catalog"`
 }
 
 func (i *catalogCreateRoute) Method() string {
@@ -236,8 +266,12 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Catalog = catalog
+		catalogs := i.contentHandler.GetCatalogs(catalog.Catalog)
+
+		result.Catalog.Summary = catalog
+		result.Catalog.Creater = user
+		result.Catalog.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -251,6 +285,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 
 type catalogUpdateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -258,7 +293,7 @@ type catalogUpdateParam catalogCreateParam
 
 type catalogUpdateResult struct {
 	common.Result
-	Catalog model.Summary `json:"catalog"`
+	Catalog model.SummaryView `json:"catalog"`
 }
 
 func (i *catalogUpdateRoute) Method() string {
@@ -318,8 +353,12 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Catalog = summmary
+
+		catalogs := i.contentHandler.GetCatalogs(catalog.Catalog)
+		result.Catalog.Summary = summmary
+		result.Catalog.Creater = user
+		result.Catalog.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -333,6 +372,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 
 type catalogDestroyRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 

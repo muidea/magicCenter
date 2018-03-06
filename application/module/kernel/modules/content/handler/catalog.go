@@ -14,6 +14,10 @@ func (i *catalogActionHandler) getAllCatalog() []model.Summary {
 	return dal.QueryAllCatalog(i.dbhelper)
 }
 
+func (i *catalogActionHandler) getCatalogs(ids []int) []model.Catalog {
+	return dal.QueryCatalogs(i.dbhelper, ids)
+}
+
 func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, bool) {
 	return dal.QueryCatalogByID(i.dbhelper, id)
 }

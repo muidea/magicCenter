@@ -33,6 +33,22 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 	return summaryList
 }
 
+// QueryCatalogs 查询指定分类
+func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
+	catalogList := []model.Catalog{}
+	sql := fmt.Sprintf(`select id, name from content_catalog`)
+	helper.Query(sql)
+
+	for helper.Next() {
+		summary := model.Catalog{}
+		helper.GetValue(&summary.ID, &summary.Name)
+
+		catalogList = append(catalogList, summary)
+	}
+
+	return catalogList
+}
+
 // QueryCatalogByID 查询指定分类
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}

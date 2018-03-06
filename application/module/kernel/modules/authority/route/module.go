@@ -18,13 +18,13 @@ func CreateGetModuleACLRoute(authorityHandler common.AuthorityHandler) common.Ro
 }
 
 // CreateGetModuleUserAuthGroupRoute 新建ModuleUserGetRoute
-func CreateGetModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+func CreateGetModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
 	i := moduleGetUserAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
 
 // CreatePutModuleUserAuthGroupRoute 新建PutModuleUserRoute
-func CreatePutModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
+func CreatePutModuleUserAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
 	i := modulePutUserAuthGroupRoute{authorityHandler: authorityHandler}
 	return &i
 }
@@ -35,8 +35,8 @@ type moduleGetACLRoute struct {
 
 type moduleGetACLResult struct {
 	common.Result
-	Module string      `json:"module"`
-	ACL    []model.ACL `json:"acl"`
+	Module string                `json:"module"`
+	ACL    []model.ACLDetailView `json:"acl"`
 }
 
 func (i *moduleGetACLRoute) Method() string {
@@ -63,7 +63,21 @@ func (i *moduleGetACLRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 		_, id := net.SplitRESTAPI(r.URL.Path)
 		result.Module = id
 
-		result.ACL = i.authorityHandler.QueryACLByModule(id)
+		acls := i.authorityHandler.QueryACLByModule(id)
+		for _, val := range acls {
+			acl := model.ACLDetailView{}
+			acl.ACLDetail = val
+
+			if val.AuthGroup == common.UserAuthGroup.ID {
+				acl.AuthGroup = common.UserAuthGroup.Unit
+			} else if val.AuthGroup == common.MaintainerAuthGroup.ID {
+				acl.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				acl.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+
+			result.ACL = append(result.ACL, acl)
+		}
 		result.ErrorCode = common.Success
 
 		break
@@ -83,7 +97,7 @@ type moduleGetUserAuthGroupRoute struct {
 
 type moduleGetUserAuthGroupResult struct {
 	common.Result
-	model.ModuleUserAuthGroup
+	model.ModuleUserAuthGroupView
 }
 
 func (i *moduleGetUserAuthGroupRoute) Method() string {
@@ -110,7 +124,21 @@ func (i *moduleGetUserAuthGroupRoute) getModuleUserAuthGroupHandler(w http.Respo
 		_, id := net.SplitRESTAPI(r.URL.Path)
 		info := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		result.Module = id
-		result.UserAuthGroup = info.UserAuthGroup
+
+		for _, val := range info.UserAuthGroup {
+			groupView := model.UserAuthGroupView{}
+
+			if val.AuthGroup == common.UserAuthGroup.ID {
+				groupView.AuthGroup = common.UserAuthGroup.Unit
+			} else if val.AuthGroup == common.MaintainerAuthGroup.ID {
+				groupView.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				groupView.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+
+			result.UserAuthGroup = append(result.UserAuthGroup, groupView)
+		}
+
 		result.ErrorCode = common.Success
 
 		break

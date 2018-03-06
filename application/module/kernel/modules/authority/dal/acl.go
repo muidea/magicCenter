@@ -9,8 +9,8 @@ import (
 )
 
 // InsertACL 新增ACL记录
-func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int, authGroups int) (model.ACL, bool) {
-	acl := model.ACL{URL: url, Method: method, Module: module, Status: status, AuthGroup: authGroups}
+func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int, authGroups int) (model.ACLDetail, bool) {
+	acl := model.ACLDetail{ACL: model.ACL{URL: url, Method: method}, Module: module, Status: status, AuthGroup: authGroups}
 	sql := fmt.Sprintf("insert into authority_acl (url, method, module, status, authgroup) values ('%s','%s','%s',%d,%d)", url, method, module, status, acl.AuthGroup)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
@@ -65,8 +65,8 @@ func UpdateACLStatus(helper dbhelper.DBHelper, enableList []int, disableList []i
 }
 
 // QueryACLByID 查询指定的ACL
-func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACL, bool) {
-	acl := model.ACL{}
+func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACLDetail, bool) {
+	acl := model.ACLDetail{}
 	retVal := false
 
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where id=%d", id)
@@ -80,8 +80,8 @@ func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACL, bool) {
 }
 
 // FilterACL 查询指定的ACL
-func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACL, bool) {
-	acl := model.ACL{}
+func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACLDetail, bool) {
+	acl := model.ACLDetail{}
 	retVal := false
 
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where url='%s' and method='%s'", url, method)
@@ -95,20 +95,20 @@ func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACL, bool) {
 }
 
 // UpateACL 更新ACL记录
-func UpateACL(helper dbhelper.DBHelper, acl model.ACL) bool {
+func UpateACL(helper dbhelper.DBHelper, acl model.ACLDetail) bool {
 	sql := fmt.Sprintf("update authority_acl set authgroup=%d, status=%d where id=%d", acl.AuthGroup, acl.Status, acl.ID)
 	num, ok := helper.Execute(sql)
 	return ok && num == 1
 }
 
 // QueryACLByModule 查询指定Module的ACL信息
-func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACL {
-	acls := []model.ACL{}
+func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACLDetail {
+	acls := []model.ACLDetail{}
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where module='%s'", module)
 
 	helper.Query(sql)
 	for helper.Next() {
-		acl := model.ACL{}
+		acl := model.ACLDetail{}
 		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &acl.AuthGroup)
 		acls = append(acls, acl)
 	}

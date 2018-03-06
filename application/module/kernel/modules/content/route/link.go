@@ -16,63 +16,64 @@ import (
 )
 
 // AppendLinkRoute 追加User Route
-func AppendLinkRoute(routes []common.Route, contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) []common.Route {
+func AppendLinkRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
 
-	rt := CreateGetLinkByIDRoute(contentHandler)
+	rt := CreateGetLinkByIDRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetLinkListRoute(contentHandler)
+	rt = CreateGetLinkListRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateCreateLinkRoute(contentHandler, sessionRegistry)
+	rt = CreateCreateLinkRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateUpdateLinkRoute(contentHandler, sessionRegistry)
+	rt = CreateUpdateLinkRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDestroyLinkRoute(contentHandler, sessionRegistry)
+	rt = CreateDestroyLinkRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateGetLinkByIDRoute 新建GetLink Route
-func CreateGetLinkByIDRoute(contentHandler common.ContentHandler) common.Route {
-	i := linkGetByIDRoute{contentHandler: contentHandler}
+func CreateGetLinkByIDRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := linkGetByIDRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetLinkListRoute 新建GetAllLink Route
-func CreateGetLinkListRoute(contentHandler common.ContentHandler) common.Route {
-	i := linkGetListRoute{contentHandler: contentHandler}
+func CreateGetLinkListRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := linkGetListRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateCreateLinkRoute 新建CreateLinkRoute Route
-func CreateCreateLinkRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := linkCreateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateCreateLinkRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := linkCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateUpdateLinkRoute UpdateLinkRoute Route
-func CreateUpdateLinkRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := linkUpdateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateUpdateLinkRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := linkUpdateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateDestroyLinkRoute DestroyLinkRoute Route
-func CreateDestroyLinkRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := linkDestroyRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateDestroyLinkRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := linkDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 type linkGetByIDRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type linkGetByIDResult struct {
 	common.Result
-	Link model.LinkDetail `json:"link"`
+	Link model.LinkDetailView `json:"link"`
 }
 
 func (i *linkGetByIDRoute) Method() string {
@@ -106,10 +107,15 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 
 		link, ok := i.contentHandler.GetLinkByID(id)
 		if ok {
-			result.Link = link
-			result.ErrorCode = 0
+			user, _ := i.accountHandler.FindUserByID(link.Creater)
+			catalogs := i.contentHandler.GetCatalogs(link.Catalog)
+
+			result.Link.LinkDetail = link
+			result.Link.Creater = user.User
+			result.Link.Catalog = catalogs
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "对象不存在"
 		}
 
@@ -126,11 +132,12 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 
 type linkGetListRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type linkGetListResult struct {
 	common.Result
-	Link []model.Summary `json:"link"`
+	Link []model.SummaryView `json:"link"`
 }
 
 func (i *linkGetListRoute) Method() string {
@@ -156,8 +163,19 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		catalog := r.URL.Query().Get("catalog")
 		if catalog == "" {
-			result.Link = i.contentHandler.GetAllLink()
-			result.ErrorCode = 0
+			links := i.contentHandler.GetAllLink()
+			for _, val := range links {
+				link := model.SummaryView{}
+				user, _ := i.accountHandler.FindUserByID(val.Creater)
+				catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+				link.Summary = val
+				link.Creater = user.User
+				link.Catalog = catalogs
+
+				result.Link = append(result.Link, link)
+			}
+			result.ErrorCode = common.Success
 			break
 		}
 
@@ -168,8 +186,19 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		result.Link = i.contentHandler.GetLinkByCatalog(id)
-		result.ErrorCode = 0
+		links := i.contentHandler.GetLinkByCatalog(id)
+		for _, val := range links {
+			link := model.SummaryView{}
+			user, _ := i.accountHandler.FindUserByID(val.Creater)
+			catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+			link.Summary = val
+			link.Creater = user.User
+			link.Catalog = catalogs
+
+			result.Link = append(result.Link, link)
+		}
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -183,6 +212,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 type linkCreateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -195,7 +225,7 @@ type linkCreateParam struct {
 
 type linkCreateResult struct {
 	common.Result
-	Link model.Summary `json:"link"`
+	Link model.SummaryView `json:"link"`
 }
 
 func (i *linkCreateRoute) Method() string {
@@ -222,7 +252,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -230,7 +260,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -242,8 +272,12 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Link = link
+		catalogs := i.contentHandler.GetCatalogs(link.Catalog)
+
+		result.Link.Summary = link
+		result.Link.Creater = user
+		result.Link.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -257,6 +291,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 
 type linkUpdateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -264,7 +299,7 @@ type linkUpdateParam linkCreateParam
 
 type linkUpdateResult struct {
 	common.Result
-	Link model.Summary `json:"link"`
+	Link model.SummaryView `json:"link"`
 }
 
 func (i *linkUpdateRoute) Method() string {
@@ -292,14 +327,14 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -307,7 +342,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -321,12 +356,16 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Link = summmary
+		catalogs := i.contentHandler.GetCatalogs(link.Catalog)
+
+		result.Link.Summary = summmary
+		result.Link.Creater = user
+		result.Link.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -340,6 +379,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 
 type linkDestroyRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -372,13 +412,13 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}

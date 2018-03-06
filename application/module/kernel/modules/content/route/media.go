@@ -16,63 +16,64 @@ import (
 )
 
 // AppendMediaRoute 追加User Route
-func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) []common.Route {
+func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
 
-	rt := CreateGetMediaByIDRoute(contentHandler)
+	rt := CreateGetMediaByIDRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetMediaListRoute(contentHandler)
+	rt = CreateGetMediaListRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateCreateMediaRoute(contentHandler, sessionRegistry)
+	rt = CreateCreateMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateUpdateMediaRoute(contentHandler, sessionRegistry)
+	rt = CreateUpdateMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDestroyMediaRoute(contentHandler, sessionRegistry)
+	rt = CreateDestroyMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
 }
 
 // CreateGetMediaByIDRoute 新建GetMedia Route
-func CreateGetMediaByIDRoute(contentHandler common.ContentHandler) common.Route {
-	i := mediaGetByIDRoute{contentHandler: contentHandler}
+func CreateGetMediaByIDRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := mediaGetByIDRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetMediaListRoute 新建GetAllMedia Route
-func CreateGetMediaListRoute(contentHandler common.ContentHandler) common.Route {
-	i := mediaGetListRoute{contentHandler: contentHandler}
+func CreateGetMediaListRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := mediaGetListRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateCreateMediaRoute 新建CreateMediaRoute Route
-func CreateCreateMediaRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := mediaCreateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateCreateMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := mediaCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateUpdateMediaRoute UpdateMediaRoute Route
-func CreateUpdateMediaRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := mediaUpdateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateUpdateMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := mediaUpdateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateDestroyMediaRoute DestroyMediaRoute Route
-func CreateDestroyMediaRoute(contentHandler common.ContentHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := mediaDestroyRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+func CreateDestroyMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := mediaDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 type mediaGetByIDRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type mediaGetByIDResult struct {
 	common.Result
-	Media model.MediaDetail `json:"media"`
+	Media model.MediaDetailView `json:"media"`
 }
 
 func (i *mediaGetByIDRoute) Method() string {
@@ -99,17 +100,22 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		media, ok := i.contentHandler.GetMediaByID(id)
 		if ok {
-			result.Media = media
-			result.ErrorCode = 0
+			user, _ := i.accountHandler.FindUserByID(media.Creater)
+			catalogs := i.contentHandler.GetCatalogs(media.Catalog)
+
+			result.Media.MediaDetail = media
+			result.Media.Creater = user.User
+			result.Media.Catalog = catalogs
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -125,11 +131,12 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 
 type mediaGetListRoute struct {
 	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
 }
 
 type mediaGetListResult struct {
 	common.Result
-	Media []model.Summary `json:"media"`
+	Media []model.SummaryView `json:"media"`
 }
 
 func (i *mediaGetListRoute) Method() string {
@@ -153,22 +160,44 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 	result := mediaGetListResult{}
 	for true {
-		catalog := r.URL.Query()["catalog"]
+		catalog := r.URL.Query().Get("catalog")
 		if len(catalog) < 1 {
-			result.Media = i.contentHandler.GetAllMedia()
-			result.ErrorCode = 0
+			medias := i.contentHandler.GetAllMedia()
+			for _, val := range medias {
+				media := model.SummaryView{}
+				user, _ := i.accountHandler.FindUserByID(val.Creater)
+				catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+				media.Summary = val
+				media.Creater = user.User
+				media.Catalog = catalogs
+
+				result.Media = append(result.Media, media)
+			}
+			result.ErrorCode = common.Success
 			break
 		}
 
-		id, err := strconv.Atoi(catalog[0])
+		id, err := strconv.Atoi(catalog)
 		if err != nil {
 			result.ErrorCode = 1
 			result.Reason = "无效参数"
 			break
 		}
 
-		result.Media = i.contentHandler.GetMediaByCatalog(id)
-		result.ErrorCode = 0
+		medias := i.contentHandler.GetMediaByCatalog(id)
+		for _, val := range medias {
+			media := model.SummaryView{}
+			user, _ := i.accountHandler.FindUserByID(val.Creater)
+			catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+
+			media.Summary = val
+			media.Creater = user.User
+			media.Catalog = catalogs
+
+			result.Media = append(result.Media, media)
+		}
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -182,6 +211,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 type mediaCreateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -194,7 +224,7 @@ type mediaCreateParam struct {
 
 type mediaCreateResult struct {
 	common.Result
-	Media model.Summary `json:"media"`
+	Media model.SummaryView `json:"media"`
 }
 
 func (i *mediaCreateRoute) Method() string {
@@ -221,7 +251,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -229,7 +259,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -237,12 +267,16 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Media = media
+		catalogs := i.contentHandler.GetCatalogs(media.Catalog)
+
+		result.Media.Summary = media
+		result.Media.Creater = user
+		result.Media.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -256,6 +290,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 
 type mediaUpdateRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
@@ -263,7 +298,7 @@ type mediaUpdateParam mediaCreateParam
 
 type mediaUpdateResult struct {
 	common.Result
-	Media model.Summary `json:"media"`
+	Media model.SummaryView `json:"media"`
 }
 
 func (i *mediaUpdateRoute) Method() string {
@@ -291,14 +326,14 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -306,7 +341,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -315,7 +350,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.ID = id
 		media.Name = param.Name
 		media.URL = param.URL
-		media.Desc = param.Description
+		media.Description = param.Description
 		media.Catalog = param.Catalog
 		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 		media.Creater = user.ID
@@ -325,8 +360,12 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "更新失败"
 			break
 		}
-		result.ErrorCode = 0
-		result.Media = summmary
+		catalogs := i.contentHandler.GetCatalogs(media.Catalog)
+
+		result.Media.Summary = summmary
+		result.Media.Creater = user
+		result.Media.Catalog = catalogs
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -340,6 +379,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 
 type mediaDestroyRoute struct {
 	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
 	sessionRegistry common.SessionRegistry
 }
 
