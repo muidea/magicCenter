@@ -6,6 +6,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/common/resource"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryAllMedia 查询所有图像
@@ -35,7 +36,12 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 // QueryMedias 查询指定文章
 func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
 	mediaList := []model.Media{}
-	sql := fmt.Sprintf(`select id, name from content_media`)
+
+	if len(ids) == 0 {
+		return mediaList
+	}
+
+	sql := fmt.Sprintf(`select id, name from content_media where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {

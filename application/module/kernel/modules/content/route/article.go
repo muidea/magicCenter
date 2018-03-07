@@ -43,25 +43,25 @@ func CreateGetArticleByIDRoute(contentHandler common.ContentHandler, accountHand
 
 // CreateGetArticleListRoute 新建GetArticle Route
 func CreateGetArticleListRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
-	i := articleGetListRoute{contentHandler: contentHandler}
+	i := articleGetListRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateCreateArticleRoute 新建CreateArticleRoute Route
 func CreateCreateArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := articleCreateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+	i := articleCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateUpdateArticleRoute UpdateArticleRoute Route
 func CreateUpdateArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := articleUpdateRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+	i := articleUpdateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 // CreateDestroyArticleRoute DestroyArticleRoute Route
 func CreateDestroyArticleRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := articleDestroyRoute{contentHandler: contentHandler, sessionRegistry: sessionRegistry}
+	i := articleDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 

@@ -6,6 +6,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/common/resource"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryAllArticleSummary 查询所有文章摘要
@@ -35,7 +36,12 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 // QueryArticles 查询指定文章
 func QueryArticles(helper dbhelper.DBHelper, ids []int) []model.Article {
 	articleList := []model.Article{}
-	sql := fmt.Sprintf(`select id, title from content_article`)
+
+	if len(ids) == 0 {
+		return articleList
+	}
+
+	sql := fmt.Sprintf(`select id, title from content_article where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {

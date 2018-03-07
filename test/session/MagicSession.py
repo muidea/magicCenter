@@ -12,7 +12,7 @@ class MagicSession(object):
         "Post"
         ret = None
         try:
-            response = self.currentSesion.post('%s%s'%(self.base_url, url), params)
+            response = self.currentSesion.post('%s%s'%(self.base_url, url), json = params)
             ret = json.loads(response.text)
         except ValueError as e:
             print(e)
@@ -34,7 +34,7 @@ class MagicSession(object):
         "Put"
         ret = None
         try:
-            response = self.currentSesion.put('%s%s'%(self.base_url, url), params)
+            response = self.currentSesion.put('%s%s'%(self.base_url, url), json = params)
             ret = json.loads(response.text)
         except ValueError as e:
             print(e)

@@ -218,7 +218,7 @@ type mediaCreateRoute struct {
 type mediaCreateParam struct {
 	Name        string `json:"name"`
 	URL         string `json:"url"`
-	Description string `json:"id"`
+	Description string `json:"description"`
 	Catalog     []int  `json:"catalog"`
 }
 

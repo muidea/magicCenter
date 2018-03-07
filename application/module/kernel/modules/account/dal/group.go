@@ -125,7 +125,7 @@ func SaveGroup(helper dbhelper.DBHelper, group model.GroupDetail) (model.GroupDe
 		sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s', %d)", group.Name, group.Description, group.Catalog)
 	} else {
 		// modify
-		sql = fmt.Sprintf("update account_group set name ='%s', description='%s', catalog=%d where id=%d", group.Name, group.Description, group.ID, group.Catalog)
+		sql = fmt.Sprintf("update account_group set name ='%s', description='%s', catalog=%d where id=%d", group.Name, group.Description, group.Catalog, group.ID)
 	}
 
 	_, ret := helper.Execute(sql)

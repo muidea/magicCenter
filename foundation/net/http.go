@@ -104,7 +104,7 @@ func ParsePostJSON(req *http.Request, param interface{}) error {
 		}
 
 	default:
-		return errors.New("invalid contentType")
+		return errors.New("invalid contentType, contentType:" + contentType)
 	}
 
 	return nil

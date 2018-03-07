@@ -11,40 +11,40 @@ class User(MagicSession.MagicSession):
 
     def create(self, account, email):
         "CreateUser"
-        params = {'account': account, 'email': email, 'group': str([1,2])}
+        params = {'account': account, 'email': email, 'group': [1,2]}
         val = self.post('/account/user/', params)
-        if val and val['ErrorCode'] == 0:
-            return val['User']
+        if val and val['errorCode'] == 0:
+            return val['user']
         return None
 
     def update(self, user):
         'UpdateUser'
-        params = {'email': user['Email'], 'name': user['Name']}
-        val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
-        if val and val['ErrorCode'] == 0:
-            return val['User']
+        params = {'email': user['email'], 'name': user['name']}
+        val = self.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
+        if val and val['errorCode'] == 0:
+            return val['user']
         return None
 
     def updatepassword(self, user, pwd):
         'UpdateUserPassword'
-        params = {'password': pwd, 'email': user['Email'], 'name': user['Name']}
-        val = self.put('/account/user/%d?authToken=%s'%(user['ID'], self.authority_token), params)
-        if val and val['ErrorCode'] == 0:
-            return val['User']
+        params = {'password': pwd, 'email': user['email'], 'name': user['name']}
+        val = self.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
+        if val and val['errorCode'] == 0:
+            return val['user']
         return None
 
     def find(self, user_id):
         'FindUser'
         val = self.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
-            return val['User']
+        if val and val['errorCode'] == 0:
+            return val['user']
         return None
 
     def find_all(self):
         'FindAllUser'
         val = self.get('/account/user/?authToken=%s'%self.authority_token)
-        if val and val['ErrorCode'] == 0:
-            if len(val['User']) != 2:
+        if val and val['errorCode'] == 0:
+            if len(val['user']) != 2:
                 return False
             return True
         return False
@@ -53,7 +53,7 @@ class User(MagicSession.MagicSession):
     def destroy(self, user_id):
         'DestroyUser'
         val = self.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
+        if val and val['errorCode'] == 0:
             return True
         return False
 
@@ -65,21 +65,21 @@ def main():
         APP = User('http://localhost:8888', LOGIN.authority_token)
         USER = APP.create('testUser12', 'rangh@test.com')
         if USER:
-            USER_ID = USER['ID']
+            USER_ID = USER['id']
             if not APP.updatepassword(USER, '123'):
                 print("updatepassword failed")
 
-            USER['Name'] = '11223'
+            USER['name'] = '11223'
             USER = APP.update(USER)
             if USER:
-                if not (USER['Name'] == '11223'):
+                if not (USER['name'] == '11223'):
                     print('update user failed')
             else:
                 print('update user failed')
 
             USER = APP.find(USER_ID)
             if USER:
-                if not (USER['Name'] == '11223'):
+                if not (USER['name'] == '11223'):
                     print('find user failed')
             else:
                 print('find user failed')

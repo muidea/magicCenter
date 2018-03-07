@@ -1,6 +1,6 @@
 
 from account import User
-from account import GroupDetail
+from account import Group
 from cache import Cache
 from cas import Login
 from content import Article
@@ -11,9 +11,10 @@ from fileregistry import FileRegistry
 
 
 if __file__ == '__main__':
+    print("execute test script")
     Login.main()
     User.main()
-    GroupDetail.main()
+    Group.main()
     Cache.main()
     Article.main()
     Catalog.main()

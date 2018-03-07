@@ -6,6 +6,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/common/resource"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryAllCatalog 查询所有分类
@@ -36,7 +37,12 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 // QueryCatalogs 查询指定分类
 func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 	catalogList := []model.Catalog{}
-	sql := fmt.Sprintf(`select id, name from content_catalog`)
+
+	if len(ids) == 0 {
+		return catalogList
+	}
+
+	sql := fmt.Sprintf(`select id, name from content_catalog where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {

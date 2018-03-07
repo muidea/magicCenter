@@ -214,7 +214,7 @@ type catalogCreateRoute struct {
 
 type catalogCreateParam struct {
 	Name        string `json:"name"`
-	Description string `json:"id"`
+	Description string `json:"description"`
 	Catalog     []int  `json:"catalog"`
 }
 

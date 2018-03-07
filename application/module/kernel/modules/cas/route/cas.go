@@ -90,6 +90,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		param := &accountLoginParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
+			log.Printf("ParsePostJSON failed, err:%s", err.Error())
 			result.ErrorCode = 1
 			result.Reason = "非法请求"
 			break

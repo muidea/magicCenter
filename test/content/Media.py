@@ -11,39 +11,39 @@ class Media(MagicSession.MagicSession):
 
     def create(self, name, url, desc, catalogs):
         'create'
-        params = {'name': name, 'url': url, 'desc': desc, 'catalog': str(catalogs)}
+        params = {'name': name, 'url': url, 'description': desc, 'catalog': catalogs}
         val = self.post('/content/media/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrorCode'] == 0:
-            return val['Media']
+        if val and val['errorCode'] == 0:
+            return val['media']
         return None
 
     def destroy(self, media_id):
         'destroy'
         val = self.delete('/content/media/%s?authToken=%s'%(media_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
+        if val and val['errorCode'] == 0:
             return True
         return False
 
     def update(self, media):
         'update'
-        params = {'name': media['Name'], 'url': media['URL'], 'desc': media['Desc'], 'catalog': str(media['Catalog'])}
-        val = self.put('/content/media/%s?authToken=%s'%(media['ID'], self.authority_token), params)
-        if val and val['ErrorCode'] == 0:
-            return val['Media']
+        params = {'name': media['name'], 'url': media['url'], 'desc': media['description'], 'catalog': media['catalog']}
+        val = self.put('/content/media/%s?authToken=%s'%(media['id'], self.authority_token), params)
+        if val and val['errorCode'] == 0:
+            return val['media']
         return None
 
     def query(self, media_id):
         'query'
         val = self.get('/content/media/%d?authToken=%s'%(media_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
-            return val['Media']
+        if val and val['errorCode'] == 0:
+            return val['media']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/media/?authToken=%s'%self.authority_token)
-        if val and val['ErrorCode'] == 0:
-            return val['Media']
+        if val and val['errorCode'] == 0:
+            return val['media']
         return None
 
 def main():
@@ -54,21 +54,21 @@ def main():
         APP = Media('http://localhost:8888', LOGIN.authority_token)
         MEDIA = APP.create('testMedia', 'test media url', 'test media desc', [8,9])
         if MEDIA:
-            MEDIA_ID = MEDIA['ID']
-            MEDIA['URL'] = 'aaaaaa, bb dsfsdf  erewre'
-            MEDIA['Desc'] = 'aaaaaa, bb'
-            MEDIA['Catalog'] = [8,9,10]
+            MEDIA_ID = MEDIA['id']
+            MEDIA['url'] = 'aaaaaa, bb dsfsdf  erewre'
+            MEDIA['description'] = 'aaaaaa, bb'
+            MEDIA['catalog'] = [8,9,10]
             MEDIA = APP.update(MEDIA)
             if not MEDIA:
                 print('update media failed')
-            elif len(MEDIA['Catalog']) != 3:
+            elif len(MEDIA['catalog']) != 3:
                 print('update media failed, media len invalid')
             else:
                 pass
             MEDIA = APP.query(MEDIA_ID)
             if not MEDIA:
                 print('query media failed')
-            elif not(MEDIA['URL'] =='aaaaaa, bb dsfsdf  erewre'):
+            elif not(MEDIA['url'] =='aaaaaa, bb dsfsdf  erewre'):
                 print('update media failed, content invalid')
 
             if len(APP.query_all()) <= 0:

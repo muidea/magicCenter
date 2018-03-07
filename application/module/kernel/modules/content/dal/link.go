@@ -6,6 +6,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/common/resource"
+	"muidea.com/magicCenter/foundation/util"
 )
 
 // QueryAllLink 查询全部Link
@@ -35,7 +36,12 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 // QueryLinks 查询指定链接
 func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 	linkList := []model.Link{}
-	sql := fmt.Sprintf(`select id, name from content_link`)
+
+	if len(ids) == 0 {
+		return linkList
+	}
+
+	sql := fmt.Sprintf(`select id, name from content_link where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {

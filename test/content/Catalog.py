@@ -12,39 +12,39 @@ class Catalog(MagicSession.MagicSession):
 
     def create(self, name, description, catalogs):
         'create'
-        params = {'name': name, 'description': description, 'catalog': str(catalogs)}
+        params = {'name': name, 'description': description, 'catalog': catalogs}
         val = self.post('/content/catalog/?authToken=%s'%self.authority_token, params)
-        if val and val['ErrorCode'] == 0:
-            return val['Catalog']
+        if val and val['errorCode'] == 0:
+            return val['catalog']
         return None
 
     def destroy(self, catalog_id):
         'destroy'
         val = self.delete('/content/catalog/%s?authToken=%s'%(catalog_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
+        if val and val['errorCode'] == 0:
             return True
         return False
 
     def update(self, catalog):
         'update'
-        params = {'name': catalog['Name'], 'description': catalog['Description'], 'catalog': str(catalog['Catalog'])}
-        val = self.put('/content/catalog/%s?authToken=%s'%(catalog['ID'], self.authority_token), params)
-        if val and val['ErrorCode'] == 0:
-            return val['Catalog']
+        params = {'name': catalog['name'], 'description': catalog['description'], 'catalog': catalog['catalog']}
+        val = self.put('/content/catalog/%s?authToken=%s'%(catalog['id'], self.authority_token), params)
+        if val and val['errorCode'] == 0:
+            return val['catalog']
         return None
 
     def query(self, catalog_id):
         'query'
         val = self.get('/content/catalog/%d?authToken=%s'%(catalog_id, self.authority_token))
-        if val and val['ErrorCode'] == 0:
-            return val['Catalog']
+        if val and val['errorCode'] == 0:
+            return val['catalog']
         return None
 
     def query_all(self):
         'query_all'
         val = self.get('/content/catalog/?authToken=%s'%self.authority_token)
-        if val and val['ErrorCode'] == 0:
-            return val['Catalog']
+        if val and val['errorCode'] == 0:
+            return val['catalog']
         return None
 
 def main():
@@ -55,20 +55,20 @@ def main():
         APP = Catalog('http://localhost:8888', LOGIN.authority_token)
         CATALOG = APP.create('testCatalog', 'testDescription', [8,9])
         if CATALOG:
-            CATALOG_ID = CATALOG['ID']
-            CATALOG['Description'] = 'aaaaaa'
-            CATALOG['Catalog'] = [8,9,10]
+            CATALOG_ID = CATALOG['id']
+            CATALOG['description'] = 'aaaaaa'
+            CATALOG['catalog'] = [8,9,10]
             CATALOG = APP.update(CATALOG)
             if not CATALOG:
                 print('update catalog failed')
-            elif len(CATALOG['Catalog']) != 3:
+            elif len(CATALOG['catalog']) != 3:
                 print('update catalog failed, catalog len invalid')
             else:
                 pass
             CATALOG = APP.query(CATALOG_ID)
             if not CATALOG:
                 print('query catalog failed')
-            elif not (CATALOG['Description'] == 'aaaaaa'):
+            elif not (CATALOG['description'] == 'aaaaaa'):
                 print('update catalog failed, description invalid')
 
             if len(APP.query_all()) <= 0:
