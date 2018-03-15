@@ -100,7 +100,7 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -181,7 +181,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -268,7 +268,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -425,11 +425,11 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 
 		ok := i.contentHandler.DestroyLink(id)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 

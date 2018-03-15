@@ -97,7 +97,7 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -112,7 +112,7 @@ func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.R
 			result.Catalog.Catalog = catalogs
 			result.ErrorCode = common.Success
 		} else {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -177,7 +177,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -247,7 +247,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -255,14 +255,14 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 		param := &catalogCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		createdate := time.Now().Format("2006-01-02 15:04:05")
 		catalog, ok := i.contentHandler.CreateCatalog(param.Name, param.Description, createdate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -321,14 +321,14 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -336,7 +336,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		param := &catalogUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -349,7 +349,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -405,24 +405,24 @@ func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *htt
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyCatalog(id)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 

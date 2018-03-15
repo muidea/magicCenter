@@ -159,12 +159,12 @@ func MaintainActionHandler(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Print("parseform failed")
 
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效请求数据"
 			break
 		}
 
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		result.Reason = "更新成功"
 		break
 	}

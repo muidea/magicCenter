@@ -99,7 +99,7 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -114,7 +114,7 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 			result.Article.Catalog = catalogs
 			result.ErrorCode = common.Success
 		} else {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -174,13 +174,13 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 				result.Article = append(result.Article, article)
 			}
 
-			result.ErrorCode = 0
+			result.ErrorCode = common.Success
 			break
 		}
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -198,7 +198,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 			result.Article = append(result.Article, article)
 		}
 
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -251,7 +251,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -259,7 +259,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		param := &articleCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -267,7 +267,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, param.Catalog, user.ID)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -327,14 +327,14 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -342,7 +342,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		param := &articleUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -355,7 +355,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -412,24 +412,24 @@ func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *htt
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyArticle(id)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 

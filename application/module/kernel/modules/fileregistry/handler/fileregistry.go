@@ -58,21 +58,21 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 	result := uploadFileResult{}
 	for true {
 		if req.Method != common.POST {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "非法请求"
 			break
 		}
 
 		keyName := req.URL.Query().Get("key-name")
 		if len(keyName) == 0 {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		err := req.ParseMultipartForm(0)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效请求数据"
 			break
 		}
@@ -80,7 +80,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		tempPath := "./"
 		dstFile, err := net.MultipartFormFile(req, keyName, tempPath)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "上传文件出错"
 			break
 		}
@@ -93,7 +93,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			err = os.MkdirAll(finalFilePath, os.ModePerm)
 		}
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "处理文件出错"
 			break
 		}
@@ -101,7 +101,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		finalFilePath = path.Join(finalFilePath, fileName)
 		err = os.Rename(dstFile, finalFilePath)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "处理文件出错"
 			break
 		}
@@ -114,9 +114,9 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		ret := dal.SaveFileSummary(s.dbhelper, fileSummary)
 		if ret {
 			result.AccessToken = fileSummary.AccessToken
-			result.ErrorCode = 0
+			result.ErrorCode = common.Success
 		} else {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "保存文件信息失败"
 		}
 
@@ -135,7 +135,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 	result := downloadFileResult{}
 	for true {
 		if req.Method != common.GET {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "非法请求"
 			break
 		}
@@ -143,12 +143,12 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		_, id := net.SplitRESTAPI(req.URL.Path)
 		_, ok := dal.FindFileSummary(s.dbhelper, id)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "指定文件不存在"
 			break
 		}
 
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		result.RedirectURL = fmt.Sprintf("/static/?source=%s", id)
 		break
 	}
@@ -165,7 +165,7 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 	result := deleteFileResult{}
 	for true {
 		if req.Method != common.DELETE {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "非法请求"
 			break
 		}
@@ -184,7 +184,7 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 

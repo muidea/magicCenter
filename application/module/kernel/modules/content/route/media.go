@@ -180,7 +180,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -356,7 +356,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -412,24 +412,24 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyMedia(id)
 		if !ok {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 

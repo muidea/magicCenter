@@ -67,9 +67,9 @@ func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Reque
 	obj, ok := i.cacheHandler.FetchOut(id)
 	if ok {
 		result.Cache = obj
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 	} else {
-		result.ErrorCode = 1
+		result.ErrorCode = common.Failed
 		result.Reason = "对象不存在"
 	}
 	b, err := json.Marshal(result)
@@ -125,7 +125,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		param := &cachePostParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = 1
+			result.ErrorCode = common.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -135,7 +135,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		result.Token = i.cacheHandler.PutIn(param.Value, float64(param.Age))
-		result.ErrorCode = 0
+		result.ErrorCode = common.Success
 		break
 	}
 
@@ -184,7 +184,7 @@ func (i *deleteCacheRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Req
 	result := common.Result{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
 	i.cacheHandler.Remove(id)
-	result.ErrorCode = 0
+	result.ErrorCode = common.Success
 	result.Reason = "清除成功"
 
 	b, err := json.Marshal(result)
