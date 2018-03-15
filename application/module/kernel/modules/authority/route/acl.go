@@ -125,8 +125,7 @@ type aclGetByModuleRoute struct {
 
 type aclGetByModuleResult struct {
 	common.Result
-	Module    string                `json:"module"`
-	ACLDetail []model.ACLDetailView `json:"acl"`
+	ACL []model.ACLView `json:"acl"`
 }
 
 func (i *aclGetByModuleRoute) Method() string {
@@ -151,21 +150,22 @@ func (i *aclGetByModuleRoute) getACLHandler(w http.ResponseWriter, r *http.Reque
 
 	for true {
 		module := r.URL.Query().Get("module")
+		if module != "" {
+			acls := i.authorityHandler.QueryACLByModule(module)
+			for _, val := range acls {
+				acl := model.ACLView{}
+				acl.ACL = val
 
-		result.Module = module
-		acls := i.authorityHandler.QueryACLByModule(module)
-		for _, val := range acls {
-			acl := model.ACLDetailView{}
-			acl.ACLDetail = val
-
-			if val.AuthGroup == common.UserAuthGroup.ID {
-				acl.AuthGroup = common.UserAuthGroup.Unit
-			} else if val.AuthGroup == common.MaintainerAuthGroup.ID {
-				acl.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				acl.AuthGroup = common.VisitorAuthGroup.Unit
+				result.ACL = append(result.ACL, acl)
 			}
-			result.ACLDetail = append(result.ACLDetail, acl)
+		} else {
+			acls := i.authorityHandler.QueryAllACL()
+			for _, val := range acls {
+				acl := model.ACLView{}
+				acl.ACL = val
+
+				result.ACL = append(result.ACL, acl)
+			}
 		}
 		result.ErrorCode = common.Success
 

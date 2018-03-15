@@ -102,14 +102,29 @@ func UpateACL(helper dbhelper.DBHelper, acl model.ACLDetail) bool {
 }
 
 // QueryACLByModule 查询指定Module的ACL信息
-func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACLDetail {
-	acls := []model.ACLDetail{}
-	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where module='%s'", module)
+func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACL {
+	acls := []model.ACL{}
+	sql := fmt.Sprintf("select id, url, method from authority_acl where module='%s'", module)
 
 	helper.Query(sql)
 	for helper.Next() {
-		acl := model.ACLDetail{}
-		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &acl.AuthGroup)
+		acl := model.ACL{}
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)
+		acls = append(acls, acl)
+	}
+
+	return acls
+}
+
+// QueryAllACL 查询所有ACL
+func QueryAllACL(helper dbhelper.DBHelper) []model.ACL {
+	acls := []model.ACL{}
+	sql := fmt.Sprintf("select id, url, method from authority_acl")
+
+	helper.Query(sql)
+	for helper.Next() {
+		acl := model.ACL{}
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)
 		acls = append(acls, acl)
 	}
 

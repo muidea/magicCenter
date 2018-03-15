@@ -107,7 +107,11 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	return avalibleFlag
 }
 
-func (i *impl) QueryACLByModule(module string) []model.ACLDetail {
+func (i *impl) QueryAllACL() []model.ACL {
+	return dal.QueryAllACL(i.dbhelper)
+}
+
+func (i *impl) QueryACLByModule(module string) []model.ACL {
 	return dal.QueryACLByModule(i.dbhelper, module)
 }
 

@@ -13,6 +13,11 @@ type ACL struct {
 	Method string `json:"method"`
 }
 
+// ACLView acl
+type ACLView struct {
+	ACL
+}
+
 // ACLDetail 访问控制列表
 type ACLDetail struct {
 	ACL

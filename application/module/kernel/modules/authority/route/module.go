@@ -35,8 +35,8 @@ type moduleGetACLRoute struct {
 
 type moduleGetACLResult struct {
 	common.Result
-	Module string                `json:"module"`
-	ACL    []model.ACLDetailView `json:"acl"`
+	Module string          `json:"module"`
+	ACL    []model.ACLView `json:"acl"`
 }
 
 func (i *moduleGetACLRoute) Method() string {
@@ -65,16 +65,8 @@ func (i *moduleGetACLRoute) getModuleACLHandler(w http.ResponseWriter, r *http.R
 
 		acls := i.authorityHandler.QueryACLByModule(id)
 		for _, val := range acls {
-			acl := model.ACLDetailView{}
-			acl.ACLDetail = val
-
-			if val.AuthGroup == common.UserAuthGroup.ID {
-				acl.AuthGroup = common.UserAuthGroup.Unit
-			} else if val.AuthGroup == common.MaintainerAuthGroup.ID {
-				acl.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				acl.AuthGroup = common.VisitorAuthGroup.Unit
-			}
+			acl := model.ACLView{}
+			acl.ACL = val
 
 			result.ACL = append(result.ACL, acl)
 		}
