@@ -117,15 +117,15 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateMedia 新建文件
-func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createdate string, uID int, catalogs []int) (model.Summary, bool) {
+func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, uID int, catalogs []int) (model.Summary, bool) {
 	media := model.Summary{}
 	media.Name = name
 	media.Catalog = catalogs
-	media.CreateDate = createdate
+	media.CreateDate = createDate
 	media.Creater = uID
 
 	// insert
-	sql := fmt.Sprintf(`insert into content_media (name,url, description, createdate, creater) values ('%s','%s','%s','%s',%d)`, name, url, desc, createdate, uID)
+	sql := fmt.Sprintf(`insert into content_media (name,url, description, createdate, creater) values ('%s','%s','%s','%s',%d)`, name, url, desc, createDate, uID)
 	num, result := helper.Execute(sql)
 	if num != 1 || !result {
 		return media, false

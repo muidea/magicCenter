@@ -213,9 +213,9 @@ type catalogCreateRoute struct {
 }
 
 type catalogCreateParam struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Catalog     []int  `json:"catalog"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Catalog     []model.Catalog `json:"catalog"`
 }
 
 type catalogCreateResult struct {
@@ -259,14 +259,20 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		createdate := time.Now().Format("2006-01-02 15:04:05")
-		catalog, ok := i.contentHandler.CreateCatalog(param.Name, param.Description, createdate, param.Catalog, user.ID)
+
+		createDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
+		catalog, ok := i.contentHandler.CreateCatalog(param.Name, param.Description, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		catalogs := i.contentHandler.GetCatalogs(catalog.Catalog)
 
 		result.Catalog.Summary = catalog
 		result.Catalog.Creater = user
@@ -340,12 +346,20 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
+
+		updateDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
 		catalog := model.CatalogDetail{}
 		catalog.ID = id
 		catalog.Name = param.Name
 		catalog.Description = param.Description
-		catalog.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-		catalog.Catalog = param.Catalog
+		catalog.CreateDate = updateDate
+		catalog.Catalog = catalogIds
 		catalog.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveCatalog(catalog)
 		if !ok {
@@ -354,7 +368,6 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		catalogs := i.contentHandler.GetCatalogs(catalog.Catalog)
 		result.Catalog.Summary = summmary
 		result.Catalog.Creater = user
 		result.Catalog.Catalog = catalogs

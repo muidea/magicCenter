@@ -217,9 +217,9 @@ type articleCreateRoute struct {
 }
 
 type articleCreateParam struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	Catalog []int  `json:"catalog"`
+	Title   string          `json:"title"`
+	Content string          `json:"content"`
+	Catalog []model.Catalog `json:"catalog"`
 }
 
 type articleCreateResult struct {
@@ -265,14 +265,18 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, param.Catalog, user.ID)
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
+		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
-
-		catalogs := i.contentHandler.GetCatalogs(article.Catalog)
 
 		result.Article.Summary = article
 		result.Article.Creater = user
@@ -346,12 +350,20 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
+
+		updateDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
 		article := model.ArticleDetail{}
 		article.ID = id
 		article.Name = param.Title
 		article.Content = param.Content
-		article.Catalog = param.Catalog
-		article.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		article.Catalog = catalogIds
+		article.CreateDate = updateDate
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
 		if !ok {
@@ -359,8 +371,6 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			result.Reason = "更新失败"
 			break
 		}
-
-		catalogs := i.contentHandler.GetCatalogs(summmary.Catalog)
 
 		result.Article.Summary = summmary
 		result.Article.Creater = user

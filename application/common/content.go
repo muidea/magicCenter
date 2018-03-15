@@ -18,15 +18,17 @@ type ContentHandler interface {
 	GetCatalogs(ids []int) []model.Catalog
 	GetCatalogByID(id int) (model.CatalogDetail, bool)
 	GetCatalogByCatalog(id int) []model.Summary
-	CreateCatalog(name, description, createdate string, catalog []int, author int) (model.Summary, bool)
+	CreateCatalog(name, description, createDate string, catalog []int, creater int) (model.Summary, bool)
 	SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool)
 	DestroyCatalog(id int) bool
+	// 更新Catalog，如果不存在，则新建一个
+	UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) []model.Catalog
 
 	GetAllLink() []model.Summary
 	GetLinks(ids []int) []model.Link
 	GetLinkByID(id int) (model.LinkDetail, bool)
 	GetLinkByCatalog(catalog int) []model.Summary
-	CreateLink(name, url, logo, createdate string, catalog []int, author int) (model.Summary, bool)
+	CreateLink(name, url, logo, createDate string, catalog []int, creater int) (model.Summary, bool)
 	SaveLink(link model.LinkDetail) (model.Summary, bool)
 	DestroyLink(id int) bool
 
@@ -34,7 +36,7 @@ type ContentHandler interface {
 	GetMedias(ids []int) []model.Media
 	GetMediaByID(id int) (model.MediaDetail, bool)
 	GetMediaByCatalog(catalog int) []model.Summary
-	CreateMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool)
+	CreateMedia(name, url, desc, createDate string, catalog []int, creater int) (model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 

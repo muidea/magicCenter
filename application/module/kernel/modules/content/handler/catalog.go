@@ -26,8 +26,8 @@ func (i *catalogActionHandler) findCatalogByCatalog(id int) []model.Summary {
 	return dal.QueryCatalogByCatalog(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) createCatalog(name, description, createdate string, parent []int, author int) (model.Summary, bool) {
-	return dal.CreateCatalog(i.dbhelper, name, description, createdate, parent, author)
+func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []int, author int) (model.Summary, bool) {
+	return dal.CreateCatalog(i.dbhelper, name, description, createDate, parent, author)
 }
 
 func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
@@ -36,4 +36,8 @@ func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.S
 
 func (i *catalogActionHandler) destroyCatalog(id int) bool {
 	return dal.DeleteCatalog(i.dbhelper, id)
+}
+
+func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, updateDate string, updater int) []model.Catalog {
+	return dal.UpdateCatalog(i.dbhelper, catalogs, updateDate, updater)
 }

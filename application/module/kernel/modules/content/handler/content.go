@@ -72,8 +72,8 @@ func (i *impl) GetCatalogByCatalog(id int) []model.Summary {
 	return i.catalogHandler.findCatalogByCatalog(id)
 }
 
-func (i *impl) CreateCatalog(name, description, createdate string, parent []int, author int) (model.Summary, bool) {
-	return i.catalogHandler.createCatalog(name, description, createdate, parent, author)
+func (i *impl) CreateCatalog(name, description, createDate string, parent []int, author int) (model.Summary, bool) {
+	return i.catalogHandler.createCatalog(name, description, createDate, parent, author)
 }
 
 func (i *impl) SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
@@ -82,6 +82,10 @@ func (i *impl) SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
 
 func (i *impl) DestroyCatalog(id int) bool {
 	return i.catalogHandler.destroyCatalog(id)
+}
+
+func (i *impl) UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) []model.Catalog {
+	return i.catalogHandler.updateCatalog(catalogs, updateDate, updater)
 }
 
 func (i *impl) GetAllLink() []model.Summary {
@@ -100,8 +104,8 @@ func (i *impl) GetLinkByCatalog(catalog int) []model.Summary {
 	return i.linkHandler.findLinkByCatalog(catalog)
 }
 
-func (i *impl) CreateLink(name, url, logo, createdate string, catalog []int, author int) (model.Summary, bool) {
-	return i.linkHandler.createLink(name, url, logo, createdate, catalog, author)
+func (i *impl) CreateLink(name, url, logo, createDate string, catalog []int, author int) (model.Summary, bool) {
+	return i.linkHandler.createLink(name, url, logo, createDate, catalog, author)
 }
 
 func (i *impl) SaveLink(link model.LinkDetail) (model.Summary, bool) {
@@ -128,8 +132,8 @@ func (i *impl) GetMediaByCatalog(catalog int) []model.Summary {
 	return i.mediaHandler.findMediaByCatalog(catalog)
 }
 
-func (i *impl) CreateMedia(name, url, desc, createdate string, catalog []int, author int) (model.Summary, bool) {
-	return i.mediaHandler.createMedia(name, url, desc, createdate, catalog, author)
+func (i *impl) CreateMedia(name, url, desc, createDate string, catalog []int, author int) (model.Summary, bool) {
+	return i.mediaHandler.createMedia(name, url, desc, createDate, catalog, author)
 }
 
 func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {

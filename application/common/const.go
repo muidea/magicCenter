@@ -16,3 +16,6 @@ var UserAuthGroup = model.AuthGroup{Unit: model.Unit{ID: 1, Name: "用户权限�
 
 // MaintainerAuthGroup 维护权限组
 var MaintainerAuthGroup = model.AuthGroup{Unit: model.Unit{ID: 2, Name: "维护权限组"}, Description: "允许查看和编辑内容，要求预先进行登录"}
+
+// DefaultContentCatalog 系统默认的Content分组，UpdataCatalog时，如果需要创建Catalog,则默认指定的ParentCatalog
+var DefaultContentCatalog = model.CatalogDetail{Summary: model.Summary{Unit: model.Unit{ID: 0, Name: "默认Content分组"}, CreateDate: "", Creater: 0}, Description: "系统默认的Content分组"}

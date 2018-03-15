@@ -216,10 +216,10 @@ type mediaCreateRoute struct {
 }
 
 type mediaCreateParam struct {
-	Name        string `json:"name"`
-	URL         string `json:"url"`
-	Description string `json:"description"`
-	Catalog     []int  `json:"catalog"`
+	Name        string          `json:"name"`
+	URL         string          `json:"url"`
+	Description string          `json:"description"`
+	Catalog     []model.Catalog `json:"catalog"`
 }
 
 type mediaCreateResult struct {
@@ -265,13 +265,18 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, param.Catalog, user.ID)
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
+		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		catalogs := i.contentHandler.GetCatalogs(media.Catalog)
 
 		result.Media.Summary = media
 		result.Media.Creater = user
@@ -346,13 +351,20 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
+		updateDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
 		media := model.MediaDetail{}
 		media.ID = id
 		media.Name = param.Name
 		media.URL = param.URL
 		media.Description = param.Description
-		media.Catalog = param.Catalog
-		media.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		media.Catalog = catalogIds
+		media.CreateDate = updateDate
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
@@ -360,7 +372,6 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "更新失败"
 			break
 		}
-		catalogs := i.contentHandler.GetCatalogs(media.Catalog)
 
 		result.Media.Summary = summmary
 		result.Media.Creater = user

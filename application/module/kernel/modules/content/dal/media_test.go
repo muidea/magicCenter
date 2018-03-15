@@ -21,7 +21,7 @@ func TestMedia(t *testing.T) {
 	img.ID = 32
 	img.Name = "test image"
 	img.URL = "test image url"
-	img.Desc = "test image descr"
+	img.Description = "test image descr"
 	img.Creater = 10
 	img.Catalog = append(img.Catalog, 10)
 
@@ -48,7 +48,7 @@ func TestMedia(t *testing.T) {
 		return
 	}
 
-	curImg.Desc = "tttt"
+	curImg.Description = "tttt"
 	_, ret = SaveMedia(helper, curImg)
 	if !ret {
 		t.Error("SaveMedia failed")

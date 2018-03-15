@@ -3,6 +3,8 @@ package dal
 import (
 	"fmt"
 
+	"muidea.com/magicCenter/application/common"
+
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/application/common/resource"
@@ -118,16 +120,52 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 	return result
 }
 
+// UpdateCatalog 更新Catalog
+func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDate string, updater int) []model.Catalog {
+	ids := []int{}
+	for _, val := range catalogs {
+		if val.ID > 0 {
+			detail, ok := QueryCatalogByID(helper, val.ID)
+			if ok {
+				modifyFlag := false
+				if detail.Name != val.Name {
+					detail.Name = val.Name
+					modifyFlag = true
+				}
+				if detail.Creater != updater {
+					detail.Creater = updater
+					modifyFlag = true
+				}
+
+				if modifyFlag {
+					detail.CreateDate = updateDate
+					SaveCatalog(helper, detail)
+				}
+
+				ids = append(ids, val.ID)
+				continue
+			}
+		}
+
+		detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common.DefaultContentCatalog.ID}, updater)
+		if ok {
+			ids = append(ids, detail.ID)
+		}
+	}
+
+	return QueryCatalogs(helper, ids)
+}
+
 // CreateCatalog 新建分类
-func CreateCatalog(helper dbhelper.DBHelper, name, description, createdate string, parent []int, creater int) (model.Summary, bool) {
+func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int) (model.Summary, bool) {
 	catalog := model.Summary{}
 	catalog.Name = name
 	catalog.Creater = creater
 	catalog.Catalog = parent
-	catalog.CreateDate = createdate
+	catalog.CreateDate = createDate
 
 	// insert
-	sql := fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createdate, creater)
+	sql := fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createDate, creater)
 	num, result := helper.Execute(sql)
 
 	if num == 1 && result {

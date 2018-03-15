@@ -217,10 +217,10 @@ type linkCreateRoute struct {
 }
 
 type linkCreateParam struct {
-	Name    string `json:"name"`
-	URL     string `json:"url"`
-	Logo    string `json:"logo"`
-	Catalog []int  `json:"catalog"`
+	Name    string          `json:"name"`
+	URL     string          `json:"url"`
+	Logo    string          `json:"logo"`
+	Catalog []model.Catalog `json:"catalog"`
 }
 
 type linkCreateResult struct {
@@ -266,13 +266,18 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, param.Catalog, user.ID)
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
+		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		catalogs := i.contentHandler.GetCatalogs(link.Catalog)
 
 		result.Link.Summary = link
 		result.Link.Creater = user
@@ -346,13 +351,21 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
+
+		updateDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
 		link := model.LinkDetail{}
 		link.ID = id
 		link.Name = param.Name
 		link.URL = param.URL
 		link.Logo = param.Logo
-		link.Catalog = param.Catalog
-		link.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+		link.Catalog = catalogIds
+		link.CreateDate = updateDate
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
 		if !ok {
@@ -360,7 +373,6 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "更新失败"
 			break
 		}
-		catalogs := i.contentHandler.GetCatalogs(link.Catalog)
 
 		result.Link.Summary = summmary
 		result.Link.Creater = user
