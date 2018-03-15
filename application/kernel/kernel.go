@@ -1,8 +1,10 @@
 package kernel
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
@@ -57,6 +59,11 @@ func (i *impl) isStartup() bool {
 	return ok
 }
 
+func (i *impl) startuped() {
+	startupFlag := fmt.Sprintf("startup_TimeStamp:%s", time.Now().Format("2006-01-02 15:04:05"))
+	i.configurationImpl.SetOption(model.AppStartupData, startupFlag)
+}
+
 func (i *impl) StartUp() error {
 	i.loaderImpl.LoadAllModules(i.configurationImpl, i.sessionRegistryImpl, i.moduleHubImpl)
 
@@ -83,6 +90,10 @@ func (i *impl) StartUp() error {
 				authorityHandler.InsertACL(rt.Pattern(), rt.Method(), m.ID(), 0, rt.AuthGroup())
 			}
 		}
+	}
+
+	if !isStartup {
+		i.startuped()
 	}
 
 	i.moduleHubImpl.StartupAllModules()
