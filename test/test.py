@@ -10,7 +10,7 @@ from content import Media
 from fileregistry import FileRegistry
 
 
-if __file__ == '__main__':
+if __name__ == '__main__':
     print("execute test script")
     Login.main()
     User.main()
