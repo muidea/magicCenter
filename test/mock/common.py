@@ -1,63 +1,70 @@
-import random
-import array
+'common'
 
-rawContent = 'abcdefghijklmnopqrstuvwxyz'
+import random
+
+RAW_CONTENT = 'abcdefghijklmnopqrstuvwxyz'
 
 # 随机生成一个词
 def word():
+    'word'
     ret = ""
-    return ret.join(random.sample(rawContent, random.randint(5,12)))
+    return ret.join(random.sample(RAW_CONTENT, random.randint(5, 12)))
 
 # 随机生成一个名字，首字母大写
 def name():
+    'name'
     return word().title()
 
 # 随机生成一个句子
 def sentence():
-    valArray = []
-    count = random.randint(5,13)
-    ii = 0
-    while(ii < count):
-        valArray.append(word())
-        ii = ii + 1
+    'sentence'
+    val_array = []
+    count = random.randint(5, 13)
+    index = 0
+    while index < count:
+        val_array.append(word())
+        index = index + 1
 
     ret = " "
-    return ret.join(valArray) + ". "
+    return ret.join(val_array) + ". "
 
 # 随机生成一个标题
 def title():
-    valArray = []
-    count = random.randint(5,10)
-    ii = 0
-    while(ii < count):
-        valArray.append(word())
-        ii = ii + 1
+    'title'
+    val_array = []
+    count = random.randint(5, 10)
+    index = 0
+    while index < count:
+        val_array.append(word())
+        index = index + 1
 
     ret = " "
-    return ret.join(valArray)
+    return ret.join(val_array)
 
 # 生成一段话
 def paragraph():
-    valArray = []
-    count = random.randint(5,10)
-    ii = 0
-    while(ii < count):
-        valArray.append(sentence())
-        ii = ii + 1
+    'paragraph'
+    val_array = []
+    count = random.randint(5, 10)
+    index = 0
+    while index < count:
+        val_array.append(sentence())
+        index = index + 1
 
     ret = ""
-    return ret.join(valArray)
+    return ret.join(val_array)
 
 def content():
-    valArray = []
-    count = random.randint(3,60)
-    ii = 0
-    while(ii < count):
-        valArray.append(paragraph())
-        ii = ii + 1
+    'content'
+    val_array = []
+    count = random.randint(3, 60)
+    index = 0
+    while index < count:
+        val_array.append(paragraph())
+        index = index + 1
 
     ret = "\n"
-    return ret.join(valArray)    
+    return ret.join(val_array)
 
 if __name__ == '__main__':
     print(word())

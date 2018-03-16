@@ -1,11 +1,12 @@
-"Gruop"
-from session import MagicSession
-from cas import Login
+'group.py'
 
-class Group(MagicSession.MagicSession):
+from session import session
+from cas import login
+
+class Group(session.MagicSession):
     "Group"
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
     def create(self, name, description):
@@ -14,8 +15,8 @@ class Group(MagicSession.MagicSession):
         val = self.post('/account/group/?authToken=%s'%self.authority_token, params)
         if val and val['errorCode'] == 0:
             return val['group']
-        else:
-            return None
+
+        return None
 
     def save(self, group):
         "UpdateGroup"
@@ -23,16 +24,16 @@ class Group(MagicSession.MagicSession):
         val = self.put('/account/group/%d?authToken=%s'%(group['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['group']
-        else:
-            return None
+
+        return None
 
     def find(self, group_id):
         "FindGroup"
         val = self.get('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return val['group']
-        else:
-            return None
+
+        return None
 
     def find_all(self):
         "FindAllGroup"
@@ -49,36 +50,37 @@ class Group(MagicSession.MagicSession):
         val = self.delete('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return True
-        else:
-            return False
+
+        return False
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
-    else:    
-        APP = Group('http://localhost:8888', LOGIN.authority_token)
-        GROUP = APP.create('testGorup1', 'test description')
-        if GROUP:
-            GROUP_ID = GROUP['id']
-            GROUP['description'] = 'aaaaaa'
-            GROUP = APP.save(GROUP)
-            if GROUP and not (GROUP['description'] == 'aaaaaa'):
+    else:
+        app = Group('http://localhost:8888', login_session.authority_token)
+        group = app.create('testGorup1', 'test description')
+        if group:
+            group_id = group['id']
+            group['description'] = 'aaaaaa'
+            group = app.save(group)
+            if group and (group['description'] != 'aaaaaa'):
                 print('update group failed')
 
-            GROUP = APP.find(GROUP_ID)
-            if GROUP:
-                if not (GROUP['description'] == 'aaaaaa'):
+            group = app.find(group_id)
+            if group:
+                if group['description'] != 'aaaaaa':
                     print('find group failed')
             else:
                 print('find group failed')
 
-            APP.find_all()
+            app.find_all()
 
-            if not APP.destroy(GROUP_ID):
+            if not app.destroy(group_id):
                 print('destroy group failed')
 
         else:
             print('create group failed')
-        
-        LOGIN.logout(LOGIN.authority_token)
+
+        login_session.logout(login_session.authority_token)

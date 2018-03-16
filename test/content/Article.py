@@ -1,12 +1,12 @@
 "Article"
 
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class Article(MagicSession.MagicSession):
+class Article(session.MagicSession):
     'Article'
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
     def create(self, title, content, catalogs):
@@ -49,34 +49,35 @@ class Article(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        APP = Article('http://localhost:8888', LOGIN.authority_token)
-        ARTICLE = APP.create('testArticle', 'test article content', [8,9])
-        if ARTICLE:
-            ARTICLE_ID = ARTICLE['id']
-            ARTICLE['content'] = 'aaaaaa, bb dsfsdf  erewre'
-            ARTICLE['catalog'] = [8,9,10]
-            ARTICLE = APP.update(ARTICLE)
-            if not ARTICLE:
+        app = Article('http://localhost:8888', login_session.authority_token)
+        article = app.create('testArticle', 'test article content', [8, 9])
+        if article:
+            article_id = article['id']
+            article['content'] = 'aaaaaa, bb dsfsdf  erewre'
+            article['catalog'] = [8, 9, 10]
+            article = app.update(article)
+            if not article:
                 print('update article failed')
-            elif len(ARTICLE['catalog']) != 3:
+            elif len(article['catalog']) != 3:
                 print('update article failed, article len invalid')
             else:
                 pass
-            ARTICLE = APP.query(ARTICLE_ID)
-            if not ARTICLE:
+            article = app.query(article_id)
+            if not article:
                 print('query article failed')
-            elif not (ARTICLE['content'] == 'aaaaaa, bb dsfsdf  erewre'):
+            elif article['content'] != 'aaaaaa, bb dsfsdf  erewre':
                 print('update article failed, content invalid')
 
-            if len(APP.query_all()) <= 0:
+            if len(app.query_all()) <= 0:
                 print('query_all article failed')
-             
-            APP.destroy(ARTICLE_ID)
+
+            app.destroy(article_id)
         else:
             print('create article failed')
 
-        LOGIN.logout(LOGIN.authority_token)
+        login_session.logout(login_session.authority_token)

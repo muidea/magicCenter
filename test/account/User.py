@@ -1,17 +1,17 @@
 "User"
 
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class User(MagicSession.MagicSession):
+class User(session.MagicSession):
     "User"
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
     def create(self, account, email):
         "CreateUser"
-        params = {'account': account, 'email': email, 'group': [1,2]}
+        params = {'account': account, 'email': email, 'group': [1, 2]}
         val = self.post('/account/user/', params)
         if val and val['errorCode'] == 0:
             return val['user']
@@ -58,36 +58,37 @@ class User(MagicSession.MagicSession):
         return False
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
-    else:    
-        APP = User('http://localhost:8888', LOGIN.authority_token)
-        USER = APP.create('testUser12', 'rangh@test.com')
-        if USER:
-            USER_ID = USER['id']
-            if not APP.updatepassword(USER, '123'):
+    else:
+        app = User('http://localhost:8888', login_session.authority_token)
+        user = app.create('testUser12', 'rangh@test.com')
+        if user:
+            user_id = user['id']
+            if not app.updatepassword(user, '123'):
                 print("updatepassword failed")
 
-            USER['name'] = '11223'
-            USER = APP.update(USER)
-            if USER:
-                if not (USER['name'] == '11223'):
+            user['name'] = '11223'
+            user = app.update(user)
+            if user:
+                if user['name'] != '11223':
                     print('update user failed')
             else:
                 print('update user failed')
 
-            USER = APP.find(USER_ID)
-            if USER:
-                if not (USER['name'] == '11223'):
+            user = app.find(user_id)
+            if user:
+                if user['name'] != '11223':
                     print('find user failed')
             else:
                 print('find user failed')
 
-            APP.destroy(USER_ID)
+            app.destroy(user_id)
 
-            APP.find_all()
+            app.find_all()
         else:
             print('create user failed')
 
-        LOGIN.logout(LOGIN.authority_token)
+        login_session.logout(login_session.authority_token)

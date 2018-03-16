@@ -1,11 +1,11 @@
 "Link"
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class Link(MagicSession.MagicSession):
+class Link(session.MagicSession):
     'Link'
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
     def create(self, name, url, logo, catalogs):
@@ -46,35 +46,36 @@ class Link(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        APP = Link('http://localhost:8888', LOGIN.authority_token)
-        LINK = APP.create('testLink', 'test link url', 'test link logo', [8,9])
-        if LINK:
-            LINK_ID = LINK['id']
-            LINK['url'] = 'aaaaaa, bb dsfsdf  erewre aa'
-            LINK['logo'] = 'test link logo'
-            LINK['catalog'] = [8,9,10]
-            LINK = APP.update(LINK)
-            if not LINK:
+        app = Link('http://localhost:8888', login_session.authority_token)
+        link = app.create('testLink', 'test link url', 'test link logo', [8, 9])
+        if link:
+            link_id = link['id']
+            link['url'] = 'aaaaaa, bb dsfsdf  erewre aa'
+            link['logo'] = 'test link logo'
+            link['catalog'] = [8, 9, 10]
+            link = app.update(link)
+            if not link:
                 print('update link failed')
-            elif len(LINK['catalog']) != 3:
+            elif len(link['catalog']) != 3:
                 print('update link failed, link len invalid')
             else:
                 pass
-            LINK = APP.query(LINK_ID)
-            if not LINK:
+            link = app.query(link_id)
+            if not link:
                 print('query link failed')
-            elif not (LINK['url'] == 'aaaaaa, bb dsfsdf  erewre aa'):
+            elif link['url'] != 'aaaaaa, bb dsfsdf  erewre aa':
                 print('update link failed, content invalid')
 
-            if len(APP.query_all()) <= 0:
+            if len(app.query_all()) <= 0:
                 print('query_all link failed')
-            
-            APP.destroy(LINK_ID)
+
+            app.destroy(link_id)
         else:
             print('create link failed')
 
-        LOGIN.logout(LOGIN.authority_token)
+        login_session.logout(login_session.authority_token)

@@ -1,12 +1,12 @@
 "Catalog"
 
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class Catalog(MagicSession.MagicSession):
+class Catalog(session.MagicSession):
     'Catalog'
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
 
@@ -48,34 +48,35 @@ class Catalog(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        APP = Catalog('http://localhost:8888', LOGIN.authority_token)
-        CATALOG = APP.create('testCatalog', 'testDescription', [8,9])
-        if CATALOG:
-            CATALOG_ID = CATALOG['id']
-            CATALOG['description'] = 'aaaaaa'
-            CATALOG['catalog'] = [8,9,10]
-            CATALOG = APP.update(CATALOG)
-            if not CATALOG:
+        app = Catalog('http://localhost:8888', login_session.authority_token)
+        catalog = app.create('testCatalog', 'testDescription', [8, 9])
+        if catalog:
+            catalog_id = catalog['id']
+            catalog['description'] = 'aaaaaa'
+            catalog['catalog'] = [8, 9, 10]
+            catalog = app.update(catalog)
+            if not catalog:
                 print('update catalog failed')
-            elif len(CATALOG['catalog']) != 3:
+            elif len(catalog['catalog']) != 3:
                 print('update catalog failed, catalog len invalid')
             else:
                 pass
-            CATALOG = APP.query(CATALOG_ID)
-            if not CATALOG:
+            catalog = app.query(catalog_id)
+            if not catalog:
                 print('query catalog failed')
-            elif not (CATALOG['description'] == 'aaaaaa'):
+            elif catalog['description'] != 'aaaaaa':
                 print('update catalog failed, description invalid')
 
-            if len(APP.query_all()) <= 0:
+            if len(app.query_all()) <= 0:
                 print('query_all catalog failed')
-            
-            APP.destroy(CATALOG_ID)
+
+            app.destroy(catalog_id)
         else:
             print('create catalog failed')
 
-        LOGIN.logout(LOGIN.authority_token)
+        login_session.logout(login_session.authority_token)

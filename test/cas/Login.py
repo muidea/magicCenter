@@ -1,11 +1,11 @@
 'Login'
 
-from session import MagicSession
+from session import session
 
-class Login(MagicSession.MagicSession):
+class Login(session.MagicSession):
     'Login'
     def __init__(self, base_url):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = ''
         self.current_user = None
 
@@ -34,8 +34,9 @@ class Login(MagicSession.MagicSession):
         return None
 
 def main():
-    APP = Login('http://localhost:8888')
-    APP.login('rangh@126.com', '123')
-    APP.status(APP.authority_token)
-    APP.logout('123')
-    APP.logout(APP.authority_token)
+    'main'
+    app = Login('http://localhost:8888')
+    app.login('admin@muidea.com', '123')
+    app.status(app.authority_token)
+    app.logout('123')
+    app.logout(app.authority_token)

@@ -1,12 +1,12 @@
 "Media"
 
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class Media(MagicSession.MagicSession):
+class Media(session.MagicSession):
     'Media'
     def __init__(self, base_url, auth_token):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = auth_token
 
     def create(self, name, url, desc, catalogs):
@@ -47,34 +47,35 @@ class Media(MagicSession.MagicSession):
         return None
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        APP = Media('http://localhost:8888', LOGIN.authority_token)
-        MEDIA = APP.create('testMedia', 'test media url', 'test media desc', [8,9])
-        if MEDIA:
-            MEDIA_ID = MEDIA['id']
-            MEDIA['url'] = 'aaaaaa, bb dsfsdf  erewre'
-            MEDIA['description'] = 'aaaaaa, bb'
-            MEDIA['catalog'] = [8,9,10]
-            MEDIA = APP.update(MEDIA)
-            if not MEDIA:
+        app = Media('http://localhost:8888', login_session.authority_token)
+        media = app.create('testMedia', 'test media url', 'test media desc', [8, 9])
+        if media:
+            media_id = media['id']
+            media['url'] = 'aaaaaa, bb dsfsdf  erewre'
+            media['description'] = 'aaaaaa, bb'
+            media['catalog'] = [8, 9, 10]
+            media = app.update(media)
+            if not media:
                 print('update media failed')
-            elif len(MEDIA['catalog']) != 3:
+            elif len(media['catalog']) != 3:
                 print('update media failed, media len invalid')
             else:
                 pass
-            MEDIA = APP.query(MEDIA_ID)
-            if not MEDIA:
+            media = app.query(media_id)
+            if not media:
                 print('query media failed')
-            elif not(MEDIA['url'] =='aaaaaa, bb dsfsdf  erewre'):
+            elif media['url'] != 'aaaaaa, bb dsfsdf  erewre':
                 print('update media failed, content invalid')
 
-            if len(APP.query_all()) <= 0:
-                print('query_all media failed')            
-            APP.destroy(MEDIA_ID)
+            if len(app.query_all()) <= 0:
+                print('query_all media failed')
+            app.destroy(media_id)
         else:
             print('create media failed')
 
-        LOGIN.logout(LOGIN.authority_token)
+        login_session.logout(login_session.authority_token)

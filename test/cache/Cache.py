@@ -1,12 +1,12 @@
 "Cache"
 
-from session import MagicSession
-from cas import Login
+from session import session
+from cas import login
 
-class Cache(MagicSession.MagicSession):
+class Cache(session.MagicSession):
     'Cache'
     def __init__(self, base_url, authorityToken):
-        MagicSession.MagicSession.__init__(self, base_url)
+        session.MagicSession.__init__(self, base_url)
         self.authority_token = authorityToken
 
     def put_in(self, data):
@@ -15,6 +15,7 @@ class Cache(MagicSession.MagicSession):
         val = self.post('/cache/item/?authToken=%s'%(self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['token']
+
         return None
 
     def fetch_out(self, token):
@@ -22,30 +23,31 @@ class Cache(MagicSession.MagicSession):
         val = self.get('/cache/item/%s?authToken=%s'%(token, self.authority_token))
         if val and val['errorCode'] == 0:
             return val['cache']
-        else:
-            return None
+
+        return None
 
     def remove(self, token):
         'query'
         val = self.delete('/cache/item/%s?authToken=%s'%(token, self.authority_token))
         if val and val['errorCode'] == 0:
             return True
-        else:
-            return False
+
+        return False
 
 def main():
-    LOGIN = Login.Login('http://localhost:8888')
-    if not LOGIN.login('rangh@126.com', '123'):
+    'main'
+    login_session = login.Login('http://localhost:8888')
+    if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
-    else:    
-        APP = Cache('http://localhost:8888', LOGIN.authority_token)
-        token = APP.put_in("Test")
+    else:
+        app = Cache('http://localhost:8888', login_session.authority_token)
+        token = app.put_in("Test")
         if token:
-            if not APP.fetch_out(token):
+            if not app.fetch_out(token):
                 print("fetch out failed")
 
-            if not APP.remove(token):
+            if not app.remove(token):
                 print("remove failed")
         else:
             print("put in cache failed")
-    LOGIN.logout(LOGIN.authority_token)
+    login_session.logout(login_session.authority_token)
