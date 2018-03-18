@@ -105,11 +105,26 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 
 // DeleteLinkByID 删除指定Link
 func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from content_link where id =%d`, id)
-	num, result := helper.Execute(sql)
-	if num > 0 && result {
-		lnk := resource.CreateSimpleRes(id, model.LINK, "", "", -1)
-		result = resource.DeleteResource(helper, lnk)
+	result := false
+	helper.BeginTransaction()
+
+	for {
+		sql := fmt.Sprintf(`delete from content_link where id =%d`, id)
+		_, result = helper.Execute(sql)
+		if result {
+			res, ok := resource.QueryResource(helper, id, model.LINK)
+			if ok {
+				result = resource.DeleteResource(helper, res, true)
+			}
+		}
+
+		break
+	}
+
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return result
@@ -122,26 +137,47 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 	lnk.Catalog = catalogs
 	lnk.CreateDate = createDate
 	lnk.Creater = uID
+	result := false
+	helper.BeginTransaction()
 
-	// insert
-	sql := fmt.Sprintf(`insert into content_link (name,url,logo, createDate, creater) values ('%s','%s','%s','%s', %d)`, name, url, logo, createDate, uID)
-	_, result := helper.Execute(sql)
-	if result {
-		sql = fmt.Sprintf(`select id from content_link where name='%s' and url ='%s' and creater=%d`, name, url, uID)
+	for {
+		// insert
+		sql := fmt.Sprintf(`insert into content_link (name,url,logo, createDate, creater) values ('%s','%s','%s','%s', %d)`, name, url, logo, createDate, uID)
+		_, result = helper.Execute(sql)
+		if result {
+			sql = fmt.Sprintf(`select id from content_link where name='%s' and url ='%s' and creater=%d`, name, url, uID)
 
-		helper.Query(sql)
-		if helper.Next() {
-			helper.GetValue(&lnk.ID)
+			helper.Query(sql)
+			if helper.Next() {
+				helper.GetValue(&lnk.ID)
+			} else {
+				result = false
+				break
+			}
 		}
+
+		if result {
+			res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
+			for _, c := range lnk.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			result = resource.CreateResource(helper, res, true)
+		}
+
+		break
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
-		for _, c := range lnk.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
-		}
-		result = resource.SaveResource(helper, res)
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return lnk, result
@@ -149,20 +185,45 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 
 // SaveLink 保存Link
 func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bool) {
-	// modify
-	sql := fmt.Sprintf(`update content_link set name ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
-	num, result := helper.Execute(sql)
+	summary := model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}
+	result := false
+	helper.BeginTransaction()
 
-	if result && num == 1 {
-		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
-		for _, c := range lnk.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
+	for {
+		// modify
+		sql := fmt.Sprintf(`update content_link set name ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
+		_, result = helper.Execute(sql)
+
+		if result {
+			res, ok := resource.QueryResource(helper, lnk.ID, model.LINK)
+			if !ok {
+				result = false
+				break
+			}
+
+			res.ResetRelative()
+			for _, c := range lnk.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+			if result {
+				result = resource.SaveResource(helper, res, true)
+			}
 		}
-		result = resource.SaveResource(helper, res)
-	} else {
-		result = false
+
+		break
 	}
 
-	return model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}, result
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
+	}
+
+	return summary, result
 }

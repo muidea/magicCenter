@@ -53,12 +53,12 @@ def main():
         print('login failed')
     else:
         app = Media('http://localhost:8888', login_session.authority_token)
-        media = app.create('testMedia', 'test media url', 'test media desc', [8, 9])
+        media = app.create('testMedia', 'test media url', 'test media desc', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if media:
             media_id = media['id']
             media['url'] = 'aaaaaa, bb dsfsdf  erewre'
             media['description'] = 'aaaaaa, bb'
-            media['catalog'] = [8, 9, 10]
+            media['catalog'] = [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}, {'id':0, 'name': 'ca3'}]
             media = app.update(media)
             if not media:
                 print('update media failed')

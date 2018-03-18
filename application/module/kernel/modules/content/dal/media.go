@@ -106,11 +106,25 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 
 // DeleteMediaByID 删除图像
 func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from content_media where id =%d`, id)
-	num, result := helper.Execute(sql)
-	if num > 0 && result {
-		img := resource.CreateSimpleRes(id, model.MEDIA, "", "", -1)
-		result = resource.DeleteResource(helper, img)
+	result := false
+	helper.BeginTransaction()
+
+	for {
+		sql := fmt.Sprintf(`delete from content_media where id =%d`, id)
+		_, result = helper.Execute(sql)
+		if result {
+			res, ok := resource.QueryResource(helper, id, model.MEDIA)
+			if ok {
+				result = resource.DeleteResource(helper, res, true)
+			}
+		}
+		break
+	}
+
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return result
@@ -124,28 +138,51 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, u
 	media.CreateDate = createDate
 	media.Creater = uID
 
-	// insert
-	sql := fmt.Sprintf(`insert into content_media (name,url, description, createdate, creater) values ('%s','%s','%s','%s',%d)`, name, url, desc, createDate, uID)
-	num, result := helper.Execute(sql)
-	if num != 1 || !result {
-		return media, false
-	}
+	result := false
+	helper.BeginTransaction()
 
-	sql = fmt.Sprintf(`select id from content_media where url= '%s' and creater=%d`, url, uID)
-	helper.Query(sql)
-	result = false
-	if helper.Next() {
-		helper.GetValue(&media.ID)
-		result = true
+	for {
+		// insert
+		sql := fmt.Sprintf(`insert into content_media (name,url, description, createdate, creater) values ('%s','%s','%s','%s',%d)`, name, url, desc, createDate, uID)
+		_, result = helper.Execute(sql)
+		if !result {
+			break
+		}
+
+		sql = fmt.Sprintf(`select id from content_media where url= '%s' and creater=%d`, url, uID)
+		helper.Query(sql)
+		result = false
+		if helper.Next() {
+			helper.GetValue(&media.ID)
+			result = true
+		} else {
+			break
+		}
+
+		if result {
+			res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
+			for _, c := range media.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			if result {
+				result = resource.CreateResource(helper, res, true)
+			}
+		}
+
+		break
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
-		for _, c := range media.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
-		}
-		result = resource.SaveResource(helper, res)
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return media, result
@@ -153,19 +190,43 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, u
 
 // SaveMedia 保存文件
 func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary, bool) {
-	// modify
-	sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Description, media.CreateDate, media.Creater, media.ID)
-	num, result := helper.Execute(sql)
-	if num == 1 && result {
-		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
-		for _, c := range media.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
+	summary := model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}
+	result := false
+	helper.BeginTransaction()
+	for {
+		// modify
+		sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Description, media.CreateDate, media.Creater, media.ID)
+		_, result = helper.Execute(sql)
+		if result {
+			res, ok := resource.QueryResource(helper, media.ID, model.MEDIA)
+			if !ok {
+				result = false
+				break
+			}
+
+			res.ResetRelative()
+			for _, c := range media.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			if result {
+				result = resource.SaveResource(helper, res, true)
+			}
 		}
-		result = resource.SaveResource(helper, res)
-	} else {
-		result = false
+		break
 	}
 
-	return model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}, result
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
+	}
+
+	return summary, result
 }

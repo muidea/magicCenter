@@ -9,6 +9,7 @@ import (
 // Resource 资源对象
 // 用于表示可用于访问的信息(article,catalog,image,link)
 type Resource interface {
+	ID() int
 	// RId 资源对应信息的ID
 	RId() int
 	// RName 资源名称
@@ -21,13 +22,18 @@ type Resource interface {
 	Relative() []Resource
 	// ROwner 资源拥有者
 	ROwner() int
+	// ResetRelative 重置关联资源
+	ResetRelative()
 	// AppendRelative 追加关联资源
 	AppendRelative(r Resource)
+
+	// 设置ID
+	setID(id int)
 }
 
 // CreateSimpleRes 创建新的资源
 func CreateSimpleRes(rID int, rType, rName, rCreateDate string, rOwner int) Resource {
-	res := &simpleRes{}
+	res := &simpleRes{oid: -1}
 	res.rid = rID
 	res.rType = rType
 	res.rName = rName
@@ -39,12 +45,17 @@ func CreateSimpleRes(rID int, rType, rName, rCreateDate string, rOwner int) Reso
 
 // simpleRes 简单资源对象
 type simpleRes struct {
+	oid         int
 	rid         int
 	rName       string
 	rType       string
 	rCreateDate string
 	rOwner      int
 	relative    []Resource
+}
+
+func (s *simpleRes) ID() int {
+	return s.oid
 }
 
 // RId 资源ID
@@ -77,40 +88,83 @@ func (s *simpleRes) ROwner() int {
 	return s.rOwner
 }
 
+func (s *simpleRes) ResetRelative() {
+	s.relative = []Resource{}
+}
+
 // AppendRelative 追加关联对象
 func (s *simpleRes) AppendRelative(r Resource) {
 	s.relative = append(s.relative, r)
 }
 
+func (s *simpleRes) setID(id int) {
+	s.oid = id
+}
+
 // QueryResource 查询资源
 func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, bool) {
-	sql := fmt.Sprintf(`select id, name, type, createtime, owner from common_resource where id =%d and type ='%s'`, rid, rType)
+	sql := fmt.Sprintf(`select oid, id, name, type, createtime, owner from common_resource where id =%d and type ='%s'`, rid, rType)
 	helper.Query(sql)
 
 	res := simpleRes{}
 	result := false
 	if helper.Next() {
-		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		result = true
 	}
 
 	if result {
-		res.relative = QueryRelativeResource(helper, rid, rType)
+		res.relative = relativeResource(helper, res.oid)
 	}
 
 	return &res, result
 }
 
-// QueryRelativeResource 查询关联的资源
-func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
-	sql := fmt.Sprintf(`select distinct(r.oid), r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.dst and r.type = rr.dsttype and rr.src =%d and rr.srctype ='%s'`, rid, rType)
+// relativeResource 查询关联的资源,即以oid的子资源
+func relativeResource(helper dbhelper.DBHelper, oid int) []Resource {
+	sql := fmt.Sprintf(`select r.oid, r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d`, oid)
 	helper.Query(sql)
 
 	resultList := []Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
-		oid := 0
-		helper.GetValue(&oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
+		resultList = append(resultList, res)
+	}
+
+	return resultList
+}
+
+// QueryRelativeResource 查询关联的资源
+func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
+	oid := -1
+	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rid, rType)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&oid)
+		return relativeResource(helper, oid)
+	}
+
+	return []Resource{}
+}
+
+// referenceResource 查询引用了指定Res的资源列表
+// rID Res ID
+// rType Res 类型
+// referenceType 待查询的资源类型，值为""表示查询所有类型
+func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) []Resource {
+	sql := ""
+	if referenceType == "" {
+		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d`, oid)
+	} else {
+		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and rr.srctype ='%s'`, oid, referenceType)
+	}
+	helper.Query(sql)
+
+	resultList := []Resource{}
+	for helper.Next() {
+		res := &simpleRes{}
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		resultList = append(resultList, res)
 	}
 
@@ -122,62 +176,108 @@ func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Re
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
 func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []Resource {
-	sql := ""
-	if referenceType == "" {
-		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s'`, rID, rType)
-	} else {
-		sql = fmt.Sprintf(`select r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.id = rr.src and r.type = rr.srctype and rr.dst = %d and rr.dsttype = '%s' and rr.srctype ='%s'`, rID, rType, referenceType)
-	}
+	oid := -1
+	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rID, rType)
 	helper.Query(sql)
-
-	resultList := []Resource{}
-	for helper.Next() {
-		res := &simpleRes{}
-		helper.GetValue(&res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
-		resultList = append(resultList, res)
+	if helper.Next() {
+		helper.GetValue(&oid)
+		return referenceResource(helper, oid, referenceType)
 	}
 
-	return resultList
+	return []Resource{}
+}
+
+// CreateResource 新建资源
+func CreateResource(helper dbhelper.DBHelper, res Resource, enableTransaction bool) bool {
+	if !enableTransaction {
+		helper.BeginTransaction()
+	}
+
+	result := false
+	for {
+		result = false
+		sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, res.RId(), res.RType())
+		helper.Query(sql)
+		if helper.Next() {
+			// 说明对应的资源已经存在
+			break
+		}
+
+		// insert
+		sql = fmt.Sprintf(`insert into common_resource (id,name,type,createtime,owner) values (%d, '%s','%s', '%s', %d)`, res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
+		_, result = helper.Execute(sql)
+		if !result {
+			// 插入失败
+			break
+		}
+
+		result = false
+		sql = fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, res.RId(), res.RType())
+		helper.Query(sql)
+		if helper.Next() {
+			oid := -1
+			helper.GetValue(&oid)
+
+			res.setID(oid)
+			result = true
+		}
+		if !result {
+			break
+		}
+
+		result = saveResourceRelative(helper, res)
+		break
+	}
+
+	if !enableTransaction {
+		if result {
+			helper.Commit()
+		} else {
+			helper.Rollback()
+		}
+	}
+
+	return result
 }
 
 // SaveResource 保存资源
-func SaveResource(helper dbhelper.DBHelper, res Resource) bool {
-	sql := fmt.Sprintf(`select id from common_resource where id=%d and type='%s'`, res.RId(), res.RType())
-	helper.Query(sql)
-
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
+func SaveResource(helper dbhelper.DBHelper, res Resource, enableTransaction bool) bool {
+	if !enableTransaction {
+		helper.BeginTransaction()
 	}
 
-	if !result {
-		// insert
-		sql = fmt.Sprintf(`insert into common_resource (id,name,type,createtime,owner) values (%d, '%s','%s', '%s', %d)`, res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
-	} else {
-		// modify
-		sql = fmt.Sprintf(`update common_resource set name ='%s' where type='%s' and id=%d`, res.RName(), res.RType(), res.RId())
-	}
+	sql := fmt.Sprintf(`update common_resource set name ='%s', createtime ='%s', owner=%d where oid=%d`, res.RName(), res.RCreateDate(), res.ROwner(), res.ID())
 
 	// 这里只需要没有出错就可以了，不需要判断是否真实的更新了记录
 	// 原因是由于resource本身并没有变化，所以update是没有记录更新的
-	_, result = helper.Execute(sql)
+	_, result := helper.Execute(sql)
 	if result {
 		saveResourceRelative(helper, res)
+	}
+
+	if !enableTransaction {
+		if result {
+			helper.Commit()
+		} else {
+			helper.Rollback()
+		}
 	}
 
 	return result
 }
 
 // DeleteResource 删除资源
-func DeleteResource(helper dbhelper.DBHelper, res Resource) bool {
-	sql := fmt.Sprintf(`delete from common_resource where type='%s' and id=%d`, res.RType(), res.RId())
-	_, result := helper.Execute(sql)
-	if result {
-		deleteResourceRelative(helper, res)
-	} else {
-		panic("execute failed")
+func DeleteResource(helper dbhelper.DBHelper, res Resource, enableTransaction bool) bool {
+	result := false
+
+	for {
+		sql := fmt.Sprintf(`delete from common_resource where oid=%d`, res.ID())
+		_, result = helper.Execute(sql)
+		if result {
+			result = deleteResourceRelative(helper, res)
+		}
+
+		break
 	}
 
 	return result
@@ -185,28 +285,30 @@ func DeleteResource(helper dbhelper.DBHelper, res Resource) bool {
 
 // 保存关联资源
 func saveResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
-	result := false
+	result := true
 
 	deleteResourceRelative(helper, res)
 
 	for _, rr := range res.Relative() {
 		result = false
-		sql := fmt.Sprintf(`select id from common_resource_relative where src=%d and srctype='%s' and dst=%d and dsttype='%s'`, res.RId(), res.RType(), rr.RId(), rr.RType())
+
+		sql := fmt.Sprintf(`select oid from common_resource where oid=%d`, rr.ID())
 		helper.Query(sql)
 
+		found := false
 		if helper.Next() {
-			var id = 0
-			helper.GetValue(&id)
-			result = true
+			found = true
 		}
 
+		if !found {
+			break
+		}
+
+		// insert
+		sql = fmt.Sprintf(`insert into common_resource_relative (src, dst) values (%d, %d)`, res.ID(), rr.ID())
+		_, result = helper.Execute(sql)
 		if !result {
-			// insert
-			sql = fmt.Sprintf(`insert into common_resource_relative (src,srctype,dst,dsttype) values (%d, '%s', %d, '%s')`, res.RId(), res.RType(), rr.RId(), rr.RType())
-			_, result = helper.Execute(sql)
-			if !result {
-				panic("execute failed")
-			}
+			break
 		}
 	}
 
@@ -215,11 +317,8 @@ func saveResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 
 // 删除关联资源
 func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
-	sql := fmt.Sprintf(`delete from common_resource_relative where src=%d and srctype='%s'`, res.RId(), res.RType())
+	sql := fmt.Sprintf(`delete from common_resource_relative where src=%d`, res.ID())
 	_, result := helper.Execute(sql)
-	if !result {
-		panic("execute failed")
-	}
 
 	return result
 }

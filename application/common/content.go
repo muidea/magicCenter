@@ -22,7 +22,7 @@ type ContentHandler interface {
 	SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool)
 	DestroyCatalog(id int) bool
 	// 更新Catalog，如果不存在，则新建一个
-	UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) []model.Catalog
+	UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool)
 
 	GetAllLink() []model.Summary
 	GetLinks(ids []int) []model.Link

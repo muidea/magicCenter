@@ -57,7 +57,7 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 	return catalogList
 }
 
-// QueryCatalogByID 查询指定分类
+// QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{}
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
@@ -71,6 +71,28 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, id, model.CATALOG)
+
+		for _, r := range ress {
+			catalog.Catalog = append(catalog.Catalog, r.RId())
+		}
+	}
+	return catalog, result
+}
+
+// QueryCatalogByName 查询指定Name的Catalog
+func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDetail, bool) {
+	catalog := model.CatalogDetail{}
+	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where name = '%s'`, name)
+	helper.Query(sql)
+
+	result := false
+	if helper.Next() {
+		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
+		result = true
+	}
+
+	if result {
+		ress := resource.QueryRelativeResource(helper, catalog.ID, model.CATALOG)
 
 		for _, r := range ress {
 			catalog.Catalog = append(catalog.Catalog, r.RId())
@@ -109,101 +131,188 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 // DeleteCatalog 删除指定类
 func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from content_catalog where id=%d`, id)
+	result := false
+	helper.BeginTransaction()
 
-	num, result := helper.Execute(sql)
-	if num >= 1 && result {
-		ca := resource.CreateSimpleRes(id, model.CATALOG, "", "", -1)
-		result = resource.DeleteResource(helper, ca)
+	for {
+		sql := fmt.Sprintf(`delete from content_catalog where id=%d`, id)
+
+		_, result = helper.Execute(sql)
+		if result {
+			res, ok := resource.QueryResource(helper, id, model.CATALOG)
+			if ok {
+				result = resource.DeleteResource(helper, res, true)
+			}
+		}
+
+		break
+	}
+
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return result
 }
 
 // UpdateCatalog 更新Catalog
-func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDate string, updater int) []model.Catalog {
+func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool) {
 	ids := []int{}
+	result := false
+	helper.BeginTransaction()
 	for _, val := range catalogs {
-		if val.ID > 0 {
-			detail, ok := QueryCatalogByID(helper, val.ID)
-			if ok {
-				modifyFlag := false
-				if detail.Name != val.Name {
-					detail.Name = val.Name
-					modifyFlag = true
-				}
-				if detail.Creater != updater {
-					detail.Creater = updater
-					modifyFlag = true
-				}
+		result = true
+		detail, existFlag := QueryCatalogByName(helper, val.Name)
 
-				if modifyFlag {
-					detail.CreateDate = updateDate
-					SaveCatalog(helper, detail)
-				}
-
-				ids = append(ids, val.ID)
-				continue
+		if existFlag {
+			modifyFlag := false
+			if detail.Name != val.Name {
+				detail.Name = val.Name
+				modifyFlag = true
 			}
-		}
+			if detail.Creater != updater {
+				detail.Creater = updater
+				modifyFlag = true
+			}
 
-		detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common.DefaultContentCatalog.ID}, updater)
-		if ok {
+			if modifyFlag {
+				detail.CreateDate = updateDate
+				_, result = SaveCatalog(helper, detail, true)
+				if !result {
+					break
+				}
+			}
+
 			ids = append(ids, detail.ID)
+		} else {
+			detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common.DefaultContentCatalog.ID}, updater, true)
+			if ok {
+				ids = append(ids, detail.ID)
+			} else {
+				result = false
+			}
 		}
 	}
 
-	return QueryCatalogs(helper, ids)
+	if result {
+		helper.Commit()
+		return QueryCatalogs(helper, ids), true
+	}
+
+	helper.Rollback()
+
+	return []model.Catalog{}, false
 }
 
 // CreateCatalog 新建分类
-func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int) (model.Summary, bool) {
+func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
 	catalog := model.Summary{}
 	catalog.Name = name
 	catalog.Creater = creater
 	catalog.Catalog = parent
 	catalog.CreateDate = createDate
 
-	// insert
-	sql := fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createDate, creater)
-	num, result := helper.Execute(sql)
-
-	if num == 1 && result {
-		sql = fmt.Sprintf(`select id from content_catalog where name='%s' and creater=%d`, name, creater)
-		helper.Query(sql)
-		if helper.Next() {
-			helper.GetValue(&catalog.ID)
-		}
+	if !enableTransaction {
+		helper.BeginTransaction()
 	}
 
-	if result {
-		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
-		for _, c := range parent {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
+	result := false
+	for {
+		sql := fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
+		helper.Query(sql)
+		if helper.Next() {
+			// 说明对应的Catalog已经存在，返回Create失败
+			break
 		}
-		result = resource.SaveResource(helper, res)
+
+		// insert
+		sql = fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createDate, creater)
+		_, result = helper.Execute(sql)
+
+		if result {
+			sql = fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
+			helper.Query(sql)
+			if helper.Next() {
+				helper.GetValue(&catalog.ID)
+			} else {
+				result = false
+				break
+			}
+		}
+
+		if result {
+			res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
+			for _, c := range parent {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			if result {
+				result = resource.CreateResource(helper, res, true)
+			}
+		}
+
+		break
+	}
+
+	if !enableTransaction {
+		if result {
+			helper.Commit()
+		} else {
+			helper.Rollback()
+		}
 	}
 
 	return catalog, result
 }
 
 // SaveCatalog 保存分类
-func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail) (model.Summary, bool) {
-	// modify
-	sql := fmt.Sprintf(`update content_catalog set name ='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
-	num, result := helper.Execute(sql)
+func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTransaction bool) (model.Summary, bool) {
+	if !enableTransaction {
+		helper.BeginTransaction()
+	}
+	summary := model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}
 
-	if num == 1 && result {
-		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
-		for _, c := range catalog.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
+	result := false
+	for {
+		// modify
+		sql := fmt.Sprintf(`update content_catalog set description='%s', createdate='%s', creater =%d where id=%d`, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
+		_, result = helper.Execute(sql)
+
+		if result {
+			res, ok := resource.QueryResource(helper, catalog.ID, model.CATALOG)
+			if !ok {
+				result = false
+				break
+			}
+
+			res.ResetRelative()
+			for _, c := range catalog.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				}
+			}
+			result = resource.SaveResource(helper, res, true)
 		}
-		result = resource.SaveResource(helper, res)
-	} else {
-		result = false
+
+		break
 	}
 
-	return model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}, result
+	if !enableTransaction {
+		if result {
+			helper.Commit()
+		} else {
+			helper.Rollback()
+		}
+	}
+
+	return summary, result
 }

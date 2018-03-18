@@ -55,11 +55,11 @@ def main():
         print('login failed')
     else:
         app = Article('http://localhost:8888', login_session.authority_token)
-        article = app.create('testArticle', 'test article content', [8, 9])
+        article = app.create('testArticle', 'test article content', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if article:
             article_id = article['id']
             article['content'] = 'aaaaaa, bb dsfsdf  erewre'
-            article['catalog'] = [8, 9, 10]
+            article['catalog'] = [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}, {'id':0, 'name': 'ca3'}]
             article = app.update(article)
             if not article:
                 print('update article failed')

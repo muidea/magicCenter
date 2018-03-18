@@ -64,6 +64,7 @@ func (impl *impl) BeginTransaction() {
 	}
 
 	impl.dbTx = tx
+	// log.Print("BeginTransaction")
 }
 
 func (impl *impl) Commit() {
@@ -79,6 +80,7 @@ func (impl *impl) Commit() {
 	}
 
 	impl.dbTx = nil
+	// log.Print("Commit")
 }
 
 func (impl *impl) Rollback() {
@@ -94,6 +96,7 @@ func (impl *impl) Rollback() {
 	}
 
 	impl.dbTx = nil
+	// log.Print("Rollback")
 }
 
 func (impl *impl) Query(sql string) {

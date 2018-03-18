@@ -262,7 +262,13 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		if !ok {
+			result.ErrorCode = common.Failed
+			result.Reason = "更新Catalog失败"
+			break
+		}
+
 		for _, val := range catalogs {
 			catalogIds = append(catalogIds, val.ID)
 		}
@@ -349,7 +355,12 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		if !ok {
+			result.ErrorCode = common.Failed
+			result.Reason = "更新Catalog失败"
+			break
+		}
 		for _, val := range catalogs {
 			catalogIds = append(catalogIds, val.ID)
 		}

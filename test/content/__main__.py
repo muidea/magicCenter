@@ -1,9 +1,9 @@
-from content import Article
-from content import Catalog
-from content import Link
-from content import Media
+from content import article
+from content import catalog
+from content import link
+from content import media
 
-Article.main()
-Catalog.main()
-Link.main()
-Media.main()
+article.main()
+catalog.main()
+link.main()
+media.main()

@@ -112,29 +112,48 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 	article.Creater = creater
 	article.Catalog = catalogs
 
-	// insert
-	sql := fmt.Sprintf(`insert into content_article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
-	num, result := helper.Execute(sql)
-	if num != 1 || !result {
-		return article, false
-	}
+	result := false
+	helper.BeginTransaction()
+	for {
+		// insert
+		sql := fmt.Sprintf(`insert into content_article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
+		_, result = helper.Execute(sql)
+		if !result {
+			break
+		}
 
-	sql = fmt.Sprintf(`select id from content_article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
+		sql = fmt.Sprintf(`select id from content_article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
+		helper.Query(sql)
+		result = false
+		if helper.Next() {
+			helper.GetValue(&article.ID)
+			result = true
+		}
 
-	helper.Query(sql)
-	result = false
-	if helper.Next() {
-		helper.GetValue(&article.ID)
-		result = true
+		if result {
+			res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
+			for _, c := range article.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			if result {
+				result = resource.CreateResource(helper, res, true)
+			}
+		}
+
+		break
 	}
 
 	if result {
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
-		for _, c := range article.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
-		}
-		result = resource.SaveResource(helper, res)
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return article, result
@@ -142,33 +161,76 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
-	// modify
-	sql := fmt.Sprintf(`update content_article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
-	num, result := helper.Execute(sql)
+	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
+	result := false
 
-	if num == 1 && result {
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
-		for _, c := range article.Catalog {
-			ca := resource.CreateSimpleRes(c, model.CATALOG, "", "", -1)
-			res.AppendRelative(ca)
+	helper.BeginTransaction()
+	for {
+		// modify
+		sql := fmt.Sprintf(`update content_article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
+		_, result = helper.Execute(sql)
+
+		if result {
+			res, ok := resource.QueryResource(helper, article.ID, model.ARTICLE)
+			if !ok {
+				result = false
+				break
+			}
+
+			res.ResetRelative()
+			for _, c := range article.Catalog {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
+			}
+
+			if result {
+				result = resource.SaveResource(helper, res, true)
+			}
+
+			break
 		}
-		result = resource.SaveResource(helper, res)
-	} else {
-		result = false
+
+		break
 	}
 
-	return model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}, result
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
+	}
+
+	return summary, result
 }
 
 // DeleteArticle 删除文章
 func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
-	sql := fmt.Sprintf(`delete from content_article where id=%d`, id)
+	result := false
+	helper.BeginTransaction()
 
-	num, result := helper.Execute(sql)
-	if num >= 1 && result {
-		// 删除资源时，名称时不用关注的，所以这里填“”好了
-		res := resource.CreateSimpleRes(id, model.ARTICLE, "", "", -1)
-		result = resource.DeleteResource(helper, res)
+	for {
+		sql := fmt.Sprintf(`delete from content_article where id=%d`, id)
+
+		_, result = helper.Execute(sql)
+		if result {
+			// 删除资源时，名称时不用关注的，所以这里填“”好了
+			res, ok := resource.QueryResource(helper, id, model.ARTICLE)
+			if ok {
+				result = resource.DeleteResource(helper, res, true)
+			}
+		}
+
+		break
+	}
+
+	if result {
+		helper.Commit()
+	} else {
+		helper.Rollback()
 	}
 
 	return result

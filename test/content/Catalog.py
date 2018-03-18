@@ -54,11 +54,11 @@ def main():
         print('login failed')
     else:
         app = Catalog('http://localhost:8888', login_session.authority_token)
-        catalog = app.create('testCatalog', 'testDescription', [8, 9])
+        catalog = app.create('testCatalog', 'testDescription', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if catalog:
             catalog_id = catalog['id']
             catalog['description'] = 'aaaaaa'
-            catalog['catalog'] = [8, 9, 10]
+            catalog['catalog'] = [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}, {'id':0, 'name': 'ca3'}]
             catalog = app.update(catalog)
             if not catalog:
                 print('update catalog failed')

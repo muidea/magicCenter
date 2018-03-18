@@ -52,12 +52,12 @@ def main():
         print('login failed')
     else:
         app = Link('http://localhost:8888', login_session.authority_token)
-        link = app.create('testLink', 'test link url', 'test link logo', [8, 9])
+        link = app.create('testLink', 'test link url', 'test link logo', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if link:
             link_id = link['id']
             link['url'] = 'aaaaaa, bb dsfsdf  erewre aa'
             link['logo'] = 'test link logo'
-            link['catalog'] = [8, 9, 10]
+            link['catalog'] = [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}, {'id':0, 'name': 'ca3'}]
             link = app.update(link)
             if not link:
                 print('update link failed')
