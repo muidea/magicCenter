@@ -56,6 +56,9 @@ def main():
         app = Catalog('http://localhost:8888', login_session.authority_token)
         catalog = app.create('testCatalog', 'testDescription', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if catalog:
+            temp = app.create('testCatalog2', 'testDescription', [{'id':catalog['id'], 'name': catalog['name']}, {'id':0, 'name':'ca4'}])
+            app.destroy(temp['id'])
+
             catalog_id = catalog['id']
             catalog['description'] = 'aaaaaa'
             catalog['catalog'] = [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}, {'id':0, 'name': 'ca3'}]
