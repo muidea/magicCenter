@@ -8,7 +8,7 @@ from content import article
 from content import catalog
 from content import link
 from content import media
-from fileregistry import file_registry
+#from fileregistry import file_registry
 
 
 if __name__ == '__main__':
@@ -21,4 +21,4 @@ if __name__ == '__main__':
     catalog.main()
     link.main()
     media.main()
-    file_registry.main()
+    #file_registry.main()
