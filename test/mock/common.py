@@ -8,7 +8,7 @@ RAW_CONTENT = 'abcdefghijklmnopqrstuvwxyz'
 def word():
     'word'
     ret = ""
-    return ret.join(random.sample(RAW_CONTENT, random.randint(5, 12)))
+    return ret.join(random.sample(RAW_CONTENT, random.randint(3, 12)))
 
 # 随机生成一个名字，首字母大写
 def name():
@@ -66,6 +66,53 @@ def content():
     ret = "\n"
     return ret.join(val_array)
 
+def email():
+    'email'
+    url_array = []
+    index = 0
+    while index < 2:
+        url_array.append(word())
+        index = index + 1
+    domain = '.'
+    return '%s@%s'%(word(), domain.join(url_array))
+
+def picker_list(data_list, num):
+    'picker_list'
+    ret = []
+    data_len = len(data_list)
+    if data_len <= num:
+        return data_list
+
+    tmp_list = data_list[:]
+    while True:
+        if len(ret) >= num:
+            break
+        offset = random.randint(0, len(tmp_list)-1)
+        ret.append(tmp_list[offset])
+        del tmp_list[offset]
+    return ret
+
+def picker_dict(data_dict, num):
+    'picker_dict'
+    ret = {}
+    data_len = len(data_dict)
+    if data_len >= num:
+        return data_dict
+
+    tmp_dict = data_dict.copy()
+    while True:
+        if len(ret) >= num:
+            break
+        offset = random.randint(0, len(tmp_dict)-1)
+        for key, val in tmp_dict.items():
+            if offset == 0:
+                ret[key] = val
+                break
+            else:
+                offset = offset -1
+
+    return ret
+
 if __name__ == '__main__':
     print(word())
     print(name())
@@ -73,3 +120,4 @@ if __name__ == '__main__':
     print(title())
     print(paragraph())
     print(content())
+    print(email())

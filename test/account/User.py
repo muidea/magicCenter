@@ -3,16 +3,20 @@
 from session import session
 from cas import login
 
-class User(session.MagicSession):
+class User:
     "User"
-    def __init__(self, base_url, auth_token):
-        session.MagicSession.__init__(self, base_url)
+    def __init__(self, work_session, auth_token):
+        self.current_session = work_session
         self.authority_token = auth_token
 
-    def create(self, account, email):
+    def refresh_token(self, auth_token):
+        'refreshToken'
+        self.authority_token = auth_token
+
+    def create(self, account, email, group):
         "CreateUser"
-        params = {'account': account, 'email': email, 'group': [1, 2]}
-        val = self.post('/account/user/', params)
+        params = {'account': account, 'email': email, 'group': group}
+        val = self.current_session.post('/account/user/', params)
         if val and val['errorCode'] == 0:
             return val['user']
         return None
@@ -20,54 +24,53 @@ class User(session.MagicSession):
     def update(self, user):
         'UpdateUser'
         params = {'email': user['email'], 'name': user['name']}
-        val = self.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
+        val = self.current_session.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['user']
         return None
 
-    def updatepassword(self, user, pwd):
+    def update_password(self, user, pwd):
         'UpdateUserPassword'
         params = {'password': pwd, 'email': user['email'], 'name': user['name']}
-        val = self.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
+        val = self.current_session.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['user']
         return None
 
     def find(self, user_id):
         'FindUser'
-        val = self.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
+        val = self.current_session.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return val['user']
         return None
 
     def find_all(self):
         'FindAllUser'
-        val = self.get('/account/user/?authToken=%s'%self.authority_token)
+        val = self.current_session.get('/account/user/?authToken=%s'%self.authority_token)
         if val and val['errorCode'] == 0:
-            if len(val['user']) != 2:
-                return False
-            return True
-        return False
+            return val['user']
+        return None
 
 
     def destroy(self, user_id):
         'DestroyUser'
-        val = self.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
+        val = self.current_session.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return True
         return False
 
 def main():
     'main'
-    login_session = login.Login('http://localhost:8888')
+    work_session = session.MagicSession('http://localhost:8888')
+    login_session = login.Login(work_session)
     if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = User('http://localhost:8888', login_session.authority_token)
-        user = app.create('testUser12', 'rangh@test.com')
+        app = User(work_session, login_session.authority_token)
+        user = app.create('testUser12', 'rangh@test.com', [1, 2])
         if user:
             user_id = user['id']
-            if not app.updatepassword(user, '123'):
+            if not app.update_password(user, '123'):
                 print("updatepassword failed")
 
             user['name'] = '11223'

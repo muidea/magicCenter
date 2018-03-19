@@ -1,5 +1,8 @@
-from account import User
-from account import Group
+from account import user
+from account import group
 
-User.main()
-Group.main()
+from account import account
+
+user.main()
+group.main()
+account.main()

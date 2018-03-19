@@ -3,16 +3,20 @@
 from session import session
 from cas import login
 
-class Group(session.MagicSession):
+class Group:
     "Group"
-    def __init__(self, base_url, auth_token):
-        session.MagicSession.__init__(self, base_url)
+    def __init__(self, work_session, auth_token):
+        self.session = work_session
         self.authority_token = auth_token
 
-    def create(self, name, description):
+    def refresh_token(self, auth_token):
+        'refreshToken'
+        self.authority_token = auth_token
+
+    def create(self, name, description, catalog):
         "CreateGroup"
-        params = {'name': name, 'description': description, 'catalog': 0}
-        val = self.post('/account/group/?authToken=%s'%self.authority_token, params)
+        params = {'name': name, 'description': description, 'catalog': catalog}
+        val = self.session.post('/account/group/?authToken=%s'%self.authority_token, params)
         if val and val['errorCode'] == 0:
             return val['group']
 
@@ -21,7 +25,7 @@ class Group(session.MagicSession):
     def save(self, group):
         "UpdateGroup"
         params = {'name': group['name'], 'description': group['description']}
-        val = self.put('/account/group/%d?authToken=%s'%(group['id'], self.authority_token), params)
+        val = self.session.put('/account/group/%d?authToken=%s'%(group['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['group']
 
@@ -29,7 +33,7 @@ class Group(session.MagicSession):
 
     def find(self, group_id):
         "FindGroup"
-        val = self.get('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
+        val = self.session.get('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return val['group']
 
@@ -37,17 +41,15 @@ class Group(session.MagicSession):
 
     def find_all(self):
         "FindAllGroup"
-        val = self.get('/account/group/')
+        val = self.session.get('/account/group/?authToken=%s'%self.authority_token)
         if val and val['errorCode'] == 0:
-            if len(val['group']) < 0:
-                return False
-            return True
+            return val['group']
 
-        return False
+        return None
 
     def destroy(self, group_id):
         "DestroyGroup"
-        val = self.delete('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
+        val = self.session.delete('/account/group/%d?authToken=%s'%(group_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return True
 
@@ -55,12 +57,13 @@ class Group(session.MagicSession):
 
 def main():
     'main'
-    login_session = login.Login('http://localhost:8888')
+    work_session = session.MagicSession('http://localhost:8888')
+    login_session = login.Login(work_session)
     if not login_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Group('http://localhost:8888', login_session.authority_token)
-        group = app.create('testGorup1', 'test description')
+        app = Group(work_session, login_session.authority_token)
+        group = app.create('testGorup1', 'test description', 0)
         if group:
             group_id = group['id']
             group['description'] = 'aaaaaa'
