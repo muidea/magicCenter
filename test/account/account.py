@@ -35,6 +35,23 @@ class Account:
 
         self.groups = all_group
 
+    def __mock_group(self):
+        catalog = common.picker_dict(self.groups, 1)
+        catalog_id = 0
+        for key, _ in catalog.items():
+            catalog_id = key
+
+        return common.word(), common.paragraph(), catalog_id
+
+    def __mock_user(self):
+        group_num = random.randint(1, 10)
+        catalog = common.picker_dict(self.groups, group_num)
+        ids = []
+        for key, _ in catalog.items():
+            ids.append(key)
+
+        return common.word(), common.email(), ids
+
     def verify(self):
         'verify account infomation between local and server'
         local_user = self.users
@@ -82,22 +99,21 @@ class Account:
         self.__refresh_user()
         self.__refresh_group()
 
-    def __mock_group(self):
-        catalog = common.picker_dict(self.groups, 1)
-        catalog_id = 0
-        for key, _ in catalog.items():
-            catalog_id = key
+    def remove(self):
+        'remove'
+        user_num = random.randint(1, 10)
+        user_dict = common.picker_dict(self.users, user_num)
+        for key in user_dict.keys():
+            if key > 0:
+                if self.current_user_session.destroy(key):
+                    self.users.pop(key)
 
-        return common.word(), common.paragraph(), catalog_id
-
-    def __mock_user(self):
-        group_num = random.randint(1, 5)
-        catalog = common.picker_dict(self.groups, group_num)
-        ids = []
-        for key, _ in catalog.items():
-            ids.append(key)
-
-        return common.word(), common.email(), ids
+        group_num = random.randint(1, 10)
+        group_dict = common.picker_dict(self.groups, group_num)
+        for key in group_dict.keys():
+            if key > 0:
+                if self.current_group_session.destroy(key):
+                    self.groups.pop(key)
 
     def mock(self):
         'mock'
@@ -131,6 +147,9 @@ def main():
         print('login failed')
     else:
         app = Account(work_session, login_session.authority_token)
+        app.refresh(login_session.authority_token)
         app.mock()
+        app.remove()
+        app.verify()
 
         login_session.logout(login_session.authority_token)

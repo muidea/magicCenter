@@ -81,7 +81,7 @@ def picker_list(data_list, num):
     ret = []
     data_len = len(data_list)
     if data_len <= num:
-        return data_list
+        return data_list.copy()
 
     tmp_list = data_list[:]
     while True:
@@ -90,23 +90,24 @@ def picker_list(data_list, num):
         offset = random.randint(0, len(tmp_list)-1)
         ret.append(tmp_list[offset])
         del tmp_list[offset]
-    return ret
+    return ret.copy()
 
 def picker_dict(data_dict, num):
     'picker_dict'
     ret = {}
     data_len = len(data_dict)
-    if data_len >= num:
-        return data_dict
+    if data_len <= num:
+        return data_dict.copy()
 
     tmp_dict = data_dict.copy()
     while True:
         if len(ret) >= num:
             break
         offset = random.randint(0, len(tmp_dict)-1)
-        for key, val in tmp_dict.items():
+        for key in tmp_dict.keys():
             if offset == 0:
-                ret[key] = val
+                ret[key] = tmp_dict[key]
+                tmp_dict.pop(key)
                 break
             else:
                 offset = offset -1
