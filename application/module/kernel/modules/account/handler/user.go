@@ -22,6 +22,10 @@ func (i *userActionHandler) findUserByID(id int) (model.UserDetail, bool) {
 	return dal.QueryUserByID(i.dbhelper, id)
 }
 
+func (i *userActionHandler) findUserByGroup(groupID int) []model.User {
+	return dal.QueryUserByGroup(i.dbhelper, groupID)
+}
+
 func (i *userActionHandler) findUserByAccount(account, password string) (model.UserDetail, bool) {
 	return dal.QueryUserByAccount(i.dbhelper, account, password)
 }

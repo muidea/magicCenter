@@ -24,6 +24,22 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
 	return groupList
 }
 
+// QuerySubGroups 查询指定分组的子分组
+func QuerySubGroups(helper dbhelper.DBHelper, id int) []model.Group {
+	groupList := []model.Group{}
+	sql := fmt.Sprintf("select id, name from account_group where catalog =%d", id)
+	helper.Query(sql)
+
+	for helper.Next() {
+		g := model.Group{}
+		helper.GetValue(&g.ID, &g.Name)
+
+		groupList = append(groupList, g)
+	}
+
+	return groupList
+}
+
 // QueryGroups 查询分组信息
 func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 	groupList := []model.Group{}

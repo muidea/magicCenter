@@ -22,6 +22,10 @@ func (i *groupActionHandler) findGroupByID(id int) (model.GroupDetail, bool) {
 	return dal.QueryGroupByID(i.dbhelper, id)
 }
 
+func (i *groupActionHandler) findSubGroup(id int) []model.Group {
+	return dal.QuerySubGroups(i.dbhelper, id)
+}
+
 func (i *groupActionHandler) findGroupByName(name string) (model.GroupDetail, bool) {
 	return dal.QueryGroupByName(i.dbhelper, name)
 }

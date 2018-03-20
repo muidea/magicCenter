@@ -1,3 +1,5 @@
+'__main__'
+
 from account import user
 from account import group
 

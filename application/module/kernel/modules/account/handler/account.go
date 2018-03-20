@@ -31,6 +31,10 @@ func (i *impl) FindUserByID(id int) (model.UserDetail, bool) {
 	return i.userHandler.findUserByID(id)
 }
 
+func (i *impl) FindUserByGroup(groupID int) []model.User {
+	return i.userHandler.findUserByGroup(groupID)
+}
+
 func (i *impl) FindUserByAccount(account, password string) (model.UserDetail, bool) {
 	return i.userHandler.findUserByAccount(account, password)
 }
@@ -67,6 +71,10 @@ func (i *impl) FindGroupByID(id int) (model.GroupDetail, bool) {
 	return i.groupHandler.findGroupByID(id)
 }
 
+func (i *impl) FindSubGroup(id int) []model.Group {
+	return i.groupHandler.findSubGroup(id)
+}
+
 func (i *impl) FindGroupByName(name string) (model.GroupDetail, bool) {
 	return i.groupHandler.findGroupByName(name)
 }
@@ -80,6 +88,13 @@ func (i *impl) SaveGroup(group model.GroupDetail) (model.GroupDetail, bool) {
 }
 
 func (i *impl) DestroyGroup(id int) bool {
+
+	subGroups := i.groupHandler.findSubGroup(id)
+	groupUsers := i.userHandler.findUserByGroup(id)
+	if len(subGroups) > 0 || len(groupUsers) > 0 {
+		return false
+	}
+
 	return i.groupHandler.destroyGroup(id)
 }
 

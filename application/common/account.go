@@ -7,6 +7,7 @@ type AccountHandler interface {
 	GetAllUser() []model.UserDetail
 	GetUsers(ids []int) []model.User
 	FindUserByID(id int) (model.UserDetail, bool)
+	FindUserByGroup(groupID int) []model.User
 	FindUserByAccount(account, password string) (model.UserDetail, bool)
 	CreateUser(account, email string, groups []int) (model.UserDetail, bool)
 	SaveUser(user model.UserDetail) (model.UserDetail, bool)
@@ -17,6 +18,7 @@ type AccountHandler interface {
 	GetAllGroup() []model.GroupDetail
 	GetGroups(ids []int) []model.Group
 	FindGroupByID(id int) (model.GroupDetail, bool)
+	FindSubGroup(id int) []model.Group
 	FindGroupByName(name string) (model.GroupDetail, bool)
 	CreateGroup(name, description string, catalog int) (model.GroupDetail, bool)
 	SaveGroup(group model.GroupDetail) (model.GroupDetail, bool)
