@@ -76,6 +76,16 @@ def email():
     domain = '.'
     return '%s@%s'%(word(), domain.join(url_array))
 
+def url():
+    'url'
+    url_array = []
+    index = 0
+    while index < 2:
+        url_array.append(word())
+        index = index + 1
+    domain = '.'
+    return domain.join(url_array)
+
 def picker_list(data_list, num):
     'picker_list'
     ret = []
