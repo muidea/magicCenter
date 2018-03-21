@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
@@ -8,6 +9,17 @@ import (
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadMediaID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from content_media`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // QueryAllMedia 查询所有图像
 func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
@@ -133,47 +145,38 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 // CreateMedia 新建文件
 func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, uID int, catalogs []int) (model.Summary, bool) {
 	media := model.Summary{}
-	media.Name = name
-	media.Catalog = catalogs
-	media.CreateDate = createDate
-	media.Creater = uID
 
+	id := allocMediaID()
 	result := false
 	helper.BeginTransaction()
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_media (name,url, description, createdate, creater) values ('%s','%s','%s','%s',%d)`, name, url, desc, createDate, uID)
+		sql := fmt.Sprintf(`insert into content_media (id, name,url, description, createdate, creater) values (%d, '%s','%s','%s','%s',%d)`, id, name, url, desc, createDate, uID)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
-		sql = fmt.Sprintf(`select id from content_media where url= '%s' and creater=%d`, url, uID)
-		helper.Query(sql)
-		result = false
-		if helper.Next() {
-			helper.GetValue(&media.ID)
-			result = true
-		} else {
-			break
+		media.ID = id
+		media.Name = name
+		media.Catalog = catalogs
+		media.CreateDate = createDate
+		media.Creater = uID
+
+		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
+		for _, c := range media.Catalog {
+			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				result = false
+				break
+			}
 		}
 
 		if result {
-			res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
-			for _, c := range media.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
-			}
-
-			if result {
-				result = resource.CreateResource(helper, res, true)
-			}
+			result = resource.CreateResource(helper, res, true)
 		}
 
 		break

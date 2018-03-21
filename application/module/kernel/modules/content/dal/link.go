@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
@@ -8,6 +9,17 @@ import (
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadLinkID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from content_link`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // QueryAllLink 查询全部Link
 func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
@@ -133,43 +145,36 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 // CreateLink 新建Link
 func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uID int, catalogs []int) (model.Summary, bool) {
 	lnk := model.Summary{}
-	lnk.Name = name
-	lnk.Catalog = catalogs
-	lnk.CreateDate = createDate
-	lnk.Creater = uID
+
+	id := allocLinkID()
 	result := false
 	helper.BeginTransaction()
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_link (name,url,logo, createDate, creater) values ('%s','%s','%s','%s', %d)`, name, url, logo, createDate, uID)
+		sql := fmt.Sprintf(`insert into content_link (id, name,url,logo, createDate, creater) values (%d, '%s','%s','%s','%s', %d)`, id, name, url, logo, createDate, uID)
 		_, result = helper.Execute(sql)
-		if result {
-			sql = fmt.Sprintf(`select id from content_link where name='%s' and url ='%s' and creater=%d`, name, url, uID)
+		if !result {
+			break
+		}
 
-			helper.Query(sql)
-			if helper.Next() {
-				helper.GetValue(&lnk.ID)
+		lnk.ID = id
+		lnk.Name = name
+		lnk.Catalog = catalogs
+		lnk.CreateDate = createDate
+		lnk.Creater = uID
+
+		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
+		for _, c := range lnk.Catalog {
+			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			if ok {
+				res.AppendRelative(ca)
 			} else {
 				result = false
 				break
 			}
 		}
-
-		if result {
-			res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
-			for _, c := range lnk.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
-			}
-
-			result = resource.CreateResource(helper, res, true)
-		}
+		result = resource.CreateResource(helper, res, true)
 
 		break
 	}

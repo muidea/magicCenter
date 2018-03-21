@@ -1,4 +1,4 @@
-"Article"
+'Article test script'
 
 from session import session
 from cas import login

@@ -1,10 +1,22 @@
 package resource
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
 )
+
+func loadResourceOID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(oid) from common_resource`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // Resource 资源对象
 // 用于表示可用于访问的信息(article,catalog,image,link)
@@ -26,14 +38,11 @@ type Resource interface {
 	ResetRelative()
 	// AppendRelative 追加关联资源
 	AppendRelative(r Resource)
-
-	// 设置ID
-	setID(id int)
 }
 
 // CreateSimpleRes 创建新的资源
 func CreateSimpleRes(rID int, rType, rName, rCreateDate string, rOwner int) Resource {
-	res := &simpleRes{oid: -1}
+	res := &simpleRes{oid: allocResourceOID()}
 	res.rid = rID
 	res.rType = rType
 	res.rName = rName
@@ -137,7 +146,7 @@ func relativeResource(helper dbhelper.DBHelper, oid int) []Resource {
 
 // QueryRelativeResource 查询关联的资源
 func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
-	oid := -1
+	oid := int(-1)
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rid, rType)
 	helper.Query(sql)
 	if helper.Next() {
@@ -176,7 +185,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
 func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []Resource {
-	oid := -1
+	oid := int(-1)
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rID, rType)
 	helper.Query(sql)
 	if helper.Next() {
@@ -204,24 +213,10 @@ func CreateResource(helper dbhelper.DBHelper, res Resource, enableTransaction bo
 		}
 
 		// insert
-		sql = fmt.Sprintf(`insert into common_resource (id,name,type,createtime,owner) values (%d, '%s','%s', '%s', %d)`, res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
+		sql = fmt.Sprintf(`insert into common_resource (oid, id,name,type,createtime,owner) values (%d, %d, '%s','%s', '%s', %d)`, res.ID(), res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
 		_, result = helper.Execute(sql)
 		if !result {
 			// 插入失败
-			break
-		}
-
-		result = false
-		sql = fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, res.RId(), res.RType())
-		helper.Query(sql)
-		if helper.Next() {
-			oid := -1
-			helper.GetValue(&oid)
-
-			res.setID(oid)
-			result = true
-		}
-		if !result {
 			break
 		}
 

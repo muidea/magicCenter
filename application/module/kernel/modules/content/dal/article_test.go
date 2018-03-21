@@ -24,9 +24,9 @@ func TestArticle(t *testing.T) {
 	ar.Catalog = append(ar.Catalog, 8)
 	ar.ID = 10
 
-	summary, ret := SaveArticle(helper, ar)
+	summary, ret := CreateArticle(helper, ar.Name, ar.Content, ar.Catalog, ar.Creater, ar.CreateDate)
 	if !ret {
-		t.Error("SaveArticle failed")
+		t.Error("CreateArticle failed")
 		return
 	}
 

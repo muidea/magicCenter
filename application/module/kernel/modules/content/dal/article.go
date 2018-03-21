@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
@@ -8,6 +9,17 @@ import (
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadArticleID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from content_article`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // QueryAllArticleSummary 查询所有文章摘要
 func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
@@ -107,44 +119,37 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 // CreateArticle 保存文章
 func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
 	article := model.Summary{}
-	article.Name = title
-	article.CreateDate = createDate
-	article.Creater = creater
-	article.Catalog = catalogs
 
+	id := allocArticleID()
 	result := false
 	helper.BeginTransaction()
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_article (title,content,creater,createdate) values ('%s','%s',%d,'%s')`, title, content, creater, createDate)
+		sql := fmt.Sprintf(`insert into content_article (id, title,content,creater,createdate) values (%d, '%s','%s',%d,'%s')`, id, title, content, creater, createDate)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
-		sql = fmt.Sprintf(`select id from content_article where title='%s' and creater =%d and createdate='%s'`, title, creater, createDate)
-		helper.Query(sql)
-		result = false
-		if helper.Next() {
-			helper.GetValue(&article.ID)
-			result = true
+		article.ID = id
+		article.Name = title
+		article.CreateDate = createDate
+		article.Creater = creater
+		article.Catalog = catalogs
+
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
+		for _, c := range article.Catalog {
+			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				result = false
+				break
+			}
 		}
 
 		if result {
-			res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
-			for _, c := range article.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
-			}
-
-			if result {
-				result = resource.CreateResource(helper, res, true)
-			}
+			result = resource.CreateResource(helper, res, true)
 		}
 
 		break

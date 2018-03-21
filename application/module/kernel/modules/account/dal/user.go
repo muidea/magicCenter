@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -8,6 +9,17 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadUserID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from account_user`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 //QueryAllUser 查询全部用户信息
 func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
@@ -63,8 +75,6 @@ func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.User {
 	userList := []model.User{}
 
 	sql := fmt.Sprintf("select id, nickname from `account_user` where groups like '%d' union select id, nickname from `account_user` where groups like '%d,%%' union select id, nickname from `account_user` where groups like '%%,%d,%%' union select id, nickname from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
-	print(sql)
-
 	helper.Query(sql)
 	for helper.Next() {
 		user := model.User{}
@@ -120,21 +130,12 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 	createTime := time.Now().Format("2006-01-02 15:04:05")
 	user.RegisterTime = createTime
 
+	id := allocUserID()
 	// insert
-	sql = fmt.Sprintf("insert into account_user(account, password, nickname, email, groups, status, registertime) values ('%s', '%s', '%s', '%s', '%s', %d, '%s')", account, "", "", email, gVal, 0, createTime)
+	sql = fmt.Sprintf("insert into account_user(id, account, password, nickname, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', '%s', %d, '%s')", id, account, "", "", email, gVal, 0, createTime)
 	_, result := helper.Execute(sql)
 	if result {
-		sql = fmt.Sprintf("select id from account_user where account='%s' and email='%s'", account, email)
-		helper.Query(sql)
-
-		result = false
-		if helper.Next() {
-			helper.GetValue(&user.ID)
-
-			user.Name = account
-
-			result = true
-		}
+		user.ID = id
 	}
 
 	return user, result

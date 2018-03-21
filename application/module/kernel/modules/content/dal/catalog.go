@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common"
@@ -10,6 +11,17 @@ import (
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadCatalogID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from content_catalog`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // QueryAllCatalog 查询所有分类
 func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
@@ -209,15 +221,12 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 // CreateCatalog 新建分类
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
 	catalog := model.Summary{}
-	catalog.Name = name
-	catalog.Creater = creater
-	catalog.Catalog = parent
-	catalog.CreateDate = createDate
 
 	if !enableTransaction {
 		helper.BeginTransaction()
 	}
 
+	id := allocCatalogID()
 	result := false
 	for {
 		sql := fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
@@ -228,14 +237,23 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		}
 
 		// insert
-		sql = fmt.Sprintf(`insert into content_catalog (name, description, createdate, creater) values ('%s','%s','%s',%d)`, name, description, createDate, creater)
+		sql = fmt.Sprintf(`insert into content_catalog (id, name, description, createdate, creater) values (%d, '%s','%s','%s',%d)`, id, name, description, createDate, creater)
 		_, result = helper.Execute(sql)
+		if !result {
+			break
+		}
 
-		if result {
-			sql = fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
-			helper.Query(sql)
-			if helper.Next() {
-				helper.GetValue(&catalog.ID)
+		catalog.ID = id
+		catalog.Name = name
+		catalog.Creater = creater
+		catalog.Catalog = parent
+		catalog.CreateDate = createDate
+
+		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
+		for _, c := range parent {
+			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			if ok {
+				res.AppendRelative(ca)
 			} else {
 				result = false
 				break
@@ -243,20 +261,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		}
 
 		if result {
-			res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
-			for _, c := range parent {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
-			}
-
-			if result {
-				result = resource.CreateResource(helper, res, true)
-			}
+			result = resource.CreateResource(helper, res, true)
 		}
 
 		break

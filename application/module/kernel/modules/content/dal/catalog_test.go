@@ -22,7 +22,7 @@ func TestCatalog(t *testing.T) {
 	ca.Name = "testCatalog"
 	ca.Creater = 3
 	ca.Catalog = append(ca.Catalog, 10)
-	catalog, ret := SaveCatalog(helper, ca)
+	catalog, ret := SaveCatalog(helper, ca, true)
 	if !ret {
 		t.Error("SaveCatalog failed")
 		return
@@ -39,7 +39,7 @@ func TestCatalog(t *testing.T) {
 	ca.Catalog = append(ca.Catalog, 8)
 	ca.Catalog = append(ca.Catalog, 9)
 
-	catalog, ret = SaveCatalog(helper, ca)
+	catalog, ret = SaveCatalog(helper, ca, true)
 	if !ret {
 		t.Error("SaveCatalog failed")
 	}

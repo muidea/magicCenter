@@ -1,12 +1,24 @@
 package dal
 
 import (
+	"database/sql"
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/model"
 	"muidea.com/magicCenter/foundation/util"
 )
+
+func loadGroupID(helper dbhelper.DBHelper) int {
+	var maxID sql.NullInt64
+	sql := fmt.Sprintf(`select max(id) from account_group`)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&maxID)
+	}
+
+	return int(maxID.Int64)
+}
 
 // QueryAllGroup 查询所有的分组
 func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
@@ -89,29 +101,23 @@ func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.GroupDetail,
 // CreateGroup 新建分组
 func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int) (model.GroupDetail, bool) {
 	group := model.NewGroup(name, description, catalog)
-	sql := fmt.Sprintf("select id from account_group where name='%s' and catalog=%d", name, 0)
+	sql := fmt.Sprintf("select id from account_group where name='%s' and catalog=%d", name, catalog)
 	helper.Query(sql)
 	if helper.Next() {
 		return group, false
 	}
 
-	sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s',%d)", name, description, catalog)
+	id := allocGroupID()
+	sql = fmt.Sprintf("insert into account_group (id, name, description, catalog) values (%d, '%s','%s',%d)", id, name, description, catalog)
 	_, result := helper.Execute(sql)
 	if !result {
 		return group, result
 	}
 
-	sql = fmt.Sprintf("select id from account_group where name='%s' and description='%s' and catalog=%d", name, description, catalog)
-	helper.Query(sql)
-	if helper.Next() {
-		helper.GetValue(&group.ID)
-		group.Name = name
-		group.Description = description
-		group.Catalog = 0
-		result = true
-	} else {
-		result = false
-	}
+	group.ID = id
+	group.Name = name
+	group.Description = description
+	group.Catalog = 0
 
 	return group, result
 }
@@ -126,23 +132,8 @@ func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
 
 // SaveGroup 保存分组
 func SaveGroup(helper dbhelper.DBHelper, group model.GroupDetail) (model.GroupDetail, bool) {
-	sql := fmt.Sprintf("select id from account_group where id=%d", group.ID)
-	helper.Query(sql)
-
-	result := false
-	if helper.Next() {
-		var id = 0
-		helper.GetValue(&id)
-		result = true
-	}
-
-	if !result {
-		// insert
-		sql = fmt.Sprintf("insert into account_group (name, description, catalog) values ('%s','%s', %d)", group.Name, group.Description, group.Catalog)
-	} else {
-		// modify
-		sql = fmt.Sprintf("update account_group set name ='%s', description='%s', catalog=%d where id=%d", group.Name, group.Description, group.Catalog, group.ID)
-	}
+	// modify
+	sql := fmt.Sprintf("update account_group set name ='%s', description='%s', catalog=%d where id=%d", group.Name, group.Description, group.Catalog, group.ID)
 
 	_, ret := helper.Execute(sql)
 	return group, ret
