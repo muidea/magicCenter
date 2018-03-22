@@ -67,10 +67,10 @@ func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 }
 
 // QueryLinkByCatalog 查询指定分类下的Link
-func QueryLinkByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
+func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.LINK)
+	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.LINK)
 	for _, r := range resList {
 		sql := fmt.Sprintf(`select id, name,createdate,creater from content_link where id =%d`, r.RId())
 		helper.Query(sql)
@@ -127,6 +127,8 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 			res, ok := resource.QueryResource(helper, id, model.LINK)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
+			} else {
+				result = ok
 			}
 		}
 
@@ -143,8 +145,8 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateLink 新建Link
-func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uID int, catalogs []int) (model.Summary, bool) {
-	lnk := model.Summary{}
+func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+	lnk := model.Summary{Unit: model.Unit{Name: name}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocLinkID()
 	result := false
@@ -152,18 +154,13 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_link (id, name,url,logo, createDate, creater) values (%d, '%s','%s','%s','%s', %d)`, id, name, url, logo, createDate, uID)
+		sql := fmt.Sprintf(`insert into content_link (id, name,url,logo, createDate, creater) values (%d, '%s','%s','%s','%s', %d)`, id, name, url, logo, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
 		lnk.ID = id
-		lnk.Name = name
-		lnk.Catalog = catalogs
-		lnk.CreateDate = createDate
-		lnk.Creater = uID
-
 		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
@@ -174,7 +171,10 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, uI
 				break
 			}
 		}
-		result = resource.CreateResource(helper, res, true)
+
+		if result {
+			result = resource.CreateResource(helper, res, true)
+		}
 
 		break
 	}

@@ -18,7 +18,7 @@ func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int,
 	}
 
 	ok = false
-	sql = fmt.Sprintf("select id from authority_acl where url='%s'", url)
+	sql = fmt.Sprintf("select id from authority_acl where url='%s' and method='%s'", url, method)
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&acl.ID)

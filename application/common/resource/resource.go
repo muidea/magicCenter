@@ -146,7 +146,7 @@ func relativeResource(helper dbhelper.DBHelper, oid int) []Resource {
 
 // QueryRelativeResource 查询关联的资源
 func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
-	oid := int(-1)
+	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rid, rType)
 	helper.Query(sql)
 	if helper.Next() {
@@ -185,7 +185,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
 func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []Resource {
-	oid := int(-1)
+	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rID, rType)
 	helper.Query(sql)
 	if helper.Next() {
@@ -264,6 +264,9 @@ func SaveResource(helper dbhelper.DBHelper, res Resource, enableTransaction bool
 // DeleteResource 删除资源
 func DeleteResource(helper dbhelper.DBHelper, res Resource, enableTransaction bool) bool {
 	result := false
+	if !enableTransaction {
+		helper.BeginTransaction()
+	}
 
 	for {
 		sql := fmt.Sprintf(`delete from common_resource where oid=%d`, res.ID())
@@ -273,6 +276,14 @@ func DeleteResource(helper dbhelper.DBHelper, res Resource, enableTransaction bo
 		}
 
 		break
+	}
+
+	if !enableTransaction {
+		if result {
+			helper.Commit()
+		} else {
+			helper.Rollback()
+		}
 	}
 
 	return result

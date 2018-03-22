@@ -90,9 +90,9 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 }
 
 // QueryArticleSummaryByCatalog 查询指定分类下的所有文章摘要
-func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
+func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 	summaryList := []model.Summary{}
-	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.ARTICLE)
+	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
 		sql := fmt.Sprintf(`select id, title, createdate,creater from content_article where id =%d`, r.RId())
 		helper.Query(sql)
@@ -118,7 +118,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, id int) []model.Summ
 
 // CreateArticle 保存文章
 func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
-	article := model.Summary{}
+	article := model.Summary{Unit: model.Unit{Name: title}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocArticleID()
 	result := false
@@ -132,11 +132,6 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 		}
 
 		article.ID = id
-		article.Name = title
-		article.CreateDate = createDate
-		article.Creater = creater
-		article.Catalog = catalogs
-
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
@@ -222,10 +217,11 @@ func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
 
 		_, result = helper.Execute(sql)
 		if result {
-			// 删除资源时，名称时不用关注的，所以这里填“”好了
 			res, ok := resource.QueryResource(helper, id, model.ARTICLE)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
+			} else {
+				result = ok
 			}
 		}
 

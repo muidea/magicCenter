@@ -128,6 +128,8 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 			res, ok := resource.QueryResource(helper, id, model.MEDIA)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
+			} else {
+				result = ok
 			}
 		}
 		break
@@ -143,8 +145,8 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateMedia 新建文件
-func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, uID int, catalogs []int) (model.Summary, bool) {
-	media := model.Summary{}
+func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+	media := model.Summary{Unit: model.Unit{Name: name}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocMediaID()
 	result := false
@@ -152,18 +154,13 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, u
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_media (id, name,url, description, createdate, creater) values (%d, '%s','%s','%s','%s',%d)`, id, name, url, desc, createDate, uID)
+		sql := fmt.Sprintf(`insert into content_media (id, name,url, description, createdate, creater) values (%d, '%s','%s','%s','%s',%d)`, id, name, url, desc, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
 		media.ID = id
-		media.Name = name
-		media.Catalog = catalogs
-		media.CreateDate = createDate
-		media.Creater = uID
-
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)

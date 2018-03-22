@@ -115,9 +115,6 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 	}
 
 	group.ID = id
-	group.Name = name
-	group.Description = description
-	group.Catalog = 0
 
 	return group, result
 }

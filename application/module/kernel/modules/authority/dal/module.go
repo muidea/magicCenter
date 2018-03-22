@@ -65,7 +65,7 @@ func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) model.Mod
 	return retValue
 }
 
-// UpdateModuleUserAuthGroup 更新指定Module的拥有着
+// UpdateModuleUserAuthGroup 更新指定Module的用户的授权组
 func UpdateModuleUserAuthGroup(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
 	retVal := false
 

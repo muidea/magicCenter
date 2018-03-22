@@ -154,6 +154,8 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 			res, ok := resource.QueryResource(helper, id, model.CATALOG)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
+			} else {
+				result = ok
 			}
 		}
 
@@ -180,10 +182,6 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 		if existFlag {
 			modifyFlag := false
-			if detail.Name != val.Name {
-				detail.Name = val.Name
-				modifyFlag = true
-			}
 			if detail.Creater != updater {
 				detail.Creater = updater
 				modifyFlag = true
@@ -220,7 +218,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 // CreateCatalog 新建分类
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
-	catalog := model.Summary{}
+	catalog := model.Summary{Unit: model.Unit{Name: name}, Catalog: parent, CreateDate: createDate, Creater: creater}
 
 	if !enableTransaction {
 		helper.BeginTransaction()
@@ -244,11 +242,6 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		}
 
 		catalog.ID = id
-		catalog.Name = name
-		catalog.Creater = creater
-		catalog.Catalog = parent
-		catalog.CreateDate = createDate
-
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
