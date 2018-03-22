@@ -53,6 +53,11 @@ func (i *impl) SaveArticle(article model.ArticleDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyArticle(id int) bool {
+	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.ARTICLE, "")
+	if len(referenceRes) > 0 {
+		return false
+	}
+
 	return i.articleHandler.destroyArticle(id)
 }
 
@@ -81,6 +86,11 @@ func (i *impl) SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyCatalog(id int) bool {
+	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.CATALOG, "")
+	if len(referenceRes) > 0 {
+		return false
+	}
+
 	return i.catalogHandler.destroyCatalog(id)
 }
 
@@ -113,6 +123,11 @@ func (i *impl) SaveLink(link model.LinkDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyLink(id int) bool {
+	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.LINK, "")
+	if len(referenceRes) > 0 {
+		return false
+	}
+
 	return i.linkHandler.destroyLink(id)
 }
 
@@ -141,6 +156,11 @@ func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyMedia(id int) bool {
+	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.MEDIA, "")
+	if len(referenceRes) > 0 {
+		return false
+	}
+
 	return i.mediaHandler.destroyMedia(id)
 }
 
