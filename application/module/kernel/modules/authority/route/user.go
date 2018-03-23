@@ -75,6 +75,8 @@ func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 
 					view.Module = append(view.Module, info)
 				}
+
+				result.User = append(result.User, view)
 			}
 		}
 
