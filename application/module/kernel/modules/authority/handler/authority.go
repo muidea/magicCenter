@@ -90,8 +90,8 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	avalibleFlag := false
-	userModuleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineAccount.User.ID)
-	for _, val := range userModuleAuthGroup.ModuleAuthGroup {
+	moduleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineAccount.User.ID)
+	for _, val := range moduleAuthGroup {
 		if val.Module == acl.Module && val.AuthGroup >= acl.AuthGroup {
 			avalibleFlag = true
 			break
@@ -160,7 +160,23 @@ func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
 	return dal.UpateACL(i.dbhelper, acl)
 }
 
-func (i *impl) QueryUserModuleAuthGroup(user int) model.UserModuleAuthGroup {
+func (i *impl) QueryAllModuleUser() []model.ModuleUserInfo {
+	return dal.QueryAllModuleUser(i.dbhelper)
+}
+
+func (i *impl) QueryModuleUserAuthGroup(module string) []model.UserAuthGroup {
+	return dal.QueryModuleUserAuthGroup(i.dbhelper, module)
+}
+
+func (i *impl) UpdateModuleUserAuthGroup(module string, userAuthGroups []model.UserAuthGroup) bool {
+	return dal.UpdateModuleUserAuthGroup(i.dbhelper, module, userAuthGroups)
+}
+
+func (i *impl) QueryAllUserModule() []model.UserModuleInfo {
+	return dal.QueryAllUserModule(i.dbhelper)
+}
+
+func (i *impl) QueryUserModuleAuthGroup(user int) []model.ModuleAuthGroup {
 	return dal.QueryUserModuleAuthGroup(i.dbhelper, user)
 }
 
@@ -177,10 +193,12 @@ func (i *impl) QueryUserACL(user int) []model.ACLDetail {
 	return acls
 }
 
-func (i *impl) QueryModuleUserAuthGroup(module string) model.ModuleUserAuthGroup {
-	return dal.QueryModuleUserAuthGroup(i.dbhelper, module)
-}
+func (i *impl) QueryAllAuthGroupDef() []model.AuthGroup {
+	authGroups := []model.AuthGroup{}
 
-func (i *impl) UpdateModuleUserAuthGroup(module string, userAuthGroups []model.UserAuthGroup) bool {
-	return dal.UpdateModuleUserAuthGroup(i.dbhelper, module, userAuthGroups)
+	authGroups = append(authGroups, common.VisitorAuthGroup)
+	authGroups = append(authGroups, common.UserAuthGroup)
+	authGroups = append(authGroups, common.MaintainerAuthGroup)
+
+	return authGroups
 }

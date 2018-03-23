@@ -5,45 +5,45 @@ import (
 )
 
 // AppendAuthorityRoute append authority route
-func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) []common.Route {
+func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub) []common.Route {
 
-	rt := CreateGetACLByIDRoute(authorityHandler)
+	rt := CreateQueryACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetACLByModuleRoute(authorityHandler)
+	rt = CreateGetACLByIDRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreatePostACLRoute(authorityHandler)
+	rt = CreatePostACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateDeleteACLRoute(authorityHandler)
+	rt = CreateDeleteACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreatePutACLRoute(authorityHandler)
+	rt = CreatePutACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetACLAuthGroupRoute(authorityHandler)
+	rt = CreateGetACLAuthGroupRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreatePutACLAuthGroupRoute(authorityHandler)
+	rt = CreatePutACLAuthGroupRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetModuleACLRoute(authorityHandler)
+	rt = CreateQueryModuleRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetModuleUserAuthGroupRoute(authorityHandler, accountHandler)
+	rt = CreateGetModuleByIDRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreatePutModuleUserAuthGroupRoute(authorityHandler, accountHandler)
+	rt = CreatePutModuleRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetUserModuleAuthGroupRoute(authorityHandler, accountHandler)
+	rt = CreateQueryUserRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreatePutUserModuleAuthGroupRoute(authorityHandler, accountHandler)
+	rt = CreateGetUserByIDRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
-	rt = CreateGetUserACLRoute(authorityHandler, accountHandler)
+	rt = CreatePutUserRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
 	return routes

@@ -12,82 +12,71 @@ import (
 	"muidea.com/magicCenter/foundation/net"
 )
 
-// CreateGetUserModuleAuthGroupRoute 新建GetUserModuleAuthGroupRoute
-func CreateGetUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
-	i := userGetModuleAuthGroupRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+// CreateQueryUserRoute 新建GetUserModuleAuthGroupRoute
+func CreateQueryUserRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub) common.Route {
+	i := userGetRoute{authorityHandler: authorityHandler, accountHandler: accountHandler, moduleHub: moduleHub}
 	return &i
 }
 
-// CreatePutUserModuleAuthGroupRoute 新建UserModulePutRoute
-func CreatePutUserModuleAuthGroupRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
-	i := userPutModuleAuthGroupRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+// CreateGetUserByIDRoute 新建UserModulePutRoute
+func CreateGetUserByIDRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub) common.Route {
+	i := userGetByIDRoute{authorityHandler: authorityHandler, accountHandler: accountHandler, moduleHub: moduleHub}
 	return &i
 }
 
-// CreateGetUserACLRoute 新建UserACLGetRoute
-func CreateGetUserACLRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
-	i := userGetACLRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+// CreatePutUserRoute 新建UserACLGetRoute
+func CreatePutUserRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub) common.Route {
+	i := userPutRoute{authorityHandler: authorityHandler, accountHandler: accountHandler, moduleHub: moduleHub}
 	return &i
 }
 
-type userGetModuleAuthGroupRoute struct {
+type userGetRoute struct {
 	authorityHandler common.AuthorityHandler
 	accountHandler   common.AccountHandler
+	moduleHub        common.ModuleHub
 }
 
-type userGetModuleAuthGroupResult struct {
+type userGetResult struct {
 	common.Result
-	model.UserModuleAuthGroupView
+	User []model.UserModuleInfoView `json:"user"`
 }
 
-func (i *userGetModuleAuthGroupRoute) Method() string {
+func (i *userGetRoute) Method() string {
 	return common.GET
 }
 
-func (i *userGetModuleAuthGroupRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetUserModuleAuthGroup)
+func (i *userGetRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QueryUser)
 }
 
-func (i *userGetModuleAuthGroupRoute) Handler() interface{} {
-	return i.getUserModuleAuthGroupHandler
+func (i *userGetRoute) Handler() interface{} {
+	return i.getHandler
 }
 
-func (i *userGetModuleAuthGroupRoute) AuthGroup() int {
+func (i *userGetRoute) AuthGroup() int {
 	return common.UserAuthGroup.ID
 }
 
-func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getUserModuleAuthGroupHandler")
+func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getHandler")
 
-	result := userGetModuleAuthGroupResult{}
+	result := userGetResult{}
 	for true {
-		_, strID := net.SplitRESTAPI(r.URL.Path)
-		id, err := strconv.Atoi(strID)
-		if err != nil {
-			result.ErrorCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
+		userModuleInfo := i.authorityHandler.QueryAllUserModule()
+		for _, val := range userModuleInfo {
+			user, ok := i.accountHandler.FindUserByID(val.User)
+			if ok {
+				view := model.UserModuleInfoView{}
+				view.User = user.User
 
-		val := i.authorityHandler.QueryUserModuleAuthGroup(id)
-		for _, v := range val.ModuleAuthGroup {
-			group := model.ModuleAuthGroupView{}
-			group.ModuleAuthGroup = v
+				for _, v := range val.Module {
+					mod, _ := i.moduleHub.FindModule(v)
+					info := model.Module{ID: mod.ID(), Name: mod.Name()}
 
-			if v.AuthGroup == common.UserAuthGroup.ID {
-				group.AuthGroup = common.UserAuthGroup.Unit
-			} else if v.AuthGroup == common.MaintainerAuthGroup.ID {
-				group.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				group.AuthGroup = common.VisitorAuthGroup.Unit
+					view.Module = append(view.Module, info)
+				}
 			}
-
-			result.ModuleAuthGroup = append(result.ModuleAuthGroup, group)
 		}
-
-		user, _ := i.accountHandler.FindUserByID(val.User)
-		result.User.ID = user.ID
-		result.User.Name = user.Name
 
 		result.ErrorCode = common.Success
 		break
@@ -101,47 +90,39 @@ func (i *userGetModuleAuthGroupRoute) getUserModuleAuthGroupHandler(w http.Respo
 	w.Write(b)
 }
 
-type userPutModuleAuthGroupRoute struct {
+type userGetByIDRoute struct {
 	authorityHandler common.AuthorityHandler
 	accountHandler   common.AccountHandler
+	moduleHub        common.ModuleHub
 }
 
-type userPutModuleAuthGroupParam struct {
-	ModuleAuthGroup []model.ModuleAuthGroup
-}
-
-type userPutModuleAuthGroupResult struct {
+type userGetByIDResult struct {
 	common.Result
+	User            model.User                  `json:"user"`
+	ModuleAuthGroup []model.ModuleAuthGroupView `json:"moduleAuthGroup"`
 }
 
-func (i *userPutModuleAuthGroupRoute) Method() string {
-	return common.PUT
+func (i *userGetByIDRoute) Method() string {
+	return common.GET
 }
 
-func (i *userPutModuleAuthGroupRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.PutUserModuleAuthGroup)
+func (i *userGetByIDRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetUserByID)
 }
 
-func (i *userPutModuleAuthGroupRoute) Handler() interface{} {
-	return i.putUserModuleAuthGroupHandler
+func (i *userGetByIDRoute) Handler() interface{} {
+	return i.getByIDHandler
 }
 
-func (i *userPutModuleAuthGroupRoute) AuthGroup() int {
+func (i *userGetByIDRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putUserModuleAuthGroupHandler")
+func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getByIDHandler")
 
-	result := userPutModuleAuthGroupResult{}
+	result := userGetByIDResult{}
 	for true {
-		param := &userPutModuleAuthGroupParam{}
-		err := net.ParsePostJSON(r, param)
-		if err != nil {
-			result.ErrorCode = common.Failed
-			result.Reason = "非法参数"
-			break
-		}
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
@@ -150,13 +131,33 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 			break
 		}
 
-		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
+		user, ok := i.accountHandler.FindUserByID(id)
 		if ok {
-			result.ErrorCode = common.Success
-		} else {
-			result.ErrorCode = common.Failed
-			result.Reason = "更新用户管理模块信息失败"
+			result.User = user.User
 		}
+
+		moduleAuthGroups := i.authorityHandler.QueryUserModuleAuthGroup(id)
+		for _, val := range moduleAuthGroups {
+			view := model.ModuleAuthGroupView{}
+
+			mod, _ := i.moduleHub.FindModule(val.Module)
+			view.Module.ID = mod.ID()
+			view.Module.Name = mod.Name()
+
+			switch val.AuthGroup {
+			case common.VisitorAuthGroup.ID:
+				view.AuthGroup = model.Unit{ID: common.VisitorAuthGroup.ID, Name: common.VisitorAuthGroup.Name}
+			case common.UserAuthGroup.ID:
+				view.AuthGroup = model.Unit{ID: common.UserAuthGroup.ID, Name: common.UserAuthGroup.Name}
+			case common.MaintainerAuthGroup.ID:
+				view.AuthGroup = model.Unit{ID: common.MaintainerAuthGroup.ID, Name: common.MaintainerAuthGroup.Name}
+			default:
+			}
+
+			result.ModuleAuthGroup = append(result.ModuleAuthGroup, view)
+		}
+
+		result.ErrorCode = common.Success
 
 		break
 	}
@@ -169,37 +170,40 @@ func (i *userPutModuleAuthGroupRoute) putUserModuleAuthGroupHandler(w http.Respo
 	w.Write(b)
 }
 
-type userGetACLRoute struct {
+type userPutRoute struct {
 	authorityHandler common.AuthorityHandler
 	accountHandler   common.AccountHandler
+	moduleHub        common.ModuleHub
 }
 
-type userGetACLResult struct {
+type userPutParam struct {
+	ModuleAuthGroup []model.ModuleAuthGroup `json:"moduleAuthGroup"`
+}
+
+type userPutResult struct {
 	common.Result
-	User model.User            `json:"user"`
-	ACL  []model.ACLDetailView `json:"acl"`
 }
 
-func (i *userGetACLRoute) Method() string {
-	return common.GET
+func (i *userPutRoute) Method() string {
+	return common.PUT
 }
 
-func (i *userGetACLRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetUserACL)
+func (i *userPutRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PutUser)
 }
 
-func (i *userGetACLRoute) Handler() interface{} {
-	return i.getUserACLHandler
+func (i *userPutRoute) Handler() interface{} {
+	return i.putHandler
 }
 
-func (i *userGetACLRoute) AuthGroup() int {
+func (i *userPutRoute) AuthGroup() int {
 	return common.UserAuthGroup.ID
 }
 
-func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getUserACLHandler")
+func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putHandler")
 
-	result := userGetACLResult{}
+	result := userPutResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
@@ -209,17 +213,21 @@ func (i *userGetACLRoute) getUserACLHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		acls := i.authorityHandler.QueryUserACL(id)
-		for _, val := range acls {
-			acl := model.ACLDetailView{}
-			acl.ACLDetail = val
-
-			result.ACL = append(result.ACL, acl)
+		param := &userPutParam{}
+		err = net.ParsePostJSON(r, param)
+		if err != nil {
+			result.ErrorCode = common.Failed
+			result.Reason = "非法参数"
+			break
 		}
 
-		user, _ := i.accountHandler.FindUserByID(id)
-		result.User.ID = user.ID
-		result.User.Name = user.Name
+		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
+		if ok {
+			result.ErrorCode = common.Success
+		} else {
+			result.ErrorCode = common.Failed
+			result.Reason = "更新用户模块授权信息失败"
+		}
 
 		result.ErrorCode = common.Success
 		break

@@ -7,32 +7,56 @@ import (
 	"muidea.com/magicCenter/application/common/model"
 )
 
-// QueryUserModuleAuthGroup 获取指定用户拥有的模块
-func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) model.UserModuleAuthGroup {
-	retValue := model.UserModuleAuthGroup{User: user}
+// QueryAllModuleUser 获取全部模块用户信息
+func QueryAllModuleUser(helper dbhelper.DBHelper) []model.ModuleUserInfo {
+	retValue := []model.ModuleUserInfo{}
 
-	sql := fmt.Sprintf("select module, authgroup from authority_module where user=%d", user)
+	sql := fmt.Sprintf("select distinct(module) from authority_module")
 	helper.Query(sql)
 	for helper.Next() {
-		moduleAuthGroup := model.ModuleAuthGroup{}
-		helper.GetValue(&moduleAuthGroup.Module, &moduleAuthGroup.AuthGroup)
+		val := model.ModuleUserInfo{}
+		helper.GetValue(&val.Module)
+		retValue = append(retValue, val)
+	}
 
-		retValue.ModuleAuthGroup = append(retValue.ModuleAuthGroup, moduleAuthGroup)
+	for idx := range retValue {
+		val := &retValue[idx]
+		sql = fmt.Sprintf("select user from authority_module where module ='%s'", val.Module)
+		helper.Query(sql)
+		for helper.Next() {
+			user := -1
+			helper.GetValue(&user)
+			val.User = append(val.User, user)
+		}
 	}
 
 	return retValue
 }
 
-// UpdateUserModuleAuthGroup 更新指定用户拥有的模块
-func UpdateUserModuleAuthGroup(helper dbhelper.DBHelper, user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
+// QueryModuleUserAuthGroup 查询拥有指定Module的User
+func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) []model.UserAuthGroup {
+	retValue := []model.UserAuthGroup{}
+	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
+	helper.Query(sql)
+	for helper.Next() {
+		val := model.UserAuthGroup{}
+		helper.GetValue(&val.User, &val.AuthGroup)
+		retValue = append(retValue, val)
+	}
+
+	return retValue
+}
+
+// UpdateModuleUserAuthGroup 更新指定Module的用户的授权组
+func UpdateModuleUserAuthGroup(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
 	retVal := false
 
 	helper.BeginTransaction()
-	sql := fmt.Sprintf("delete from authority_module where user=%d", user)
+	sql := fmt.Sprintf("delete from authority_module where module='%s'", module)
 	_, retVal = helper.Execute(sql)
 	if retVal {
-		for _, v := range moduleAuthGroups {
-			sql := fmt.Sprintf("insert into authority_module (user, module, authgroup) values (%d,'%s', %d)", user, v.Module, v.AuthGroup)
+		for _, v := range userAuthGroup {
+			sql := fmt.Sprintf("insert into authority_module (user, module, authgroup) values (%d,'%s', %d)", v.User, module, v.AuthGroup)
 
 			num, ok := helper.Execute(sql)
 			retVal = (num == 1 && ok)
@@ -51,30 +75,58 @@ func UpdateUserModuleAuthGroup(helper dbhelper.DBHelper, user int, moduleAuthGro
 	return retVal
 }
 
-// QueryModuleUserAuthGroup 查询拥有指定Module的User
-func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) model.ModuleUserAuthGroup {
-	retValue := model.ModuleUserAuthGroup{Module: module}
-	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
+// QueryAllUserModule 获取全部用户模块信息
+func QueryAllUserModule(helper dbhelper.DBHelper) []model.UserModuleInfo {
+	retValue := []model.UserModuleInfo{}
+
+	sql := fmt.Sprintf("select distinct(user) from authority_module")
 	helper.Query(sql)
 	for helper.Next() {
-		userAuthGroup := model.UserAuthGroup{}
-		helper.GetValue(&userAuthGroup.User, &userAuthGroup.AuthGroup)
-		retValue.UserAuthGroup = append(retValue.UserAuthGroup, userAuthGroup)
+		val := model.UserModuleInfo{}
+		helper.GetValue(&val.User)
+		retValue = append(retValue, val)
+	}
+
+	for idx := range retValue {
+		val := &retValue[idx]
+		sql = fmt.Sprintf("select module from authority_module where user =%d", val.User)
+		helper.Query(sql)
+		for helper.Next() {
+			mod := ""
+			helper.GetValue(&mod)
+			val.Module = append(val.Module, mod)
+		}
 	}
 
 	return retValue
 }
 
-// UpdateModuleUserAuthGroup 更新指定Module的用户的授权组
-func UpdateModuleUserAuthGroup(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
+// QueryUserModuleAuthGroup 获取指定用户拥有的模块
+func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) []model.ModuleAuthGroup {
+	retValue := []model.ModuleAuthGroup{}
+
+	sql := fmt.Sprintf("select module, authgroup from authority_module where user=%d", user)
+	helper.Query(sql)
+	for helper.Next() {
+		val := model.ModuleAuthGroup{}
+		helper.GetValue(&val.Module, &val.AuthGroup)
+
+		retValue = append(retValue, val)
+	}
+
+	return retValue
+}
+
+// UpdateUserModuleAuthGroup 更新指定用户拥有的模块
+func UpdateUserModuleAuthGroup(helper dbhelper.DBHelper, user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
 	retVal := false
 
 	helper.BeginTransaction()
-	sql := fmt.Sprintf("delete from authority_module where module='%s'", module)
+	sql := fmt.Sprintf("delete from authority_module where user=%d", user)
 	_, retVal = helper.Execute(sql)
 	if retVal {
-		for _, v := range userAuthGroup {
-			sql := fmt.Sprintf("insert into authority_module (user, module, authgroup) values (%d,'%s', %d)", v.User, module, v.AuthGroup)
+		for _, v := range moduleAuthGroups {
+			sql := fmt.Sprintf("insert into authority_module (user, module, authgroup) values (%d,'%s', %d)", user, v.Module, v.AuthGroup)
 
 			num, ok := helper.Execute(sql)
 			retVal = (num == 1 && ok)

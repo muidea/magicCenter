@@ -12,141 +12,77 @@ import (
 	"muidea.com/magicCenter/foundation/net"
 )
 
-// CreateGetACLByIDRoute GetAclByID
-func CreateGetACLByIDRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclGetByIDRoute{authorityHandler: authorityHandler}
+// CreateQueryACLRoute GetAclByModule
+func CreateQueryACLRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclGetRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
-// CreateGetACLByModuleRoute GetAclByModule
-func CreateGetACLByModuleRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclGetByModuleRoute{authorityHandler: authorityHandler}
+// CreateGetACLByIDRoute GetAclByID
+func CreateGetACLByIDRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclGetByIDRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
 // CreatePostACLRoute CreateAcl
-func CreatePostACLRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclPostRoute{authorityHandler: authorityHandler}
+func CreatePostACLRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclPostRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
 // CreateDeleteACLRoute DeleteAcl
-func CreateDeleteACLRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclDeleteRoute{authorityHandler: authorityHandler}
+func CreateDeleteACLRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclDeleteRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
 // CreatePutACLRoute UpdateAcl
-func CreatePutACLRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclPutRoute{authorityHandler: authorityHandler}
+func CreatePutACLRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclPutRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
 // CreateGetACLAuthGroupRoute GetAclAuthGroup
-func CreateGetACLAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclGetACLAuthGroupRoute{authorityHandler: authorityHandler}
+func CreateGetACLAuthGroupRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclGetAuthGroupRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
 // CreatePutACLAuthGroupRoute UpdateAclAuthGroup
-func CreatePutACLAuthGroupRoute(authorityHandler common.AuthorityHandler) common.Route {
-	i := aclPutACLAuthGroupRoute{authorityHandler: authorityHandler}
+func CreatePutACLAuthGroupRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclPutAuthGroupRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
 	return &i
 }
 
-type aclGetByIDRoute struct {
+type aclGetRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
 type aclGetResult struct {
 	common.Result
-	ACLDetail model.ACLDetailView `json:"acl"`
-}
-
-func (i *aclGetByIDRoute) Method() string {
-	return common.GET
-}
-
-func (i *aclGetByIDRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetACLByID)
-}
-
-func (i *aclGetByIDRoute) Handler() interface{} {
-	return i.getACLHandler
-}
-
-func (i *aclGetByIDRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
-}
-
-func (i *aclGetByIDRoute) getACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getACLByIDHandler")
-	result := aclGetResult{}
-
-	for true {
-		_, strID := net.SplitRESTAPI(r.URL.Path)
-		id, err := strconv.Atoi(strID)
-		if err != nil {
-			result.ErrorCode = common.Failed
-			result.Reason = "参数非法"
-			break
-		}
-
-		acl, ok := i.authorityHandler.QueryACLByID(id)
-		if ok {
-			result.ACLDetail.ACLDetail = acl
-			if acl.AuthGroup == common.UserAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
-			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
-			}
-
-			result.ErrorCode = common.Success
-		} else {
-			result.ErrorCode = common.Failed
-		}
-
-		break
-	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type aclGetByModuleRoute struct {
-	authorityHandler common.AuthorityHandler
-}
-
-type aclGetByModuleResult struct {
-	common.Result
 	ACL []model.ACLView `json:"acl"`
 }
 
-func (i *aclGetByModuleRoute) Method() string {
+func (i *aclGetRoute) Method() string {
 	return common.GET
 }
 
-func (i *aclGetByModuleRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.QueryACLByModule)
+func (i *aclGetRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QueryACL)
 }
 
-func (i *aclGetByModuleRoute) Handler() interface{} {
-	return i.getACLHandler
+func (i *aclGetRoute) Handler() interface{} {
+	return i.getHandler
 }
 
-func (i *aclGetByModuleRoute) AuthGroup() int {
+func (i *aclGetRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclGetByModuleRoute) getACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getACLByModuleHandler")
-	result := aclGetByModuleResult{}
+func (i *aclGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getHandler")
+	result := aclGetResult{}
 
 	for true {
 		module := r.URL.Query().Get("module")
@@ -180,8 +116,78 @@ func (i *aclGetByModuleRoute) getACLHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(b)
 }
 
+type aclGetByIDRoute struct {
+	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
+}
+
+type aclGetByIDResult struct {
+	common.Result
+	ACLDetail model.ACLDetailView `json:"acl"`
+}
+
+func (i *aclGetByIDRoute) Method() string {
+	return common.GET
+}
+
+func (i *aclGetByIDRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetACLByID)
+}
+
+func (i *aclGetByIDRoute) Handler() interface{} {
+	return i.getByIDHandler
+}
+
+func (i *aclGetByIDRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
+}
+
+func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getByIDHandler")
+	result := aclGetByIDResult{}
+
+	for true {
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			result.ErrorCode = common.Failed
+			result.Reason = "参数非法"
+			break
+		}
+
+		acl, ok := i.authorityHandler.QueryACLByID(id)
+		if ok {
+			mod, _ := i.moduleHub.FindModule(acl.Module)
+			acl.Module = mod.Name()
+
+			result.ACLDetail.ACLDetail = acl
+			if acl.AuthGroup == common.UserAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
+			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
+				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
+			} else {
+				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
+			}
+
+			result.ErrorCode = common.Success
+		} else {
+			result.ErrorCode = common.Failed
+		}
+
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
 type aclPostRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
 type aclPostParam struct {
@@ -205,15 +211,15 @@ func (i *aclPostRoute) Pattern() string {
 }
 
 func (i *aclPostRoute) Handler() interface{} {
-	return i.postACLHandler
+	return i.postHandler
 }
 
 func (i *aclPostRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclPostRoute) postACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("postACLHandler")
+func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("postHandler")
 
 	result := aclPostResult{}
 	for true {
@@ -254,6 +260,7 @@ func (i *aclPostRoute) postACLHandler(w http.ResponseWriter, r *http.Request) {
 
 type aclDeleteRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
 type aclDeleteResult struct {
@@ -261,7 +268,7 @@ type aclDeleteResult struct {
 }
 
 func (i *aclDeleteRoute) Method() string {
-	return common.POST
+	return common.DELETE
 }
 
 func (i *aclDeleteRoute) Pattern() string {
@@ -269,15 +276,15 @@ func (i *aclDeleteRoute) Pattern() string {
 }
 
 func (i *aclDeleteRoute) Handler() interface{} {
-	return i.deleteACLHandler
+	return i.deleteHandler
 }
 
 func (i *aclDeleteRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclDeleteRoute) deleteACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteACLHandler")
+func (i *aclDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("deleteHandler")
 
 	result := aclDeleteResult{}
 	for true {
@@ -310,6 +317,7 @@ func (i *aclDeleteRoute) deleteACLHandler(w http.ResponseWriter, r *http.Request
 
 type aclPutRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
 type aclPutParam struct {
@@ -330,15 +338,15 @@ func (i *aclPutRoute) Pattern() string {
 }
 
 func (i *aclPutRoute) Handler() interface{} {
-	return i.putACLHandler
+	return i.putHandler
 }
 
 func (i *aclPutRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclPutRoute) putACLHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putACLHandler")
+func (i *aclPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putHandler")
 
 	result := aclPutResult{}
 	for true {
@@ -369,36 +377,37 @@ func (i *aclPutRoute) putACLHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-type aclGetACLAuthGroupRoute struct {
+type aclGetAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
-type aclGetACLAuthGroupResult struct {
+type aclGetAuthGroupResult struct {
 	common.Result
 	ACL       model.ACL       `json:"acl"`
 	AuthGroup model.AuthGroup `json:"authGroup"`
 }
 
-func (i *aclGetACLAuthGroupRoute) Method() string {
+func (i *aclGetAuthGroupRoute) Method() string {
 	return common.GET
 }
 
-func (i *aclGetACLAuthGroupRoute) Pattern() string {
+func (i *aclGetAuthGroupRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetACLAuthGroup)
 }
 
-func (i *aclGetACLAuthGroupRoute) Handler() interface{} {
-	return i.getACLAuthGroupHandler
+func (i *aclGetAuthGroupRoute) Handler() interface{} {
+	return i.getAuthGroupHandler
 }
 
-func (i *aclGetACLAuthGroupRoute) AuthGroup() int {
+func (i *aclGetAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclGetACLAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getACLAuthGroupHandler")
+func (i *aclGetAuthGroupRoute) getAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getAuthGroupHandler")
 
-	result := aclGetACLAuthGroupResult{}
+	result := aclGetAuthGroupResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
@@ -437,11 +446,12 @@ func (i *aclGetACLAuthGroupRoute) getACLAuthGroupHandler(w http.ResponseWriter, 
 	w.Write(b)
 }
 
-type aclPutACLAuthGroupRoute struct {
+type aclPutAuthGroupRoute struct {
 	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
 }
 
-type aclPutACLAuthGroupParam struct {
+type aclPutAuthGroupParam struct {
 	AuthGroup int `json:"authGroup"`
 }
 
@@ -449,24 +459,24 @@ type aclPutACLAuthGroupResult struct {
 	common.Result
 }
 
-func (i *aclPutACLAuthGroupRoute) Method() string {
+func (i *aclPutAuthGroupRoute) Method() string {
 	return common.PUT
 }
 
-func (i *aclPutACLAuthGroupRoute) Pattern() string {
+func (i *aclPutAuthGroupRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.PutACLAuthGroup)
 }
 
-func (i *aclPutACLAuthGroupRoute) Handler() interface{} {
-	return i.putACLAuthGroupHandler
+func (i *aclPutAuthGroupRoute) Handler() interface{} {
+	return i.putAuthGroupHandler
 }
 
-func (i *aclPutACLAuthGroupRoute) AuthGroup() int {
+func (i *aclPutAuthGroupRoute) AuthGroup() int {
 	return common.MaintainerAuthGroup.ID
 }
 
-func (i *aclPutACLAuthGroupRoute) putACLAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("putACLAuthGroupHandler")
+func (i *aclPutAuthGroupRoute) putAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putAuthGroupHandler")
 
 	result := aclPutACLAuthGroupResult{}
 	for true {
@@ -478,7 +488,7 @@ func (i *aclPutACLAuthGroupRoute) putACLAuthGroupHandler(w http.ResponseWriter, 
 			break
 		}
 
-		param := &aclPutACLAuthGroupParam{}
+		param := &aclPutAuthGroupParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrorCode = common.Failed

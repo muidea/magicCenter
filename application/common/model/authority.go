@@ -29,19 +29,20 @@ type ACLDetail struct {
 // ACLDetailView ACL显示信息
 type ACLDetailView struct {
 	ACLDetail
-	AuthGroup Unit `json:"authGroup"`
+	Module    Module `json:"module"`
+	AuthGroup Unit   `json:"authGroup"`
 }
 
-// ModuleAuthGroup 模块授权组
-type ModuleAuthGroup struct {
-	Module    string `json:"module"`
-	AuthGroup int    `json:"authGroup"`
+// ModuleUserInfo 模块的用户信息
+type ModuleUserInfo struct {
+	Module string `json:"module"`
+	User   []int  `json:"user"`
 }
 
-// ModuleAuthGroupView 模块授权组显示信息
-type ModuleAuthGroupView struct {
-	ModuleAuthGroup
-	AuthGroup Unit `json:"authGroup"`
+// ModuleUserInfoView 模块的用户信息
+type ModuleUserInfoView struct {
+	Module Module `json:"module"`
+	User   []User `json:"user"`
 }
 
 // UserAuthGroup 用户授权组
@@ -56,26 +57,26 @@ type UserAuthGroupView struct {
 	AuthGroup Unit `json:"authGroup"`
 }
 
-// UserModuleAuthGroup 用户模块授权组
-type UserModuleAuthGroup struct {
-	User            int               `json:"user"`
-	ModuleAuthGroup []ModuleAuthGroup `json:"moduleAuthGroup"`
+// UserModuleInfo 用户模块信息
+type UserModuleInfo struct {
+	User   int      `json:"user"`
+	Module []string `json:"module"`
 }
 
-// UserModuleAuthGroupView 用户模块授权组显示信息
-type UserModuleAuthGroupView struct {
-	User            User                  `json:"user"`
-	ModuleAuthGroup []ModuleAuthGroupView `json:"moduleAuthGroup"`
+// UserModuleInfoView 用户模块信息
+type UserModuleInfoView struct {
+	User   User     `json:"user"`
+	Module []Module `json:"module"`
 }
 
-// ModuleUserAuthGroup 模块用户授权信息
-type ModuleUserAuthGroup struct {
-	Module        string          `json:"module"`
-	UserAuthGroup []UserAuthGroup `json:"userAuthGroup"`
+// ModuleAuthGroup 模块授权组
+type ModuleAuthGroup struct {
+	Module    string `json:"module"`
+	AuthGroup int    `json:"authGroup"`
 }
 
-// ModuleUserAuthGroupView 模块用户授权信息显示信息
-type ModuleUserAuthGroupView struct {
-	Module        string              `json:"module"`
-	UserAuthGroup []UserAuthGroupView `json:"userAuthGroup"`
+// ModuleAuthGroupView 模块授权组显示信息
+type ModuleAuthGroupView struct {
+	Module    Module `json:"module"`
+	AuthGroup Unit   `json:"authGroup"`
 }

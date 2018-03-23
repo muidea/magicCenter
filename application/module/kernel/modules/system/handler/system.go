@@ -10,10 +10,10 @@ import (
 func CreateSystemHandler(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) common.SystemHandler {
 	i := impl{moduleHub: moduleHub}
 
-	moduleList := []model.Module{}
+	moduleList := []model.ModuleDetail{}
 	modules := moduleHub.QueryAllModule()
 	for _, mod := range modules {
-		item := model.Module{ID: mod.ID(), Name: mod.Name(), Description: mod.Description(), Type: mod.Type(), Status: mod.Status()}
+		item := model.ModuleDetail{ID: mod.ID(), Name: mod.Name(), Description: mod.Description(), Type: mod.Type(), Status: mod.Status()}
 
 		for _, rt := range mod.Routes() {
 			r := model.Route{Pattern: rt.Pattern(), Method: rt.Method()}
@@ -29,7 +29,7 @@ func CreateSystemHandler(configuration common.Configuration, sessionRegistry com
 
 type impl struct {
 	moduleHub  common.ModuleHub
-	moduleList []model.Module
+	moduleList []model.ModuleDetail
 }
 
 func (s *impl) GetSystemProperty() model.SystemProperty {
@@ -40,7 +40,7 @@ func (s *impl) UpdateSystemProperty(sysProperty model.SystemProperty) bool {
 	return configuration.UpdateSystemProperty(sysProperty)
 }
 
-func (s *impl) GetModuleList() []model.Module {
+func (s *impl) GetModuleList() []model.ModuleDetail {
 	return s.moduleList
 }
 

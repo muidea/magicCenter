@@ -140,7 +140,7 @@ type getModulesRoute struct {
 
 type getModulesResult struct {
 	common.Result
-	Module []model.Module `json:"module"`
+	Module []model.ModuleDetail `json:"module"`
 }
 
 func (i *getModulesRoute) Method() string {

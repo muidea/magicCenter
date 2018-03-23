@@ -14,11 +14,11 @@ const Description = "Magic 权限管理模块"
 // URL 模块Url
 const URL = "/authority"
 
+// QueryACL 查询ACL
+const QueryACL = "/acl/"
+
 // GetACLByID 查询指定的ACL
 const GetACLByID = "/acl/:id"
-
-// QueryACLByModule 查询指定的ACL
-const QueryACLByModule = "/acl/"
 
 // PostACL 新增ACL
 const PostACL = "/acl/"
@@ -35,20 +35,20 @@ const GetACLAuthGroup = "/acl/authgroup/:id"
 // PutACLAuthGroup 更新指定acl的权限组
 const PutACLAuthGroup = "/acl/authgroup/:id"
 
-// GetModuleACL 查询指定Module的ACL
-const GetModuleACL = "/module/acl/:id"
+// QueryModule 查询Module的用户信息
+const QueryModule = "/module/"
 
-// GetModuleUserAuthGroup 查询拥有指定Module的用户
-const GetModuleUserAuthGroup = "/module/user/:id"
+// GetModuleByID 查询指定Module的用户授权组信息
+const GetModuleByID = "/module/:id"
 
-// PutModuleUserAuthGroup 更新拥有指定Module的用户
-const PutModuleUserAuthGroup = "/module/user/:id"
+// PutModule 更新指定Module的用户授权组信息
+const PutModule = "/module/:id"
 
-// GetUserModuleAuthGroup 查询指定用户拥有的Module
-const GetUserModuleAuthGroup = "/user/module/:id"
+// QueryUser 查询用户的Module信息
+const QueryUser = "/user/"
 
-// PutUserModuleAuthGroup 更新指定用户拥有的Module
-const PutUserModuleAuthGroup = "/user/module/:id"
+// GetUserByID 查询指定User的Module授权组信息
+const GetUserByID = "/user/:id"
 
-// GetUserACL 获取指定用户可访问的ACL
-const GetUserACL = "/user/acl/:id"
+// PutUser 更新指定用户的Module授权组信息
+const PutUser = "/user/:id"
