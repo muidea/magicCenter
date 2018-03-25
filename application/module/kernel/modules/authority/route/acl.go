@@ -158,8 +158,6 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 		acl, ok := i.authorityHandler.QueryACLByID(id)
 		if ok {
 			mod, _ := i.moduleHub.FindModule(acl.Module)
-			acl.Module = mod.Name()
-
 			result.ACLDetail.ACLDetail = acl
 			if acl.AuthGroup == common.UserAuthGroup.ID {
 				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
@@ -168,6 +166,9 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 			} else {
 				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
 			}
+
+			result.ACLDetail.Module.ID = mod.ID()
+			result.ACLDetail.Module.Name = mod.Name()
 
 			result.ErrorCode = common.Success
 		} else {

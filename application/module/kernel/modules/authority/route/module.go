@@ -95,8 +95,7 @@ type moduleGetByIDRoute struct {
 
 type moduleGetByIDResult struct {
 	common.Result
-	Module        model.Module              `json:"module"`
-	UserAuthGroup []model.UserAuthGroupView `json:"userAuthGroup"`
+	Module model.ModuleUserAuthGroupView `json:"module"`
 }
 
 func (i *moduleGetByIDRoute) Method() string {
@@ -126,7 +125,6 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 		result.Module.ID = mod.ID()
 		result.Module.Name = mod.Name()
 
-		existUserAuthGroups := []model.UserAuthGroup{}
 		userAuthGroups := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		for _, val := range userAuthGroups {
 			user, ok := i.accountHandler.FindUserByID(val.User)
@@ -139,23 +137,16 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 
 				switch val.AuthGroup {
 				case common.VisitorAuthGroup.ID:
-					view.AuthGroup = model.Unit{ID: common.VisitorAuthGroup.ID, Name: common.VisitorAuthGroup.Name}
+					view.AuthGroup = common.VisitorAuthGroup
 				case common.UserAuthGroup.ID:
-					view.AuthGroup = model.Unit{ID: common.UserAuthGroup.ID, Name: common.UserAuthGroup.Name}
+					view.AuthGroup = common.UserAuthGroup
 				case common.MaintainerAuthGroup.ID:
-					view.AuthGroup = model.Unit{ID: common.MaintainerAuthGroup.ID, Name: common.MaintainerAuthGroup.Name}
+					view.AuthGroup = common.MaintainerAuthGroup
 				default:
 				}
 
-				result.UserAuthGroup = append(result.UserAuthGroup, view)
-
-				existUserAuthGroups = append(existUserAuthGroups, val)
+				result.Module.UserAuthGroup = append(result.Module.UserAuthGroup, view)
 			}
-		}
-
-		if len(userAuthGroups) != len(existUserAuthGroups) {
-			// 到这里肯定是出现了异常，原因可能是由于该用户已经不存在了，所以这里主动的更新一下信息
-			i.authorityHandler.UpdateModuleUserAuthGroup(id, existUserAuthGroups)
 		}
 
 		result.ErrorCode = common.Success

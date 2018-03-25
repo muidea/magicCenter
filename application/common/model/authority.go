@@ -54,7 +54,13 @@ type UserAuthGroup struct {
 // UserAuthGroupView 用户授权组显示信息
 type UserAuthGroupView struct {
 	User
-	AuthGroup Unit `json:"authGroup"`
+	AuthGroup AuthGroup `json:"authGroup"`
+}
+
+// ModuleUserAuthGroupView 模块的用户授权组显示信息
+type ModuleUserAuthGroupView struct {
+	Module
+	UserAuthGroup []UserAuthGroupView `json:"userAuthGroup"`
 }
 
 // UserModuleInfo 用户模块信息
@@ -78,5 +84,11 @@ type ModuleAuthGroup struct {
 // ModuleAuthGroupView 模块授权组显示信息
 type ModuleAuthGroupView struct {
 	Module
-	AuthGroup Unit `json:"authGroup"`
+	AuthGroup AuthGroup `json:"authGroup"`
+}
+
+// UserModuleAuthGroupView 用户的模块授权组显示信息
+type UserModuleAuthGroupView struct {
+	UserDetailView
+	ModuleAuthGroup []ModuleAuthGroupView `json:"moduleAuthGroup"`
 }

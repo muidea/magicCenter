@@ -100,8 +100,7 @@ type userGetByIDRoute struct {
 
 type userGetByIDResult struct {
 	common.Result
-	User            model.User                  `json:"user"`
-	ModuleAuthGroup []model.ModuleAuthGroupView `json:"moduleAuthGroup"`
+	User model.UserModuleAuthGroupView `json:"user"`
 }
 
 func (i *userGetByIDRoute) Method() string {
@@ -135,7 +134,9 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 
 		user, ok := i.accountHandler.FindUserByID(id)
 		if ok {
-			result.User = user.User
+			result.User.UserDetail = user
+
+			result.User.Group = i.accountHandler.GetGroups(user.Group)
 		}
 
 		moduleAuthGroups := i.authorityHandler.QueryUserModuleAuthGroup(id)
@@ -148,15 +149,15 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 
 			switch val.AuthGroup {
 			case common.VisitorAuthGroup.ID:
-				view.AuthGroup = model.Unit{ID: common.VisitorAuthGroup.ID, Name: common.VisitorAuthGroup.Name}
+				view.AuthGroup = common.VisitorAuthGroup
 			case common.UserAuthGroup.ID:
-				view.AuthGroup = model.Unit{ID: common.UserAuthGroup.ID, Name: common.UserAuthGroup.Name}
+				view.AuthGroup = common.UserAuthGroup
 			case common.MaintainerAuthGroup.ID:
-				view.AuthGroup = model.Unit{ID: common.MaintainerAuthGroup.ID, Name: common.MaintainerAuthGroup.Name}
+				view.AuthGroup = common.MaintainerAuthGroup
 			default:
 			}
 
-			result.ModuleAuthGroup = append(result.ModuleAuthGroup, view)
+			result.User.ModuleAuthGroup = append(result.User.ModuleAuthGroup, view)
 		}
 
 		result.ErrorCode = common.Success
