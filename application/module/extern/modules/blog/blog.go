@@ -1,106 +1,66 @@
 package blog
 
 import (
-	"magiccenter/common"
-	"magiccenter/system"
-
-	"muidea.com/util"
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/module/extern/modules/blog/def"
+	"muidea.com/magicCenter/application/module/extern/modules/blog/route"
 )
 
-// ID Blog Module ID
-const ID = "f17133ec-63e9-4b46-8757-e6ca1af6fe3e"
+// LoadModule 加载模块
+func LoadModule(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
 
-// Name Blog Module Name
-const Name = "Magic Blog"
+	mod, _ := moduleHub.FindModule(common.CotentModuleID)
+	contentHandler := mod.EntryPoint().(common.ContentHandler)
 
-// Description Blog Module Description
-const Description = "Magic 博客"
+	instance := &blog{routes: make([]common.Route, 0)}
 
-// URL Blog Module URL
-const URL = "/blog"
+	instance.routes = route.AppendBlogRoute(instance.routes, contentHandler)
+
+	moduleHub.RegisterModule(instance)
+}
 
 type blog struct {
+	routes []common.Route
 }
 
-var instance *blog
-
-// LoadModule 加载模块
-func LoadModule() {
-	if instance == nil {
-		instance = &blog{}
-	}
-
-	modulehub := system.GetModuleHub()
-	modulehub.RegisterModule(instance)
+func (s *blog) ID() string {
+	return def.ID
 }
 
-func (b *blog) ID() string {
-	return ID
+func (s *blog) Name() string {
+	return def.Name
 }
 
-func (b *blog) Name() string {
-	return Name
+func (s *blog) Description() string {
+	return def.Description
 }
 
-func (b *blog) Description() string {
-	return Description
+func (s *blog) Group() string {
+	return "user"
 }
 
-func (b *blog) Group() string {
-	return "content"
+func (s *blog) Type() int {
+	return common.EXTERNAL
 }
 
-func (b *blog) Type() int {
-	return common.INTERNAL
-}
-
-func (b *blog) URL() string {
-	return URL
-}
-
-func (b *blog) Status() int {
+func (s *blog) Status() int {
 	return 0
 }
 
-func (b *blog) EndPoint() common.EndPoint {
+func (s *blog) EntryPoint() interface{} {
 	return nil
 }
 
-func (b *blog) AuthGroups() []common.AuthGroup {
-	groups := []common.AuthGroup{}
-
-	return groups
+// Route Account 路由信息
+func (s *blog) Routes() []common.Route {
+	return s.routes
 }
 
-func (b *blog) Routes() []common.Route {
-	router := system.GetRouter()
-	auth := system.GetAuthority()
-
-	routes := []common.Route{
-		router.NewRoute(common.GET, "/", indexHandler, nil),
-		router.NewRoute(common.GET, "/view/", viewContentHandler, nil),
-		router.NewRoute(common.GET, "/catalog/", viewCatalogHandler, nil),
-		router.NewRoute(common.GET, "/link/", viewLinkHandler, nil),
-		router.NewRoute(common.GET, "/maintain/", MaintainViewHandler, auth.AdminAuthVerify()),
-		router.NewRoute(common.POST, "/ajaxMaintain/", MaintainActionHandler, auth.AdminAuthVerify()),
-	}
-
-	return routes
-}
-
-func (b *blog) Startup() bool {
+// Startup 启动Account模块
+func (s *blog) Startup() bool {
 	return true
 }
 
-func (b *blog) Cleanup() {
-
-}
-
-func (b *blog) Invoke(param interface{}, result interface{}) bool {
-	util.ValidataPtr(param)
-	if result != nil {
-		util.ValidataPtr(result)
-	}
-
-	return false
+// Cleanup 清除Account模块
+func (s *blog) Cleanup() {
 }

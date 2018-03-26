@@ -2,18 +2,18 @@ package loader
 
 import (
 	"log"
-	"magiccenter/extern/modules/blog"
-	"magiccenter/extern/modules/cms"
-	"magiccenter/extern/modules/static"
+
+	"muidea.com/magicCenter/application/common"
+	"muidea.com/magicCenter/application/module/extern/modules/blog"
 )
 
 // LoadAllModules 加载所有Module
-func LoadAllModules() {
+func LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, modulHub common.ModuleHub) {
 	log.Println("load all modules...")
 
-	blog.LoadModule()
+	blog.LoadModule(configuration, sessionRegistry, modulHub)
 
-	cms.LoadModule()
+	//cms.LoadModule()
 
-	static.LoadModule()
+	//static.LoadModule()
 }
