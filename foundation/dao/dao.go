@@ -41,112 +41,144 @@ func Fetch(user string, password string, address string, dbName string) (Dao, er
 	return &i, err
 }
 
-func (impl *impl) Release() {
+func (s *impl) Release() {
 
-	if impl.rowsHandle != nil {
-		impl.rowsHandle.Close()
+	if s.dbTx != nil {
+		panic("dbTx isn't nil")
 	}
-	impl.rowsHandle = nil
 
-	if impl.dbHandle != nil {
+	if s.rowsHandle != nil {
+		s.rowsHandle.Close()
+	}
+	s.rowsHandle = nil
+
+	if s.dbHandle != nil {
 		//log.Print("close database connection...")
 
-		impl.dbHandle.Close()
+		s.dbHandle.Close()
 	}
-	impl.dbHandle = nil
+	s.dbHandle = nil
 
 }
 
-func (impl *impl) BeginTransaction() {
-	tx, err := impl.dbHandle.Begin()
+func (s *impl) BeginTransaction() {
+	tx, err := s.dbHandle.Begin()
 	if err != nil {
 		panic("begin transaction exception, err:" + err.Error())
 	}
 
-	impl.dbTx = tx
+	s.dbTx = tx
 	// log.Print("BeginTransaction")
 }
 
-func (impl *impl) Commit() {
-	if impl.dbTx == nil {
+func (s *impl) Commit() {
+	if s.dbTx == nil {
 		panic("dbTx is nil")
 	}
 
-	err := impl.dbTx.Commit()
+	err := s.dbTx.Commit()
 	if err != nil {
-		impl.dbTx = nil
+		s.dbTx = nil
 
 		panic("commit transaction exception, err:" + err.Error())
 	}
 
-	impl.dbTx = nil
+	s.dbTx = nil
 	// log.Print("Commit")
 }
 
-func (impl *impl) Rollback() {
-	if impl.dbTx == nil {
+func (s *impl) Rollback() {
+	if s.dbTx == nil {
 		panic("dbTx is nil")
 	}
 
-	err := impl.dbTx.Rollback()
+	err := s.dbTx.Rollback()
 	if err != nil {
-		impl.dbTx = nil
+		s.dbTx = nil
 
 		panic("rollback transaction exception, err:" + err.Error())
 	}
 
-	impl.dbTx = nil
+	s.dbTx = nil
 	// log.Print("Rollback")
 }
 
-func (impl *impl) Query(sql string) {
+func (s *impl) Query(sql string) {
 
-	if impl.dbHandle == nil {
-		panic("dbHanlde is nil")
-	}
-	if impl.rowsHandle != nil {
-		impl.rowsHandle.Close()
-		impl.rowsHandle = nil
-	}
+	if s.dbTx == nil {
+		if s.dbHandle == nil {
+			panic("dbHanlde is nil")
+		}
+		if s.rowsHandle != nil {
+			s.rowsHandle.Close()
+			s.rowsHandle = nil
+		}
 
-	rows, err := impl.dbHandle.Query(sql)
-	if err != nil {
-		panic("query exception, err:" + err.Error() + ", sql:" + sql)
+		rows, err := s.dbHandle.Query(sql)
+		if err != nil {
+			panic("query exception, err:" + err.Error() + ", sql:" + sql)
+		}
+		s.rowsHandle = rows
+	} else {
+
+		if s.rowsHandle != nil {
+			s.rowsHandle.Close()
+			s.rowsHandle = nil
+		}
+
+		rows, err := s.dbTx.Query(sql)
+		if err != nil {
+			panic("query exception, err:" + err.Error() + ", sql:" + sql)
+		}
+		s.rowsHandle = rows
 	}
-	impl.rowsHandle = rows
 }
 
-func (impl *impl) Next() bool {
-	if impl.rowsHandle == nil {
+func (s *impl) Next() bool {
+	if s.rowsHandle == nil {
 		panic("rowsHandle is nil")
 	}
 
-	ret := impl.rowsHandle.Next()
+	ret := s.rowsHandle.Next()
 	if !ret {
-		impl.rowsHandle.Close()
-		impl.rowsHandle = nil
+		s.rowsHandle.Close()
+		s.rowsHandle = nil
 	}
 
 	return ret
 }
 
-func (impl *impl) GetField(value ...interface{}) {
-	if impl.rowsHandle == nil {
+func (s *impl) GetField(value ...interface{}) {
+	if s.rowsHandle == nil {
 		panic("rowsHandle is nil")
 	}
 
-	err := impl.rowsHandle.Scan(value...)
+	err := s.rowsHandle.Scan(value...)
 	if err != nil {
 		panic("scan exception, err:" + err.Error())
 	}
 }
 
-func (impl *impl) Execute(sql string) (int64, bool) {
-	if impl.dbHandle == nil {
-		panic("dbHandle is nil")
+func (s *impl) Execute(sql string) (int64, bool) {
+	if s.dbTx == nil {
+		if s.dbHandle == nil {
+			panic("dbHandle is nil")
+		}
+
+		result, err := s.dbHandle.Exec(sql)
+		if err != nil {
+			panic("exec exception, err:" + err.Error() + ", sql:" + sql)
+		}
+
+		num, err := result.RowsAffected()
+		if err != nil {
+			panic("rows affected exception, err:" + err.Error())
+		}
+
+		return num, true
 	}
 
-	result, err := impl.dbHandle.Exec(sql)
+	result, err := s.dbTx.Exec(sql)
 	if err != nil {
 		panic("exec exception, err:" + err.Error() + ", sql:" + sql)
 	}
