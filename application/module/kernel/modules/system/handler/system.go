@@ -15,11 +15,6 @@ func CreateSystemHandler(configuration common.Configuration, sessionRegistry com
 	for _, mod := range modules {
 		item := model.ModuleDetail{ID: mod.ID(), Name: mod.Name(), Description: mod.Description(), Type: mod.Type(), Status: mod.Status()}
 
-		for _, rt := range mod.Routes() {
-			r := model.Route{Pattern: rt.Pattern(), Method: rt.Method()}
-			item.Route = append(item.Route, r)
-		}
-
 		moduleList = append(moduleList, item)
 	}
 	i.moduleList = moduleList
@@ -40,8 +35,13 @@ func (s *impl) UpdateSystemProperty(sysProperty model.SystemProperty) bool {
 	return configuration.UpdateSystemProperty(sysProperty)
 }
 
-func (s *impl) GetModuleList() []model.ModuleDetail {
-	return s.moduleList
+func (s *impl) GetModuleList() []model.Module {
+	moduleList := []model.Module{}
+	for _, val := range s.moduleList {
+		moduleList = append(moduleList, model.Module{ID: val.ID, Name: val.Name})
+	}
+
+	return moduleList
 }
 
 func (s *impl) GetSystemStatistics() model.StatisticsView {

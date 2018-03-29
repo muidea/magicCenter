@@ -124,6 +124,9 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 		mod, _ := i.moduleHub.FindModule(id)
 		result.Module.ID = mod.ID()
 		result.Module.Name = mod.Name()
+		result.Module.Description = mod.Description()
+		result.Module.Type = mod.Type()
+		result.Module.Status = mod.Status()
 
 		userAuthGroups := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		for _, val := range userAuthGroups {

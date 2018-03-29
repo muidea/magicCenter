@@ -59,7 +59,7 @@ type UserAuthGroupView struct {
 
 // ModuleUserAuthGroupView 模块的用户授权组显示信息
 type ModuleUserAuthGroupView struct {
-	Module
+	ModuleDetail
 	UserAuthGroup []UserAuthGroupView `json:"userAuthGroup"`
 }
 
