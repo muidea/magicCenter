@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadMediaID(helper dbhelper.DBHelper) int {
@@ -28,7 +28,7 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 	helper.Query(sql)
 
 	for helper.Next() {
-		media := model.Summary{}
+		media := model.Summary{Type: model.MEDIA}
 		helper.GetValue(&media.ID, &media.Name, &media.CreateDate, &media.Creater)
 
 		summaryList = append(summaryList, media)
@@ -72,21 +72,15 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.MEDIA)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, name,createdate,creater from content_media where id =%d`, r.RId())
-		helper.Query(sql)
-
-		if helper.Next() {
-			media := model.Summary{}
-			helper.GetValue(&media.ID, &media.Name, &media.CreateDate, &media.Creater)
-			summaryList = append(summaryList, media)
-		}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
 	}
 
 	for index, value := range summaryList {
-		media := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.MEDIA)
+		summary := &summaryList[index]
+		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
-			media.Catalog = append(media.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, r.RId())
 		}
 	}
 
@@ -146,7 +140,7 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 
 // CreateMedia 新建文件
 func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, creater int, catalogs []int) (model.Summary, bool) {
-	media := model.Summary{Unit: model.Unit{Name: name}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+	media := model.Summary{Unit: model.Unit{Name: name}, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocMediaID()
 	result := false
@@ -190,7 +184,7 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, c
 
 // SaveMedia 保存文件
 func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary, bool) {
-	summary := model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Type: model.MEDIA, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}
 	result := false
 	helper.BeginTransaction()
 	for {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadLinkID(helper dbhelper.DBHelper) int {
@@ -28,7 +28,7 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 	helper.Query(sql)
 
 	for helper.Next() {
-		link := model.Summary{}
+		link := model.Summary{Type: model.LINK}
 		helper.GetValue(&link.ID, &link.Name, &link.CreateDate, &link.Creater)
 
 		summaryList = append(summaryList, link)
@@ -72,19 +72,13 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.LINK)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, name,createdate,creater from content_link where id =%d`, r.RId())
-		helper.Query(sql)
-
-		if helper.Next() {
-			link := model.Summary{}
-			helper.GetValue(&link.ID, &link.Name, &link.CreateDate, &link.Creater)
-			summaryList = append(summaryList, link)
-		}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
 	}
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.LINK)
+		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
@@ -146,7 +140,7 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 
 // CreateLink 新建Link
 func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, creater int, catalogs []int) (model.Summary, bool) {
-	lnk := model.Summary{Unit: model.Unit{Name: name}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+	lnk := model.Summary{Unit: model.Unit{Name: name}, Type: model.LINK, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocLinkID()
 	result := false
@@ -190,7 +184,7 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, cr
 
 // SaveLink 保存Link
 func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bool) {
-	summary := model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Type: model.LINK, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}
 	result := false
 	helper.BeginTransaction()
 

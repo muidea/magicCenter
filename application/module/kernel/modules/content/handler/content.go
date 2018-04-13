@@ -3,8 +3,8 @@ package handler
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
+	"muidea.com/magicCommon/model"
 )
 
 // CreateContentHandler 新建ContentHandler
@@ -164,7 +164,26 @@ func (i *impl) DestroyMedia(id int) bool {
 	return i.mediaHandler.destroyMedia(id)
 }
 
-func (i *impl) GetAccountSummary() model.ContentSummary {
+func (i *impl) GetSummaryByCatalog(id int) []model.Summary {
+	summaryList := []model.Summary{}
+	resList := resource.QueryReferenceResource(i.dbhelper, id, model.CATALOG, "")
+	for _, r := range resList {
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
+	}
+
+	for index, value := range summaryList {
+		summary := &summaryList[index]
+		ress := resource.QueryRelativeResource(i.dbhelper, value.ID, value.Type)
+		for _, r := range ress {
+			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+	}
+
+	return summaryList
+}
+
+func (i *impl) GetContentSummary() model.ContentSummary {
 	result := model.ContentSummary{}
 
 	articleCount := len(i.articleHandler.getAllArticleSummary())

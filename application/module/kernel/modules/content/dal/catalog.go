@@ -7,9 +7,9 @@ import (
 	"muidea.com/magicCenter/application/common"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadCatalogID(helper dbhelper.DBHelper) int {
@@ -31,7 +31,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 	helper.Query(sql)
 
 	for helper.Next() {
-		c := model.Summary{}
+		c := model.Summary{Type: model.CATALOG}
 		helper.GetValue(&c.ID, &c.Name, &c.CreateDate, &c.Creater)
 
 		summaryList = append(summaryList, c)
@@ -119,20 +119,13 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, name,createdate,creater from content_catalog where id =%d`, r.RId())
-		helper.Query(sql)
-
-		if helper.Next() {
-			summary := model.Summary{}
-			helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
-
-			summaryList = append(summaryList, summary)
-		}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
 	}
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.CATALOG)
+		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
@@ -218,7 +211,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 // CreateCatalog 新建分类
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
-	catalog := model.Summary{Unit: model.Unit{Name: name}, Catalog: parent, CreateDate: createDate, Creater: creater}
+	catalog := model.Summary{Unit: model.Unit{Name: name}, Type: model.CATALOG, Catalog: parent, CreateDate: createDate, Creater: creater}
 
 	if !enableTransaction {
 		helper.BeginTransaction()
@@ -276,7 +269,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 	if !enableTransaction {
 		helper.BeginTransaction()
 	}
-	summary := model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Type: model.CATALOG, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}
 
 	result := false
 	for {

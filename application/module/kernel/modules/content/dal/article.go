@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadArticleID(helper dbhelper.DBHelper) int {
@@ -28,7 +28,7 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 	helper.Query(sql)
 
 	for helper.Next() {
-		summary := model.Summary{}
+		summary := model.Summary{Type: model.ARTICLE}
 		helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
 
 		summaryList = append(summaryList, summary)
@@ -94,20 +94,13 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 	summaryList := []model.Summary{}
 	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
-		sql := fmt.Sprintf(`select id, title, createdate,creater from content_article where id =%d`, r.RId())
-		helper.Query(sql)
-
-		if helper.Next() {
-			summary := model.Summary{}
-			helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
-
-			summaryList = append(summaryList, summary)
-		}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
 	}
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.ARTICLE)
+		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
@@ -118,7 +111,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 
 // CreateArticle 保存文章
 func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
-	article := model.Summary{Unit: model.Unit{Name: title}, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+	article := model.Summary{Unit: model.Unit{Name: title}, Type: model.ARTICLE, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocArticleID()
 	result := false
@@ -161,7 +154,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
-	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Type: model.ARTICLE, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
 	result := false
 
 	helper.BeginTransaction()
