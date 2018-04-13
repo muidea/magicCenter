@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // SaveFileSummary 保存文件信息

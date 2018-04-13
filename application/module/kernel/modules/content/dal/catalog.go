@@ -7,7 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/common/resource"
 	"muidea.com/magicCenter/foundation/util"
 )

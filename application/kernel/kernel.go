@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"

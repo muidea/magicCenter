@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/foundation/net"
 )
 

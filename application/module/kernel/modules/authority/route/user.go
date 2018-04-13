@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
 )

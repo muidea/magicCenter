@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // QueryAllModuleUser 获取全部模块用户信息

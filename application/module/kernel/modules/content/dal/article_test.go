@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 func TestArticle(t *testing.T) {

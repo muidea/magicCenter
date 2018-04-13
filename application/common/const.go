@@ -1,6 +1,6 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
+import "muidea.com/magicCommon/model"
 
 // SessionID 会话ID
 const SessionID = "sessionID"

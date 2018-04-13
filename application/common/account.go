@@ -1,6 +1,6 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
+import "muidea.com/magicCommon/model"
 
 // AccountHandler 账号信息处理Handler
 type AccountHandler interface {

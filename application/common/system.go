@@ -1,6 +1,6 @@
 package common
 
-import "muidea.com/magicCenter/application/common/model"
+import "muidea.com/magicCommon/model"
 
 // SystemHandler 系统管理接口
 type SystemHandler interface {

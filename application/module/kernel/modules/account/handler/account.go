@@ -3,7 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // CreateAccountHandler 创建Account处理器

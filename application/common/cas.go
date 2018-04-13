@@ -1,7 +1,7 @@
 package common
 
 import (
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // CASHandler 鉴权处理Handler

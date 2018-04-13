@@ -1,7 +1,7 @@
 package common
 
 import (
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // ContentHandler 内容处理Handler

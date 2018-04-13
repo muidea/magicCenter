@@ -3,7 +3,7 @@ package common
 import (
 	"net/http"
 
-	"muidea.com/magicCenter/application/common/model"
+	"muidea.com/magicCommon/model"
 )
 
 // Session 会话
