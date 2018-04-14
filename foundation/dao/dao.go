@@ -42,7 +42,6 @@ func Fetch(user string, password string, address string, dbName string) (Dao, er
 }
 
 func (s *impl) Release() {
-
 	if s.dbTx != nil {
 		panic("dbTx isn't nil")
 	}
@@ -62,13 +61,18 @@ func (s *impl) Release() {
 }
 
 func (s *impl) BeginTransaction() {
+	if s.rowsHandle != nil {
+		s.rowsHandle.Close()
+	}
+	s.rowsHandle = nil
+
 	tx, err := s.dbHandle.Begin()
 	if err != nil {
 		panic("begin transaction exception, err:" + err.Error())
 	}
 
 	s.dbTx = tx
-	// log.Print("BeginTransaction")
+	//log.Print("BeginTransaction")
 }
 
 func (s *impl) Commit() {
@@ -84,7 +88,7 @@ func (s *impl) Commit() {
 	}
 
 	s.dbTx = nil
-	// log.Print("Commit")
+	//log.Print("Commit")
 }
 
 func (s *impl) Rollback() {
@@ -100,11 +104,11 @@ func (s *impl) Rollback() {
 	}
 
 	s.dbTx = nil
-	// log.Print("Rollback")
+	//log.Print("Rollback")
 }
 
 func (s *impl) Query(sql string) {
-
+	//log.Printf("Query, sql:%s", sql)
 	if s.dbTx == nil {
 		if s.dbHandle == nil {
 			panic("dbHanlde is nil")
@@ -141,6 +145,7 @@ func (s *impl) Next() bool {
 
 	ret := s.rowsHandle.Next()
 	if !ret {
+		//log.Print("Next, close rows")
 		s.rowsHandle.Close()
 		s.rowsHandle = nil
 	}
@@ -160,6 +165,11 @@ func (s *impl) GetField(value ...interface{}) {
 }
 
 func (s *impl) Execute(sql string) (int64, bool) {
+	if s.rowsHandle != nil {
+		s.rowsHandle.Close()
+	}
+	s.rowsHandle = nil
+
 	if s.dbTx == nil {
 		if s.dbHandle == nil {
 			panic("dbHandle is nil")
