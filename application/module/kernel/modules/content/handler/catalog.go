@@ -2,8 +2,8 @@ package handler
 
 import (
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/dal"
+	"muidea.com/magicCommon/model"
 )
 
 type catalogActionHandler struct {
@@ -40,4 +40,8 @@ func (i *catalogActionHandler) destroyCatalog(id int) bool {
 
 func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool) {
 	return dal.UpdateCatalog(i.dbhelper, catalogs, updateDate, updater)
+}
+
+func (i *catalogActionHandler) queryCatalogByName(name string) (model.CatalogDetail, bool) {
+	return dal.QueryCatalogByName(i.dbhelper, name)
 }

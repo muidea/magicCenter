@@ -10,9 +10,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendMediaRoute 追加User Route
@@ -72,7 +73,7 @@ type mediaGetByIDRoute struct {
 }
 
 type mediaGetByIDResult struct {
-	common.Result
+	common_result.Result
 	Media model.MediaDetailView `json:"media"`
 }
 
@@ -100,7 +101,7 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -113,9 +114,9 @@ func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Reque
 			result.Media.MediaDetail = media
 			result.Media.Creater = user.User
 			result.Media.Catalog = catalogs
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -135,7 +136,7 @@ type mediaGetListRoute struct {
 }
 
 type mediaGetListResult struct {
-	common.Result
+	common_result.Result
 	Media []model.SummaryView `json:"media"`
 }
 
@@ -174,13 +175,13 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 				result.Media = append(result.Media, media)
 			}
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 			break
 		}
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -197,7 +198,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 			result.Media = append(result.Media, media)
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -223,7 +224,7 @@ type mediaCreateParam struct {
 }
 
 type mediaCreateResult struct {
-	common.Result
+	common_result.Result
 	Media model.SummaryView `json:"media"`
 }
 
@@ -251,7 +252,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -259,7 +260,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -268,7 +269,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -278,7 +279,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 
 		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, catalogIds, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -286,7 +287,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		result.Media.Summary = media
 		result.Media.Creater = user
 		result.Media.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -307,7 +308,7 @@ type mediaUpdateRoute struct {
 type mediaUpdateParam mediaCreateParam
 
 type mediaUpdateResult struct {
-	common.Result
+	common_result.Result
 	Media model.SummaryView `json:"media"`
 }
 
@@ -336,14 +337,14 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -351,7 +352,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		param := &mediaUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -360,7 +361,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -378,7 +379,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -386,7 +387,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		result.Media.Summary = summmary
 		result.Media.Creater = user
 		result.Media.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -405,7 +406,7 @@ type mediaDestroyRoute struct {
 }
 
 type mediaDestroyResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *mediaDestroyRoute) Method() string {
@@ -433,24 +434,24 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyMedia(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

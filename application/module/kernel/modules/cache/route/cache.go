@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
 )
 
 // AppendCacheRoute 追加cache 路由
@@ -39,7 +40,7 @@ type queryCacheRoute struct {
 }
 
 type cacheQueryResult struct {
-	common.Result
+	common_result.Result
 	Cache interface{} `json:"cache"`
 }
 
@@ -67,9 +68,9 @@ func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Reque
 	obj, ok := i.cacheHandler.FetchOut(id)
 	if ok {
 		result.Cache = obj
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 	} else {
-		result.ErrorCode = common.Failed
+		result.ErrorCode = common_result.Failed
 		result.Reason = "对象不存在"
 	}
 	b, err := json.Marshal(result)
@@ -97,7 +98,7 @@ type cachePostParam struct {
 }
 
 type cachePostResult struct {
-	common.Result
+	common_result.Result
 	Token string `json:"token"`
 }
 
@@ -125,7 +126,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		param := &cachePostParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -135,7 +136,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		result.Token = i.cacheHandler.PutIn(param.Value, float64(param.Age))
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -159,7 +160,7 @@ type deleteCacheRoute struct {
 }
 
 type cacheDeleteResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *deleteCacheRoute) Method() string {
@@ -181,10 +182,10 @@ func (i *deleteCacheRoute) AuthGroup() int {
 func (i *deleteCacheRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("deleteCacheHandler")
 
-	result := common.Result{}
+	result := common_result.Result{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
 	i.cacheHandler.Remove(id)
-	result.ErrorCode = common.Success
+	result.ErrorCode = common_result.Success
 	result.Reason = "清除成功"
 
 	b, err := json.Marshal(result)

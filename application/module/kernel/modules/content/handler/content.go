@@ -98,6 +98,10 @@ func (i *impl) UpdateCatalog(catalogs []model.Catalog, updateDate string, update
 	return i.catalogHandler.updateCatalog(catalogs, updateDate, updater)
 }
 
+func (i *impl) QueryCatalogByName(name string) (model.CatalogDetail, bool) {
+	return i.catalogHandler.queryCatalogByName(name)
+}
+
 func (i *impl) GetAllLink() []model.Summary {
 	return i.linkHandler.getAllLink()
 }

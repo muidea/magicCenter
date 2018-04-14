@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/system/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendSystemRoute 追加SystemRoute
@@ -44,7 +45,7 @@ type getSystemConfigRoute struct {
 }
 
 type getSystemConfigResult struct {
-	common.Result
+	common_result.Result
 	SystemProperty model.SystemProperty `json:"systemProperty"`
 }
 
@@ -67,7 +68,7 @@ func (i *getSystemConfigRoute) AuthGroup() int {
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	result := getSystemConfigResult{}
 	result.SystemProperty = i.systemHandler.GetSystemProperty()
-	result.ErrorCode = common.Success
+	result.ErrorCode = common_result.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -82,7 +83,7 @@ type setSystemConfigRoute struct {
 }
 
 type setSystemConfigResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *setSystemConfigRoute) Method() string {
@@ -117,9 +118,9 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 		systemProperty.MailPassword = r.FormValue("mailpassword")
 
 		if i.systemHandler.UpdateSystemProperty(systemProperty) {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新系统信息失败"
 		}
 
@@ -139,7 +140,7 @@ type getModulesRoute struct {
 }
 
 type getModulesResult struct {
-	common.Result
+	common_result.Result
 	Module []model.Module `json:"module"`
 }
 
@@ -163,7 +164,7 @@ func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Reque
 	result := getModulesResult{}
 
 	result.Module = i.systemHandler.GetModuleList()
-	result.ErrorCode = common.Success
+	result.ErrorCode = common_result.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {

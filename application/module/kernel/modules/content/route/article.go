@@ -10,9 +10,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendArticleRoute 追加User Route
@@ -71,7 +72,7 @@ type articleGetByIDRoute struct {
 }
 
 type articleGetByIDResult struct {
-	common.Result
+	common_result.Result
 	Article model.ArticleDetailView `json:"article"`
 }
 
@@ -99,7 +100,7 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -112,9 +113,9 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 			result.Article.ArticleDetail = article
 			result.Article.Creater = user.User
 			result.Article.Catalog = catalogs
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -134,7 +135,7 @@ type articleGetListRoute struct {
 }
 
 type articleGetListResult struct {
-	common.Result
+	common_result.Result
 	Article []model.SummaryView `json:"article"`
 }
 
@@ -174,13 +175,13 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 				result.Article = append(result.Article, article)
 			}
 
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 			break
 		}
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -198,7 +199,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 			result.Article = append(result.Article, article)
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -223,7 +224,7 @@ type articleCreateParam struct {
 }
 
 type articleCreateResult struct {
-	common.Result
+	common_result.Result
 	Article model.SummaryView `json:"article"`
 }
 
@@ -251,7 +252,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -259,7 +260,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		param := &articleCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -268,7 +269,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -278,7 +279,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 
 		article, ok := i.contentHandler.CreateArticle(param.Name, param.Content, createDate, catalogIds, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -286,7 +287,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		result.Article.Summary = article
 		result.Article.Creater = user
 		result.Article.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -307,7 +308,7 @@ type articleUpdateRoute struct {
 type articleUpdateParam articleCreateParam
 
 type articleUpdateResult struct {
-	common.Result
+	common_result.Result
 	Article model.SummaryView `json:"article"`
 }
 
@@ -336,14 +337,14 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -351,7 +352,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		param := &articleUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -360,7 +361,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -378,7 +379,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -386,7 +387,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		result.Article.Summary = summmary
 		result.Article.Creater = user
 		result.Article.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -405,7 +406,7 @@ type articleDestroyRoute struct {
 }
 
 type articleDestroyResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *articleDestroyRoute) Method() string {
@@ -433,24 +434,24 @@ func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *htt
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyArticle(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

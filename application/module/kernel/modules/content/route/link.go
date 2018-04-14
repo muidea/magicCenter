@@ -10,9 +10,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendLinkRoute 追加User Route
@@ -72,7 +73,7 @@ type linkGetByIDRoute struct {
 }
 
 type linkGetByIDResult struct {
-	common.Result
+	common_result.Result
 	Link model.LinkDetailView `json:"link"`
 }
 
@@ -100,7 +101,7 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -113,9 +114,9 @@ func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request
 			result.Link.LinkDetail = link
 			result.Link.Creater = user.User
 			result.Link.Catalog = catalogs
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "对象不存在"
 		}
 
@@ -136,7 +137,7 @@ type linkGetListRoute struct {
 }
 
 type linkGetListResult struct {
-	common.Result
+	common_result.Result
 	Link []model.SummaryView `json:"link"`
 }
 
@@ -175,13 +176,13 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 				result.Link = append(result.Link, link)
 			}
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 			break
 		}
 
 		id, err := strconv.Atoi(catalog)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -198,7 +199,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 			result.Link = append(result.Link, link)
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -224,7 +225,7 @@ type linkCreateParam struct {
 }
 
 type linkCreateResult struct {
-	common.Result
+	common_result.Result
 	Link model.SummaryView `json:"link"`
 }
 
@@ -252,7 +253,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -260,7 +261,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -269,7 +270,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -279,7 +280,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 
 		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, catalogIds, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
 			break
 		}
@@ -287,7 +288,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		result.Link.Summary = link
 		result.Link.Creater = user
 		result.Link.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -308,7 +309,7 @@ type linkUpdateRoute struct {
 type linkUpdateParam linkCreateParam
 
 type linkUpdateResult struct {
-	common.Result
+	common_result.Result
 	Link model.SummaryView `json:"link"`
 }
 
@@ -337,14 +338,14 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
@@ -352,7 +353,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		param := &linkUpdateParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -361,7 +362,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		catalogIds := []int{}
 		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新Catalog失败"
 			break
 		}
@@ -379,7 +380,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -387,7 +388,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		result.Link.Summary = summmary
 		result.Link.Creater = user
 		result.Link.Catalog = catalogs
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -406,7 +407,7 @@ type linkDestroyRoute struct {
 }
 
 type linkDestroyResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *linkDestroyRoute) Method() string {
@@ -434,24 +435,24 @@ func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Requ
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 		_, found := session.GetAccount()
 		if !found {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效权限"
 			break
 		}
 
 		ok := i.contentHandler.DestroyLink(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

@@ -27,7 +27,7 @@ const PutArticle = "/article/:id"
 const DeleteArticle = "/article/:id"
 
 // GetArticleList 查询文章列表
-const GetArticleList = "/article/"
+const GetArticleList = "/articles/"
 
 // GetCatalogDetail 查询指定分类
 const GetCatalogDetail = "/catalog/:id"
@@ -41,8 +41,11 @@ const PutCatalog = "/catalog/:id"
 // DeleteCatalog 删除分类
 const DeleteCatalog = "/catalog/:id"
 
+// QueryCatalogByName 查询指定分类
+const QueryCatalogByName = "/catalog/?name=:name"
+
 // GetCatalogList 查询分类列表
-const GetCatalogList = "/catalog/"
+const GetCatalogList = "/catalogs/"
 
 // GetLinkDetail 查询指定链接
 const GetLinkDetail = "/link/:id"
@@ -57,7 +60,7 @@ const PutLink = "/link/:id"
 const DeleteLink = "/link/:id"
 
 // GetLinkList 查询链接列表
-const GetLinkList = "/link/"
+const GetLinkList = "/links/"
 
 // GetMediaDetail 查询指定文件
 const GetMediaDetail = "/media/:id"
@@ -72,4 +75,4 @@ const PutMedia = "/media/:id"
 const DeleteMedia = "/media/:id"
 
 // GetMediaList 查询文件列表
-const GetMediaList = "/media/"
+const GetMediaList = "/medias/"

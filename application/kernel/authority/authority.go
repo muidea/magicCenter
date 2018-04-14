@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
+	common_result "muidea.com/magicCommon/common"
 )
 
 // Authority 权限控制服务
@@ -45,7 +46,7 @@ func VerifyHandler(moduleHub common.ModuleHub, authority Authority) martini.Hand
 			c.Next()
 		} else {
 			// 没有权限, 直接返回错误
-			result := common.Result{ErrorCode: common.InvalidAuthority, Reason: "无操作权限"}
+			result := common_result.Result{ErrorCode: common_result.InvalidAuthority, Reason: "无操作权限"}
 			b, err := json.Marshal(result)
 			if err != nil {
 				panic("json.Marshal, failed, err:" + err.Error())

@@ -7,9 +7,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendUserRoute 追加User Route
@@ -68,7 +69,7 @@ type userGetRoute struct {
 }
 
 type userGetResult struct {
-	common.Result
+	common_result.Result
 	User model.UserDetailView `json:"user"`
 }
 
@@ -96,7 +97,7 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -105,9 +106,9 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			result.User.UserDetail = user
 			result.User.Group = i.accountHandler.GetGroups(user.Group)
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -126,7 +127,7 @@ type userGetAllRoute struct {
 }
 
 type userGetAllResult struct {
-	common.Result
+	common_result.Result
 	User []model.UserDetailView `json:"user"`
 }
 
@@ -159,7 +160,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 
 			result.User = append(result.User, user)
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -182,7 +183,7 @@ type userCreateParam struct {
 }
 
 type userCreateResult struct {
-	common.Result
+	common_result.Result
 	User model.UserDetailView `json:"user"`
 }
 
@@ -210,21 +211,21 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 		param := &userCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		user, ok := i.accountHandler.CreateUser(param.Account, param.EMail, param.Group)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "创建新用户失败"
 			break
 		}
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -248,7 +249,7 @@ type userSaveParam struct {
 }
 
 type userSaveResult struct {
-	common.Result
+	common_result.Result
 	User model.UserDetail `json:"user"`
 }
 
@@ -276,7 +277,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -284,14 +285,14 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		param := &userSaveParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		user, ok := i.accountHandler.FindUserByID(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -314,14 +315,14 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		}
 
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新失败"
 			break
 		}
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -338,7 +339,7 @@ type userDestroyRoute struct {
 }
 
 type userDestroyResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *userDestroyRoute) Method() string {
@@ -365,19 +366,19 @@ func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Req
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyUserByID(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

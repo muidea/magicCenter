@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"html/template"
 	"log"
-	"magiccenter/common"
 	"magiccenter/common/model"
 	"net/http"
+
+	common_result "muidea.com/magicCommon/common"
 )
 
 // PageView 页面视图
@@ -140,19 +141,19 @@ func MaintainViewHandler(res http.ResponseWriter, req *http.Request) {
 func MaintainActionHandler(res http.ResponseWriter, req *http.Request) {
 	log.Printf("MaintainActionHandler")
 
-	result := common.Result{}
+	result := common_result.Result{}
 
 	for {
 		err := req.ParseForm()
 		if err != nil {
 			log.Print("parseform failed")
 
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效请求数据"
 			break
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		result.Reason = "更新成功"
 		break
 	}

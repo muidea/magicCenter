@@ -7,9 +7,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // AppendGroupRoute 追加Group Route
@@ -68,7 +69,7 @@ type groupGetRoute struct {
 }
 
 type groupGetResult struct {
-	common.Result
+	common_result.Result
 	Group model.GroupDetailView `json:"group"`
 }
 
@@ -96,7 +97,7 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -109,9 +110,9 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 			result.Group.Catalog.ID = catalog.ID
 			result.Group.Catalog.Name = catalog.Name
 
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -130,7 +131,7 @@ type groupGetAllRoute struct {
 }
 
 type groupGetAllResult struct {
-	common.Result
+	common_result.Result
 	Group []model.GroupDetailView `json:"group"`
 }
 
@@ -165,7 +166,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 			result.Group = append(result.Group, groupView)
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -188,7 +189,7 @@ type groupCreateParam struct {
 }
 
 type groupCreateResult struct {
-	common.Result
+	common_result.Result
 	Group model.GroupDetailView `json:"group"`
 }
 
@@ -216,14 +217,14 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 		param := &groupCreateParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description, param.Catalog)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -232,7 +233,7 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -255,7 +256,7 @@ type groupSaveParam struct {
 }
 
 type groupSaveResult struct {
-	common.Result
+	common_result.Result
 	Group model.GroupDetailView `json:"group"`
 }
 
@@ -283,7 +284,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -291,7 +292,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		param := &groupSaveParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -302,7 +303,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -311,7 +312,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -328,7 +329,7 @@ type groupDestroyRoute struct {
 }
 
 type groupDestroyResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *groupDestroyRoute) Method() string {
@@ -355,19 +356,19 @@ func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.R
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyGroup(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

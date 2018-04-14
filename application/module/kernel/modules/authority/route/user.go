@@ -7,9 +7,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // CreateQueryUserRoute 新建GetUserModuleAuthGroupRoute
@@ -37,7 +38,7 @@ type userGetRoute struct {
 }
 
 type userGetResult struct {
-	common.Result
+	common_result.Result
 	User []model.UserModuleInfoView `json:"user"`
 }
 
@@ -80,7 +81,7 @@ func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -99,7 +100,7 @@ type userGetByIDRoute struct {
 }
 
 type userGetByIDResult struct {
-	common.Result
+	common_result.Result
 	User model.UserModuleAuthGroupView `json:"user"`
 }
 
@@ -127,7 +128,7 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -160,7 +161,7 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 			result.User.ModuleAuthGroup = append(result.User.ModuleAuthGroup, view)
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 
 		break
 	}
@@ -184,7 +185,7 @@ type userPutParam struct {
 }
 
 type userPutResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *userPutRoute) Method() string {
@@ -211,7 +212,7 @@ func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -219,20 +220,20 @@ func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		param := &userPutParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
 		if ok {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新用户模块授权信息失败"
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 

@@ -6,9 +6,10 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // CreateQueryModuleRoute 新建ModuleUserGetRoute
@@ -36,7 +37,7 @@ type moduleGetRoute struct {
 }
 
 type moduleGetResult struct {
-	common.Result
+	common_result.Result
 	Module []model.ModuleUserInfoView `json:"module"`
 }
 
@@ -74,7 +75,7 @@ func (i *moduleGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 			result.Module = append(result.Module, view)
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 
 		break
 	}
@@ -94,7 +95,7 @@ type moduleGetByIDRoute struct {
 }
 
 type moduleGetByIDResult struct {
-	common.Result
+	common_result.Result
 	Module model.ModuleUserAuthGroupView `json:"module"`
 }
 
@@ -152,7 +153,7 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 			}
 		}
 
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 		break
 	}
 
@@ -175,7 +176,7 @@ type modulePutParam struct {
 }
 
 type modulePutResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *modulePutRoute) Method() string {
@@ -204,16 +205,16 @@ func (i *modulePutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		param := &modulePutParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateModuleUserAuthGroup(id, param.UserAuthGroup)
 		if ok {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新模块用户信息失败"
 		}
 

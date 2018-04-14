@@ -23,6 +23,8 @@ type ContentHandler interface {
 	DestroyCatalog(id int) bool
 	// 更新Catalog，如果不存在，则新建一个
 	UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool)
+	// 查询指定名称的Catalog
+	QueryCatalogByName(name string) (model.CatalogDetail, bool)
 
 	GetAllLink() []model.Summary
 	GetLinks(ids []int) []model.Link

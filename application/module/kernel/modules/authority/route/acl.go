@@ -7,9 +7,10 @@ import (
 	"strconv"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // CreateQueryACLRoute GetAclByModule
@@ -60,7 +61,7 @@ type aclGetRoute struct {
 }
 
 type aclGetResult struct {
-	common.Result
+	common_result.Result
 	ACL []model.ACLView `json:"acl"`
 }
 
@@ -103,7 +104,7 @@ func (i *aclGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 				result.ACL = append(result.ACL, acl)
 			}
 		}
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 
 		break
 	}
@@ -122,7 +123,7 @@ type aclGetByIDRoute struct {
 }
 
 type aclGetByIDResult struct {
-	common.Result
+	common_result.Result
 	ACLDetail model.ACLDetailView `json:"acl"`
 }
 
@@ -150,7 +151,7 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
@@ -170,9 +171,9 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 			result.ACLDetail.Module.ID = mod.ID()
 			result.ACLDetail.Module.Name = mod.Name()
 
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 		}
 
 		break
@@ -199,7 +200,7 @@ type aclPostParam struct {
 }
 
 type aclPostResult struct {
-	common.Result
+	common_result.Result
 	ACLDetail model.ACLDetailView `json:"acl"`
 }
 
@@ -227,7 +228,7 @@ func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 		param := &aclPostParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
@@ -242,9 +243,9 @@ func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
 			}
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "新建ACL失败"
 		}
 
@@ -265,7 +266,7 @@ type aclDeleteRoute struct {
 }
 
 type aclDeleteResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *aclDeleteRoute) Method() string {
@@ -292,16 +293,16 @@ func (i *aclDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Request) {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
 
 		ok := i.authorityHandler.DeleteACL(id)
 		if ok {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "删除ACL失败"
 		}
 
@@ -327,7 +328,7 @@ type aclPutParam struct {
 }
 
 type aclPutResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *aclPutRoute) Method() string {
@@ -354,16 +355,16 @@ func (i *aclPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		param := &aclPutParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateACLStatus(param.EnableList, param.DisableList)
 		if ok {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新ACL状态失败"
 		}
 
@@ -384,7 +385,7 @@ type aclGetAuthGroupRoute struct {
 }
 
 type aclGetAuthGroupResult struct {
-	common.Result
+	common_result.Result
 	ACL       model.ACL       `json:"acl"`
 	AuthGroup model.AuthGroup `json:"authGroup"`
 }
@@ -413,28 +414,28 @@ func (i *aclGetAuthGroupRoute) getAuthGroupHandler(w http.ResponseWriter, r *htt
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
 
 		acl, ok := i.authorityHandler.QueryACLByID(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		authGroup, ok := i.authorityHandler.QueryACLAuthGroup(id)
 		if !ok {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		result.ACL = acl.ACL
 		result.AuthGroup = authGroup
-		result.ErrorCode = common.Success
+		result.ErrorCode = common_result.Success
 
 		break
 	}
@@ -457,7 +458,7 @@ type aclPutAuthGroupParam struct {
 }
 
 type aclPutACLAuthGroupResult struct {
-	common.Result
+	common_result.Result
 }
 
 func (i *aclPutAuthGroupRoute) Method() string {
@@ -484,7 +485,7 @@ func (i *aclPutAuthGroupRoute) putAuthGroupHandler(w http.ResponseWriter, r *htt
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
@@ -492,16 +493,16 @@ func (i *aclPutAuthGroupRoute) putAuthGroupHandler(w http.ResponseWriter, r *htt
 		param := &aclPutAuthGroupParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "参数非法"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateACLAuthGroup(id, param.AuthGroup)
 		if ok {
-			result.ErrorCode = common.Success
+			result.ErrorCode = common_result.Success
 		} else {
-			result.ErrorCode = common.Failed
+			result.ErrorCode = common_result.Failed
 			result.Reason = "更新ACL授权组失败"
 		}
 
