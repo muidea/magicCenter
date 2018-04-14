@@ -14,6 +14,8 @@ func loadArticleID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from content_article`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -33,6 +35,7 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 
 		summaryList = append(summaryList, summary)
 	}
+	helper.Finish()
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
@@ -55,6 +58,7 @@ func QueryArticles(helper dbhelper.DBHelper, ids []int) []model.Article {
 
 	sql := fmt.Sprintf(`select id, title from content_article where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		summary := model.Article{}
@@ -78,6 +82,7 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 		helper.GetValue(&ar.ID, &ar.Name, &ar.Content, &ar.Creater, &ar.CreateDate)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, ar.ID, model.ARTICLE)

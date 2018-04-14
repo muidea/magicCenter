@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 // InsertACL 新增ACL记录
@@ -20,6 +20,8 @@ func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int,
 	ok = false
 	sql = fmt.Sprintf("select id from authority_acl where url='%s' and method='%s'", url, method)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&acl.ID)
 		ok = true
@@ -71,6 +73,8 @@ func QueryACLByID(helper dbhelper.DBHelper, id int) (model.ACLDetail, bool) {
 
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where id=%d", id)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &acl.AuthGroup)
 		retVal = true
@@ -86,6 +90,8 @@ func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACLDetail, b
 
 	sql := fmt.Sprintf("select id, url, method, module, status, authgroup from authority_acl where url='%s' and method='%s'", url, method)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Module, &acl.Status, &acl.AuthGroup)
 		retVal = true
@@ -107,6 +113,8 @@ func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACL {
 	sql := fmt.Sprintf("select id, url, method from authority_acl where module='%s'", module)
 
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		acl := model.ACL{}
 		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)
@@ -122,6 +130,8 @@ func QueryAllACL(helper dbhelper.DBHelper) []model.ACL {
 	sql := fmt.Sprintf("select id, url, method from authority_acl")
 
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		acl := model.ACL{}
 		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)

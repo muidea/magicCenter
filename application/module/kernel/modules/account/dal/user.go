@@ -6,14 +6,16 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadUserID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from account_user`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -26,6 +28,8 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user")
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		user := model.UserDetail{}
 		groups := ""
@@ -43,6 +47,8 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 	userList := []model.User{}
 	sql := fmt.Sprintf("select id, nickname from account_user where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		user := model.User{}
 		helper.GetValue(&user.ID, &user.Name)
@@ -58,6 +64,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 
 	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
@@ -76,6 +83,8 @@ func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.User {
 
 	sql := fmt.Sprintf("select id, nickname from `account_user` where groups like '%d' union select id, nickname from `account_user` where groups like '%d,%%' union select id, nickname from `account_user` where groups like '%%,%d,%%' union select id, nickname from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		user := model.User{}
 		helper.GetValue(&user.ID, &user.Name)
@@ -91,6 +100,7 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 
 	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user where id=%d", id)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
@@ -122,9 +132,12 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 	user := model.UserDetail{Account: account, Email: email, Group: groups}
 	sql := fmt.Sprintf("select id from account_user where account='%s'", account)
 	helper.Query(sql)
+
 	if helper.Next() {
+		helper.Finish()
 		return user, false
 	}
+	helper.Finish()
 
 	gVal := util.IntArray2Str(groups)
 	createTime := time.Now().Format("2006-01-02 15:04:05")
@@ -167,6 +180,8 @@ func GetLastRegisterUser(helper dbhelper.DBHelper, count int) []model.UserDetail
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user order by registertime desc limit %d", count)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		user := model.UserDetail{}
 		groups := ""

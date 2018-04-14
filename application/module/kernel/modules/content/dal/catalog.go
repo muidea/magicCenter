@@ -16,6 +16,8 @@ func loadCatalogID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from content_catalog`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -36,6 +38,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 
 		summaryList = append(summaryList, c)
 	}
+	helper.Finish()
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
@@ -58,6 +61,7 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 
 	sql := fmt.Sprintf(`select id, name from content_catalog where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		summary := model.Catalog{}
@@ -80,6 +84,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, id, model.CATALOG)
@@ -102,6 +107,7 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDet
 		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, catalog.ID, model.CATALOG)
@@ -224,8 +230,10 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		helper.Query(sql)
 		if helper.Next() {
 			// 说明对应的Catalog已经存在，返回Create失败
+			helper.Finish()
 			break
 		}
+		helper.Finish()
 
 		// insert
 		sql = fmt.Sprintf(`insert into content_catalog (id, name, description, createdate, creater) values (%d, '%s','%s','%s',%d)`, id, name, description, createDate, creater)

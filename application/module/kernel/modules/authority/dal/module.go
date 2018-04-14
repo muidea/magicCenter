@@ -18,6 +18,7 @@ func QueryAllModuleUser(helper dbhelper.DBHelper) []model.ModuleUserInfo {
 		helper.GetValue(&val.Module)
 		retValue = append(retValue, val)
 	}
+	helper.Finish()
 
 	for idx := range retValue {
 		val := &retValue[idx]
@@ -28,6 +29,7 @@ func QueryAllModuleUser(helper dbhelper.DBHelper) []model.ModuleUserInfo {
 			helper.GetValue(&user)
 			val.User = append(val.User, user)
 		}
+		helper.Finish()
 	}
 
 	return retValue
@@ -38,6 +40,7 @@ func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) []model.U
 	retValue := []model.UserAuthGroup{}
 	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
 	helper.Query(sql)
+	defer helper.Finish()
 	for helper.Next() {
 		val := model.UserAuthGroup{}
 		helper.GetValue(&val.User, &val.AuthGroup)
@@ -86,6 +89,7 @@ func QueryAllUserModule(helper dbhelper.DBHelper) []model.UserModuleInfo {
 		helper.GetValue(&val.User)
 		retValue = append(retValue, val)
 	}
+	helper.Finish()
 
 	for idx := range retValue {
 		val := &retValue[idx]
@@ -96,6 +100,7 @@ func QueryAllUserModule(helper dbhelper.DBHelper) []model.UserModuleInfo {
 			helper.GetValue(&mod)
 			val.Module = append(val.Module, mod)
 		}
+		helper.Finish()
 	}
 
 	return retValue
@@ -107,6 +112,8 @@ func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) []model.Module
 
 	sql := fmt.Sprintf("select module, authgroup from authority_module where user=%d", user)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	for helper.Next() {
 		val := model.ModuleAuthGroup{}
 		helper.GetValue(&val.Module, &val.AuthGroup)

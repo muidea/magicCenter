@@ -14,6 +14,8 @@ func loadLinkID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from content_link`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -33,6 +35,7 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 
 		summaryList = append(summaryList, link)
 	}
+	helper.Finish()
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
@@ -55,6 +58,7 @@ func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 
 	sql := fmt.Sprintf(`select id, name from content_link where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		link := model.Link{}
@@ -98,6 +102,7 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 		helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.CreateDate, &link.Creater)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, link.ID, model.LINK)

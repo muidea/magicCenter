@@ -11,6 +11,8 @@ func loadResourceOID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(oid) from common_resource`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -121,6 +123,7 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, b
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rType, &res.rCreateDate, &res.rOwner)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		res.relative = relativeResource(helper, res.oid)
@@ -133,6 +136,7 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, b
 func relativeResource(helper dbhelper.DBHelper, oid int) []Resource {
 	sql := fmt.Sprintf(`select r.oid, r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d`, oid)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	resultList := []Resource{}
 	for helper.Next() {
@@ -149,8 +153,15 @@ func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Re
 	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rid, rType)
 	helper.Query(sql)
+
+	ok := false
 	if helper.Next() {
 		helper.GetValue(&oid)
+		ok = true
+	}
+	helper.Finish()
+
+	if ok {
 		return relativeResource(helper, oid)
 	}
 
@@ -169,6 +180,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and rr.srctype ='%s'`, oid, referenceType)
 	}
 	helper.Query(sql)
+	defer helper.Finish()
 
 	resultList := []Resource{}
 	for helper.Next() {
@@ -188,8 +200,15 @@ func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceT
 	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rID, rType)
 	helper.Query(sql)
+
+	ok := false
 	if helper.Next() {
 		helper.GetValue(&oid)
+		ok = true
+	}
+	helper.Finish()
+
+	if ok {
 		return referenceResource(helper, oid, referenceType)
 	}
 
@@ -207,10 +226,13 @@ func CreateResource(helper dbhelper.DBHelper, res Resource, enableTransaction bo
 		result = false
 		sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, res.RId(), res.RType())
 		helper.Query(sql)
+
 		if helper.Next() {
+			helper.Finish()
 			// 说明对应的资源已经存在
 			break
 		}
+		helper.Finish()
 
 		// insert
 		sql = fmt.Sprintf(`insert into common_resource (oid, id,name,type,createtime,owner) values (%d, %d, '%s','%s', '%s', %d)`, res.ID(), res.RId(), res.RName(), res.RType(), res.RCreateDate(), res.ROwner())
@@ -305,6 +327,7 @@ func saveResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 		if helper.Next() {
 			found = true
 		}
+		helper.Finish()
 
 		if !found {
 			break
@@ -333,6 +356,7 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
 	sql := fmt.Sprintf(`select id, name, type, createtime, owner from common_resource order by createtime desc limit %d`, count)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	resultList := []Resource{}
 	for helper.Next() {

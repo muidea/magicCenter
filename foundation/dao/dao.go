@@ -15,6 +15,7 @@ type Dao interface {
 	Rollback()
 	Query(sql string)
 	Next() bool
+	Finish()
 	GetField(value ...interface{})
 	Execute(sql string) (int64, bool)
 }
@@ -151,6 +152,13 @@ func (s *impl) Next() bool {
 	}
 
 	return ret
+}
+
+func (s *impl) Finish() {
+	if s.rowsHandle != nil {
+		s.rowsHandle.Close()
+		s.rowsHandle = nil
+	}
 }
 
 func (s *impl) GetField(value ...interface{}) {

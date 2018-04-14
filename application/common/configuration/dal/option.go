@@ -8,23 +8,15 @@ import (
 
 //SetOption 保存配置项
 func SetOption(helper dbhelper.DBHelper, owner, key, value string) bool {
-	sql := fmt.Sprintf("select id, value from common_option where `key`='%s' and owner='%s'", key, owner)
-	helper.Query(sql)
+	oldValue, found := GetOption(helper, owner, key)
 
-	id := -1
-	oldValue := ""
-	found := false
-	if helper.Next() {
-		helper.GetValue(&id, &oldValue)
-		found = true
-	}
-
-	if value == oldValue {
-		return true
-	}
-
+	sql := ""
 	if found {
-		sql = fmt.Sprintf("update common_option set value='%s' where id=%d and owner='%s'", value, id, owner)
+		if oldValue == value {
+			return true
+		}
+
+		sql = fmt.Sprintf("update common_option set value='%s' where key='%s' and owner='%s'", value, key, owner)
 	} else {
 		sql = fmt.Sprintf("insert into common_option(`key`,value, owner) values ('%s','%s','%s')", key, value, owner)
 	}
@@ -37,6 +29,7 @@ func SetOption(helper dbhelper.DBHelper, owner, key, value string) bool {
 func GetOption(helper dbhelper.DBHelper, owner, key string) (string, bool) {
 	sql := fmt.Sprintf("select value from common_option where `key`='%s' and owner='%s'", key, owner)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	value := ""
 	found := false

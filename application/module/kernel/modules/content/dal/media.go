@@ -14,6 +14,8 @@ func loadMediaID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from content_media`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -33,6 +35,7 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 
 		summaryList = append(summaryList, media)
 	}
+	helper.Finish()
 
 	for index, value := range summaryList {
 		media := &summaryList[index]
@@ -55,6 +58,7 @@ func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
 
 	sql := fmt.Sprintf(`select id, name from content_media where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		media := model.Media{}
@@ -99,6 +103,7 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 		helper.GetValue(&media.ID, &media.Name, &media.URL, &media.Description, &media.CreateDate, &media.Creater)
 		result = true
 	}
+	helper.Finish()
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, id, model.MEDIA)

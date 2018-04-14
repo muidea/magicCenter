@@ -5,14 +5,16 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadGroupID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
 	sql := fmt.Sprintf(`select max(id) from account_group`)
 	helper.Query(sql)
+	defer helper.Finish()
+
 	if helper.Next() {
 		helper.GetValue(&maxID)
 	}
@@ -25,6 +27,7 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
 	groupList := []model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group")
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		g := model.GroupDetail{}
@@ -41,6 +44,7 @@ func QuerySubGroups(helper dbhelper.DBHelper, id int) []model.Group {
 	groupList := []model.Group{}
 	sql := fmt.Sprintf("select id, name from account_group where catalog =%d", id)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	for helper.Next() {
 		g := model.Group{}
@@ -73,6 +77,7 @@ func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.GroupDetail, bool) 
 	group := model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description,catalog from account_group where id=%d", id)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
@@ -88,6 +93,7 @@ func QueryGroupByName(helper dbhelper.DBHelper, name string) (model.GroupDetail,
 	group := model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group where name='%s'", name)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
@@ -103,9 +109,12 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 	group := model.NewGroup(name, description, catalog)
 	sql := fmt.Sprintf("select id from account_group where name='%s' and catalog=%d", name, catalog)
 	helper.Query(sql)
+
 	if helper.Next() {
+		helper.Finish()
 		return group, false
 	}
+	helper.Finish()
 
 	id := allocGroupID()
 	sql = fmt.Sprintf("insert into account_group (id, name, description, catalog) values (%d, '%s','%s',%d)", id, name, description, catalog)

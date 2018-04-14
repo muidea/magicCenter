@@ -40,6 +40,7 @@ func DisReserveFileSummary(helper dbhelper.DBHelper, accessToken string) bool {
 func FindFileSummary(helper dbhelper.DBHelper, accesstoken string) (model.FileSummary, bool) {
 	sql := fmt.Sprintf("select filename, filepath, uploaddate, reserveflag from common_fileregistry where accesstoken = '%s'", accesstoken)
 	helper.Query(sql)
+	defer helper.Finish()
 
 	fileSummary := model.FileSummary{}
 	retVal := false

@@ -18,6 +18,8 @@ type DBHelper interface {
 
 	Next() bool
 
+	Finish()
+
 	GetValue(...interface{})
 
 	Execute(string) (int64, bool)
@@ -60,6 +62,10 @@ func (db *impl) Query(sql string) {
 
 func (db *impl) Next() bool {
 	return db.dao.Next()
+}
+
+func (db *impl) Finish() {
+	db.dao.Finish()
 }
 
 func (db *impl) GetValue(val ...interface{}) {
