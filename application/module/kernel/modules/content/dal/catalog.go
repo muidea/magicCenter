@@ -174,45 +174,48 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool) {
 	ids := []int{}
 	result := false
-	helper.BeginTransaction()
-	for _, val := range catalogs {
-		result = true
-		detail, existFlag := QueryCatalogByName(helper, val.Name)
+	if len(catalogs) > 0 {
+		helper.BeginTransaction()
+		for _, val := range catalogs {
+			result = true
+			detail, existFlag := QueryCatalogByName(helper, val.Name)
 
-		if existFlag {
-			modifyFlag := false
-			if detail.Creater != updater {
-				detail.Creater = updater
-				modifyFlag = true
-			}
-
-			if modifyFlag {
-				detail.CreateDate = updateDate
-				_, result = SaveCatalog(helper, detail, true)
-				if !result {
-					break
+			if existFlag {
+				modifyFlag := false
+				if detail.Creater != updater {
+					detail.Creater = updater
+					modifyFlag = true
 				}
-			}
 
-			ids = append(ids, detail.ID)
-		} else {
-			detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common.DefaultContentCatalog.ID}, updater, true)
-			if ok {
+				if modifyFlag {
+					detail.CreateDate = updateDate
+					_, result = SaveCatalog(helper, detail, true)
+					if !result {
+						break
+					}
+				}
+
 				ids = append(ids, detail.ID)
 			} else {
-				result = false
+				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common.DefaultContentCatalog.ID}, updater, true)
+				if ok {
+					ids = append(ids, detail.ID)
+				} else {
+					result = false
+				}
 			}
 		}
+
+		if result {
+			helper.Commit()
+			return QueryCatalogs(helper, ids), true
+		}
+
+		helper.Rollback()
+		return []model.Catalog{}, false
 	}
 
-	if result {
-		helper.Commit()
-		return QueryCatalogs(helper, ids), true
-	}
-
-	helper.Rollback()
-
-	return []model.Catalog{}, false
+	return []model.Catalog{}, true
 }
 
 // CreateCatalog 新建分类
