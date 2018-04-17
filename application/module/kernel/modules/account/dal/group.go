@@ -59,6 +59,10 @@ func QuerySubGroups(helper dbhelper.DBHelper, id int) []model.Group {
 // QueryGroups 查询分组信息
 func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 	groupList := []model.Group{}
+	if len(ids) == 0 {
+		return groupList
+	}
+
 	sql := fmt.Sprintf("select id, name from account_group where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 
