@@ -10,7 +10,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
 	common_result "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/model"
+	common_model "muidea.com/magicCommon/model"
 )
 
 // AppendUserRoute 追加User Route
@@ -70,7 +70,7 @@ type userGetRoute struct {
 
 type userGetResult struct {
 	common_result.Result
-	User model.UserDetailView `json:"user"`
+	User common_model.UserDetailView `json:"user"`
 }
 
 func (i *userGetRoute) Method() string {
@@ -128,7 +128,7 @@ type userGetAllRoute struct {
 
 type userGetAllResult struct {
 	common_result.Result
-	User []model.UserDetailView `json:"user"`
+	User []common_model.UserDetailView `json:"user"`
 }
 
 func (i *userGetAllRoute) Method() string {
@@ -154,7 +154,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 	for true {
 		allUsers := i.accountHandler.GetAllUser()
 		for _, val := range allUsers {
-			user := model.UserDetailView{}
+			user := common_model.UserDetailView{}
 			user.UserDetail = val
 			user.Group = i.accountHandler.GetGroups(val.Group)
 
@@ -177,14 +177,14 @@ type userCreateRoute struct {
 }
 
 type userCreateParam struct {
-	Account string `json:"account"`
-	EMail   string `json:"email"`
-	Group   []int  `json:"group"`
+	Account string               `json:"account"`
+	EMail   string               `json:"email"`
+	Group   []common_model.Group `json:"group"`
 }
 
 type userCreateResult struct {
 	common_result.Result
-	User model.UserDetailView `json:"user"`
+	User common_model.UserDetailView `json:"user"`
 }
 
 func (i *userCreateRoute) Method() string {
@@ -215,8 +215,12 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "非法参数"
 			break
 		}
+		ids := []int{}
+		for _, val := range param.Group {
+			ids = append(ids, val.ID)
+		}
 
-		user, ok := i.accountHandler.CreateUser(param.Account, param.EMail, param.Group)
+		user, ok := i.accountHandler.CreateUser(param.Account, param.EMail, ids)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "创建新用户失败"
@@ -250,7 +254,7 @@ type userSaveParam struct {
 
 type userSaveResult struct {
 	common_result.Result
-	User model.UserDetail `json:"user"`
+	User common_model.UserDetail `json:"user"`
 }
 
 func (i *userSaveRoute) Method() string {
