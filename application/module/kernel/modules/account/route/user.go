@@ -177,9 +177,10 @@ type userCreateRoute struct {
 }
 
 type userCreateParam struct {
-	Account string               `json:"account"`
-	EMail   string               `json:"email"`
-	Group   []common_model.Group `json:"group"`
+	Account  string               `json:"account"`
+	Password string               `json:"password"`
+	EMail    string               `json:"email"`
+	Group    []common_model.Group `json:"group"`
 }
 
 type userCreateResult struct {
@@ -220,7 +221,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 			ids = append(ids, val.ID)
 		}
 
-		user, ok := i.accountHandler.CreateUser(param.Account, param.EMail, ids)
+		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.EMail, ids)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "创建新用户失败"

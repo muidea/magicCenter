@@ -128,7 +128,7 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 }
 
 // CreateUser 创建新用户，根据用户信息和密码
-func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (model.UserDetail, bool) {
+func CreateUser(helper dbhelper.DBHelper, account, password, email string, groups []int) (model.UserDetail, bool) {
 	user := model.UserDetail{Account: account, Email: email, Group: groups}
 	sql := fmt.Sprintf("select id from account_user where account='%s'", account)
 	helper.Query(sql)
@@ -145,7 +145,7 @@ func CreateUser(helper dbhelper.DBHelper, account, email string, groups []int) (
 
 	id := allocUserID()
 	// insert
-	sql = fmt.Sprintf("insert into account_user(id, account, password, nickname, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', '%s', %d, '%s')", id, account, "", "", email, gVal, 0, createTime)
+	sql = fmt.Sprintf("insert into account_user(id, account, password, nickname, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', '%s', %d, '%s')", id, account, password, "", email, gVal, 0, createTime)
 	_, result := helper.Execute(sql)
 	if !result {
 		return user, false

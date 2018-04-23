@@ -2,8 +2,8 @@ package handler
 
 import (
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/dal"
+	"muidea.com/magicCommon/model"
 )
 
 type userActionHandler struct {
@@ -31,8 +31,8 @@ func (i *userActionHandler) findUserByAccount(account, password string) (model.U
 }
 
 // 新建User
-func (i *userActionHandler) createUser(account, email string, groups []int) (model.UserDetail, bool) {
-	return dal.CreateUser(i.dbhelper, account, email, groups)
+func (i *userActionHandler) createUser(account, password, email string, groups []int) (model.UserDetail, bool) {
+	return dal.CreateUser(i.dbhelper, account, password, email, groups)
 }
 
 // 保存User

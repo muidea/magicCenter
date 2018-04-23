@@ -39,8 +39,8 @@ func (i *impl) FindUserByAccount(account, password string) (model.UserDetail, bo
 	return i.userHandler.findUserByAccount(account, password)
 }
 
-func (i *impl) CreateUser(account, email string, groups []int) (model.UserDetail, bool) {
-	return i.userHandler.createUser(account, email, groups)
+func (i *impl) CreateUser(account, password, email string, groups []int) (model.UserDetail, bool) {
+	return i.userHandler.createUser(account, password, email, groups)
 }
 
 func (i *impl) SaveUser(user model.UserDetail) (model.UserDetail, bool) {

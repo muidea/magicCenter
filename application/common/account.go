@@ -9,7 +9,7 @@ type AccountHandler interface {
 	FindUserByID(id int) (model.UserDetail, bool)
 	FindUserByGroup(groupID int) []model.User
 	FindUserByAccount(account, password string) (model.UserDetail, bool)
-	CreateUser(account, email string, groups []int) (model.UserDetail, bool)
+	CreateUser(account, password, email string, groups []int) (model.UserDetail, bool)
 	SaveUser(user model.UserDetail) (model.UserDetail, bool)
 	SaveUserWithPassword(user model.UserDetail, password string) (model.UserDetail, bool)
 	DestroyUserByID(id int) bool
