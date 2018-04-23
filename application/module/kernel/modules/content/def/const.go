@@ -42,7 +42,7 @@ const PutCatalog = "/catalog/:id"
 const DeleteCatalog = "/catalog/:id"
 
 // QueryCatalogByName 查询指定分类
-const QueryCatalogByName = "/catalog/?name=:name"
+const QueryCatalogByName = "/catalog/"
 
 // GetCatalogList 查询分类列表
 const GetCatalogList = "/catalogs/"
