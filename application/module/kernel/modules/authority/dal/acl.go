@@ -10,7 +10,7 @@ import (
 
 // InsertACL 新增ACL记录
 func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int, authGroups int) (model.ACLDetail, bool) {
-	acl := model.ACLDetail{ACL: model.ACL{URL: url, Method: method}, Module: module, Status: status, AuthGroup: authGroups}
+	acl := model.ACLDetail{ACL: model.ACL{URL: url, Method: method, Status: status}, Module: module, AuthGroup: authGroups}
 	sql := fmt.Sprintf("insert into authority_acl (url, method, module, status, authgroup) values ('%s','%s','%s',%d,%d)", url, method, module, status, acl.AuthGroup)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
@@ -100,24 +100,24 @@ func FilterACL(helper dbhelper.DBHelper, url, method string) (model.ACLDetail, b
 	return acl, retVal
 }
 
-// UpateACL 更新ACL记录
-func UpateACL(helper dbhelper.DBHelper, acl model.ACLDetail) bool {
+// UpdateACL 更新ACL记录
+func UpdateACL(helper dbhelper.DBHelper, acl model.ACLDetail) bool {
 	sql := fmt.Sprintf("update authority_acl set authgroup=%d, status=%d where id=%d", acl.AuthGroup, acl.Status, acl.ID)
-	num, ok := helper.Execute(sql)
-	return ok && num == 1
+	_, ok := helper.Execute(sql)
+	return ok
 }
 
 // QueryACLByModule 查询指定Module的ACL信息
 func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACL {
 	acls := []model.ACL{}
-	sql := fmt.Sprintf("select id, url, method from authority_acl where module='%s'", module)
+	sql := fmt.Sprintf("select id, url, method, status from authority_acl where module='%s'", module)
 
 	helper.Query(sql)
 	defer helper.Finish()
 
 	for helper.Next() {
 		acl := model.ACL{}
-		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Status)
 		acls = append(acls, acl)
 	}
 
@@ -127,14 +127,14 @@ func QueryACLByModule(helper dbhelper.DBHelper, module string) []model.ACL {
 // QueryAllACL 查询所有ACL
 func QueryAllACL(helper dbhelper.DBHelper) []model.ACL {
 	acls := []model.ACL{}
-	sql := fmt.Sprintf("select id, url, method from authority_acl")
+	sql := fmt.Sprintf("select id, url, method, status from authority_acl")
 
 	helper.Query(sql)
 	defer helper.Finish()
 
 	for helper.Next() {
 		acl := model.ACL{}
-		helper.GetValue(&acl.ID, &acl.URL, &acl.Method)
+		helper.GetValue(&acl.ID, &acl.URL, &acl.Method, &acl.Status)
 		acls = append(acls, acl)
 	}
 

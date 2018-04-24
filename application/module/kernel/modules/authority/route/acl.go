@@ -43,6 +43,12 @@ func CreatePutACLRoute(authorityHandler common.AuthorityHandler, moduleHub commo
 	return &i
 }
 
+// CreatePutACLsRoute UpdateAcls
+func CreatePutACLsRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
+	i := aclPutsRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
+	return &i
+}
+
 // CreateGetACLAuthGroupRoute GetAclAuthGroup
 func CreateGetACLAuthGroupRoute(authorityHandler common.AuthorityHandler, moduleHub common.ModuleHub) common.Route {
 	i := aclGetAuthGroupRoute{authorityHandler: authorityHandler, moduleHub: moduleHub}
@@ -323,8 +329,11 @@ type aclPutRoute struct {
 }
 
 type aclPutParam struct {
-	EnableList  []int `json:"enablelist"`
-	DisableList []int `json:"disablelist"`
+	URL       string `json:"url"`
+	Method    string `json:"method"`
+	Module    string `json:"module"`
+	AuthGroup int    `json:"authGroup"`
+	Status    int    `json:"status"`
 }
 
 type aclPutResult struct {
@@ -352,7 +361,86 @@ func (i *aclPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 
 	result := aclPutResult{}
 	for true {
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "非法参数"
+			break
+		}
+
+		acl, ok := i.authorityHandler.QueryACLByID(id)
+		if !ok {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "对象不存在"
+			break
+		}
+
 		param := &aclPutParam{}
+		err = net.ParsePostJSON(r, param)
+		if err != nil {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "非法参数"
+			break
+		}
+		acl.AuthGroup = param.AuthGroup
+		acl.Status = param.Status
+
+		ok = i.authorityHandler.UpdateACL(acl)
+		if ok {
+			result.ErrorCode = common_result.Success
+		} else {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "更新ACL状态失败"
+		}
+
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type aclPutsRoute struct {
+	authorityHandler common.AuthorityHandler
+	moduleHub        common.ModuleHub
+}
+
+type aclPutsParam struct {
+	EnableList  []int `json:"enablelist"`
+	DisableList []int `json:"disablelist"`
+}
+
+type aclPutsResult struct {
+	common_result.Result
+}
+
+func (i *aclPutsRoute) Method() string {
+	return common.PUT
+}
+
+func (i *aclPutsRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PutACLs)
+}
+
+func (i *aclPutsRoute) Handler() interface{} {
+	return i.putsHandler
+}
+
+func (i *aclPutsRoute) AuthGroup() int {
+	return common.MaintainerAuthGroup.ID
+}
+
+func (i *aclPutsRoute) putsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("putsHandler")
+
+	result := aclPutsResult{}
+	for true {
+		param := &aclPutsParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			result.ErrorCode = common_result.Failed

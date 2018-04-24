@@ -127,6 +127,10 @@ func (i *impl) DeleteACL(id int) bool {
 	return dal.DeleteACL(i.dbhelper, id)
 }
 
+func (i *impl) UpdateACL(acl model.ACLDetail) bool {
+	return dal.UpdateACL(i.dbhelper, acl)
+}
+
 func (i *impl) UpdateACLStatus(enableList []int, disableList []int) bool {
 	return dal.UpdateACLStatus(i.dbhelper, enableList, disableList)
 }
@@ -157,7 +161,7 @@ func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
 	}
 
 	acl.AuthGroup = authGroup
-	return dal.UpateACL(i.dbhelper, acl)
+	return dal.UpdateACL(i.dbhelper, acl)
 }
 
 func (i *impl) QueryAllModuleUser() []model.ModuleUserInfo {

@@ -26,8 +26,11 @@ const PostACL = "/acl/"
 // DeleteACL 删除ACL
 const DeleteACL = "/acl/:id"
 
-// PutACL 更新ACL（启用、禁用）
-const PutACL = "/acl/"
+// PutACL 更新ACL
+const PutACL = "/acl/:id"
+
+// PutACLs 批量更新ACL（启用、禁用）
+const PutACLs = "/acls/"
 
 // GetACLAuthGroup 查询指定acl的权限组
 const GetACLAuthGroup = "/acl/authgroup/:id"

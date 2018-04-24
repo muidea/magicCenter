@@ -22,6 +22,9 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	rt = CreatePutACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 
+	rt = CreatePutACLsRoute(authorityHandler, moduleHub)
+	routes = append(routes, rt)
+
 	rt = CreateGetACLAuthGroupRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
 

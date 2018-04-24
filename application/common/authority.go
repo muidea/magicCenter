@@ -23,7 +23,11 @@ type AuthorityHandler interface {
 
 	// 删除ACL
 	DeleteACL(id int) bool
-	// 更新ACL
+
+	// 更新指定的ACL的授权组和状态
+	UpdateACL(acl model.ACLDetail) bool
+
+	// 批量更新ACL状态
 	UpdateACLStatus(enableList []int, disableList []int) bool
 
 	// 查询指定ACL的授权组信息
