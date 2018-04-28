@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // AppendFileRegistryRoute 追加FileRegistry路由
@@ -52,7 +53,7 @@ func (i *uploadFileRoute) Handler() interface{} {
 }
 
 func (i *uploadFileRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *uploadFileRoute) uploadFileHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +79,7 @@ func (i *downloadFileRoute) Handler() interface{} {
 }
 
 func (i *downloadFileRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *downloadFileRoute) downloadFileHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +105,7 @@ func (i *deleteFileRoute) Handler() interface{} {
 }
 
 func (i *deleteFileRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *deleteFileRoute) deleteFileHandler(w http.ResponseWriter, r *http.Request) {

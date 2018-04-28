@@ -12,6 +12,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -89,7 +90,7 @@ func (i *articleGetByIDRoute) Handler() interface{} {
 }
 
 func (i *articleGetByIDRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -152,7 +153,7 @@ func (i *articleGetListRoute) Handler() interface{} {
 }
 
 func (i *articleGetListRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *http.Request) {
@@ -241,7 +242,7 @@ func (i *articleCreateRoute) Handler() interface{} {
 }
 
 func (i *articleCreateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -325,7 +326,7 @@ func (i *articleUpdateRoute) Handler() interface{} {
 }
 
 func (i *articleUpdateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http.Request) {
@@ -422,7 +423,7 @@ func (i *articleDestroyRoute) Handler() interface{} {
 }
 
 func (i *articleDestroyRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *http.Request) {

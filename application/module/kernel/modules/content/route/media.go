@@ -12,6 +12,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -90,7 +91,7 @@ func (i *mediaGetByIDRoute) Handler() interface{} {
 }
 
 func (i *mediaGetByIDRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +154,7 @@ func (i *mediaGetListRoute) Handler() interface{} {
 }
 
 func (i *mediaGetListRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.Request) {
@@ -241,7 +242,7 @@ func (i *mediaCreateRoute) Handler() interface{} {
 }
 
 func (i *mediaCreateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Request) {
@@ -325,7 +326,7 @@ func (i *mediaUpdateRoute) Handler() interface{} {
 }
 
 func (i *mediaUpdateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Request) {
@@ -422,7 +423,7 @@ func (i *mediaDestroyRoute) Handler() interface{} {
 }
 
 func (i *mediaDestroyRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Request) {

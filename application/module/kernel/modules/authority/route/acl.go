@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -84,7 +85,7 @@ func (i *aclGetRoute) Handler() interface{} {
 }
 
 func (i *aclGetRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +107,7 @@ func (i *aclGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 			for _, val := range acls {
 				acl := model.ACLView{}
 				acl.ACL = val
+				acl.Status = common_const.GetStatus(val.Status)
 
 				result.ACL = append(result.ACL, acl)
 			}
@@ -146,7 +148,7 @@ func (i *aclGetByIDRoute) Handler() interface{} {
 }
 
 func (i *aclGetByIDRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -166,13 +168,8 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 		if ok {
 			mod, _ := i.moduleHub.FindModule(acl.Module)
 			result.ACLDetail.ACLDetail = acl
-			if acl.AuthGroup == common.UserAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
-			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
-			}
+			result.ACLDetail.Status = common_const.GetStatus(acl.Status)
+			result.ACLDetail.AuthGroup = common_const.GetAuthGroup(acl.AuthGroup)
 
 			result.ACLDetail.Module.ID = mod.ID()
 			result.ACLDetail.Module.Name = mod.Name()
@@ -223,7 +220,7 @@ func (i *aclPostRoute) Handler() interface{} {
 }
 
 func (i *aclPostRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
@@ -242,13 +239,8 @@ func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 		acl, ok := i.authorityHandler.InsertACL(param.URL, param.Method, param.Module, 0, param.AuthGroup)
 		if ok {
 			result.ACLDetail.ACLDetail = acl
-			if acl.AuthGroup == common.UserAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.UserAuthGroup.Unit
-			} else if acl.AuthGroup == common.MaintainerAuthGroup.ID {
-				result.ACLDetail.AuthGroup = common.MaintainerAuthGroup.Unit
-			} else {
-				result.ACLDetail.AuthGroup = common.VisitorAuthGroup.Unit
-			}
+			result.ACLDetail.Status = common_const.GetStatus(acl.Status)
+			result.ACLDetail.AuthGroup = common_const.GetAuthGroup(acl.AuthGroup)
 			result.ErrorCode = common_result.Success
 		} else {
 			result.ErrorCode = common_result.Failed
@@ -288,7 +280,7 @@ func (i *aclDeleteRoute) Handler() interface{} {
 }
 
 func (i *aclDeleteRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -353,7 +345,7 @@ func (i *aclPutRoute) Handler() interface{} {
 }
 
 func (i *aclPutRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
@@ -432,7 +424,7 @@ func (i *aclPutsRoute) Handler() interface{} {
 }
 
 func (i *aclPutsRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclPutsRoute) putsHandler(w http.ResponseWriter, r *http.Request) {
@@ -491,7 +483,7 @@ func (i *aclGetAuthGroupRoute) Handler() interface{} {
 }
 
 func (i *aclGetAuthGroupRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclGetAuthGroupRoute) getAuthGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -562,7 +554,7 @@ func (i *aclPutAuthGroupRoute) Handler() interface{} {
 }
 
 func (i *aclPutAuthGroupRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *aclPutAuthGroupRoute) putAuthGroupHandler(w http.ResponseWriter, r *http.Request) {

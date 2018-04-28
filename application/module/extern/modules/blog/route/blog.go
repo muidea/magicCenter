@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/extern/modules/blog/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // AppendBlogRoute 追加User Route
@@ -59,7 +60,7 @@ func (i *mainPageRoute) Handler() interface{} {
 }
 
 func (i *mainPageRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *mainPageRoute) getMainPageHandler(res http.ResponseWriter, req *http.Request) {
@@ -83,7 +84,7 @@ func (i *detailPageRoute) Handler() interface{} {
 }
 
 func (i *detailPageRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *detailPageRoute) getDetailPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +108,7 @@ func (i *listPageRoute) Handler() interface{} {
 }
 
 func (i *listPageRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *listPageRoute) getListPageHandler(w http.ResponseWriter, r *http.Request) {

@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/cache/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 )
 
@@ -57,7 +58,7 @@ func (i *queryCacheRoute) Handler() interface{} {
 }
 
 func (i *queryCacheRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +116,7 @@ func (i *postCacheRoute) Handler() interface{} {
 }
 
 func (i *postCacheRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request) {
@@ -176,7 +177,7 @@ func (i *deleteCacheRoute) Handler() interface{} {
 }
 
 func (i *deleteCacheRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *deleteCacheRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Request) {

@@ -10,6 +10,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -96,7 +97,7 @@ func (i *catalogGetByIDRoute) Handler() interface{} {
 }
 
 func (i *catalogGetByIDRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -159,7 +160,7 @@ func (i *catalogQueryByNameRoute) Handler() interface{} {
 }
 
 func (i *catalogQueryByNameRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *catalogQueryByNameRoute) queryCatalogByNameHandler(w http.ResponseWriter, r *http.Request) {
@@ -221,7 +222,7 @@ func (i *catalogGetListRoute) Handler() interface{} {
 }
 
 func (i *catalogGetListRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *http.Request) {
@@ -308,7 +309,7 @@ func (i *catalogCreateRoute) Handler() interface{} {
 }
 
 func (i *catalogCreateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -393,7 +394,7 @@ func (i *catalogUpdateRoute) Handler() interface{} {
 }
 
 func (i *catalogUpdateRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http.Request) {
@@ -489,7 +490,7 @@ func (i *catalogDestroyRoute) Handler() interface{} {
 }
 
 func (i *catalogDestroyRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {

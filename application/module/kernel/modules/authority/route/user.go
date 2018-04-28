@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -55,7 +56,7 @@ func (i *userGetRoute) Handler() interface{} {
 }
 
 func (i *userGetRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +118,7 @@ func (i *userGetByIDRoute) Handler() interface{} {
 }
 
 func (i *userGetByIDRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -147,16 +148,7 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 			mod, _ := i.moduleHub.FindModule(val.Module)
 			view.Module.ID = mod.ID()
 			view.Module.Name = mod.Name()
-
-			switch val.AuthGroup {
-			case common.VisitorAuthGroup.ID:
-				view.AuthGroup = common.VisitorAuthGroup
-			case common.UserAuthGroup.ID:
-				view.AuthGroup = common.UserAuthGroup
-			case common.MaintainerAuthGroup.ID:
-				view.AuthGroup = common.MaintainerAuthGroup
-			default:
-			}
+			view.AuthGroup = common_const.GetAuthGroup(val.AuthGroup)
 
 			result.User.ModuleAuthGroup = append(result.User.ModuleAuthGroup, view)
 		}
@@ -201,7 +193,7 @@ func (i *userPutRoute) Handler() interface{} {
 }
 
 func (i *userPutRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {

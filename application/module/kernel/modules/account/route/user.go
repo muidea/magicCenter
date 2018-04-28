@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	common_model "muidea.com/magicCommon/model"
 )
@@ -86,7 +87,7 @@ func (i *userGetRoute) Handler() interface{} {
 }
 
 func (i *userGetRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +145,7 @@ func (i *userGetAllRoute) Handler() interface{} {
 }
 
 func (i *userGetAllRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -201,7 +202,7 @@ func (i *userCreateRoute) Handler() interface{} {
 }
 
 func (i *userCreateRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -230,6 +231,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
+		result.User.Status = common_const.GetStatus(user.Status)
 		result.ErrorCode = common_result.Success
 		break
 	}
@@ -271,7 +273,7 @@ func (i *userSaveRoute) Handler() interface{} {
 }
 
 func (i *userSaveRoute) AuthGroup() int {
-	return common.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -360,7 +362,7 @@ func (i *userDestroyRoute) Handler() interface{} {
 }
 
 func (i *userDestroyRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Request) {

@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -69,7 +70,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	// 如果ACL的授权组为访客组，则直接认为有授权
-	if acl.AuthGroup == common.VisitorAuthGroup.ID {
+	if acl.AuthGroup == common_const.VisitorAuthGroup.ID {
 		return true
 	}
 
@@ -144,14 +145,7 @@ func (i *impl) QueryACLAuthGroup(id int) (model.AuthGroup, bool) {
 		return authGroup, ok
 	}
 
-	switch acl.AuthGroup {
-	case common.VisitorAuthGroup.ID:
-		authGroup = common.VisitorAuthGroup
-	case common.UserAuthGroup.ID:
-		authGroup = common.UserAuthGroup
-	case common.MaintainerAuthGroup.ID:
-		authGroup = common.MaintainerAuthGroup
-	}
+	authGroup = common_const.GetAuthGroup(acl.AuthGroup)
 
 	return authGroup, ok
 }
@@ -211,9 +205,9 @@ func (i *impl) QueryUserACL(user int) []model.ACLDetail {
 func (i *impl) QueryAllAuthGroupDef() []model.AuthGroup {
 	authGroups := []model.AuthGroup{}
 
-	authGroups = append(authGroups, common.VisitorAuthGroup)
-	authGroups = append(authGroups, common.UserAuthGroup)
-	authGroups = append(authGroups, common.MaintainerAuthGroup)
+	authGroups = append(authGroups, common_const.VisitorAuthGroup)
+	authGroups = append(authGroups, common_const.UserAuthGroup)
+	authGroups = append(authGroups, common_const.MaintainerAuthGroup)
 
 	return authGroups
 }

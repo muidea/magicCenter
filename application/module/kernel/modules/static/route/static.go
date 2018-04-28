@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/static/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // CreateStaticResRoute 新建静态资源路由
@@ -33,7 +34,7 @@ func (i *staticResRoute) Handler() interface{} {
 }
 
 func (i *staticResRoute) AuthGroup() int {
-	return common.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *staticResRoute) getStaticResHandler(w http.ResponseWriter, r *http.Request) {

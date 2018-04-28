@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/foundation/net"
+	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
@@ -54,7 +55,7 @@ func (i *moduleGetRoute) Handler() interface{} {
 }
 
 func (i *moduleGetRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *moduleGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +115,7 @@ func (i *moduleGetByIDRoute) Handler() interface{} {
 }
 
 func (i *moduleGetByIDRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +130,7 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 		result.Module.Name = mod.Name()
 		result.Module.Description = mod.Description()
 		result.Module.Type = mod.Type()
-		result.Module.Status = mod.Status()
+		result.Module.Status = common_const.GetStatus(mod.Status())
 
 		userAuthGroups := i.authorityHandler.QueryModuleUserAuthGroup(id)
 		for _, val := range userAuthGroups {
@@ -140,16 +141,7 @@ func (i *moduleGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Reque
 
 				view.User.ID = user.ID
 				view.User.Name = user.Name
-
-				switch val.AuthGroup {
-				case common.VisitorAuthGroup.ID:
-					view.AuthGroup = common.VisitorAuthGroup
-				case common.UserAuthGroup.ID:
-					view.AuthGroup = common.UserAuthGroup
-				case common.MaintainerAuthGroup.ID:
-					view.AuthGroup = common.MaintainerAuthGroup
-				default:
-				}
+				view.AuthGroup = common_const.GetAuthGroup(val.AuthGroup)
 
 				result.Module.UserAuthGroup = append(result.Module.UserAuthGroup, view)
 			}
@@ -194,7 +186,7 @@ func (i *modulePutRoute) Handler() interface{} {
 }
 
 func (i *modulePutRoute) AuthGroup() int {
-	return common.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *modulePutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
