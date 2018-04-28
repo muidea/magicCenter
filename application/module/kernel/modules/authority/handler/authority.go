@@ -16,6 +16,7 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 
 	i := impl{
 		dbhelper:        dbhelper,
+		moduleHub:       moduleHub,
 		sessionRegistry: sessionRegistry}
 
 	casModule, _ := moduleHub.FindModule(common.CASModuleID)
@@ -32,6 +33,7 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 
 type impl struct {
 	dbhelper        dbhelper.DBHelper
+	moduleHub       common.ModuleHub
 	sessionRegistry common.SessionRegistry
 	casHandler      common.CASHandler
 }
@@ -165,7 +167,16 @@ func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
 }
 
 func (i *impl) QueryAllModuleUser() []model.ModuleUserInfo {
-	return dal.QueryAllModuleUser(i.dbhelper)
+	moduleUserInfos := []model.ModuleUserInfo{}
+
+	ids := i.moduleHub.GetAllModuleIDs()
+	for _, v := range ids {
+		info := model.ModuleUserInfo{Module: v}
+		info.User = dal.QueryModuleUser(i.dbhelper, v)
+		moduleUserInfos = append(moduleUserInfos, info)
+	}
+
+	return moduleUserInfos
 }
 
 func (i *impl) QueryModuleUserAuthGroup(module string) []model.UserAuthGroup {

@@ -29,9 +29,20 @@ func CreateModuleHub() common.ModuleHub {
 	return &impl
 }
 
-// QueryAllModule 查询所有的模块
+// GetAllModuleIDs 获取所有模块的ID
+func (instance *impl) GetAllModuleIDs() []string {
+	ids := []string{}
+
+	for k := range instance.moduleIDMap {
+		ids = append(ids, k)
+	}
+
+	return ids
+}
+
+// GetAllModule 查询所有的模块
 // 包含启用和未启用的
-func (instance *impl) QueryAllModule() []common.Module {
+func (instance *impl) GetAllModule() []common.Module {
 	modules := []common.Module{}
 
 	for _, m := range instance.moduleIDMap {

@@ -64,13 +64,15 @@ func (i *moduleGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 	for true {
 		moduleUserInfo := i.authorityHandler.QueryAllModuleUser()
 		for _, val := range moduleUserInfo {
-			view := model.ModuleUserInfoView{}
+			view := model.ModuleUserInfoView{User: []model.User{}}
 
 			mod, _ := i.moduleHub.FindModule(val.Module)
 			view.Module.ID = mod.ID()
 			view.Module.Name = mod.Name()
 
-			view.User = i.accountHandler.GetUsers(val.User)
+			if len(val.User) > 0 {
+				view.User = i.accountHandler.GetUsers(val.User)
+			}
 
 			result.Module = append(result.Module, view)
 		}

@@ -45,6 +45,10 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 // QueryUsers 查询指定用户
 func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 	userList := []model.User{}
+	if len(ids) == 0 {
+		return userList
+	}
+
 	sql := fmt.Sprintf("select id, nickname from account_user where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 	defer helper.Finish()

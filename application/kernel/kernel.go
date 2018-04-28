@@ -8,11 +8,11 @@ import (
 
 	"github.com/go-martini/martini"
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/kernel/authority"
 	"muidea.com/magicCenter/application/kernel/modulehub"
 	"muidea.com/magicCenter/application/kernel/router"
 	"muidea.com/magicCenter/application/kernel/session"
+	"muidea.com/magicCommon/model"
 )
 
 // Kernel MagicCenter系统接口
@@ -76,7 +76,7 @@ func (i *impl) StartUp() error {
 		}
 	}
 
-	allModules := i.moduleHubImpl.QueryAllModule()
+	allModules := i.moduleHubImpl.GetAllModule()
 	for _, m := range allModules {
 		routes := m.Routes()
 		// if define routes trace something...
@@ -120,7 +120,7 @@ func (i *impl) Run() {
 func (i *impl) ShutDown() {
 	/*
 		退出时不需要做路由清理操作
-		allModules := i.moduleHubImpl.QueryAllModule()
+		allModules := i.moduleHubImpl.GetAllModule()
 		for _, m := range allModules {
 			baseURL := m.URL()
 			routes := m.Routes()

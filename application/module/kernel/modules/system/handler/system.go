@@ -11,7 +11,7 @@ func CreateSystemHandler(configuration common.Configuration, sessionRegistry com
 	i := impl{moduleHub: moduleHub}
 
 	moduleList := []model.ModuleDetail{}
-	modules := moduleHub.QueryAllModule()
+	modules := moduleHub.GetAllModule()
 	for _, mod := range modules {
 		item := model.ModuleDetail{ID: mod.ID(), Name: mod.Name(), Description: mod.Description(), Type: mod.Type(), Status: mod.Status()}
 

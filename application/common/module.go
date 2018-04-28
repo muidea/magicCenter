@@ -57,8 +57,10 @@ type ModuleHub interface {
 	StartupAllModules()
 	// 清理所有Module
 	CleanupAllModules()
+	// 查询全部的Module ID
+	GetAllModuleIDs() []string
 	// 查询全部Module
-	QueryAllModule() []Module
+	GetAllModule() []Module
 	// 查询全部Module分组
 	GetAllModuleGroups() []string
 	// 查询指定分组的Module

@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"log"
 
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCommon/model"
@@ -35,7 +36,22 @@ func QueryAllModuleUser(helper dbhelper.DBHelper) []model.ModuleUserInfo {
 	return retValue
 }
 
-// QueryModuleUserAuthGroup 查询拥有指定Module的User
+// QueryModuleUser 查询拥有指定Module的User
+func QueryModuleUser(helper dbhelper.DBHelper, module string) []int {
+	retValue := []int{}
+	sql := fmt.Sprintf("select distinct(user) from authority_module where module='%s'", module)
+	helper.Query(sql)
+	defer helper.Finish()
+	for helper.Next() {
+		val := -1
+		helper.GetValue(&val)
+		retValue = append(retValue, val)
+	}
+
+	return retValue
+}
+
+// QueryModuleUserAuthGroup 查询拥有指定Module的User授权组
 func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) []model.UserAuthGroup {
 	retValue := []model.UserAuthGroup{}
 	sql := fmt.Sprintf("select user, authgroup from authority_module where module='%s'", module)
@@ -54,6 +70,7 @@ func QueryModuleUserAuthGroup(helper dbhelper.DBHelper, module string) []model.U
 func UpdateModuleUserAuthGroup(helper dbhelper.DBHelper, module string, userAuthGroup []model.UserAuthGroup) bool {
 	retVal := false
 
+	log.Printf("module:%s, authGroup size:%d", module, len(userAuthGroup))
 	helper.BeginTransaction()
 	sql := fmt.Sprintf("delete from authority_module where module='%s'", module)
 	_, retVal = helper.Execute(sql)
