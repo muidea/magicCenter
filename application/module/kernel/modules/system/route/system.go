@@ -20,9 +20,6 @@ func AppendSystemRoute(routes []common.Route, systemHandler common.SystemHandler
 	rt = SetSystemConfigRoute(systemHandler)
 	routes = append(routes, rt)
 
-	rt = GetModulesRoute(systemHandler)
-	routes = append(routes, rt)
-
 	return routes
 }
 
@@ -34,11 +31,6 @@ func GetSystemConfigRoute(systemHandler common.SystemHandler) common.Route {
 // SetSystemConfigRoute 新建获取SystemConfig路由
 func SetSystemConfigRoute(systemHandler common.SystemHandler) common.Route {
 	return &setSystemConfigRoute{systemHandler: systemHandler}
-}
-
-// GetModulesRoute 新建获取Modules路由
-func GetModulesRoute(systemHandler common.SystemHandler) common.Route {
-	return &getModulesRoute{systemHandler: systemHandler}
 }
 
 type getSystemConfigRoute struct {
@@ -127,45 +119,6 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 
 		break
 	}
-
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type getModulesRoute struct {
-	systemHandler common.SystemHandler
-}
-
-type getModulesResult struct {
-	common_result.Result
-	Module []model.Module `json:"module"`
-}
-
-func (i *getModulesRoute) Method() string {
-	return common.GET
-}
-
-func (i *getModulesRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetSystemModule)
-}
-
-func (i *getModulesRoute) Handler() interface{} {
-	return i.getModulesHandler
-}
-
-func (i *getModulesRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
-}
-
-func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Request) {
-	result := getModulesResult{}
-
-	result.Module = i.systemHandler.GetModuleList()
-	result.ErrorCode = common_result.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {

@@ -10,21 +10,11 @@ import (
 func CreateSystemHandler(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) common.SystemHandler {
 	i := impl{moduleHub: moduleHub}
 
-	moduleList := []model.ModuleDetail{}
-	modules := moduleHub.GetAllModule()
-	for _, mod := range modules {
-		item := model.ModuleDetail{ID: mod.ID(), Name: mod.Name(), Description: mod.Description(), Type: mod.Type(), Status: mod.Status()}
-
-		moduleList = append(moduleList, item)
-	}
-	i.moduleList = moduleList
-
 	return &i
 }
 
 type impl struct {
-	moduleHub  common.ModuleHub
-	moduleList []model.ModuleDetail
+	moduleHub common.ModuleHub
 }
 
 func (s *impl) GetSystemProperty() model.SystemProperty {
@@ -33,15 +23,6 @@ func (s *impl) GetSystemProperty() model.SystemProperty {
 
 func (s *impl) UpdateSystemProperty(sysProperty model.SystemProperty) bool {
 	return configuration.UpdateSystemProperty(sysProperty)
-}
-
-func (s *impl) GetModuleList() []model.Module {
-	moduleList := []model.Module{}
-	for _, val := range s.moduleList {
-		moduleList = append(moduleList, model.Module{ID: val.ID, Name: val.Name})
-	}
-
-	return moduleList
 }
 
 func (s *impl) GetSystemStatistics() model.StatisticsView {

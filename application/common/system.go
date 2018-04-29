@@ -7,6 +7,5 @@ type SystemHandler interface {
 	GetSystemProperty() model.SystemProperty
 
 	UpdateSystemProperty(sysProperty model.SystemProperty) bool
-	GetModuleList() []model.Module
 	GetSystemStatistics() model.StatisticsView
 }
