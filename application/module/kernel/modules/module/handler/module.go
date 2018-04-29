@@ -37,3 +37,17 @@ func (s *impl) GetModuleDetailList() []model.ModuleDetail {
 
 	return moduleList
 }
+
+func (s *impl) QueryModuleByID(id string) (model.ModuleDetail, bool) {
+	detail := model.ModuleDetail{}
+	mod, ok := s.moduleHub.FindModule(id)
+	if ok {
+		detail.ID = mod.ID()
+		detail.Name = mod.Name()
+		detail.Description = mod.Description()
+		detail.Type = mod.Type()
+		detail.Status = mod.Status()
+	}
+
+	return detail, ok
+}

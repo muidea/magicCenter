@@ -17,12 +17,20 @@ func AppendModuleRegistryRoute(routes []common.Route, moduleHandler common.Modul
 	rt := GetModulesRoute(moduleHandler)
 	routes = append(routes, rt)
 
+	rt = GetModuleByIDRoute(moduleHandler)
+	routes = append(routes, rt)
+
 	return routes
 }
 
 // GetModulesRoute 新建获取Modules路由
 func GetModulesRoute(moduleHandler common.ModuleRegistryHandler) common.Route {
 	return &getModulesRoute{moduleHandler: moduleHandler}
+}
+
+// GetModuleByIDRoute 获取指定Module
+func GetModuleByIDRoute(moduleHandler common.ModuleRegistryHandler) common.Route {
+	return &getModuleByIDRoute{moduleHandler: moduleHandler}
 }
 
 type getModulesRoute struct {
@@ -63,6 +71,57 @@ func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Reque
 		result.Module = append(result.Module, detail)
 	}
 	result.ErrorCode = common_result.Success
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type getModuleByIDRoute struct {
+	moduleHandler common.ModuleRegistryHandler
+}
+
+type getModuleByIDResult struct {
+	common_result.Result
+	Module model.ModuleDetailView `json:"module"`
+}
+
+func (i *getModuleByIDRoute) Method() string {
+	return common.GET
+}
+
+func (i *getModuleByIDRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetModuleByID)
+}
+
+func (i *getModuleByIDRoute) Handler() interface{} {
+	return i.getModuleByIDHandler
+}
+
+func (i *getModuleByIDRoute) AuthGroup() int {
+	return common_const.MaintainerAuthGroup.ID
+}
+
+func (i *getModuleByIDRoute) getModuleByIDHandler(w http.ResponseWriter, r *http.Request) {
+	result := getModuleByIDResult{}
+
+	for {
+		_, id := net.SplitRESTAPI(r.URL.Path)
+		detail, ok := i.moduleHandler.QueryModuleByID(id)
+		if ok {
+			result.Module.ModuleDetail = detail
+			result.Module.Type = common_const.GetModuleType(detail.Type)
+			result.Module.Status = common_const.GetStatus(detail.Status)
+			result.ErrorCode = common_result.Success
+		} else {
+			result.ErrorCode = common_result.NoExist
+		}
+
+		break
+	}
 
 	b, err := json.Marshal(result)
 	if err != nil {

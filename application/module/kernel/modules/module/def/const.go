@@ -14,3 +14,6 @@ const URL = "/module"
 
 // GetListModule 获取系统模块列表
 const GetListModule = "/"
+
+// GetModuleByID 获取指定模块
+const GetModuleByID = "/:id"

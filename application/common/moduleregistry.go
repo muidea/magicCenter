@@ -7,4 +7,6 @@ type ModuleRegistryHandler interface {
 	GetModuleList() []model.Module
 
 	GetModuleDetailList() []model.ModuleDetail
+
+	QueryModuleByID(id string) (model.ModuleDetail, bool)
 }
