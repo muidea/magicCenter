@@ -5,6 +5,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/cas/route"
+	common_const "muidea.com/magicCommon/common"
 )
 
 type cas struct {
@@ -43,11 +44,11 @@ func (s *cas) Group() string {
 }
 
 func (s *cas) Type() int {
-	return common.KERNEL
+	return common_const.KERNEL
 }
 
 func (s *cas) Status() int {
-	return 0
+	return common_const.ACTIVE
 }
 
 func (s *cas) EntryPoint() interface{} {

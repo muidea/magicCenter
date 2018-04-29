@@ -5,6 +5,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/route"
+	common_const "muidea.com/magicCommon/common"
 )
 
 type authority struct {
@@ -48,11 +49,11 @@ func (instance *authority) Group() string {
 }
 
 func (instance *authority) Type() int {
-	return common.KERNEL
+	return common_const.KERNEL
 }
 
 func (instance *authority) Status() int {
-	return 0
+	return common_const.ACTIVE
 }
 
 func (instance *authority) EntryPoint() interface{} {

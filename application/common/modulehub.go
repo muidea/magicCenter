@@ -1,15 +1,5 @@
 package common
 
-// 模块类型
-const (
-	// 内核模块，不能被禁用
-	KERNEL = iota
-	// 内置模块，属于系统自带可选模块，可以被禁用
-	INTERNAL
-	// 外部模块，通过外部接口注册进来的模块，可以被禁用
-	EXTERNAL
-)
-
 const (
 	// AuthorityModuleID Authority模块ID
 	AuthorityModuleID = "158e11b7-adee-4b0d-afc9-0b47145195bd"

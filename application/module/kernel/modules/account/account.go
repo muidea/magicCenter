@@ -5,6 +5,7 @@ import (
 	"muidea.com/magicCenter/application/module/kernel/modules/account/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/handler"
 	"muidea.com/magicCenter/application/module/kernel/modules/account/route"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // LoadModule 加载模块
@@ -40,11 +41,11 @@ func (instance *account) Group() string {
 }
 
 func (instance *account) Type() int {
-	return common.KERNEL
+	return common_const.KERNEL
 }
 
 func (instance *account) Status() int {
-	return 0
+	return common_const.ACTIVE
 }
 
 func (instance *account) EntryPoint() interface{} {

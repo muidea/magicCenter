@@ -4,6 +4,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/extern/modules/blog/def"
 	"muidea.com/magicCenter/application/module/extern/modules/blog/route"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // LoadModule 加载模块
@@ -40,11 +41,11 @@ func (s *blog) Group() string {
 }
 
 func (s *blog) Type() int {
-	return common.EXTERNAL
+	return common_const.EXTERNAL
 }
 
 func (s *blog) Status() int {
-	return 0
+	return common_const.ACTIVE
 }
 
 func (s *blog) EntryPoint() interface{} {

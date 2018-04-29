@@ -2,9 +2,10 @@ package mail
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail/def"
 	"muidea.com/magicCenter/application/module/kernel/modules/mail/handler"
+	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/model"
 )
 
 // LoadModule 加载Mail模块
@@ -41,11 +42,11 @@ func (instance *mail) Group() string {
 }
 
 func (instance *mail) Type() int {
-	return common.KERNEL
+	return common_const.KERNEL
 }
 
 func (instance *mail) Status() int {
-	return 0
+	return common_const.ACTIVE
 }
 
 func (instance *mail) EntryPoint() interface{} {

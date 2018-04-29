@@ -31,7 +31,7 @@ type getModulesRoute struct {
 
 type getModulesResult struct {
 	common_result.Result
-	Module []model.ModuleDetail `json:"module"`
+	Module []model.ModuleDetailView `json:"module"`
 }
 
 func (i *getModulesRoute) Method() string {
@@ -53,7 +53,15 @@ func (i *getModulesRoute) AuthGroup() int {
 func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Request) {
 	result := getModulesResult{}
 
-	result.Module = i.moduleHandler.GetModuleDetailList()
+	modules := i.moduleHandler.GetModuleDetailList()
+	for _, v := range modules {
+		detail := model.ModuleDetailView{}
+		detail.ModuleDetail = v
+		detail.Type = common_const.GetModuleType(v.Type)
+		detail.Status = common_const.GetStatus(v.Status)
+
+		result.Module = append(result.Module, detail)
+	}
 	result.ErrorCode = common_result.Success
 
 	b, err := json.Marshal(result)
