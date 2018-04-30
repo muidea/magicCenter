@@ -4,7 +4,9 @@ import "muidea.com/magicCommon/model"
 
 // AccountHandler 账号信息处理Handler
 type AccountHandler interface {
-	GetAllUser() []model.UserDetail
+	GetAllUserIDs() []int
+	GetAllUser() []model.User
+	GetAllUserDetail() []model.UserDetail
 	GetUsers(ids []int) []model.User
 	FindUserByID(id int) (model.UserDetail, bool)
 	FindUserByGroup(groupID int) []model.User

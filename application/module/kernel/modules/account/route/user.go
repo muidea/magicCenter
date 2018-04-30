@@ -153,7 +153,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 
 	result := userGetAllResult{}
 	for true {
-		allUsers := i.accountHandler.GetAllUser()
+		allUsers := i.accountHandler.GetAllUserDetail()
 		for _, val := range allUsers {
 			user := common_model.UserDetailView{}
 			user.UserDetail = val

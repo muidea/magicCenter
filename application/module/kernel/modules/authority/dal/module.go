@@ -123,6 +123,24 @@ func QueryAllUserModule(helper dbhelper.DBHelper) []model.UserModuleInfo {
 	return retValue
 }
 
+// QueryUserModule 获取指定用户拥有的模块
+func QueryUserModule(helper dbhelper.DBHelper, user int) []string {
+	retValue := []string{}
+
+	sql := fmt.Sprintf("select distinct(module) from authority_module where user=%d", user)
+	helper.Query(sql)
+	defer helper.Finish()
+
+	for helper.Next() {
+		val := ""
+		helper.GetValue(&val)
+
+		retValue = append(retValue, val)
+	}
+
+	return retValue
+}
+
 // QueryUserModuleAuthGroup 获取指定用户拥有的模块
 func QueryUserModuleAuthGroup(helper dbhelper.DBHelper, user int) []model.ModuleAuthGroup {
 	retValue := []model.ModuleAuthGroup{}

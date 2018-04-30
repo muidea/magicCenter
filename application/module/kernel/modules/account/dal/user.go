@@ -23,8 +23,42 @@ func loadUserID(helper dbhelper.DBHelper) int {
 	return int(maxID.Int64)
 }
 
+//QueryAllUserIDs 查询全部用户ID
+func QueryAllUserIDs(helper dbhelper.DBHelper) []int {
+	userIDs := []int{}
+	sql := fmt.Sprintf("select id from account_user")
+	helper.Query(sql)
+	defer helper.Finish()
+
+	for helper.Next() {
+		id := -1
+		helper.GetValue(&id)
+
+		userIDs = append(userIDs, id)
+	}
+
+	return userIDs
+}
+
 //QueryAllUser 查询全部用户信息
-func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
+func QueryAllUser(helper dbhelper.DBHelper) []model.User {
+	userList := []model.User{}
+	sql := fmt.Sprintf("select id, account from account_user")
+	helper.Query(sql)
+	defer helper.Finish()
+
+	for helper.Next() {
+		user := model.User{}
+		helper.GetValue(&user.ID, &user.Name)
+
+		userList = append(userList, user)
+	}
+
+	return userList
+}
+
+//QueryAllUserDetail 查询全部用户信息
+func QueryAllUserDetail(helper dbhelper.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user")
 	helper.Query(sql)

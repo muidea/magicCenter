@@ -29,6 +29,10 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 		panic("can\\'t find CASModule")
 	}
 
+	accountModule, _ := moduleHub.FindModule(common.AccountModuleID)
+	entryPoint = accountModule.EntryPoint()
+	i.accountHandler = entryPoint.(common.AccountHandler)
+
 	return &i
 }
 
@@ -37,6 +41,7 @@ type impl struct {
 	moduleHub       common.ModuleHub
 	sessionRegistry common.SessionRegistry
 	casHandler      common.CASHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
@@ -182,7 +187,17 @@ func (i *impl) UpdateModuleUserAuthGroup(module string, userAuthGroups []model.U
 }
 
 func (i *impl) QueryAllUserModule() []model.UserModuleInfo {
-	return dal.QueryAllUserModule(i.dbhelper)
+	userModuleInfos := []model.UserModuleInfo{}
+
+	allUsers := i.accountHandler.GetAllUserIDs()
+	for _, v := range allUsers {
+		info := model.UserModuleInfo{User: v}
+		info.Module = dal.QueryUserModule(i.dbhelper, v)
+
+		userModuleInfos = append(userModuleInfos, info)
+	}
+
+	return userModuleInfos
 }
 
 func (i *impl) QueryUserModuleAuthGroup(user int) []model.ModuleAuthGroup {

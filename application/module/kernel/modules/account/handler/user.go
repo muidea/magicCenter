@@ -10,8 +10,16 @@ type userActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *userActionHandler) getAllUser() []model.UserDetail {
+func (i *userActionHandler) getAllUserIDs() []int {
+	return dal.QueryAllUserIDs(i.dbhelper)
+}
+
+func (i *userActionHandler) getAllUser() []model.User {
 	return dal.QueryAllUser(i.dbhelper)
+}
+
+func (i *userActionHandler) getAllUserDetail() []model.UserDetail {
+	return dal.QueryAllUserDetail(i.dbhelper)
 }
 
 func (i *userActionHandler) getUsers(ids []int) []model.User {

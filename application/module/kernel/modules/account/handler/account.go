@@ -19,8 +19,16 @@ type impl struct {
 	groupHandler groupActionHandler
 }
 
-func (i *impl) GetAllUser() []model.UserDetail {
+func (i *impl) GetAllUserIDs() []int {
+	return i.userHandler.getAllUserIDs()
+}
+
+func (i *impl) GetAllUser() []model.User {
 	return i.userHandler.getAllUser()
+}
+
+func (i *impl) GetAllUserDetail() []model.UserDetail {
+	return i.userHandler.getAllUserDetail()
 }
 
 func (i *impl) GetUsers(ids []int) []model.User {
