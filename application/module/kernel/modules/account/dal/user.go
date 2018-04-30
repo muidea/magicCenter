@@ -26,14 +26,14 @@ func loadUserID(helper dbhelper.DBHelper) int {
 //QueryAllUser 查询全部用户信息
 func QueryAllUser(helper dbhelper.DBHelper) []model.UserDetail {
 	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user")
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user")
 	helper.Query(sql)
 	defer helper.Finish()
 
 	for helper.Next() {
 		user := model.UserDetail{}
 		groups := ""
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
+		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
 		user.Group, _ = util.Str2IntArray(groups)
 
 		userList = append(userList, user)
@@ -49,7 +49,7 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 		return userList
 	}
 
-	sql := fmt.Sprintf("select id, nickname from account_user where id in(%s)", util.IntArray2Str(ids))
+	sql := fmt.Sprintf("select id, account from account_user where id in(%s)", util.IntArray2Str(ids))
 	helper.Query(sql)
 	defer helper.Finish()
 
@@ -66,14 +66,14 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user where account='%s' and password='%s'", account, password)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where account='%s' and password='%s'", account, password)
 	helper.Query(sql)
 	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
 		groups := ""
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
+		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
 		user.Group, _ = util.Str2IntArray(groups)
 		result = true
 	}
@@ -85,7 +85,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.User {
 	userList := []model.User{}
 
-	sql := fmt.Sprintf("select id, nickname from `account_user` where groups like '%d' union select id, nickname from `account_user` where groups like '%d,%%' union select id, nickname from `account_user` where groups like '%%,%d,%%' union select id, nickname from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
+	sql := fmt.Sprintf("select id, account from `account_user` where groups like '%d' union select id, account from `account_user` where groups like '%d,%%' union select id, account from `account_user` where groups like '%%,%d,%%' union select id, account from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
 	helper.Query(sql)
 	defer helper.Finish()
 
@@ -102,14 +102,14 @@ func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.User {
 func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user where id=%d", id)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where id=%d", id)
 	helper.Query(sql)
 	defer helper.Finish()
 
 	result := false
 	if helper.Next() {
 		groups := ""
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
+		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
 		user.Group, _ = util.Str2IntArray(groups)
 		result = true
 	}
@@ -133,7 +133,7 @@ func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) boo
 
 // CreateUser 创建新用户，根据用户信息和密码
 func CreateUser(helper dbhelper.DBHelper, account, password, email string, groups []int) (model.UserDetail, bool) {
-	user := model.UserDetail{Account: account, Email: email, Group: groups}
+	user := model.UserDetail{User: model.User{ID: -1, Name: account}, Email: email, Group: groups}
 	sql := fmt.Sprintf("select id from account_user where account='%s'", account)
 	helper.Query(sql)
 
@@ -149,7 +149,7 @@ func CreateUser(helper dbhelper.DBHelper, account, password, email string, group
 
 	id := allocUserID()
 	// insert
-	sql = fmt.Sprintf("insert into account_user(id, account, password, nickname, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', '%s', %d, '%s')", id, account, password, "", email, gVal, 0, createTime)
+	sql = fmt.Sprintf("insert into account_user(id, account, password, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', %d, '%s')", id, account, password, email, gVal, 0, createTime)
 	_, result := helper.Execute(sql)
 	if !result {
 		return user, false
@@ -163,7 +163,7 @@ func CreateUser(helper dbhelper.DBHelper, account, password, email string, group
 func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
 	gVal := util.IntArray2Str(user.Group)
 	// modify
-	sql := fmt.Sprintf("update account_user set nickname='%s', email='%s', groups='%s', status=%d where id =%d", user.Name, user.Email, gVal, user.Status, user.ID)
+	sql := fmt.Sprintf("update account_user set email='%s', groups='%s', status=%d where id =%d", user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1
@@ -173,7 +173,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
 	gVal := util.IntArray2Str(user.Group)
 	// modify
-	sql := fmt.Sprintf("update account_user set password='%s', nickname='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Name, user.Email, gVal, user.Status, user.ID)
+	sql := fmt.Sprintf("update account_user set password='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1
@@ -182,14 +182,14 @@ func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, passw
 // GetLastRegisterUser 获取最新的用户
 func GetLastRegisterUser(helper dbhelper.DBHelper, count int) []model.UserDetail {
 	userList := []model.UserDetail{}
-	sql := fmt.Sprintf("select id, account, nickname, email, groups, status, registertime from account_user order by registertime desc limit %d", count)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user order by registertime desc limit %d", count)
 	helper.Query(sql)
 	defer helper.Finish()
 
 	for helper.Next() {
 		user := model.UserDetail{}
 		groups := ""
-		helper.GetValue(&user.ID, &user.Account, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
+		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
 		user.Group, _ = util.Str2IntArray(groups)
 
 		userList = append(userList, user)

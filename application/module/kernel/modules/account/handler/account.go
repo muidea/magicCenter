@@ -114,7 +114,7 @@ func (i *impl) GetLastAccount(count int) model.AccountRecord {
 	result := model.AccountRecord{}
 	users := i.userHandler.GetLastRegisterUser(count)
 	for _, v := range users {
-		item := model.AccountUnit{Name: v.Account, RegisterDate: v.RegisterTime}
+		item := model.AccountUnit{Name: v.Name, RegisterDate: v.RegisterTime}
 
 		result = append(result, item)
 	}
