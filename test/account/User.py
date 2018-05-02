@@ -13,28 +13,46 @@ class User:
         'refreshToken'
         self.authority_token = auth_token
 
-    def create(self, account, email, group):
+    def create(self, account, password, email, group):
         "CreateUser"
-        params = {'account': account, 'email': email, 'group': group}
+        params = {'account': account, 'password': password, 'email': email, 'group': group}
         val = self.current_session.post('/account/user/', params)
         if val and val['errorCode'] == 0:
             return val['user']
+
+        print('param:')
+        print(params)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def update(self, user):
         'UpdateUser'
-        params = {'email': user['email'], 'name': user['name']}
+        params = {'email': user['email'], 'group': user['group']}
         val = self.current_session.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['user']
+
+        print('param:')
+        print(params)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def update_password(self, user, pwd):
         'UpdateUserPassword'
-        params = {'password': pwd, 'email': user['email'], 'name': user['name']}
-        val = self.current_session.put('/account/user/%d?authToken=%s'%(user['id'], self.authority_token), params)
+        params = {'password': pwd}
+        val = self.current_session.put('/account/user/%d?authToken=%s&action=change_password'%(user['id'], self.authority_token), params)
         if val and val['errorCode'] == 0:
             return val['user']
+
+        print('param:')
+        print(params)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def find(self, user_id):
@@ -42,6 +60,12 @@ class User:
         val = self.current_session.get('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return val['user']
+
+        print('param:')
+        print(user_id)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def find_all(self):
@@ -49,6 +73,10 @@ class User:
         val = self.current_session.get('/account/user/?authToken=%s'%self.authority_token)
         if val and val['errorCode'] == 0:
             return val['user']
+
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
 
@@ -57,6 +85,12 @@ class User:
         val = self.current_session.delete('/account/user/%d?authToken=%s'%(user_id, self.authority_token))
         if val and val['errorCode'] == 0:
             return True
+
+        print('param:')
+        print(user_id)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return False
 
 def main():
@@ -67,23 +101,23 @@ def main():
         print('login failed')
     else:
         app = User(work_session, login_session.authority_token)
-        user = app.create('testUser12', 'rangh@test.com', [1, 2])
+        user = app.create('testUser12', '123', 'rangh@test.com', [{'id': 0, 'name':'系统管理组'}])
         if user:
             user_id = user['id']
-            if not app.update_password(user, '123'):
+            if not app.update_password(user, '123456'):
                 print("updatepassword failed")
 
-            user['name'] = '11223'
+            user['email'] = '11223@ttt.com'
             user = app.update(user)
             if user:
-                if user['name'] != '11223':
+                if user['email'] != '11223@ttt.com':
                     print('update user failed')
             else:
                 print('update user failed')
 
             user = app.find(user_id)
             if user:
-                if user['name'] != '11223':
+                if user['email'] != '11223@ttt.com':
                     print('find user failed')
             else:
                 print('find user failed')

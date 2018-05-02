@@ -184,9 +184,9 @@ type groupCreateRoute struct {
 }
 
 type groupCreateParam struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Catalog     int    `json:"catalog"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Catalog     model.Group `json:"catalog"`
 }
 
 type groupCreateResult struct {
@@ -223,7 +223,7 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description, param.Catalog)
+		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description, param.Catalog.ID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
@@ -231,7 +231,7 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		result.Group.GroupDetail = group
-		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
+		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog.ID)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
 		result.ErrorCode = common_result.Success
@@ -251,9 +251,9 @@ type groupSaveRoute struct {
 }
 
 type groupSaveParam struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Catalog     int    `json:"catalog"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Catalog     model.Group `json:"catalog"`
 }
 
 type groupSaveResult struct {
@@ -298,7 +298,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		group := model.NewGroup(param.Name, param.Description, param.Catalog)
+		group := model.NewGroup(param.Name, param.Description, param.Catalog.ID)
 		group.ID = id
 
 		group, ok := i.accountHandler.SaveGroup(group)
@@ -310,7 +310,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		result.Group.GroupDetail = group
-		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog)
+		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog.ID)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
 		result.ErrorCode = common_result.Success

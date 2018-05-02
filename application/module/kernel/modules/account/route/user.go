@@ -249,16 +249,15 @@ type userSaveRoute struct {
 }
 
 type userSaveParam struct {
-	Email       string `json:"email"`
-	Name        string `json:"name"`
-	Password    string `json:"password"`
-	GroupDetail []int  `json:"group"`
+	Email string               `json:"email"`
+	Group []common_model.Group `json:"group"`
 }
 
-type userSaveResult struct {
-	common_result.Result
-	User common_model.UserDetail `json:"user"`
+type userSavePasswordParam struct {
+	Password string `json:"password"`
 }
+
+type userSaveResult userCreateResult
 
 func (i *userSaveRoute) Method() string {
 	return common.PUT
@@ -281,19 +280,12 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 
 	result := userCreateResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
+	action := r.URL.Query().Get("action")
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
-			break
-		}
-
-		param := &userSaveParam{}
-		err = net.ParsePostJSON(r, param)
-		if err != nil {
-			result.ErrorCode = common_result.Failed
-			result.Reason = "非法参数"
 			break
 		}
 
@@ -304,20 +296,42 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		if param.Email != "" {
-			user.Email = param.Email
-		}
-		if param.Name != "" {
-			user.Name = param.Name
-		}
+		if action == "change_password" {
+			param := &userSavePasswordParam{}
+			err = net.ParsePostJSON(r, param)
+			if err != nil {
+				result.ErrorCode = common_result.Failed
+				result.Reason = "非法参数"
+				break
+			}
+			if param.Password == "" {
+				result.ErrorCode = common_result.Failed
+				result.Reason = "非法参数"
+				break
+			}
 
-		if len(param.GroupDetail) > 0 {
-			user.Group = param.GroupDetail
-		}
-
-		if param.Password != "" {
 			user, ok = i.accountHandler.SaveUserWithPassword(user, param.Password)
 		} else {
+			param := &userSaveParam{}
+			err = net.ParsePostJSON(r, param)
+			if err != nil {
+				result.ErrorCode = common_result.Failed
+				result.Reason = "非法参数"
+				break
+			}
+
+			if param.Email != "" {
+				user.Email = param.Email
+			}
+
+			if len(param.Group) > 0 {
+				ids := []int{}
+				for _, v := range param.Group {
+					ids = append(ids, v.ID)
+				}
+				user.Group = ids
+			}
+
 			user, ok = i.accountHandler.SaveUser(user)
 		}
 
@@ -329,6 +343,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
+		result.User.Status = common_const.GetStatus(user.Status)
 		result.ErrorCode = common_result.Success
 		break
 	}

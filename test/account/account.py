@@ -37,20 +37,20 @@ class Account:
 
     def __mock_group(self):
         catalog = common.picker_dict(self.groups, 1)
-        catalog_id = 0
-        for key, _ in catalog.items():
-            catalog_id = key
+        catalog = {}
+        for _, val in catalog.items():
+            catalog = val
 
-        return common.word(), common.paragraph(), catalog_id
+        return common.word(), common.paragraph(), catalog
 
     def __mock_user(self):
         group_num = random.randint(1, 10)
         catalog = common.picker_dict(self.groups, group_num)
-        ids = []
-        for key, _ in catalog.items():
-            ids.append(key)
+        groups = []
+        for _, val in catalog.items():
+            groups.append(val)
 
-        return common.word(), common.email(), ids
+        return common.word(), common.email(), groups
 
     def verify(self):
         'verify account infomation between local and server'
@@ -115,6 +115,16 @@ class Account:
                 if self.current_group_session.destroy(key):
                     self.groups.pop(key)
 
+    def clear(self):
+        'clear'
+        for key in iter(self.users.keys()):
+            if key > 0:
+                self.current_user_session.destroy(key)
+
+        for key in iter(self.groups.keys()):
+            if key > 0:
+                self.current_group_session.destroy(key)
+
     def mock(self):
         'mock'
         group_count = random.randint(1, 10)
@@ -132,7 +142,7 @@ class Account:
         while user_count > 0:
             user_count = user_count -1
             account, email, catalog = self.__mock_user()
-            new_user = self.current_user_session.create(account, email, catalog)
+            new_user = self.current_user_session.create(account, '123', email, catalog)
             if new_user is None:
                 print('create user failed')
                 break
@@ -151,5 +161,6 @@ def main():
         app.mock()
         app.remove()
         app.verify()
+        app.clear()
 
         login_session.logout(login_session.authority_token)

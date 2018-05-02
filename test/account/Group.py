@@ -20,6 +20,11 @@ class Group:
         if val and val['errorCode'] == 0:
             return val['group']
 
+        print('param:')
+        print(params)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def save(self, group):
@@ -29,6 +34,11 @@ class Group:
         if val and val['errorCode'] == 0:
             return val['group']
 
+        print('param:')
+        print(params)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def find(self, group_id):
@@ -37,6 +47,11 @@ class Group:
         if val and val['errorCode'] == 0:
             return val['group']
 
+        print('param:')
+        print(group_id)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def find_all(self):
@@ -45,6 +60,9 @@ class Group:
         if val and val['errorCode'] == 0:
             return val['group']
 
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return None
 
     def destroy(self, group_id):
@@ -53,6 +71,11 @@ class Group:
         if val and val['errorCode'] == 0:
             return True
 
+        print('param:')
+        print(group_id)
+        print('result:')
+        print(val)
+        print('-----------------------------------------')
         return False
 
 def main():
@@ -63,7 +86,7 @@ def main():
         print('login failed')
     else:
         app = Group(work_session, login_session.authority_token)
-        group = app.create('testGorup1', 'test description', 0)
+        group = app.create('testGorup1', 'test description', {'id':0, 'name':'test'})
         if group:
             group_id = group['id']
             group['description'] = 'aaaaaa'
