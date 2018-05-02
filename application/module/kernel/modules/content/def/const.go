@@ -76,3 +76,6 @@ const DeleteMedia = "/media/:id"
 
 // GetMediaList 查询文件列表
 const GetMediaList = "/medias/"
+
+// GetSummaryByCatalog 查询指定分类下的Smmary
+const GetSummaryByCatalog = "/summary/:id"

@@ -21,6 +21,7 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 
 	instance := &content{contentHandler: handler.CreateContentHandler(), accountHandler: accountHandler}
 
+	instance.routes = route.AppendSummaryRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
