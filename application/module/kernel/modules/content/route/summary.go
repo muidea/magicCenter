@@ -35,7 +35,7 @@ type summaryGetByIDRoute struct {
 
 type summaryGetByIDResult struct {
 	common_result.Result
-	Summary []model.SummaryView `json:"Summary"`
+	Summary []model.SummaryView `json:"summary"`
 }
 
 func (i *summaryGetByIDRoute) Method() string {
