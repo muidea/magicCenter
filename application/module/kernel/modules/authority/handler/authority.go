@@ -6,7 +6,7 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
-	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )

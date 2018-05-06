@@ -5,7 +5,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCommon/model"
-	"muidea.com/magicCenter/foundation/net"
+	"muidea.com/magicCommon/foundation/net"
 )
 
 // CreateEMailHandler 新建MailHandler

@@ -6,7 +6,7 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCommon/model"
-	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/foundation/util"
 )
 
 // CreateCASHandler 新建CASHandler

@@ -12,8 +12,8 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/module/kernel/modules/fileregistry/dal"
-	"muidea.com/magicCenter/foundation/net"
-	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/foundation/util"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )

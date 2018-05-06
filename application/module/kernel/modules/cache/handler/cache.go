@@ -2,7 +2,7 @@ package handler
 
 import (
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/cache"
+	"muidea.com/magicCommon/foundation/cache"
 )
 
 // CreateCacheHandler 新建缓存处理器

@@ -3,7 +3,7 @@ package dbhelper
 import (
 	"log"
 
-	"muidea.com/magicCenter/foundation/dao"
+	"muidea.com/magicCommon/foundation/dao"
 )
 
 // DBHelper 数据访问助手

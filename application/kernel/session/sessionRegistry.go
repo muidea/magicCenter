@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/application/common"
-	"muidea.com/magicCenter/foundation/util"
+	"muidea.com/magicCommon/foundation/util"
 )
 
 var sessionCookieID = "session_id"
