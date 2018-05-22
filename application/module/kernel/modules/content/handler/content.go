@@ -118,8 +118,8 @@ func (i *impl) GetLinkByCatalog(catalog int) []model.Summary {
 	return i.linkHandler.findLinkByCatalog(catalog)
 }
 
-func (i *impl) CreateLink(name, url, logo, createDate string, catalog []int, author int) (model.Summary, bool) {
-	return i.linkHandler.createLink(name, url, logo, createDate, catalog, author)
+func (i *impl) CreateLink(name, desc, url, logo, createDate string, catalog []int, author int) (model.Summary, bool) {
+	return i.linkHandler.createLink(name, desc, url, logo, createDate, catalog, author)
 }
 
 func (i *impl) SaveLink(link model.LinkDetail) (model.Summary, bool) {
@@ -151,8 +151,8 @@ func (i *impl) GetMediaByCatalog(catalog int) []model.Summary {
 	return i.mediaHandler.findMediaByCatalog(catalog)
 }
 
-func (i *impl) CreateMedia(name, url, desc, createDate string, catalog []int, author int) (model.Summary, bool) {
-	return i.mediaHandler.createMedia(name, url, desc, createDate, catalog, author)
+func (i *impl) CreateMedia(name, desc, url, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
+	return i.mediaHandler.createMedia(name, desc, url, createDate, catalog, expiration, author)
 }
 
 func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {
@@ -172,7 +172,7 @@ func (i *impl) GetSummaryByCatalog(id int) []model.Summary {
 	summaryList := []model.Summary{}
 	resList := resource.QueryReferenceResource(i.dbhelper, id, model.CATALOG, "")
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 

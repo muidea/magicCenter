@@ -11,9 +11,9 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
-	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -221,6 +221,7 @@ type mediaCreateParam struct {
 	Name        string          `json:"name"`
 	URL         string          `json:"url"`
 	Description string          `json:"description"`
+	Expiration  int             `json:"expiration"`
 	Catalog     []model.Catalog `json:"catalog"`
 }
 
@@ -278,7 +279,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			catalogIds = append(catalogIds, val.ID)
 		}
 
-		media, ok := i.contentHandler.CreateMedia(param.Name, param.URL, param.Description, createDate, catalogIds, user.ID)
+		media, ok := i.contentHandler.CreateMedia(param.Name, param.Description, param.URL, createDate, catalogIds, param.Expiration, user.ID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
@@ -377,6 +378,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media.Description = param.Description
 		media.Catalog = catalogIds
 		media.CreateDate = updateDate
+		media.Expiration = param.Expiration
 		media.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveMedia(media)
 		if !ok {

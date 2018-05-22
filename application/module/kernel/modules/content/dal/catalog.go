@@ -6,8 +6,8 @@ import (
 
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/common/resource"
-	"muidea.com/magicCommon/foundation/util"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -28,23 +28,15 @@ func loadCatalogID(helper dbhelper.DBHelper) int {
 func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
 
-	sql := fmt.Sprintf(`select id, name,createdate,creater from content_catalog`)
-	helper.Query(sql)
+	ress := resource.QueryResourceByType(helper, model.CATALOG)
+	for _, v := range ress {
+		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
-	for helper.Next() {
-		c := model.Summary{Type: model.CATALOG}
-		helper.GetValue(&c.ID, &c.Name, &c.CreateDate, &c.Creater)
-
-		summaryList = append(summaryList, c)
-	}
-	helper.Finish()
-
-	for index, value := range summaryList {
-		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.CATALOG)
-		for _, r := range ress {
+		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		summaryList = append(summaryList, summary)
 	}
 
 	return summaryList
@@ -124,7 +116,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 
@@ -219,7 +211,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 // CreateCatalog 新建分类
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
-	catalog := model.Summary{Unit: model.Unit{Name: name}, Type: model.CATALOG, Catalog: parent, CreateDate: createDate, Creater: creater}
+	catalog := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.CATALOG, Catalog: parent, CreateDate: createDate, Creater: creater}
 
 	if !enableTransaction {
 		helper.BeginTransaction()
@@ -245,7 +237,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		}
 
 		catalog.ID = id
-		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.CreateDate, catalog.Creater)
+		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
 			if ok {

@@ -30,7 +30,7 @@ type ContentHandler interface {
 	GetLinks(ids []int) []model.Link
 	GetLinkByID(id int) (model.LinkDetail, bool)
 	GetLinkByCatalog(catalog int) []model.Summary
-	CreateLink(name, url, logo, createDate string, catalog []int, creater int) (model.Summary, bool)
+	CreateLink(name, desc, url, logo, createDate string, catalog []int, creater int) (model.Summary, bool)
 	SaveLink(link model.LinkDetail) (model.Summary, bool)
 	DestroyLink(id int) bool
 
@@ -38,7 +38,7 @@ type ContentHandler interface {
 	GetMedias(ids []int) []model.Media
 	GetMediaByID(id int) (model.MediaDetail, bool)
 	GetMediaByCatalog(catalog int) []model.Summary
-	CreateMedia(name, url, desc, createDate string, catalog []int, creater int) (model.Summary, bool)
+	CreateMedia(name, desc, url, createDate string, catalog []int, expiration, creater int) (model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 

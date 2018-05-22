@@ -11,9 +11,9 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
-	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -219,10 +219,11 @@ type linkCreateRoute struct {
 }
 
 type linkCreateParam struct {
-	Name    string          `json:"name"`
-	URL     string          `json:"url"`
-	Logo    string          `json:"logo"`
-	Catalog []model.Catalog `json:"catalog"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	URL         string          `json:"url"`
+	Logo        string          `json:"logo"`
+	Catalog     []model.Catalog `json:"catalog"`
 }
 
 type linkCreateResult struct {
@@ -279,7 +280,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			catalogIds = append(catalogIds, val.ID)
 		}
 
-		link, ok := i.contentHandler.CreateLink(param.Name, param.URL, param.Logo, createDate, catalogIds, user.ID)
+		link, ok := i.contentHandler.CreateLink(param.Name, param.Description, param.URL, param.Logo, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
@@ -374,6 +375,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		link := model.LinkDetail{}
 		link.ID = id
 		link.Name = param.Name
+		link.Description = param.Description
 		link.URL = param.URL
 		link.Logo = param.Logo
 		link.Catalog = catalogIds

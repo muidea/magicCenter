@@ -26,23 +26,16 @@ func loadMediaID(helper dbhelper.DBHelper) int {
 // QueryAllMedia 查询所有图像
 func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, name, createdate,creater from content_media`)
-	helper.Query(sql)
 
-	for helper.Next() {
-		media := model.Summary{Type: model.MEDIA}
-		helper.GetValue(&media.ID, &media.Name, &media.CreateDate, &media.Creater)
+	ress := resource.QueryResourceByType(helper, model.MEDIA)
+	for _, v := range ress {
+		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
-		summaryList = append(summaryList, media)
-	}
-	helper.Finish()
-
-	for index, value := range summaryList {
-		media := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.MEDIA)
-		for _, r := range ress {
-			media.Catalog = append(media.Catalog, r.RId())
+		for _, r := range v.Relative() {
+			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		summaryList = append(summaryList, summary)
 	}
 
 	return summaryList
@@ -76,7 +69,7 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.MEDIA)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 
@@ -95,12 +88,12 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) {
 	media := model.MediaDetail{}
 
-	sql := fmt.Sprintf(`select id, name, url, description,createdate, creater from content_media where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, url, createdate, creater from content_media where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&media.ID, &media.Name, &media.URL, &media.Description, &media.CreateDate, &media.Creater)
+		helper.GetValue(&media.ID, &media.Name, &media.Description, &media.URL, &media.CreateDate, &media.Creater)
 		result = true
 	}
 	helper.Finish()
@@ -144,8 +137,8 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateMedia 新建文件
-func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, creater int, catalogs []int) (model.Summary, bool) {
-	media := model.Summary{Unit: model.Unit{Name: name}, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+func CreateMedia(helper dbhelper.DBHelper, name, description, url, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
+	media := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocMediaID()
 	result := false
@@ -153,14 +146,14 @@ func CreateMedia(helper dbhelper.DBHelper, name, url, desc, createDate string, c
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_media (id, name,url, description, createdate, creater) values (%d, '%s','%s','%s','%s',%d)`, id, name, url, desc, createDate, creater)
+		sql := fmt.Sprintf(`insert into content_media (id, name, description, url, createdate, creater, expiration) values (%d, '%s','%s','%s','%s',%d,%d)`, id, name, description, url, createDate, creater, expiration)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
 		media.ID = id
-		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.CreateDate, media.Creater)
+		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.Description, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
 			if ok {
@@ -194,7 +187,7 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 	helper.BeginTransaction()
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_media set name='%s', url ='%s', description='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.URL, media.Description, media.CreateDate, media.Creater, media.ID)
+		sql := fmt.Sprintf(`update content_media set name='%s', description='%s', url ='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.Description, media.URL, media.CreateDate, media.Creater, media.ID)
 		_, result = helper.Execute(sql)
 		if result {
 			res, ok := resource.QueryResource(helper, media.ID, model.MEDIA)

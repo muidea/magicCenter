@@ -2,8 +2,8 @@ package handler
 
 import (
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/dal"
+	"muidea.com/magicCommon/model"
 )
 
 type linkActionHandler struct {
@@ -26,8 +26,8 @@ func (i *linkActionHandler) findLinkByCatalog(catalog int) []model.Summary {
 	return dal.QueryLinkByCatalog(i.dbhelper, catalog)
 }
 
-func (i *linkActionHandler) createLink(name, url, logo, createDate string, catalog []int, author int) (model.Summary, bool) {
-	return dal.CreateLink(i.dbhelper, name, url, logo, createDate, author, catalog)
+func (i *linkActionHandler) createLink(name, desc, url, logo, createDate string, catalog []int, author int) (model.Summary, bool) {
+	return dal.CreateLink(i.dbhelper, name, desc, url, logo, createDate, author, catalog)
 }
 
 func (i *linkActionHandler) saveLink(link model.LinkDetail) (model.Summary, bool) {

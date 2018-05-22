@@ -26,23 +26,16 @@ func loadArticleID(helper dbhelper.DBHelper) int {
 // QueryAllArticleSummary 查询所有文章摘要
 func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, title,createdate,creater from content_article`)
-	helper.Query(sql)
 
-	for helper.Next() {
-		summary := model.Summary{Type: model.ARTICLE}
-		helper.GetValue(&summary.ID, &summary.Name, &summary.CreateDate, &summary.Creater)
+	ress := resource.QueryResourceByType(helper, model.ARTICLE)
+	for _, v := range ress {
+		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
-		summaryList = append(summaryList, summary)
-	}
-	helper.Finish()
-
-	for index, value := range summaryList {
-		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.ARTICLE)
-		for _, r := range ress {
+		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		summaryList = append(summaryList, summary)
 	}
 
 	return summaryList
@@ -99,7 +92,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 	summaryList := []model.Summary{}
 	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.ARTICLE)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 
@@ -130,7 +123,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 		}
 
 		article.ID = id
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, article.CreateDate, article.Creater)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, "", article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
 			if ok {

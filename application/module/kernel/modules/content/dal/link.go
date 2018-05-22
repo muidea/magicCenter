@@ -26,23 +26,16 @@ func loadLinkID(helper dbhelper.DBHelper) int {
 // QueryAllLink 查询全部Link
 func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 	summaryList := []model.Summary{}
-	sql := fmt.Sprintf(`select id, name,createdate,creater from content_link`)
-	helper.Query(sql)
 
-	for helper.Next() {
-		link := model.Summary{Type: model.LINK}
-		helper.GetValue(&link.ID, &link.Name, &link.CreateDate, &link.Creater)
+	ress := resource.QueryResourceByType(helper, model.LINK)
+	for _, v := range ress {
+		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
-		summaryList = append(summaryList, link)
-	}
-	helper.Finish()
-
-	for index, value := range summaryList {
-		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, model.LINK)
-		for _, r := range ress {
+		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		summaryList = append(summaryList, summary)
 	}
 
 	return summaryList
@@ -76,7 +69,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.LINK)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 
@@ -94,12 +87,12 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 // QueryLinkByID 查询指定Link
 func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 	link := model.LinkDetail{}
-	sql := fmt.Sprintf(`select id, name, url, logo, createdate, creater from content_link where id =%d`, id)
+	sql := fmt.Sprintf(`select id, name, description, url, logo, createdate, creater from content_link where id =%d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&link.ID, &link.Name, &link.URL, &link.Logo, &link.CreateDate, &link.Creater)
+		helper.GetValue(&link.ID, &link.Name, &link.Description, &link.URL, &link.Logo, &link.CreateDate, &link.Creater)
 		result = true
 	}
 	helper.Finish()
@@ -144,8 +137,8 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateLink 新建Link
-func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, creater int, catalogs []int) (model.Summary, bool) {
-	lnk := model.Summary{Unit: model.Unit{Name: name}, Type: model.LINK, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+	lnk := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.LINK, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocLinkID()
 	result := false
@@ -153,14 +146,14 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, cr
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_link (id, name,url,logo, createDate, creater) values (%d, '%s','%s','%s','%s', %d)`, id, name, url, logo, createDate, creater)
+		sql := fmt.Sprintf(`insert into content_link (id, name, description,url,logo, createDate, creater) values (%d,'%s','%s','%s','%s','%s', %d)`, id, name, description, url, logo, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
 		}
 
 		lnk.ID = id
-		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.CreateDate, lnk.Creater)
+		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.Description, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
 			if ok {
@@ -189,13 +182,13 @@ func CreateLink(helper dbhelper.DBHelper, name, url, logo, createDate string, cr
 
 // SaveLink 保存Link
 func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bool) {
-	summary := model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Type: model.LINK, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: lnk.ID, Name: lnk.Name}, Description: lnk.Description, Type: model.LINK, Catalog: lnk.Catalog, CreateDate: lnk.CreateDate, Creater: lnk.Creater}
 	result := false
 	helper.BeginTransaction()
 
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_link set name ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
+		sql := fmt.Sprintf(`update content_link set name ='%s', description ='%s', url ='%s', logo='%s', createdate='%s', creater=%d where id=%d`, lnk.Name, lnk.Description, lnk.URL, lnk.Logo, lnk.CreateDate, lnk.Creater, lnk.ID)
 		_, result = helper.Execute(sql)
 
 		if result {

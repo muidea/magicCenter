@@ -2,8 +2,8 @@ package handler
 
 import (
 	"muidea.com/magicCenter/application/common/dbhelper"
-	"muidea.com/magicCommon/model"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/dal"
+	"muidea.com/magicCommon/model"
 )
 
 type mediaActionHandler struct {
@@ -26,8 +26,8 @@ func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.Summary {
 	return dal.QueryMediaByCatalog(i.dbhelper, catalog)
 }
 
-func (i *mediaActionHandler) createMedia(name, url, desc, createDate string, catalog []int, author int) (model.Summary, bool) {
-	return dal.CreateMedia(i.dbhelper, name, url, desc, createDate, author, catalog)
+func (i *mediaActionHandler) createMedia(name, desc, url, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
+	return dal.CreateMedia(i.dbhelper, name, desc, url, createDate, expiration, author, catalog)
 }
 
 func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, bool) {
