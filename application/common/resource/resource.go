@@ -155,10 +155,11 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 	}
 
 	retVal := []Resource{}
-	for _, v := range resList {
-		v.relative = relativeResource(helper, v.oid)
+	for idx := range resList {
+		cur := resList[idx]
+		cur.relative = relativeResource(helper, cur.oid)
 
-		retVal = append(retVal, &v)
+		retVal = append(retVal, &cur)
 	}
 
 	return retVal
