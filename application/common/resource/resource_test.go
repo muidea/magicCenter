@@ -13,15 +13,15 @@ func TestResource(t *testing.T) {
 	}
 	defer helper.Release()
 
-	catalog1 := CreateSimpleRes(9, "catalog", "ca1", "2018-03-10 00:00:00", 0)
-	catalog2 := CreateSimpleRes(10, "catalog", "ca2", "2018-03-10 00:00:00", 0)
-	catalog3 := CreateSimpleRes(11, "catalog", "ca3", "2018-03-10 00:00:00", 0)
+	catalog1 := CreateSimpleRes(9, "catalog", "ca1", "ca1", "2018-03-10 00:00:00", 0)
+	catalog2 := CreateSimpleRes(10, "catalog", "ca2", "ca2", "2018-03-10 00:00:00", 0)
+	catalog3 := CreateSimpleRes(11, "catalog", "ca3", "ca3", "2018-03-10 00:00:00", 0)
 
 	CreateResource(helper, catalog1, false)
 	CreateResource(helper, catalog2, false)
 	CreateResource(helper, catalog3, false)
 
-	res := CreateSimpleRes(0, "test", "test", "2018-03-10 00:00:00", 0)
+	res := CreateSimpleRes(0, "test", "test", "test", "2018-03-10 00:00:00", 0)
 
 	res.AppendRelative(catalog1)
 	res.AppendRelative(catalog2)
