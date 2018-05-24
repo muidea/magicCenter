@@ -8,9 +8,9 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
-	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -57,7 +57,7 @@ func (i *summaryGetByIDRoute) AuthGroup() int {
 func (i *summaryGetByIDRoute) getSummaryHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getSummaryHandler")
 
-	result := summaryGetByIDResult{}
+	result := summaryGetByIDResult{Summary: []model.SummaryView{}}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
