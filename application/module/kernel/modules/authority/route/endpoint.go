@@ -99,9 +99,9 @@ type endpointPostRoute struct {
 }
 
 type endpointPostParam struct {
-	ID          string `json:"url"`
-	Name        string `json:"method"`
-	Description string `json:"module"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 	User        []int  `json:"user"`
 	Status      int    `json:"status"`
 }
@@ -218,7 +218,6 @@ type endpointPutRoute struct {
 }
 
 type endpointPutParam struct {
-	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	User        []int  `json:"user"`

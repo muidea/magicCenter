@@ -31,7 +31,7 @@ func DeleteEndpoint(helper dbhelper.DBHelper, id string) bool {
 
 // UpdateEndpoint 更新Endpoint记录
 func UpdateEndpoint(helper dbhelper.DBHelper, endpoint model.Endpoint) (model.Endpoint, bool) {
-	sql := fmt.Sprintf("update authority_endpoint set name='%s', description='%s', user='%s', status=%d accessToken='%s' wehre id='%s'", endpoint.Name, endpoint.Description, util.IntArray2Str(endpoint.User), endpoint.Status, endpoint.AccessToken, endpoint.ID)
+	sql := fmt.Sprintf("update authority_endpoint set name='%s', description='%s', user='%s', status=%d, accessToken='%s' where id='%s'", endpoint.Name, endpoint.Description, util.IntArray2Str(endpoint.User), endpoint.Status, endpoint.AccessToken, endpoint.ID)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
 		return endpoint, false
