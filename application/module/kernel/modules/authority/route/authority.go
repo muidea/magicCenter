@@ -49,5 +49,17 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	rt = CreatePutUserRoute(authorityHandler, accountHandler, moduleHub)
 	routes = append(routes, rt)
 
+	rt = CreateQueryEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreatePostEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreateDeleteEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreatePutEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
 	return routes
 }

@@ -6,8 +6,8 @@ import (
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/common/dbhelper"
 	"muidea.com/magicCenter/application/module/kernel/modules/authority/dal"
-	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -206,6 +206,26 @@ func (i *impl) QueryUserModuleAuthGroup(user int) []model.ModuleAuthGroup {
 
 func (i *impl) UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
 	return dal.UpdateUserModuleAuthGroup(i.dbhelper, user, moduleAuthGroups)
+}
+
+func (i *impl) QueryAllEndpoint() []model.Endpoint {
+	return dal.QueryAllEndpoint(i.dbhelper)
+}
+
+func (i *impl) QueryEndpointByID(id string) (model.Endpoint, bool) {
+	return dal.QueryEndpointByID(i.dbhelper, id)
+}
+
+func (i *impl) InsertEndpoint(id, name, description string, user []int, status int, accessToken string) (model.Endpoint, bool) {
+	return dal.InsertEndpoint(i.dbhelper, id, name, description, user, status, accessToken)
+}
+
+func (i *impl) UpdateEndpoint(endpoint model.Endpoint) (model.Endpoint, bool) {
+	return dal.UpdateEndpoint(i.dbhelper, endpoint)
+}
+
+func (i *impl) DeleteEndpoint(id string) bool {
+	return dal.DeleteEndpoint(i.dbhelper, id)
 }
 
 func (i *impl) QueryUserACL(user int) []model.ACLDetail {

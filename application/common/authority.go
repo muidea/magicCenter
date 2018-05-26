@@ -49,6 +49,17 @@ type AuthorityHandler interface {
 	// 更新指定用户使用的模块信息
 	UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.ModuleAuthGroup) bool
 
+	// 查询所有Endpoint
+	QueryAllEndpoint() []model.Endpoint
+	// 查询指定的Endpoint
+	QueryEndpointByID(id string) (model.Endpoint, bool)
+	// 新增Endpoint
+	InsertEndpoint(id, name, description string, user []int, status int, accessToken string) (model.Endpoint, bool)
+	// 更新Endpoint
+	UpdateEndpoint(endpoint model.Endpoint) (model.Endpoint, bool)
+	// 删除Endpoint
+	DeleteEndpoint(id string) bool
+
 	// 查询指定用户的ACL列表
 	QueryUserACL(user int) []model.ACLDetail
 

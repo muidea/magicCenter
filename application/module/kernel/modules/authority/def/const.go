@@ -55,3 +55,15 @@ const GetUserByID = "/user/:id"
 
 // PutUser 更新指定用户的Module授权组信息
 const PutUser = "/user/:id"
+
+// QueryEndpoint 查询Endpoint
+const QueryEndpoint = "/endpoint/"
+
+// PostEndpoint 新增Endpoint
+const PostEndpoint = "/endpoint/"
+
+// PutEndpoint 更新指定Endpoint
+const PutEndpoint = "/endpoint/:id"
+
+// DeleteEndpoint 删除指定Endpoint
+const DeleteEndpoint = "/endpoint/:id"
