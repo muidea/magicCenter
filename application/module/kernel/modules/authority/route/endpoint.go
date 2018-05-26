@@ -10,6 +10,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -139,7 +140,8 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		endpoint, ok := i.authorityHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, "")
+		accessToken := util.RandomAlphanumeric(32)
+		endpoint, ok := i.authorityHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, accessToken)
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(param.User)

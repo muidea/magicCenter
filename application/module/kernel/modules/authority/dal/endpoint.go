@@ -17,6 +17,8 @@ func InsertEndpoint(helper dbhelper.DBHelper, id, name, description string, user
 		return endpoint, false
 	}
 
+	endpoint.AccessToken = accessToken
+
 	return endpoint, true
 }
 
