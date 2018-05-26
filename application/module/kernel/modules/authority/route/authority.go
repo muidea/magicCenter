@@ -52,6 +52,9 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	rt = CreateQueryEndpointRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 
+	rt = CreateQueryByIDEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
 	rt = CreatePostEndpointRoute(authorityHandler, accountHandler)
 	routes = append(routes, rt)
 

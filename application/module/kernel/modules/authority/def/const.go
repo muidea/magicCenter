@@ -59,6 +59,9 @@ const PutUser = "/user/:id"
 // QueryEndpoint 查询Endpoint
 const QueryEndpoint = "/endpoint/"
 
+// QueryByIDEndpoint 查询Endpoint
+const QueryByIDEndpoint = "/endpoint/:id"
+
 // PostEndpoint 新增Endpoint
 const PostEndpoint = "/endpoint/"
 

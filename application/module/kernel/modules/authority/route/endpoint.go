@@ -21,6 +21,13 @@ func CreateQueryEndpointRoute(authorityHandler common.AuthorityHandler, accountH
 	return &i
 }
 
+// CreateQueryByIDEndpointRoute QueryByIDEndpoint
+func CreateQueryByIDEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+
+	i := endpointQueryByIDRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+	return &i
+}
+
 // CreatePostEndpointRoute CreateEndpoint
 func CreatePostEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
 
@@ -81,6 +88,59 @@ func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) 
 			result.Endpoint = append(result.Endpoint, endpoint)
 		}
 		result.ErrorCode = common_result.Success
+
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type endpointQueryByIDRoute struct {
+	authorityHandler common.AuthorityHandler
+	accountHandler   common.AccountHandler
+}
+
+type endpointQueryByIDResult struct {
+	common_result.Result
+	Endpoint model.EndpointView `json:"endpoint"`
+}
+
+func (i *endpointQueryByIDRoute) Method() string {
+	return common.GET
+}
+
+func (i *endpointQueryByIDRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QueryByIDEndpoint)
+}
+
+func (i *endpointQueryByIDRoute) Handler() interface{} {
+	return i.getHandler
+}
+
+func (i *endpointQueryByIDRoute) AuthGroup() int {
+	return common_const.MaintainerAuthGroup.ID
+}
+
+func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getHandler")
+	result := endpointQueryByIDResult{}
+
+	for {
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
+		if ok {
+			result.Endpoint.Endpoint = endpoint
+			result.Endpoint.User = i.accountHandler.GetUsers(endpoint.User)
+			result.ErrorCode = common_result.Success
+		} else {
+			result.ErrorCode = common_result.NoExist
+			result.Reason = "对象不存在"
+		}
 
 		break
 	}
