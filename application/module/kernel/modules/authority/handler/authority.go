@@ -79,7 +79,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return true
 	}
 
-	authToken := req.URL.Query().Get("authToken")
+	authToken := req.URL.Query().Get(common.AuthTokenID)
 	if len(authToken) == 0 {
 		// 没有提供AuthToken则认为没有授权
 		return false
@@ -216,8 +216,8 @@ func (i *impl) QueryEndpointByID(id string) (model.Endpoint, bool) {
 	return dal.QueryEndpointByID(i.dbhelper, id)
 }
 
-func (i *impl) InsertEndpoint(id, name, description string, user []int, status int, accessToken string) (model.Endpoint, bool) {
-	return dal.InsertEndpoint(i.dbhelper, id, name, description, user, status, accessToken)
+func (i *impl) InsertEndpoint(id, name, description string, user []int, status int, authToken string) (model.Endpoint, bool) {
+	return dal.InsertEndpoint(i.dbhelper, id, name, description, user, status, authToken)
 }
 
 func (i *impl) UpdateEndpoint(endpoint model.Endpoint) (model.Endpoint, bool) {

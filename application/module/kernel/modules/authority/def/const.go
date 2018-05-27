@@ -70,3 +70,6 @@ const PutEndpoint = "/endpoint/:id"
 
 // DeleteEndpoint 删除指定Endpoint
 const DeleteEndpoint = "/endpoint/:id"
+
+// GetEndpointAuth 终端认证
+const GetEndpointAuth = "/endpoint/:id"

@@ -5,7 +5,7 @@ import (
 )
 
 // AppendAuthorityRoute append authority route
-func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub) []common.Route {
+func AppendAuthorityRoute(routes []common.Route, authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler, moduleHub common.ModuleHub, sessionRegistry common.SessionRegistry) []common.Route {
 
 	rt := CreateQueryACLRoute(authorityHandler, moduleHub)
 	routes = append(routes, rt)
@@ -62,6 +62,9 @@ func AppendAuthorityRoute(routes []common.Route, authorityHandler common.Authori
 	routes = append(routes, rt)
 
 	rt = CreatePutEndpointRoute(authorityHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreateGetEndpointAuthRoute(authorityHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes

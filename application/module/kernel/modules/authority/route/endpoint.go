@@ -48,6 +48,13 @@ func CreatePutEndpointRoute(authorityHandler common.AuthorityHandler, accountHan
 	return &i
 }
 
+// CreateGetEndpointAuthRoute VerifyEndpointAuth
+func CreateGetEndpointAuthRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) common.Route {
+
+	i := endpointAuthRoute{authorityHandler: authorityHandler, sessionRegistry: sessionRegistry}
+	return &i
+}
+
 type endpointQueryRoute struct {
 	authorityHandler common.AuthorityHandler
 	accountHandler   common.AccountHandler
@@ -200,8 +207,8 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 			break
 		}
 
-		accessToken := util.RandomAlphanumeric(32)
-		endpoint, ok := i.authorityHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, accessToken)
+		authToken := util.RandomAlphanumeric(32)
+		endpoint, ok := i.authorityHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, authToken)
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(param.User)
@@ -344,6 +351,66 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type endpointAuthRoute struct {
+	authorityHandler common.AuthorityHandler
+	sessionRegistry  common.SessionRegistry
+}
+
+type endpointAuthResult struct {
+	common_result.Result
+	SessionID string `json:"sessionID"`
+}
+
+func (i *endpointAuthRoute) Method() string {
+	return common.GET
+}
+
+func (i *endpointAuthRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetEndpointAuth)
+}
+
+func (i *endpointAuthRoute) Handler() interface{} {
+	return i.verifyHandler
+}
+
+func (i *endpointAuthRoute) AuthGroup() int {
+	return common_const.VisitorAuthGroup.ID
+}
+
+func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("verifyHandler")
+
+	session := i.sessionRegistry.GetSession(w, r)
+	result := endpointAuthResult{}
+	for {
+		_, strID := net.SplitRESTAPI(r.URL.Path)
+		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
+		if !ok {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "对象不存在"
+			break
+		}
+
+		authToken := r.URL.Query().Get(common.AuthTokenID)
+		if endpoint.AuthToken != authToken {
+			result.ErrorCode = common_result.InvalidAuthority
+			result.Reason = "无效授权"
+			break
+		}
+
+		session.SetOption(common.AuthTokenID, authToken)
+		result.ErrorCode = common_result.Success
+		result.SessionID = session.ID()
+		break
+	}
 	b, err := json.Marshal(result)
 	if err != nil {
 		panic("json.Marshal, failed, err:" + err.Error())

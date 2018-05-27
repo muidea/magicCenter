@@ -9,15 +9,15 @@ import (
 )
 
 // InsertEndpoint 新增Endpoint记录
-func InsertEndpoint(helper dbhelper.DBHelper, id, name, description string, user []int, status int, accessToken string) (model.Endpoint, bool) {
+func InsertEndpoint(helper dbhelper.DBHelper, id, name, description string, user []int, status int, authToken string) (model.Endpoint, bool) {
 	endpoint := model.Endpoint{ID: id, Name: name, Description: description, User: user, Status: status}
-	sql := fmt.Sprintf("insert into authority_endpoint (id, name, description, user, status, accessToken) values ('%s','%s','%s','%s',%d,'%s')", id, name, description, util.IntArray2Str(user), status, accessToken)
+	sql := fmt.Sprintf("insert into authority_endpoint (id, name, description, user, status, authToken) values ('%s','%s','%s','%s',%d,'%s')", id, name, description, util.IntArray2Str(user), status, authToken)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
 		return endpoint, false
 	}
 
-	endpoint.AccessToken = accessToken
+	endpoint.AuthToken = authToken
 
 	return endpoint, true
 }
@@ -31,7 +31,7 @@ func DeleteEndpoint(helper dbhelper.DBHelper, id string) bool {
 
 // UpdateEndpoint 更新Endpoint记录
 func UpdateEndpoint(helper dbhelper.DBHelper, endpoint model.Endpoint) (model.Endpoint, bool) {
-	sql := fmt.Sprintf("update authority_endpoint set name='%s', description='%s', user='%s', status=%d, accessToken='%s' where id='%s'", endpoint.Name, endpoint.Description, util.IntArray2Str(endpoint.User), endpoint.Status, endpoint.AccessToken, endpoint.ID)
+	sql := fmt.Sprintf("update authority_endpoint set name='%s', description='%s', user='%s', status=%d, authToken='%s' where id='%s'", endpoint.Name, endpoint.Description, util.IntArray2Str(endpoint.User), endpoint.Status, endpoint.AuthToken, endpoint.ID)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {
 		return endpoint, false
@@ -43,7 +43,7 @@ func UpdateEndpoint(helper dbhelper.DBHelper, endpoint model.Endpoint) (model.En
 // QueryAllEndpoint 查询所有Endpoint
 func QueryAllEndpoint(helper dbhelper.DBHelper) []model.Endpoint {
 	endpoints := []model.Endpoint{}
-	sql := fmt.Sprintf("select id, name, description, user, status, accessToken from authority_endpoint")
+	sql := fmt.Sprintf("select id, name, description, user, status, authToken from authority_endpoint")
 
 	helper.Query(sql)
 	defer helper.Finish()
@@ -51,7 +51,7 @@ func QueryAllEndpoint(helper dbhelper.DBHelper) []model.Endpoint {
 	for helper.Next() {
 		endpoint := model.Endpoint{}
 		users := ""
-		helper.GetValue(&endpoint.ID, &endpoint.Name, &endpoint.Description, &users, &endpoint.Status, &endpoint.AccessToken)
+		helper.GetValue(&endpoint.ID, &endpoint.Name, &endpoint.Description, &users, &endpoint.Status, &endpoint.AuthToken)
 		endpoint.User, _ = util.Str2IntArray(users)
 
 		endpoints = append(endpoints, endpoint)
@@ -63,14 +63,14 @@ func QueryAllEndpoint(helper dbhelper.DBHelper) []model.Endpoint {
 // QueryEndpointByID 查询指定Endpoint
 func QueryEndpointByID(helper dbhelper.DBHelper, id string) (model.Endpoint, bool) {
 	endpoint := model.Endpoint{}
-	sql := fmt.Sprintf("select id, name, description, user, status, accessToken from authority_endpoint where id='%s'", id)
+	sql := fmt.Sprintf("select id, name, description, user, status, authToken from authority_endpoint where id='%s'", id)
 
 	helper.Query(sql)
 	defer helper.Finish()
 
 	if helper.Next() {
 		users := ""
-		helper.GetValue(&endpoint.ID, &endpoint.Name, &endpoint.Description, &users, &endpoint.Status, &endpoint.AccessToken)
+		helper.GetValue(&endpoint.ID, &endpoint.Name, &endpoint.Description, &users, &endpoint.Status, &endpoint.AuthToken)
 		endpoint.User, _ = util.Str2IntArray(users)
 
 		return endpoint, true

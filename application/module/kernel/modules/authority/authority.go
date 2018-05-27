@@ -27,7 +27,7 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 		accountHandler:   accountHandler,
 		authorityHandler: handler.CreateAuthorityHandler(moduleHub, sessionRegistry)}
 
-	instance.routes = route.AppendAuthorityRoute(instance.routes, instance.authorityHandler, instance.accountHandler, moduleHub)
+	instance.routes = route.AppendAuthorityRoute(instance.routes, instance.authorityHandler, instance.accountHandler, moduleHub, sessionRegistry)
 
 	moduleHub.RegisterModule(instance)
 }
