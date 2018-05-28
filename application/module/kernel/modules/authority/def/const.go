@@ -72,4 +72,4 @@ const PutEndpoint = "/endpoint/:id"
 const DeleteEndpoint = "/endpoint/:id"
 
 // GetEndpointAuth 终端认证
-const GetEndpointAuth = "/endpoint/:id"
+const GetEndpointAuth = "/endpoint/verify/:id"
