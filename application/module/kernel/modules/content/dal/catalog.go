@@ -169,7 +169,13 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 		helper.BeginTransaction()
 		for _, val := range catalogs {
 			result = true
-			detail, existFlag := QueryCatalogByName(helper, val.Name)
+			detail := model.CatalogDetail{}
+			existFlag := false
+			if val.ID > 0 {
+				detail, existFlag = QueryCatalogByID(helper, val.ID)
+			} else {
+				detail, existFlag = QueryCatalogByName(helper, val.Name)
+			}
 
 			if existFlag {
 				modifyFlag := false
