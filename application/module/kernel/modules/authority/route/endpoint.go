@@ -407,6 +407,7 @@ func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		session.SetOption(common.AuthTokenID, authToken)
+		session.SetOption(common.ExpiryDate, -1)
 		result.ErrorCode = common_result.Success
 		result.SessionID = session.ID()
 		break

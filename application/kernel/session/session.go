@@ -75,6 +75,11 @@ func (s *sessionImpl) refresh() {
 }
 
 func (s *sessionImpl) timeOut() bool {
+	expiryDate, found := s.context[common.ExpiryDate]
+	if found && expiryDate.(int) == -1 {
+		return false
+	}
+
 	preTime, found := s.context["$$refreshTime"]
 	if !found {
 		return true
