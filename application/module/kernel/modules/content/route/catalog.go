@@ -9,9 +9,9 @@ import (
 
 	"muidea.com/magicCenter/application/common"
 	"muidea.com/magicCenter/application/module/kernel/modules/content/def"
-	"muidea.com/magicCommon/foundation/net"
 	common_const "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -496,7 +496,6 @@ func (i *catalogDestroyRoute) AuthGroup() int {
 func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteCatalogHandler")
 
-	session := i.sessionRegistry.GetSession(w, r)
 	result := catalogCreateResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
@@ -504,12 +503,6 @@ func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *htt
 		if err != nil {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "无效参数"
-			break
-		}
-		_, found := session.GetAccount()
-		if !found {
-			result.ErrorCode = common_result.Failed
-			result.Reason = "无效权限"
 			break
 		}
 
