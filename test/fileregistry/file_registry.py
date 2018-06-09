@@ -1,7 +1,7 @@
 'file_registry'
 
 from session import session
-from cas import login
+from cas import cas
 
 class FileRegistry(session.MagicSession):
     "FileRegistry"
@@ -35,11 +35,11 @@ class FileRegistry(session.MagicSession):
 
 def main():
     'main'
-    login_session = login.Login('http://localhost:8888')
-    if not login_session.login('admin@muidea.com', '123'):
+    cas_session = cas.Cas('http://localhost:8888')
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = FileRegistry('http://localhost:8888', login_session.authority_token)
+        app = FileRegistry('http://localhost:8888', cas_session.authority_token)
         info = app.upload_file('./ArticleTest.py')
         if info:
             url = app.download_file(info)
@@ -47,4 +47,4 @@ def main():
                 print('download file failed')
             app.delete_file(info)
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)

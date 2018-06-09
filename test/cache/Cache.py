@@ -1,7 +1,7 @@
 "Cache"
 
 from session import session
-from cas import login
+from cas import cas
 
 class Cache(session.MagicSession):
     'Cache'
@@ -36,11 +36,12 @@ class Cache(session.MagicSession):
 
 def main():
     'main'
-    login_session = login.Login('http://localhost:8888')
-    if not login_session.login('admin@muidea.com', '123'):
+    work_session = session.MagicSession('http://localhost:8888')
+    cas_session = cas.Cas(work_session)    
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Cache('http://localhost:8888', login_session.authority_token)
+        app = Cache('http://localhost:8888', cas_session.authority_token)
         token = app.put_in("Test")
         if token:
             if not app.fetch_out(token):
@@ -50,4 +51,4 @@ def main():
                 print("remove failed")
         else:
             print("put in cache failed")
-    login_session.logout(login_session.authority_token)
+    cas_session.logout(cas_session.authority_token)

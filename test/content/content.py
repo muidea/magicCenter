@@ -9,7 +9,7 @@ from content import link
 from content import media
 from mock import common
 from session import session
-from cas import login
+from cas import cas
 
 class Content:
     'Content Manager'
@@ -266,14 +266,14 @@ class Content:
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    login_session = login.Login(work_session)
-    if not login_session.login('admin@muidea.com', '123'):
+    cas_session = cas.Cas(work_session)
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Content(work_session, login_session.authority_token)
-        app.refresh(login_session.authority_token)
+        app = Content(work_session, cas_session.authority_token)
+        app.refresh(cas_session.authority_token)
         app.mock()
         app.remove()
         app.verify()
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)

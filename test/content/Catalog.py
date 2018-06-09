@@ -1,7 +1,7 @@
 "Catalog"
 
 from session import session
-from cas import login
+from cas import cas
 
 class Catalog:
     'Catalog'
@@ -53,11 +53,11 @@ class Catalog:
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    login_session = login.Login(work_session)
-    if not login_session.login('admin@muidea.com', '123'):
+    cas_session = cas.Cas(work_session)
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Catalog(work_session, login_session.authority_token)
+        app = Catalog(work_session, cas_session.authority_token)
         catalog = app.create('testCatalog', 'testDescription', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if catalog:
             temp = app.create('testCatalog2', 'testDescription', [{'id':catalog['id'], 'name': catalog['name']}, {'id':0, 'name':'ca4'}])
@@ -79,11 +79,11 @@ def main():
             elif catalog['description'] != 'aaaaaa':
                 print('update catalog failed, description invalid')
 
-            if len(app.find_all()) <= 0:
+            if not app.find_all():
                 print('query_all catalog failed')
 
             app.destroy(catalog_id)
         else:
             print('create catalog failed')
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)

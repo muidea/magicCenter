@@ -1,9 +1,9 @@
-'Login'
+'Cas'
 
 from session import session
 
-class Login:
-    'Login'
+class Cas:
+    'Cas'
     def __init__(self, work_session):
         self.session = work_session
         self.authority_token = ''
@@ -36,7 +36,7 @@ class Login:
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    app = Login(work_session)
+    app = Cas(work_session)
     app.login('admin@muidea.com', '123')
     app.status(app.authority_token)
     app.logout('123')

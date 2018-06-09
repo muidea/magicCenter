@@ -1,7 +1,7 @@
 "User"
 
 from session import session
-from cas import login
+from cas import cas
 
 class User:
     "User"
@@ -96,11 +96,11 @@ class User:
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    login_session = login.Login(work_session)
-    if not login_session.login('admin@muidea.com', '123'):
-        print('login failed')
+    cas_session = cas.Cas(work_session)
+    if not cas_session.login('admin@muidea.com', '123'):
+        print('cas failed')
     else:
-        app = User(work_session, login_session.authority_token)
+        app = User(work_session, cas_session.authority_token)
         user = app.create('testUser12', '123', 'rangh@test.com', [{'id': 0, 'name':'系统管理组'}])
         if user:
             user_id = user['id']
@@ -128,4 +128,4 @@ def main():
         else:
             print('create user failed')
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)

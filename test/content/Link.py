@@ -1,6 +1,6 @@
 "Link"
 from session import session
-from cas import login
+from cas import cas
 
 class Link:
     'Link'
@@ -52,11 +52,11 @@ class Link:
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    login_session = login.Login(work_session)
-    if not login_session.login('admin@muidea.com', '123'):
+    cas_session = cas.Cas(work_session)
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Link(work_session, login_session.authority_token)
+        app = Link(work_session, cas_session.authority_token)
         link = app.create('testLink', 'test link url', 'test link logo', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if link:
             link_id = link['id']
@@ -76,11 +76,11 @@ def main():
             elif link['url'] != 'aaaaaa, bb dsfsdf  erewre aa':
                 print('update link failed, content invalid')
 
-            if len(app.find_all()) <= 0:
+            if not app.find_all():
                 print('query_all link failed')
 
             app.destroy(link_id)
         else:
             print('create link failed')
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)

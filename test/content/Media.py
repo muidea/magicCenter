@@ -1,7 +1,7 @@
 "Media"
 
 from session import session
-from cas import login
+from cas import cas
 
 class Media(session.MagicSession):
     'Media'
@@ -53,11 +53,11 @@ class Media(session.MagicSession):
 def main():
     'main'
     work_session = session.MagicSession('http://localhost:8888')
-    login_session = login.Login(work_session)
-    if not login_session.login('admin@muidea.com', '123'):
+    cas_session = cas.Cas(work_session)
+    if not cas_session.login('admin@muidea.com', '123'):
         print('login failed')
     else:
-        app = Media(work_session, login_session.authority_token)
+        app = Media(work_session, cas_session.authority_token)
         media = app.create('testMedia', 'test media url', 'test media desc', [{'id':0, 'name': "ca1"}, {'id':0, 'name':'ca2'}])
         if media:
             media_id = media['id']
@@ -77,10 +77,10 @@ def main():
             elif media['url'] != 'aaaaaa, bb dsfsdf  erewre':
                 print('update media failed, content invalid')
 
-            if len(app.find_all()) <= 0:
+            if not app.find_all():
                 print('query_all media failed')
             app.destroy(media_id)
         else:
             print('create media failed')
 
-        login_session.logout(login_session.authority_token)
+        cas_session.logout(cas_session.authority_token)
