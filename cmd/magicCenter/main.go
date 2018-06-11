@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"muidea.com/magicCenter/application"
+	"muidea.com/magicCenter"
 )
 
 func main() {
