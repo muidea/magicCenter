@@ -1,0 +1,33 @@
+version: '2'
+services:
+    db:
+      image: 'docker.io/mysql'
+      container_name: 'mysql'
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /Users/rangh/Documents/GoPATH/src/muidea.com/magicCenter/docker/mysql:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: rootkit
+        TZ: "Asia/Shanghai"
+      ports:
+        - 3406:3306
+
+    adminer:
+      image: 'docker.io/adminer'
+      container_name: 'adminer'
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        TZ: "Asia/Shanghai"
+      ports:
+        - 8080:8080
+
+networks:
+  muidea-ai:
+ 
