@@ -1,24 +1,43 @@
 package dal
 
-import "muidea.com/magicCenter/common/dbhelper"
+import (
+	"muidea.com/magicCenter/common/dbhelper"
+	"muidea.com/magicCenter/common/initializer"
+)
 
-var userID int
-var groupID int
+type idHolder struct {
+	userID  int
+	groupID int
+}
 
-func init() {
+func (s *idHolder) Handle() {
 	dbhelper, _ := dbhelper.NewHelper()
 	defer dbhelper.Release()
 
-	userID = loadUserID(dbhelper)
-	groupID = loadGroupID(dbhelper)
+	s.userID = loadUserID(dbhelper)
+	s.groupID = loadGroupID(dbhelper)
+}
+
+func (s *idHolder) AllocUserID() int {
+	s.userID++
+	return s.userID
+}
+
+func (s *idHolder) AllocGroupID() int {
+	s.groupID++
+	return s.groupID
+}
+
+var holder = &idHolder{}
+
+func init() {
+	initializer.RegisterHandler(holder)
 }
 
 func allocUserID() int {
-	userID = userID + 1
-	return userID
+	return holder.AllocUserID()
 }
 
 func allocGroupID() int {
-	groupID = groupID + 1
-	return groupID
+	return holder.AllocGroupID()
 }

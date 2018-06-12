@@ -1,38 +1,65 @@
 package dal
 
-import "muidea.com/magicCenter/common/dbhelper"
+import (
+	"muidea.com/magicCenter/common/dbhelper"
+	"muidea.com/magicCenter/common/initializer"
+)
 
-var articleID int
-var catalogID int
-var linkID int
-var mediaID int
+type idHolder struct {
+	articleID int
+	catalogID int
+	linkID    int
+	mediaID   int
+}
 
-func init() {
+func (s *idHolder) Handle() {
 	dbhelper, _ := dbhelper.NewHelper()
 	defer dbhelper.Release()
 
-	articleID = loadArticleID(dbhelper)
-	catalogID = loadCatalogID(dbhelper)
-	linkID = loadLinkID(dbhelper)
-	mediaID = loadMediaID(dbhelper)
+	s.articleID = loadArticleID(dbhelper)
+	s.catalogID = loadCatalogID(dbhelper)
+	s.linkID = loadLinkID(dbhelper)
+	s.mediaID = loadMediaID(dbhelper)
+}
+
+func (s *idHolder) AllocArticleID() int {
+	s.articleID++
+	return s.articleID
+}
+
+func (s *idHolder) AllocCatalogID() int {
+	s.catalogID++
+	return s.catalogID
+}
+
+func (s *idHolder) AllocLinkID() int {
+	s.linkID++
+	return s.linkID
+}
+
+func (s *idHolder) AllocMediaID() int {
+	s.mediaID++
+	return s.mediaID
+}
+
+var holder = &idHolder{}
+
+func init() {
+	initializer.RegisterHandler(holder)
 }
 
 func allocArticleID() int {
-	articleID = articleID + 1
-	return articleID
+	return holder.AllocArticleID()
 }
 
 func allocCatalogID() int {
-	catalogID = catalogID + 1
-	return catalogID
+	return holder.AllocCatalogID()
 }
 
 func allocLinkID() int {
-	linkID = linkID + 1
-	return linkID
+	return holder.AllocLinkID()
 }
 
 func allocMediaID() int {
-	mediaID = mediaID + 1
-	return mediaID
+	return holder.AllocMediaID()
 }

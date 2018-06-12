@@ -1,6 +1,7 @@
 package dbhelper
 
 import (
+	"errors"
 	"log"
 
 	"muidea.com/magicCommon/foundation/dao"
@@ -31,10 +32,28 @@ type impl struct {
 	dao dao.Dao
 }
 
+type databaseConfigInfo struct {
+	Server   string
+	Name     string
+	Account  string
+	Password string
+}
+
+var databaseInfo *databaseConfigInfo
+
+// InitDB 初始化数据库
+func InitDB(server, name, account, password string) {
+	databaseInfo = &databaseConfigInfo{Server: server, Name: name, Account: account, Password: password}
+}
+
 // NewHelper 创建数据助手
 func NewHelper() (DBHelper, error) {
+	if databaseInfo == nil {
+		return nil, errors.New("illegal database config info")
+	}
+
 	m := &impl{}
-	dao, err := dao.Fetch("magiccenter", "magiccenter", "localhost:3306", "magiccenter_db")
+	dao, err := dao.Fetch(databaseInfo.Account, databaseInfo.Password, databaseInfo.Server, databaseInfo.Name)
 	if err != nil {
 		log.Print("fetch database failed, err:" + err.Error())
 		return nil, err

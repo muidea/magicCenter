@@ -1,17 +1,32 @@
 package resource
 
-import "muidea.com/magicCenter/common/dbhelper"
+import (
+	"muidea.com/magicCenter/common/dbhelper"
+	"muidea.com/magicCenter/common/initializer"
+)
 
-var resourceOID int
+type idHolder struct {
+	resourceOID int
+}
 
-func init() {
+func (s *idHolder) Handle() {
 	dbhelper, _ := dbhelper.NewHelper()
 	defer dbhelper.Release()
 
-	resourceOID = loadResourceOID(dbhelper)
+	s.resourceOID = loadResourceOID(dbhelper)
+}
+
+func (s *idHolder) AllocResourceOID() int {
+	s.resourceOID++
+	return s.resourceOID
+}
+
+var holder = &idHolder{}
+
+func init() {
+	initializer.RegisterHandler(holder)
 }
 
 func allocResourceOID() int {
-	resourceOID = resourceOID + 1
-	return resourceOID
+	return holder.AllocResourceOID()
 }
