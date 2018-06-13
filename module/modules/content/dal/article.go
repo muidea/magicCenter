@@ -122,8 +122,9 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 			break
 		}
 
+		desc := util.ExtractSummary(content)
 		article.ID = id
-		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, "", article.CreateDate, article.Creater)
+		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
 			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
 			if ok {
@@ -167,6 +168,10 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 				result = false
 				break
 			}
+
+			res.UpdateName(article.Name)
+			desc := util.ExtractSummary(article.Content)
+			res.UpdateDescription(desc)
 
 			res.ResetRelative()
 			for _, c := range article.Catalog {

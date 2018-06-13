@@ -38,6 +38,10 @@ type Resource interface {
 	Relative() []Resource
 	// ROwner 资源拥有者
 	ROwner() int
+	// UpdateName 更新Name
+	UpdateName(name string)
+	// UpdateDescription 更新Description
+	UpdateDescription(desc string)
 	// ResetRelative 重置关联资源
 	ResetRelative()
 	// AppendRelative 追加关联资源
@@ -106,6 +110,14 @@ func (s *simpleRes) Relative() []Resource {
 // ROwner 资源拥有者
 func (s *simpleRes) ROwner() int {
 	return s.rOwner
+}
+
+func (s *simpleRes) UpdateName(name string) {
+	s.rName = name
+}
+
+func (s *simpleRes) UpdateDescription(desc string) {
+	s.rDescription = desc
 }
 
 func (s *simpleRes) ResetRelative() {
