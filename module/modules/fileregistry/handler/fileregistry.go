@@ -57,7 +57,7 @@ func (s *impl) FindFile(accessToken string) (string, model.FileSummary, bool) {
 
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 	result := uploadFileResult{}
-	for true {
+	for {
 		if req.Method != common.POST {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "非法请求"
@@ -71,7 +71,8 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		err := req.ParseMultipartForm(0)
+		// max file size
+		err := req.ParseMultipartForm(32 << 20)
 		if err != nil {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "无效请求数据"
@@ -134,7 +135,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 
 func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 	result := downloadFileResult{}
-	for true {
+	for {
 		if req.Method != common.GET {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "非法请求"
