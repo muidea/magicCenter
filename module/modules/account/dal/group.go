@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/common/dbhelper"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -22,8 +23,22 @@ func loadGroupID(helper dbhelper.DBHelper) int {
 	return int(maxID.Int64)
 }
 
-// QueryAllGroup 查询所有的分组
-func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
+// QueryGroupCount 查询分组数量
+func QueryGroupCount(helper dbhelper.DBHelper) int {
+	sql := fmt.Sprintf("select count(id) from account_group")
+	helper.Query(sql)
+	defer helper.Finish()
+
+	countVal := 0
+	if helper.Next() {
+		helper.GetValue(&countVal)
+	}
+
+	return countVal
+}
+
+// QueryAllGroupDetail 查询所有的分组
+func QueryAllGroupDetail(helper dbhelper.DBHelper, filter *common_def.PageFilter) []model.GroupDetail {
 	groupList := []model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group")
 	helper.Query(sql)
@@ -32,6 +47,23 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.GroupDetail {
 	for helper.Next() {
 		g := model.GroupDetail{}
 		helper.GetValue(&g.ID, &g.Name, &g.Description, &g.Catalog)
+
+		groupList = append(groupList, g)
+	}
+
+	return groupList
+}
+
+// QueryAllGroup 查询所有的分组
+func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
+	groupList := []model.Group{}
+	sql := fmt.Sprintf("select id, name from account_group")
+	helper.Query(sql)
+	defer helper.Finish()
+
+	for helper.Next() {
+		g := model.Group{}
+		helper.GetValue(&g.ID, &g.Name)
 
 		groupList = append(groupList, g)
 	}

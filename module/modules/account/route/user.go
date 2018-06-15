@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
 	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	common_model "muidea.com/magicCommon/model"
@@ -153,7 +154,10 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 
 	result := userGetAllResult{}
 	for true {
-		allUsers := i.accountHandler.GetAllUserDetail()
+		filter := &common_def.PageFilter{}
+		filter.Parse(r)
+
+		allUsers := i.accountHandler.GetAllUserDetail(filter)
 		for _, val := range allUsers {
 			user := common_model.UserDetailView{}
 			user.UserDetail = val

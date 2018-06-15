@@ -3,11 +3,16 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/account/dal"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
 type userActionHandler struct {
 	dbhelper dbhelper.DBHelper
+}
+
+func (i *userActionHandler) getUserCount() int {
+	return dal.QueryUserCount(i.dbhelper)
 }
 
 func (i *userActionHandler) getAllUserIDs() []int {
@@ -18,8 +23,8 @@ func (i *userActionHandler) getAllUser() []model.User {
 	return dal.QueryAllUser(i.dbhelper)
 }
 
-func (i *userActionHandler) getAllUserDetail() []model.UserDetail {
-	return dal.QueryAllUserDetail(i.dbhelper)
+func (i *userActionHandler) getAllUserDetail(filter *common_def.PageFilter) []model.UserDetail {
+	return dal.QueryAllUserDetail(i.dbhelper, filter)
 }
 
 func (i *userActionHandler) getUsers(ids []int) []model.User {

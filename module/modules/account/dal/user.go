@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/common/dbhelper"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -21,6 +22,20 @@ func loadUserID(helper dbhelper.DBHelper) int {
 	}
 
 	return int(maxID.Int64)
+}
+
+//QueryUserCount 查询用户数量
+func QueryUserCount(helper dbhelper.DBHelper) int {
+	sql := fmt.Sprintf("select count(id) from account_user")
+	helper.Query(sql)
+	defer helper.Finish()
+
+	countValue := 0
+	if helper.Next() {
+		helper.GetValue(&countValue)
+	}
+
+	return countValue
 }
 
 //QueryAllUserIDs 查询全部用户ID
@@ -58,7 +73,7 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.User {
 }
 
 //QueryAllUserDetail 查询全部用户信息
-func QueryAllUserDetail(helper dbhelper.DBHelper) []model.UserDetail {
+func QueryAllUserDetail(helper dbhelper.DBHelper, filter *common_def.PageFilter) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user")
 	helper.Query(sql)

@@ -3,6 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/dbhelper"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -27,8 +28,8 @@ func (i *impl) GetAllUser() []model.User {
 	return i.userHandler.getAllUser()
 }
 
-func (i *impl) GetAllUserDetail() []model.UserDetail {
-	return i.userHandler.getAllUserDetail()
+func (i *impl) GetAllUserDetail(filter *common_def.PageFilter) []model.UserDetail {
+	return i.userHandler.getAllUserDetail(filter)
 }
 
 func (i *impl) GetUsers(ids []int) []model.User {
@@ -67,8 +68,12 @@ func (i *impl) DestroyUserByAccount(account, password string) bool {
 	return i.userHandler.destroyUserByAccount(account, password)
 }
 
-func (i *impl) GetAllGroup() []model.GroupDetail {
-	return i.groupHandler.getAllGroups()
+func (i *impl) GetAllGroup() []model.Group {
+	return i.groupHandler.getAllGroup()
+}
+
+func (i *impl) GetAllGroupDetail(filter *common_def.PageFilter) []model.GroupDetail {
+	return i.groupHandler.getAllGroupDetail(filter)
 }
 
 func (i *impl) GetGroups(ids []int) []model.Group {
@@ -108,10 +113,10 @@ func (i *impl) DestroyGroup(id int) bool {
 
 func (i *impl) GetAccountSummary() model.AccountSummary {
 	result := model.AccountSummary{}
-	userCount := len(i.userHandler.getAllUser())
+	userCount := i.userHandler.getUserCount()
 	userItem := model.UnitSummary{Name: "用户", Type: "user", Count: userCount}
 	result = append(result, userItem)
-	groupCount := len(i.groupHandler.getAllGroups())
+	groupCount := i.groupHandler.getGroupCount()
 	groupItem := model.UnitSummary{Name: "分组", Type: "group", Count: groupCount}
 	result = append(result, groupItem)
 

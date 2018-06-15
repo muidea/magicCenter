@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
 	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
@@ -20,7 +21,7 @@ func AppendGroupRoute(routes []common.Route, accountHandler common.AccountHandle
 	rt := CreateGetGroupRoute(accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetAllGroupRoute(accountHandler)
+	rt = CreateGetAllGroupDetailRoute(accountHandler)
 	routes = append(routes, rt)
 
 	rt = CreateCreateGroupRoute(accountHandler)
@@ -41,8 +42,8 @@ func CreateGetGroupRoute(accountHandler common.AccountHandler) common.Route {
 	return &i
 }
 
-// CreateGetAllGroupRoute 新建GetAllGroup Route
-func CreateGetAllGroupRoute(accountHandler common.AccountHandler) common.Route {
+// CreateGetAllGroupDetailRoute 新建GetGroupsDetail Route
+func CreateGetAllGroupDetailRoute(accountHandler common.AccountHandler) common.Route {
 	i := groupGetAllRoute{accountHandler: accountHandler}
 	return &i
 }
@@ -157,7 +158,10 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 	result := groupGetAllResult{}
 	for true {
-		allGroups := i.accountHandler.GetAllGroup()
+		filter := &common_def.PageFilter{}
+		filter.Parse(r)
+
+		allGroups := i.accountHandler.GetAllGroupDetail(filter)
 		for _, val := range allGroups {
 			groupView := model.GroupDetailView{}
 			groupView.GroupDetail = val

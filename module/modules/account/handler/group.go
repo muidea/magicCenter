@@ -3,6 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/account/dal"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -10,8 +11,16 @@ type groupActionHandler struct {
 	dbhelper dbhelper.DBHelper
 }
 
-func (i *groupActionHandler) getAllGroups() []model.GroupDetail {
+func (i *groupActionHandler) getGroupCount() int {
+	return dal.QueryGroupCount(i.dbhelper)
+}
+
+func (i *groupActionHandler) getAllGroup() []model.Group {
 	return dal.QueryAllGroup(i.dbhelper)
+}
+
+func (i *groupActionHandler) getAllGroupDetail(filter *common_def.PageFilter) []model.GroupDetail {
+	return dal.QueryAllGroupDetail(i.dbhelper, filter)
 }
 
 func (i *groupActionHandler) getGroups(ids []int) []model.Group {
