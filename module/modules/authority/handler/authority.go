@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"muidea.com/magicCenter/common"
@@ -70,6 +71,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 
 	acl, ok := dal.FilterACL(i.dbhelper, pattern, method)
 	if !ok {
+		log.Printf("can't find acl, pattern:%s, method:%s", pattern, method)
 		// 找不到对应的ACL，则认为没有权限
 		return false
 	}
@@ -82,18 +84,25 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	authToken := req.URL.Query().Get(common.AuthTokenID)
 	if len(authToken) == 0 {
 		// 没有提供AuthToken则认为没有授权
+		log.Printf("illegal authToken, empty authToken value.")
 		return false
 	}
 
 	session := i.sessionRegistry.GetSession(res, req)
 	sessionToken, ok := session.GetOption(common.AuthTokenID)
 	if ok {
-		return sessionToken.(string) == authToken
+		ok = sessionToken.(string) == authToken
+		if !ok {
+			log.Printf("illegal authToken, query authToken:%s, session authToken:%s", authToken, sessionToken.(string))
+		}
+
+		return ok
 	}
 
 	onlineAccount, ok := i.casHandler.VerifyToken(authToken)
 	if !ok {
 		// 如果提供了authToken，但是校验不通过，则认为没有权限
+		log.Printf("invalid authToken, authToken:%s", authToken)
 		return false
 	}
 
@@ -110,6 +119,8 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		// 如果校验通过，则更新session里的相关信息
 		session.SetAccount(onlineAccount.User)
 		session.SetOption(common.AuthTokenID, authToken)
+	} else {
+		log.Printf("illegal account authGroup")
 	}
 
 	return avalibleFlag
