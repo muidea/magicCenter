@@ -8,7 +8,7 @@ services:
       restart: always
       volumes:
         - /etc/localtime:/etc/localtime:ro
-        - /Users/rangh/Documents/GoPATH/src/muidea.com/magicCenter/docker/mysql:/var/lib/mysql
+        - $PWD/mysql:/var/lib/mysql
       environment:
         MYSQL_ROOT_PASSWORD: rootkit
         TZ: "Asia/Shanghai"
@@ -25,8 +25,23 @@ services:
         - /etc/localtime:/etc/localtime:ro
       environment:
         TZ: "Asia/Shanghai"
+
+    traefik:
+      image: 'docker.io/traefik'
+      command: --web --docker --docker.domain=localhost --logLevel=DEBUG
+      container_name: 'traefik'
+      networks:
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - $PWD/traefik/traefik.toml:/etc/traefik/traefik.toml        
+      environment:
+        TZ: "Asia/Shanghai"
       ports:
         - 8080:8080
+        - 82:80
 
 networks:
   muidea-ai:
