@@ -6,7 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -194,7 +194,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 				ids = append(ids, detail.ID)
 			} else {
-				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_const.DefaultContentCatalog.ID}, updater, true)
+				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_def.DefaultContentCatalog.ID}, updater, true)
 				if ok {
 					ids = append(ids, detail.ID)
 				} else {

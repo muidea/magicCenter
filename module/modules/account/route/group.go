@@ -8,7 +8,6 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
-	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
@@ -88,7 +87,7 @@ func (i *groupGetRoute) Handler() interface{} {
 }
 
 func (i *groupGetRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -150,7 +149,7 @@ func (i *groupGetAllRoute) Handler() interface{} {
 }
 
 func (i *groupGetAllRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -211,7 +210,7 @@ func (i *groupCreateRoute) Handler() interface{} {
 }
 
 func (i *groupCreateRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +277,7 @@ func (i *groupSaveRoute) Handler() interface{} {
 }
 
 func (i *groupSaveRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request) {
@@ -350,7 +349,7 @@ func (i *groupDestroyRoute) Handler() interface{} {
 }
 
 func (i *groupDestroyRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.Request) {

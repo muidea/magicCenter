@@ -5,7 +5,7 @@ import (
 	"muidea.com/magicCenter/module/modules/fileregistry/def"
 	"muidea.com/magicCenter/module/modules/fileregistry/handler"
 	"muidea.com/magicCenter/module/modules/fileregistry/route"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 )
 
 type fileRegistry struct {
@@ -44,11 +44,11 @@ func (instance *fileRegistry) Group() string {
 }
 
 func (instance *fileRegistry) Type() int {
-	return common_const.INTERNAL
+	return common_def.INTERNAL
 }
 
 func (instance *fileRegistry) Status() int {
-	return common_const.ACTIVE
+	return common_def.ACTIVE
 }
 
 func (instance *fileRegistry) EntryPoint() interface{} {

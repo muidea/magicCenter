@@ -3,6 +3,9 @@ services:
     db:
       image: 'docker.io/mysql'
       container_name: 'mysql'
+      labels:
+        - "traefik.backend=mysql"
+        - "traefik.frontend.rule=Host:mysql.localhost"
       networks: 
         - muidea-ai
       restart: always
@@ -18,6 +21,9 @@ services:
     adminer:
       image: 'docker.io/adminer'
       container_name: 'adminer'
+      labels:
+        - "traefik.backend=adminer"
+        - "traefik.frontend.rule=Host:adminer.localhost"
       networks: 
         - muidea-ai
       restart: always
@@ -30,13 +36,16 @@ services:
       image: 'docker.io/traefik'
       command: --web --docker --docker.domain=localhost --logLevel=DEBUG
       container_name: 'traefik'
+      labels:
+        - "traefik.backend=traefik"
+        - "traefik.frontend.rule=Host:traefik.localhost"
       networks:
         - muidea-ai
       restart: always
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - /var/run/docker.sock:/var/run/docker.sock
-        - $PWD/traefik/traefik.toml:/etc/traefik/traefik.toml        
+        - $PWD/traefik:/etc/traefik
       environment:
         TZ: "Asia/Shanghai"
       ports:
@@ -45,4 +54,5 @@ services:
 
 networks:
   muidea-ai:
+    driver: bridge
  

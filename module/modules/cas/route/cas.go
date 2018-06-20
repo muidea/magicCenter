@@ -7,7 +7,7 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/cas/def"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
@@ -80,7 +80,7 @@ func (i *accountLoginRoute) Handler() interface{} {
 }
 
 func (i *accountLoginRoute) AuthGroup() int {
-	return common_const.VisitorAuthGroup.ID
+	return common_def.VisitorAuthGroup.ID
 }
 
 func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -141,7 +141,7 @@ func (i *accountLogoutRoute) Handler() interface{} {
 }
 
 func (i *accountLogoutRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -150,7 +150,7 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := accountLogoutResult{}
 	for true {
-		authToken, ok := session.GetOption(common.AuthTokenID)
+		authToken, ok := session.GetOption(common_def.AuthTokenID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "非法请求"
@@ -199,7 +199,7 @@ func (i *accountStatusRoute) Handler() interface{} {
 }
 
 func (i *accountStatusRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Request) {
@@ -208,7 +208,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := accountStatusResult{}
 	for true {
-		authToken, ok := session.GetOption(common.AuthTokenID)
+		authToken, ok := session.GetOption(common_def.AuthTokenID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "非法请求"

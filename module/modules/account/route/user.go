@@ -8,7 +8,6 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
-	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
@@ -88,7 +87,7 @@ func (i *userGetRoute) Handler() interface{} {
 }
 
 func (i *userGetRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -146,7 +145,7 @@ func (i *userGetAllRoute) Handler() interface{} {
 }
 
 func (i *userGetAllRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +205,7 @@ func (i *userCreateRoute) Handler() interface{} {
 }
 
 func (i *userCreateRoute) AuthGroup() int {
-	return common_const.VisitorAuthGroup.ID
+	return common_def.VisitorAuthGroup.ID
 }
 
 func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +234,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.User.Status = common_const.GetStatus(user.Status)
+		result.User.Status = common_def.GetStatus(user.Status)
 		result.ErrorCode = common_result.Success
 		break
 	}
@@ -276,7 +275,7 @@ func (i *userSaveRoute) Handler() interface{} {
 }
 
 func (i *userSaveRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -347,7 +346,7 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.User.Status = common_const.GetStatus(user.Status)
+		result.User.Status = common_def.GetStatus(user.Status)
 		result.ErrorCode = common_result.Success
 		break
 	}
@@ -381,7 +380,7 @@ func (i *userDestroyRoute) Handler() interface{} {
 }
 
 func (i *userDestroyRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Request) {

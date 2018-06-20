@@ -6,7 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/system/def"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
@@ -55,7 +55,7 @@ func (i *getSystemConfigRoute) Handler() interface{} {
 }
 
 func (i *getSystemConfigRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +92,7 @@ func (i *setSystemConfigRoute) Handler() interface{} {
 }
 
 func (i *setSystemConfigRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *http.Request) {

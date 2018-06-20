@@ -5,7 +5,7 @@ import (
 	"muidea.com/magicCenter/module/modules/content/def"
 	"muidea.com/magicCenter/module/modules/content/handler"
 	"muidea.com/magicCenter/module/modules/content/route"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 )
 
 type content struct {
@@ -47,11 +47,11 @@ func (instance *content) Group() string {
 }
 
 func (instance *content) Type() int {
-	return common_const.KERNEL
+	return common_def.KERNEL
 }
 
 func (instance *content) Status() int {
-	return common_const.ACTIVE
+	return common_def.ACTIVE
 }
 
 func (instance *content) EntryPoint() interface{} {

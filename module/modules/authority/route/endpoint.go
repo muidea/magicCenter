@@ -7,7 +7,7 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/authority/def"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/foundation/util"
@@ -78,7 +78,7 @@ func (i *endpointQueryRoute) Handler() interface{} {
 }
 
 func (i *endpointQueryRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +130,7 @@ func (i *endpointQueryByIDRoute) Handler() interface{} {
 }
 
 func (i *endpointQueryByIDRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Request) {
@@ -191,7 +191,7 @@ func (i *endpointPostRoute) Handler() interface{} {
 }
 
 func (i *endpointPostRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
@@ -251,7 +251,7 @@ func (i *endpointDeleteRoute) Handler() interface{} {
 }
 
 func (i *endpointDeleteRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *endpointDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -309,7 +309,7 @@ func (i *endpointPutRoute) Handler() interface{} {
 }
 
 func (i *endpointPutRoute) AuthGroup() int {
-	return common_const.MaintainerAuthGroup.ID
+	return common_def.MaintainerAuthGroup.ID
 }
 
 func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
@@ -382,7 +382,7 @@ func (i *endpointAuthRoute) Handler() interface{} {
 }
 
 func (i *endpointAuthRoute) AuthGroup() int {
-	return common_const.VisitorAuthGroup.ID
+	return common_def.VisitorAuthGroup.ID
 }
 
 func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request) {
@@ -399,15 +399,15 @@ func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		authToken := r.URL.Query().Get(common.AuthTokenID)
+		authToken := r.URL.Query().Get(common_def.AuthTokenID)
 		if endpoint.AuthToken != authToken {
 			result.ErrorCode = common_result.InvalidAuthority
 			result.Reason = "无效授权"
 			break
 		}
 
-		session.SetOption(common.AuthTokenID, authToken)
-		session.SetOption(common.ExpiryDate, -1)
+		session.SetOption(common_def.AuthTokenID, authToken)
+		session.SetOption(common_def.ExpiryDate, -1)
 		result.ErrorCode = common_result.Success
 		result.SessionID = session.ID()
 		break

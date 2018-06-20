@@ -8,7 +8,7 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/content/def"
-	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
@@ -51,7 +51,7 @@ func (i *summaryGetByIDRoute) Handler() interface{} {
 }
 
 func (i *summaryGetByIDRoute) AuthGroup() int {
-	return common_const.UserAuthGroup.ID
+	return common_def.UserAuthGroup.ID
 }
 
 func (i *summaryGetByIDRoute) getSummaryHandler(w http.ResponseWriter, r *http.Request) {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/common"
+	common_def "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 )
 
@@ -37,7 +38,7 @@ func CreateSessionRegistry() common.SessionRegistry {
 func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request) common.Session {
 	var userSession common.Session
 
-	sessionID := r.URL.Query().Get(common.SessionID)
+	sessionID := r.URL.Query().Get(common_def.SessionID)
 	cookie, err := r.Cookie(sessionCookieID)
 	if err == nil {
 		sessionID = cookie.Value
