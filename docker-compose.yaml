@@ -32,6 +32,25 @@ services:
       environment:
         TZ: "Asia/Shanghai"
 
+    magiccenter:
+      image: 'muidea.ai/develop/magiccenter'
+      container_name: 'magiccenter'
+      labels:
+        - "traefik.backend=magiccenter"
+        - "traefik.frontend.rule=Host:magiccenter.localhost"
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        TZ: "Asia/Shanghai"
+        LISTENPORT: "8080"
+        DBSERVER: "db:3306"
+        DBNAME: "magiccenter_db"
+        ACCOUNT: "root"
+        PASSWORD: "rootkit"
+
     traefik:
       image: 'docker.io/traefik'
       command: --web --docker --docker.domain=localhost --logLevel=DEBUG
@@ -50,7 +69,7 @@ services:
         TZ: "Asia/Shanghai"
       ports:
         - 8080:8080
-        - 82:80
+        - 80:80
 
 networks:
   muidea-ai:

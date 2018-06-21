@@ -9,21 +9,23 @@ import (
 	"muidea.com/magicCenter"
 )
 
+var bindPort = "8080"
 var databaseServer = "localhost:3306"
 var databaseName = "magiccenter_db"
 var databaseAccount = "magiccenter"
 var databasePassword = "magiccenter"
 
 func main() {
-	flag.StringVar(&databaseServer, "server", databaseServer, "database server address.")
-	flag.StringVar(&databaseName, "database", databaseName, "database name.")
-	flag.StringVar(&databaseAccount, "account", databaseAccount, "database account.")
-	flag.StringVar(&databasePassword, "password", databasePassword, "database password.")
+	flag.StringVar(&bindPort, "ListenPort", bindPort, "magicCenter listen port.")
+	flag.StringVar(&databaseServer, "DBServer", databaseServer, "database server address.")
+	flag.StringVar(&databaseName, "DBName", databaseName, "database name.")
+	flag.StringVar(&databaseAccount, "Account", databaseAccount, "database account.")
+	flag.StringVar(&databasePassword, "Password", databasePassword, "database password.")
 	flag.Parse()
 
 	log.Println("MagicCenter V1.0")
 
-	app := application.AppInstance(databaseServer, databaseName, databaseAccount, databasePassword)
+	app := application.AppInstance(bindPort, databaseServer, databaseName, databaseAccount, databasePassword)
 
 	initializer.InvokHandler()
 

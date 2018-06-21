@@ -9,8 +9,6 @@ import (
 	"muidea.com/magicCenter/module/loader"
 )
 
-var serverPort = "8888"
-
 // Application 接口
 type Application interface {
 	Run()
@@ -22,18 +20,18 @@ type application struct {
 }
 
 // AppInstance 返回Application对象
-func AppInstance(server, name, account, password string) Application {
+func AppInstance(bindPort, server, name, account, password string) Application {
 	if app == nil {
 		app = &application{}
 
-		app.construct(server, name, account, password)
+		app.construct(bindPort, server, name, account, password)
 	}
 
 	return app
 }
 
-func (instance *application) construct(server, name, account, password string) {
-	os.Setenv("PORT", serverPort)
+func (instance *application) construct(bindPort, server, name, account, password string) {
+	os.Setenv("PORT", bindPort)
 
 	dbhelper.InitDB(server, name, account, password)
 }
