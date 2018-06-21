@@ -14,8 +14,8 @@ function cleanUp()
         rm -f log.txt
     fi
 
-    if [ -f $bin ]; then
-        rm -f $bin
+    if [ -f $execBin ]; then
+        rm -f $execBin
     fi
 }
 

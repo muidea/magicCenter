@@ -51,6 +51,20 @@ services:
         ACCOUNT: "root"
         PASSWORD: "rootkit"
 
+    magicsite:
+      image: 'muidea.ai/develop/magicsite'
+      container_name: 'magicsite'
+      labels:
+        - "traefik.backend=magicsite"
+        - "traefik.frontend.rule=Host:magicsite.localhost"
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        TZ: "Asia/Shanghai"
+
     traefik:
       image: 'docker.io/traefik'
       command: --web --docker --docker.domain=localhost --logLevel=DEBUG
