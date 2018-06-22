@@ -65,6 +65,39 @@ services:
       environment:
         TZ: "Asia/Shanghai"
 
+    magicblog:
+      image: 'muidea.ai/develop/magicblog'
+      container_name: 'magicblog'
+      labels:
+        - "traefik.backend=magicblog"
+        - "traefik.frontend.rule=Host:magicblog.localhost"
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        TZ: "Asia/Shanghai"
+        LISTENPORT: "8080"
+        CENTER_SERVER: "http://magiccenter:8080"
+        NAME: "magicBlog"
+        ENDPOINTID: "f0e078a8-6de8-4273-88a4-dccef60ff88f"
+        AUTHTOKEN: "yTtWiuuoGifPVfcK5Mf4mdu8mGl78E3y"
+
+    magicblogui:
+      image: 'muidea.ai/develop/magicblogui'
+      container_name: 'magicblogui'
+      labels:
+        - "traefik.backend=ui"
+        - "traefik.frontend.rule=Host:ui.localhost"
+      networks: 
+        - muidea-ai
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+      environment:
+        TZ: "Asia/Shanghai"
+
     traefik:
       image: 'docker.io/traefik'
       command: --web --docker --docker.domain=localhost --logLevel=DEBUG
