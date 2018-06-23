@@ -71,6 +71,8 @@ function rmiImage()
     fi
 }
 
+echo "build magicCenter docker image"
+
 cleanUp
 
 prepareFile
