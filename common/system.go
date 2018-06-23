@@ -8,4 +8,6 @@ type SystemHandler interface {
 
 	UpdateSystemProperty(sysProperty model.SystemProperty) bool
 	GetSystemStatistics() model.StatisticsView
+
+	GetSystemMenu() (string, bool)
 }

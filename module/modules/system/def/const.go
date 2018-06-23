@@ -22,3 +22,9 @@ const PutSystemConfig = "/config/"
 
 // GetSystemModule 获取系统模块列表
 const GetSystemModule = "/module/"
+
+// GetSystemMenu 获取系统Menu
+const GetSystemMenu = "/menu/"
+
+// GetSystemDashboard 获取系统Dashboard
+const GetSystemDashboard = "/dashboard/"

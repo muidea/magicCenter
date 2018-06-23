@@ -406,15 +406,16 @@ func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
 	resList := []simpleRes{}
 	for helper.Next() {
 		res := simpleRes{}
-		helper.GetValue(&res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate)
+		helper.GetValue(&res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 		resList = append(resList, res)
 	}
 
 	retVal := []Resource{}
 	for _, v := range resList {
-		v.relative = relativeResource(helper, v.oid)
+		res := v
+		res.relative = relativeResource(helper, v.oid)
 
-		retVal = append(retVal, &v)
+		retVal = append(retVal, &res)
 	}
 
 	return retVal

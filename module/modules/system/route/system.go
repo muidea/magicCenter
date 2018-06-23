@@ -20,6 +20,12 @@ func AppendSystemRoute(routes []common.Route, systemHandler common.SystemHandler
 	rt = SetSystemConfigRoute(systemHandler)
 	routes = append(routes, rt)
 
+	rt = GetSystemMenuRoute(systemHandler)
+	routes = append(routes, rt)
+
+	rt = GetSystemDashboardRoute(systemHandler)
+	routes = append(routes, rt)
+
 	return routes
 }
 
@@ -31,6 +37,16 @@ func GetSystemConfigRoute(systemHandler common.SystemHandler) common.Route {
 // SetSystemConfigRoute 新建获取SystemConfig路由
 func SetSystemConfigRoute(systemHandler common.SystemHandler) common.Route {
 	return &setSystemConfigRoute{systemHandler: systemHandler}
+}
+
+// GetSystemMenuRoute 新建获取SystemMenu路由
+func GetSystemMenuRoute(systemHandler common.SystemHandler) common.Route {
+	return &getSystemMenuRoute{systemHandler: systemHandler}
+}
+
+// GetSystemDashboardRoute 新建获取SystemDashboard路由
+func GetSystemDashboardRoute(systemHandler common.SystemHandler) common.Route {
+	return &getSystemDashboardRoute{systemHandler: systemHandler}
 }
 
 type getSystemConfigRoute struct {
@@ -119,6 +135,90 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 
 		break
 	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type getSystemMenuRoute struct {
+	systemHandler common.SystemHandler
+}
+
+type getSystemMenuResult struct {
+	Menu string `json:"menu"`
+
+	common_result.Result
+}
+
+func (i *getSystemMenuRoute) Method() string {
+	return common.GET
+}
+
+func (i *getSystemMenuRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetSystemMenu)
+}
+
+func (i *getSystemMenuRoute) Handler() interface{} {
+	return i.getSystemMenuHandler
+}
+
+func (i *getSystemMenuRoute) AuthGroup() int {
+	return common_def.MaintainerAuthGroup.ID
+}
+
+func (i *getSystemMenuRoute) getSystemMenuHandler(w http.ResponseWriter, r *http.Request) {
+	result := getSystemMenuResult{}
+
+	menu, ok := i.systemHandler.GetSystemMenu()
+	if ok {
+		result.Menu = menu
+		result.ErrorCode = common_result.Success
+	} else {
+		result.ErrorCode = common_result.Failed
+		result.Reason = "Get Menu failed"
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type getSystemDashboardRoute struct {
+	systemHandler common.SystemHandler
+}
+
+type getSystemDashboardResult struct {
+	model.StatisticsView
+	common_result.Result
+}
+
+func (i *getSystemDashboardRoute) Method() string {
+	return common.GET
+}
+
+func (i *getSystemDashboardRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.GetSystemDashboard)
+}
+
+func (i *getSystemDashboardRoute) Handler() interface{} {
+	return i.getSystemDashboardHandler
+}
+
+func (i *getSystemDashboardRoute) AuthGroup() int {
+	return common_def.MaintainerAuthGroup.ID
+}
+
+func (i *getSystemDashboardRoute) getSystemDashboardHandler(w http.ResponseWriter, r *http.Request) {
+	result := getSystemDashboardResult{}
+	result.ErrorCode = 0
+	result.StatisticsView = i.systemHandler.GetSystemStatistics()
 
 	b, err := json.Marshal(result)
 	if err != nil {

@@ -1,6 +1,11 @@
 package handler
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/configuration"
 	"muidea.com/magicCommon/model"
@@ -8,13 +13,14 @@ import (
 
 // CreateSystemHandler 新建SystemHandler
 func CreateSystemHandler(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) common.SystemHandler {
-	i := impl{moduleHub: moduleHub}
+	i := impl{configuration: configuration, moduleHub: moduleHub}
 
 	return &i
 }
 
 type impl struct {
-	moduleHub common.ModuleHub
+	configuration common.Configuration
+	moduleHub     common.ModuleHub
 }
 
 func (s *impl) GetSystemProperty() model.SystemProperty {
@@ -25,8 +31,30 @@ func (s *impl) UpdateSystemProperty(sysProperty model.SystemProperty) bool {
 	return configuration.UpdateSystemProperty(sysProperty)
 }
 
+func (s *impl) GetSystemMenu() (string, bool) {
+	path, ok := s.configuration.GetOption(model.StaticPath)
+	if !ok {
+		return "", false
+	}
+
+	menuFile := fmt.Sprintf("%s/const/menu.json", path)
+	fileHandler, err := os.Open(menuFile)
+	if err != nil {
+		log.Printf("open menufile failed, err:%s", err.Error())
+		return "", false
+	}
+
+	data, err := ioutil.ReadAll(fileHandler)
+	if err != nil {
+		log.Printf("read all menu content failed.")
+		return "", false
+	}
+
+	return string(data), true
+}
+
 func (s *impl) GetSystemStatistics() model.StatisticsView {
-	info := model.StatisticsView{}
+	info := model.StatisticsView{SystemSummary: []model.UnitSummary{}, SystemTrend: []model.UnitTrend{}, LastContent: []model.ContentUnit{}, LastAccount: []model.AccountUnit{}}
 	contentModule, ok := s.moduleHub.FindModule(common.CotentModuleID)
 	if ok {
 		contentHandler := contentModule.EntryPoint().(common.ContentHandler)
