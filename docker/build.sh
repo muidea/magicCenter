@@ -14,6 +14,10 @@ function cleanUp()
         rm -f log.txt
     fi
 
+    if [ -f res.tar ]; then
+        rm -f res.tar
+    fi
+
     if [ -f $execBin ]; then
         rm -f $execBin
     fi
@@ -23,6 +27,20 @@ function prepareFile()
 {
     echo "prepareFile..."
     cp $binpath ./
+    if [ $? -ne 0 ]; then
+        echo "prepareFile failed, copy magicCenter exception"
+    fi
+
+    cp -r ../static ./
+    if [ $? -ne 0 ]; then
+        echo "prepareFile failed, copy static exception"
+    fi
+    tar -caf res.tar static
+    if [ $? -ne 0 ]; then
+        echo "prepare file failed, compress failed exception."
+        exit 1
+    fi
+    rm -rf static
 }
 
 function checkImage()
