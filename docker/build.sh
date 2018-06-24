@@ -89,19 +89,44 @@ function rmiImage()
     fi
 }
 
-echo "build magicCenter docker image"
+function all()
+{
+    echo "build magicCenter docker image"
 
-cleanUp
+    cleanUp
 
-prepareFile
+    prepareFile
 
-checkImage $imageName $imageVersion
-if [ $imageID ]; then
-    rmiImage $imageName $imageVersion
+    checkImage $imageName $imageVersion
+    if [ $imageID ]; then
+        rmiImage $imageName $imageVersion
+    fi
+
+    buildImage
+
+    tagImage $imageID $imageName:$imageVersion
+
+    cleanUp
+}
+
+function build()
+{
+    checkImage $imageName $imageVersion
+    if [ $imageID ]; then
+        rmiImage $imageName $imageVersion
+    fi
+
+    buildImage
+
+    tagImage $imageID $imageName:$imageVersion    
+}
+
+if [ $1 == 'prepare' ]; then
+    prepareFile
+elif [ $1 == 'clean' ]; then
+    cleanUp
+elif [ $1 == 'build' ]; then
+    build
+else
+    all
 fi
-
-buildImage
-
-tagImage $imageID $imageName:$imageVersion
-
-cleanUp
