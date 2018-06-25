@@ -23,4 +23,6 @@ fi
 
 echo $EXTRA_ARGS
 
+/var/app/wait-for-it.sh $DBSERVER -- echo "dbserver is ready."
+
 /var/app/magicCenter $EXTRA_ARGS "$@"
