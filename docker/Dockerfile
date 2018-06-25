@@ -6,10 +6,10 @@ RUN mkdir -p /var/app
 
 WORKDIR /var/app
 
-COPY res.tar /tmp/
+COPY resource.tar /tmp/
 RUN cd /tmp \
- && tar -xvf res.tar -C /var/app/ \
- && rm -f res.tar
+ && tar -xvf resource.tar -C /var/app/ \
+ && rm -f resource.tar
 
 ADD magicCenter /var/app/magicCenter
 ADD bootstrap.sh /var/app/bootstrap.sh

@@ -20,8 +20,8 @@ function cleanUp()
         rm -f $projectName
     fi
 
-    if [ -f res.tar ]; then
-        rm -f res.tar
+    if [ -f resource.tar ]; then
+        rm -f resource.tar
     fi
 
     if [ -f $binPath ]; then
@@ -63,7 +63,7 @@ function prepareFile()
     if [ $? -ne 0 ]; then
         echo "prepareFile failed, copy static exception"
     fi
-    tar -caf res.tar static
+    tar -caf resource.tar static
     if [ $? -ne 0 ]; then
         echo "prepare file failed, compress failed exception."
         exit 1
