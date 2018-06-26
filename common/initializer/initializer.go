@@ -27,7 +27,7 @@ func Initialize(bindPort, server, name, account, password string) error {
 	_, err := dbhelper.NewHelper()
 	if err != nil {
 		errCode, _ := dbhelper.ParseError(err.Error())
-		if errCode == 1046 {
+		if errCode == 1049 {
 			dbFile := "db.sql"
 			_, err := os.Stat(dbFile)
 			if err == nil {

@@ -52,12 +52,14 @@ func InitDB(server, name, account, password string) {
 
 // ParseError 解析错误信息
 func ParseError(errString string) (int, error) {
-	if len(errString) > 0 {
-		reg := regexp.MustCompile("ERROR [0-9]+ \\([0-9]+\\)*")
-		val := reg.FindString(errString)
+	items := strings.Split(strings.ToUpper(errString), ":")
+	if len(items) > 0 {
+		errorReg := regexp.MustCompile("ERROR [0-9]+")
+		val := errorReg.FindString(items[0])
 		if len(val) > 0 {
-			items := strings.Split(val, " ")
-			errCode, _ := strconv.Atoi(items[1])
+			numReg := regexp.MustCompile("[0-9]+")
+			val = numReg.FindString(val)
+			errCode, _ := strconv.Atoi(val)
 			return errCode, nil
 		}
 
