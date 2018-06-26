@@ -2,7 +2,11 @@ package dbhelper
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"muidea.com/magicCommon/foundation/dao"
 )
@@ -44,6 +48,24 @@ var databaseInfo *databaseConfigInfo
 // InitDB 初始化数据库
 func InitDB(server, name, account, password string) {
 	databaseInfo = &databaseConfigInfo{Server: server, Name: name, Account: account, Password: password}
+}
+
+// ParseError 解析错误信息
+func ParseError(errString string) (int, error) {
+	if len(errString) > 0 {
+		reg := regexp.MustCompile("ERROR [0-9]+ \\([0-9]+\\)*")
+		val := reg.FindString(errString)
+		if len(val) > 0 {
+			items := strings.Split(val, " ")
+			errCode, _ := strconv.Atoi(items[1])
+			return errCode, nil
+		}
+
+		msg := fmt.Sprintf("illegal errString, [%s]", errString)
+		return -1, errors.New(msg)
+	}
+
+	return 0, nil
 }
 
 // NewHelper 创建数据助手

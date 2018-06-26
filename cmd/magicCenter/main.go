@@ -25,7 +25,13 @@ func main() {
 
 	log.Println("MagicCenter V1.0")
 
-	app := application.AppInstance(bindPort, databaseServer, databaseName, databaseAccount, databasePassword)
+	err := initializer.Initialize(bindPort, databaseServer, databaseName, databaseAccount, databasePassword)
+	if err != nil {
+		log.Printf("initialize failed, err:%s", err.Error())
+		return
+	}
+
+	app := application.AppInstance()
 
 	initializer.InvokHandler()
 

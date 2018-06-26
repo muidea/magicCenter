@@ -6,6 +6,8 @@ RUN mkdir -p /var/app
 
 WORKDIR /var/app
 
+RUN yum install -y mariadb
+
 COPY resource.tar /tmp/
 RUN cd /tmp \
  && tar -xvf resource.tar -C /var/app/ \
@@ -14,6 +16,7 @@ RUN cd /tmp \
 ADD magicCenter /var/app/magicCenter
 ADD bootstrap.sh /var/app/bootstrap.sh
 ADD wait-for-it.sh /var/app/wait-for-it.sh
+ADD db.sql /var/app/db.sql
 
 RUN chmod +x /var/app/magicCenter
 RUN chmod +x /var/app/bootstrap.sh
