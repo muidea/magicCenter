@@ -160,7 +160,7 @@ func (i *mediaGetListRoute) AuthGroup() int {
 func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getMediaListHandler")
 
-	result := mediaGetListResult{}
+	result := mediaGetListResult{Media: []model.SummaryView{}}
 	for true {
 		catalog := r.URL.Query().Get("catalog")
 		if len(catalog) < 1 {
