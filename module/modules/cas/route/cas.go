@@ -63,8 +63,9 @@ type accountLoginParam struct {
 
 type accountLoginResult struct {
 	common_result.Result
-	OnlineUser model.AccountOnlineView `json:"onlineUser"`
-	SessionID  string                  `json:"sessionID"`
+	OnlineUser  model.AccountOnlineView `json:"onlineUser"`
+	SessionID   string                  `json:"sessionID"`
+	AuthTokenID string                  `json:"authToken"`
 }
 
 func (i *accountLoginRoute) Method() string {
@@ -109,6 +110,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		result.ErrorCode = common_result.Success
 		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
+		result.AuthTokenID = onlineUser.AuthToken
 		break
 	}
 	b, err := json.Marshal(result)
@@ -162,6 +164,7 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			result.Reason = "非法请求"
 			break
 		}
+		session.RemoveOption(common_def.AuthTokenID)
 
 		result.ErrorCode = common_result.Success
 		break
