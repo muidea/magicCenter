@@ -18,7 +18,7 @@ const URL = "/fileregistry"
 const PostFile = "/file/"
 
 // GetFile 下载文件
-const GetFile = "/file/:id"
+const GetFile = "/file/"
 
 // DeleteFile 删除文件
 const DeleteFile = "/file/:id"

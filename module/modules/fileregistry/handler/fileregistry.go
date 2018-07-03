@@ -142,8 +142,13 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		_, id := net.SplitRESTAPI(req.URL.Path)
-		_, ok := dal.FindFileSummary(s.dbhelper, id)
+		accessToken := req.URL.Query().Get("accessToken")
+		if len(accessToken) == 0 {
+			result.ErrorCode = common_result.IllegalParam
+			result.Reason = "非法请求"
+			break
+		}
+		_, ok := dal.FindFileSummary(s.dbhelper, accessToken)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "指定文件不存在"
@@ -151,7 +156,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		result.ErrorCode = common_result.Success
-		result.RedirectURL = fmt.Sprintf("/static/?source=%s", id)
+		result.RedirectURL = fmt.Sprintf("/static/?source=%s", accessToken)
 		break
 	}
 
