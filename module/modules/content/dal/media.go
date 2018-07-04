@@ -88,12 +88,12 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) {
 	media := model.MediaDetail{}
 
-	sql := fmt.Sprintf(`select id, name, description, url, createdate, creater from content_media where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, fileToken, createdate, creater from content_media where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&media.ID, &media.Name, &media.Description, &media.URL, &media.CreateDate, &media.Creater)
+		helper.GetValue(&media.ID, &media.Name, &media.Description, &media.FileToken, &media.CreateDate, &media.Creater)
 		result = true
 	}
 	helper.Finish()
@@ -136,17 +136,14 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 	return result
 }
 
-// CreateMedia 新建文件
-func CreateMedia(helper dbhelper.DBHelper, name, description, url, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
+func createSingle(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
 	media := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocMediaID()
 	result := false
-	helper.BeginTransaction()
-
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_media (id, name, description, url, createdate, creater, expiration) values (%d, '%s','%s','%s','%s',%d,%d)`, id, name, description, url, createDate, creater, expiration)
+		sql := fmt.Sprintf(`insert into content_media (id, name, description, fileToken, createdate, creater, expiration) values (%d, '%s','%s','%s','%s',%d,%d)`, id, name, description, fileToken, createDate, creater, expiration)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
@@ -166,10 +163,23 @@ func CreateMedia(helper dbhelper.DBHelper, name, description, url, createDate st
 
 		if result {
 			result = resource.CreateResource(helper, res, true)
+		} else {
+			media.ID = -1
 		}
 
 		break
 	}
+
+	return media, result
+}
+
+// CreateMedia 新建文件
+func CreateMedia(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
+	media := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+	result := false
+	helper.BeginTransaction()
+
+	media, result = createSingle(helper, name, description, fileToken, createDate, expiration, creater, catalogs)
 
 	if result {
 		helper.Commit()
@@ -180,6 +190,18 @@ func CreateMedia(helper dbhelper.DBHelper, name, description, url, createDate st
 	return media, result
 }
 
+// BatchCreateMedia 批量新建文件
+func BatchCreateMedia(helper dbhelper.DBHelper, medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool) {
+	summaryList := []model.Summary{}
+
+	for _, val := range medias {
+		summary, _ := CreateMedia(helper, val.Name, val.Description, val.FileToken, createDate, val.Expiration, creater, val.Catalog)
+		summaryList = append(summaryList, summary)
+	}
+
+	return summaryList, true
+}
+
 // SaveMedia 保存文件
 func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary, bool) {
 	summary := model.Summary{Unit: model.Unit{ID: media.ID, Name: media.Name}, Type: model.MEDIA, Catalog: media.Catalog, CreateDate: media.CreateDate, Creater: media.Creater}
@@ -187,7 +209,7 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 	helper.BeginTransaction()
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_media set name='%s', description='%s', url ='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.Description, media.URL, media.CreateDate, media.Creater, media.ID)
+		sql := fmt.Sprintf(`update content_media set name='%s', description='%s', fileToken ='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.Description, media.FileToken, media.CreateDate, media.Creater, media.ID)
 		_, result = helper.Execute(sql)
 		if result {
 			res, ok := resource.QueryResource(helper, media.ID, model.MEDIA)

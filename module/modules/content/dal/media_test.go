@@ -20,7 +20,7 @@ func TestMedia(t *testing.T) {
 	img := model.MediaDetail{}
 	img.ID = 32
 	img.Name = "test image"
-	img.URL = "test image url"
+	img.FileToken = "test image fileToken"
 	img.Description = "test image descr"
 	img.Creater = 10
 	img.Catalog = append(img.Catalog, 10)
@@ -43,7 +43,7 @@ func TestMedia(t *testing.T) {
 		return
 	}
 
-	if curImg.URL != "test image url" {
+	if curImg.FileToken != "test image fileToken" {
 		t.Error("QueryMediaByID failed")
 		return
 	}

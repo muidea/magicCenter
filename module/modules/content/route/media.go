@@ -29,6 +29,9 @@ func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandle
 	rt = CreateCreateMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
+	rt = CreateBatchCreateMediaRoute(contentHandler, accountHandler, sessionRegistry)
+	routes = append(routes, rt)
+
 	rt = CreateUpdateMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
@@ -53,6 +56,12 @@ func CreateGetMediaListRoute(contentHandler common.ContentHandler, accountHandle
 // CreateCreateMediaRoute 新建CreateMediaRoute Route
 func CreateCreateMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
 	i := mediaCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
+	return &i
+}
+
+// CreateBatchCreateMediaRoute 新建CreateBatchCreateMediaRoute Route
+func CreateBatchCreateMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := mediaBatchCreateRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
@@ -219,7 +228,7 @@ type mediaCreateRoute struct {
 
 type mediaCreateParam struct {
 	Name        string          `json:"name"`
-	URL         string          `json:"url"`
+	FileToken   string          `json:"fileToken"`
 	Description string          `json:"description"`
 	Expiration  int             `json:"expiration"`
 	Catalog     []model.Catalog `json:"catalog"`
@@ -279,7 +288,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			catalogIds = append(catalogIds, val.ID)
 		}
 
-		media, ok := i.contentHandler.CreateMedia(param.Name, param.Description, param.URL, createDate, catalogIds, param.Expiration, user.ID)
+		media, ok := i.contentHandler.CreateMedia(param.Name, param.Description, param.FileToken, createDate, catalogIds, param.Expiration, user.ID)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "新建失败"
@@ -289,6 +298,110 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		result.Media.Summary = media
 		result.Media.Creater = user
 		result.Media.Catalog = catalogs
+		result.ErrorCode = common_result.Success
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type mediaBatchCreateRoute struct {
+	contentHandler  common.ContentHandler
+	accountHandler  common.AccountHandler
+	sessionRegistry common.SessionRegistry
+}
+
+type mediaItem struct {
+	Name      string `json:"name"`
+	FileToken string `json:"fileToken"`
+}
+
+type mediaBatchCreateParam struct {
+	Medias      []mediaItem     `json:"medias"`
+	Description string          `json:"description"`
+	Expiration  int             `json:"expiration"`
+	Catalog     []model.Catalog `json:"catalog"`
+	Privacy     int             `json:"privacy"`
+}
+
+type mediaBatchCreateResult struct {
+	common_result.Result
+	Medias []model.SummaryView `json:"media"`
+}
+
+func (i *mediaBatchCreateRoute) Method() string {
+	return common.POST
+}
+
+func (i *mediaBatchCreateRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PostBatchMedia)
+}
+
+func (i *mediaBatchCreateRoute) Handler() interface{} {
+	return i.createBatchMediaHandler
+}
+
+func (i *mediaBatchCreateRoute) AuthGroup() int {
+	return common_def.UserAuthGroup.ID
+}
+
+func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("createBatchMediaHandler")
+
+	session := i.sessionRegistry.GetSession(w, r)
+	result := mediaBatchCreateResult{Medias: []model.SummaryView{}}
+	for true {
+		user, found := session.GetAccount()
+		if !found {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "无效权限"
+			break
+		}
+
+		param := &mediaBatchCreateParam{}
+		err := net.ParsePostJSON(r, param)
+		if err != nil {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
+		createDate := time.Now().Format("2006-01-02 15:04:05")
+		catalogIds := []int{}
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		if !ok {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "更新Catalog失败"
+			break
+		}
+		for _, val := range catalogs {
+			catalogIds = append(catalogIds, val.ID)
+		}
+
+		mediaItems := []model.MediaItem{}
+		for _, val := range param.Medias {
+			item := model.MediaItem{Name: val.Name, FileToken: val.FileToken, Description: param.Description, Expiration: param.Expiration, Catalog: catalogIds}
+
+			mediaItems = append(mediaItems, item)
+		}
+
+		medias, ok := i.contentHandler.BatchCreateMedia(mediaItems, createDate, user.ID)
+		if !ok {
+			result.ErrorCode = common_result.Failed
+			result.Reason = "批量新建失败"
+			break
+		}
+
+		for _, val := range medias {
+			view := model.SummaryView{Summary: val, Catalog: catalogs, Creater: user}
+			result.Medias = append(result.Medias, view)
+		}
+
 		result.ErrorCode = common_result.Success
 		break
 	}
@@ -374,7 +487,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		media := model.MediaDetail{}
 		media.ID = id
 		media.Name = param.Name
-		media.URL = param.URL
+		media.FileToken = param.FileToken
 		media.Description = param.Description
 		media.Catalog = catalogIds
 		media.CreateDate = updateDate

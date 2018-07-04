@@ -68,6 +68,9 @@ const GetMediaDetail = "/media/:id"
 // PostMedia 新建文件
 const PostMedia = "/media/"
 
+// PostBatchMedia 批量新建文件
+const PostBatchMedia = "/media/batch/"
+
 // PutMedia 更新文件
 const PutMedia = "/media/:id"
 

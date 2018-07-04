@@ -151,8 +151,12 @@ func (i *impl) GetMediaByCatalog(catalog int) []model.Summary {
 	return i.mediaHandler.findMediaByCatalog(catalog)
 }
 
-func (i *impl) CreateMedia(name, desc, url, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
-	return i.mediaHandler.createMedia(name, desc, url, createDate, catalog, expiration, author)
+func (i *impl) CreateMedia(name, desc, fileToken, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
+	return i.mediaHandler.createMedia(name, desc, fileToken, createDate, catalog, expiration, author)
+}
+
+func (i *impl) BatchCreateMedia(medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool) {
+	return i.mediaHandler.batchCreateMedia(medias, createDate, creater)
 }
 
 func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {
