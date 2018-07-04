@@ -38,7 +38,7 @@ type impl struct {
 
 type uploadFileResult struct {
 	common_result.Result
-	AccessToken string `json:"accessToken"`
+	FileToken string `json:"fileToken"`
 }
 
 type downloadFileResult struct {
@@ -50,8 +50,8 @@ type deleteFileResult struct {
 	common_result.Result
 }
 
-func (s *impl) FindFile(accessToken string) (string, model.FileSummary, bool) {
-	fileSummary, ok := dal.FindFileSummary(s.dbhelper, accessToken)
+func (s *impl) FindFile(fileToken string) (string, model.FileSummary, bool) {
+	fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
 	return s.uploadPath, fileSummary, ok
 }
 
@@ -87,9 +87,9 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		accessToken := strings.ToLower(util.RandomAlphanumeric(32))
+		fileToken := strings.ToLower(util.RandomAlphanumeric(32))
 		_, fileName := path.Split(dstFile)
-		finalFilePath := path.Join(s.uploadPath, accessToken)
+		finalFilePath := path.Join(s.uploadPath, fileToken)
 		_, err = os.Stat(finalFilePath)
 		if err != nil {
 			err = os.MkdirAll(finalFilePath, os.ModePerm)
@@ -108,14 +108,14 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		filePath := path.Join(accessToken, fileName)
+		filePath := path.Join(fileToken, fileName)
 		fileSummary := model.FileSummary{FileName: fileName, FilePath: filePath}
-		fileSummary.AccessToken = accessToken
+		fileSummary.FileToken = fileToken
 		fileSummary.UploadDate = time.Now().Format("2006-01-02 15:04:05")
 
 		ret := dal.SaveFileSummary(s.dbhelper, fileSummary)
 		if ret {
-			result.AccessToken = fileSummary.AccessToken
+			result.FileToken = fileSummary.FileToken
 			result.ErrorCode = common_result.Success
 		} else {
 			result.ErrorCode = common_result.Failed
@@ -142,13 +142,13 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		accessToken := req.URL.Query().Get("accessToken")
-		if len(accessToken) == 0 {
+		fileToken := req.URL.Query().Get("fileToken")
+		if len(fileToken) == 0 {
 			result.ErrorCode = common_result.IllegalParam
 			result.Reason = "非法请求"
 			break
 		}
-		_, ok := dal.FindFileSummary(s.dbhelper, accessToken)
+		_, ok := dal.FindFileSummary(s.dbhelper, fileToken)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "指定文件不存在"
@@ -156,7 +156,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		result.ErrorCode = common_result.Success
-		result.RedirectURL = fmt.Sprintf("/static/?source=%s", accessToken)
+		result.RedirectURL = fmt.Sprintf("/static/?source=%s", fileToken)
 		break
 	}
 
