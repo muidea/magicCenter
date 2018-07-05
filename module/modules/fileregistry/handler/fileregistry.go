@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -148,7 +147,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 			result.Reason = "非法请求"
 			break
 		}
-		_, ok := dal.FindFileSummary(s.dbhelper, fileToken)
+		fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "指定文件不存在"
@@ -156,7 +155,7 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		result.ErrorCode = common_result.Success
-		result.RedirectURL = fmt.Sprintf("/static/?source=%s", fileToken)
+		result.RedirectURL = fileSummary.FilePath
 		break
 	}
 
