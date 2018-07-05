@@ -97,17 +97,28 @@ func (i *aclGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 		if module != "" {
 			acls := i.authorityHandler.QueryACLByModule(module)
 			for _, val := range acls {
+				mod, _ := i.moduleHub.FindModule(module)
 				acl := model.ACLView{}
 				acl.ACL = val
+				acl.Status = common_def.GetStatus(val.Status)
+				acl.AuthGroup = common_def.GetAuthGroup(val.AuthGroup)
 
+				acl.Module.ID = mod.ID()
+				acl.Module.Name = mod.Name()
 				result.ACL = append(result.ACL, acl)
 			}
 		} else {
 			acls := i.authorityHandler.QueryAllACL()
 			for _, val := range acls {
+				mod, _ := i.moduleHub.FindModule(val.Module)
+
 				acl := model.ACLView{}
 				acl.ACL = val
 				acl.Status = common_def.GetStatus(val.Status)
+				acl.AuthGroup = common_def.GetAuthGroup(val.AuthGroup)
+
+				acl.Module.ID = mod.ID()
+				acl.Module.Name = mod.Name()
 
 				result.ACL = append(result.ACL, acl)
 			}
@@ -132,7 +143,7 @@ type aclGetByIDRoute struct {
 
 type aclGetByIDResult struct {
 	common_result.Result
-	ACLDetail model.ACLDetailView `json:"acl"`
+	ACL model.ACLView `json:"acl"`
 }
 
 func (i *aclGetByIDRoute) Method() string {
@@ -167,12 +178,12 @@ func (i *aclGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request)
 		acl, ok := i.authorityHandler.QueryACLByID(id)
 		if ok {
 			mod, _ := i.moduleHub.FindModule(acl.Module)
-			result.ACLDetail.ACLDetail = acl
-			result.ACLDetail.Status = common_def.GetStatus(acl.Status)
-			result.ACLDetail.AuthGroup = common_def.GetAuthGroup(acl.AuthGroup)
+			result.ACL.ACL = acl
+			result.ACL.Status = common_def.GetStatus(acl.Status)
+			result.ACL.AuthGroup = common_def.GetAuthGroup(acl.AuthGroup)
 
-			result.ACLDetail.Module.ID = mod.ID()
-			result.ACLDetail.Module.Name = mod.Name()
+			result.ACL.Module.ID = mod.ID()
+			result.ACL.Module.Name = mod.Name()
 
 			result.ErrorCode = common_result.Success
 		} else {
@@ -204,7 +215,7 @@ type aclPostParam struct {
 
 type aclPostResult struct {
 	common_result.Result
-	ACLDetail model.ACLDetailView `json:"acl"`
+	ACL model.ACLView `json:"acl"`
 }
 
 func (i *aclPostRoute) Method() string {
@@ -238,9 +249,14 @@ func (i *aclPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 
 		acl, ok := i.authorityHandler.InsertACL(param.URL, param.Method, param.Module, 0, param.AuthGroup)
 		if ok {
-			result.ACLDetail.ACLDetail = acl
-			result.ACLDetail.Status = common_def.GetStatus(acl.Status)
-			result.ACLDetail.AuthGroup = common_def.GetAuthGroup(acl.AuthGroup)
+			mod, _ := i.moduleHub.FindModule(acl.Module)
+			result.ACL.ACL = acl
+			result.ACL.Status = common_def.GetStatus(acl.Status)
+			result.ACL.AuthGroup = common_def.GetAuthGroup(acl.AuthGroup)
+
+			result.ACL.Module.ID = mod.ID()
+			result.ACL.Module.Name = mod.Name()
+
 			result.ErrorCode = common_result.Success
 		} else {
 			result.ErrorCode = common_result.Failed
@@ -513,7 +529,7 @@ func (i *aclGetAuthGroupRoute) getAuthGroupHandler(w http.ResponseWriter, r *htt
 			break
 		}
 
-		result.ACL = acl.ACL
+		result.ACL = acl
 		result.AuthGroup = authGroup
 		result.ErrorCode = common_result.Success
 

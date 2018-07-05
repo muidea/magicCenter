@@ -134,11 +134,11 @@ func (i *impl) QueryACLByModule(module string) []model.ACL {
 	return dal.QueryACLByModule(i.dbhelper, module)
 }
 
-func (i *impl) QueryACLByID(id int) (model.ACLDetail, bool) {
+func (i *impl) QueryACLByID(id int) (model.ACL, bool) {
 	return dal.QueryACLByID(i.dbhelper, id)
 }
 
-func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACLDetail, bool) {
+func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool) {
 	return dal.InsertACL(i.dbhelper, url, method, module, status, authGroup)
 }
 
@@ -146,7 +146,7 @@ func (i *impl) DeleteACL(id int) bool {
 	return dal.DeleteACL(i.dbhelper, id)
 }
 
-func (i *impl) UpdateACL(acl model.ACLDetail) bool {
+func (i *impl) UpdateACL(acl model.ACL) bool {
 	return dal.UpdateACL(i.dbhelper, acl)
 }
 
@@ -239,8 +239,8 @@ func (i *impl) DeleteEndpoint(id string) bool {
 	return dal.DeleteEndpoint(i.dbhelper, id)
 }
 
-func (i *impl) QueryUserACL(user int) []model.ACLDetail {
-	acls := []model.ACLDetail{}
+func (i *impl) QueryUserACL(user int) []model.ACL {
+	acls := []model.ACL{}
 
 	//authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user)
 	//acls = dal.QueryAvalibleACLByAuthGroup(i.dbhelper, authGroup)
