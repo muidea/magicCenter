@@ -222,7 +222,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 	if referenceType == "" {
 		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d`, oid)
 	} else {
-		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and rr.srctype ='%s'`, oid, referenceType)
+		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s'`, oid, referenceType)
 	}
 	helper.Query(sql)
 	defer helper.Finish()
