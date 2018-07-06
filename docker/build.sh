@@ -75,14 +75,9 @@ function checkImage()
 {
     echo "checkImage..."
     docker images | grep $1 | grep $2 > log.txt
-    if [ $? -ne 0 ]; then
-        echo "checkImage failed."
-        exit 1
-    else
-        echo "checkImage success."
+    if [ $? -eq 0 ]; then
+        imageID=$(tail -1 log.txt|awk '{print $3}')
     fi
-
-    imageID=$(tail -1 log.txt|awk '{print $3}')
 }
 
 function buildImage()

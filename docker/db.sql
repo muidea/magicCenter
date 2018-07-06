@@ -87,7 +87,7 @@ CREATE TABLE `authority_acl` (
   `status` int(11) NOT NULL DEFAULT '0',
   `authgroup` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `authority_acl` (
 
 LOCK TABLES `authority_acl` WRITE;
 /*!40000 ALTER TABLE `authority_acl` DISABLE KEYS */;
-INSERT INTO `authority_acl` VALUES (1,'/content/summary/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(2,'/content/article/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(3,'/content/articles/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(4,'/content/article/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(5,'/content/article/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(6,'/content/article/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(7,'/content/catalog/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(8,'/content/catalog/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(9,'/content/catalogs/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(10,'/content/catalog/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(11,'/content/catalog/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(12,'/content/catalog/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(13,'/content/link/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(14,'/content/links/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(15,'/content/link/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(16,'/content/link/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(17,'/content/link/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(18,'/content/media/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(19,'/content/medias/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(20,'/content/media/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(21,'/content/media/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(22,'/content/media/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(23,'/cas/user/','POST','759a2ee4-147a-4169-ba89-15c0c692bc16',0,0),(24,'/cas/user/','DELETE','759a2ee4-147a-4169-ba89-15c0c692bc16',0,1),(25,'/cas/user/','GET','759a2ee4-147a-4169-ba89-15c0c692bc16',0,1),(26,'/authority/acl/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(27,'/authority/acl/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(28,'/authority/acl/','POST','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(29,'/authority/acl/:id','DELETE','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(30,'/authority/acl/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(31,'/authority/acls/','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(32,'/authority/acl/authgroup/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(33,'/authority/acl/authgroup/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(34,'/authority/module/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(35,'/authority/module/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(36,'/authority/module/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(37,'/authority/user/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,1),(38,'/authority/user/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(39,'/authority/user/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,1),(40,'/authority/endpoint/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(41,'/authority/endpoint/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(42,'/authority/endpoint/','POST','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(43,'/authority/endpoint/:id','DELETE','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(44,'/authority/endpoint/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(45,'/authority/endpoint/verify/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,0),(46,'/fileregistry/file/','POST','b467c59d-10a5-4875-b617-66662f8824fa',0,1),(47,'/fileregistry/file/:id','GET','b467c59d-10a5-4875-b617-66662f8824fa',0,0),(48,'/fileregistry/file/:id','DELETE','b467c59d-10a5-4875-b617-66662f8824fa',0,1),(49,'/static/**','GET','e9a778e8-1098-4d48-80fc-811782fe2798',0,0),(50,'/system/config/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(51,'/system/config/','PUT','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(52,'/system/menu/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(53,'/system/dashboard/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(54,'/module/','GET','a86ebf5a-9666-4b0d-a12c-acb0c91a03f5',0,2),(55,'/module/:id','GET','a86ebf5a-9666-4b0d-a12c-acb0c91a03f5',0,2),(56,'/cache/item/:id','GET','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(57,'/cache/item/','POST','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(58,'/cache/item/:id','DELETE','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(59,'/account/user/:id','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(60,'/account/user/','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(61,'/account/user/','POST','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,0),(62,'/account/user/:id','PUT','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(63,'/account/user/:id','DELETE','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(64,'/account/group/:id','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(65,'/account/group/','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(66,'/account/group/','POST','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(67,'/account/group/:id','PUT','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(68,'/account/group/:id','DELETE','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2);
+INSERT INTO `authority_acl` VALUES (1,'/system/config/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(2,'/system/config/','PUT','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(3,'/system/menu/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(4,'/system/dashboard/','GET','5b9965b6-b2be-4072-87e2-25b4f96aee54',0,2),(5,'/account/user/:id','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(6,'/account/user/','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(7,'/account/user/','POST','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,0),(8,'/account/user/:id','PUT','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(9,'/account/user/:id','DELETE','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(10,'/account/group/:id','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(11,'/account/group/','GET','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,1),(12,'/account/group/','POST','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(13,'/account/group/:id','PUT','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(14,'/account/group/:id','DELETE','b9e35167-b2a3-43ae-8c57-9b4379475e47',0,2),(15,'/fileregistry/file/','POST','b467c59d-10a5-4875-b617-66662f8824fa',0,1),(16,'/fileregistry/file/','GET','b467c59d-10a5-4875-b617-66662f8824fa',0,0),(17,'/fileregistry/file/:id','DELETE','b467c59d-10a5-4875-b617-66662f8824fa',0,1),(18,'/static/**','GET','e9a778e8-1098-4d48-80fc-811782fe2798',0,0),(19,'/authority/acl/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(20,'/authority/acl/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(21,'/authority/acl/','POST','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(22,'/authority/acl/:id','DELETE','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(23,'/authority/acl/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(24,'/authority/acls/','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(25,'/authority/acl/authgroup/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(26,'/authority/acl/authgroup/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(27,'/authority/module/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(28,'/authority/module/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(29,'/authority/module/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(30,'/authority/user/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,1),(31,'/authority/user/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(32,'/authority/user/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,1),(33,'/authority/endpoint/','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(34,'/authority/endpoint/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(35,'/authority/endpoint/','POST','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(36,'/authority/endpoint/:id','DELETE','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(37,'/authority/endpoint/:id','PUT','158e11b7-adee-4b0d-afc9-0b47145195bd',0,2),(38,'/authority/endpoint/verify/:id','GET','158e11b7-adee-4b0d-afc9-0b47145195bd',0,0),(39,'/module/','GET','a86ebf5a-9666-4b0d-a12c-acb0c91a03f5',0,2),(40,'/module/:id','GET','a86ebf5a-9666-4b0d-a12c-acb0c91a03f5',0,2),(41,'/cache/item/:id','GET','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(42,'/cache/item/','POST','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(43,'/cache/item/:id','DELETE','0424492f-420a-42fb-9106-3882c07bf99e',0,1),(44,'/content/summary/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(45,'/content/article/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(46,'/content/articles/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(47,'/content/article/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(48,'/content/article/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(49,'/content/article/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(50,'/content/catalog/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(51,'/content/catalog/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(52,'/content/catalogs/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(53,'/content/catalog/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(54,'/content/catalog/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(55,'/content/catalog/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(56,'/content/link/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(57,'/content/links/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(58,'/content/link/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(59,'/content/link/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(60,'/content/link/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(61,'/content/media/:id','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(62,'/content/medias/','GET','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,0),(63,'/content/media/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(64,'/content/media/batch/','POST','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(65,'/content/media/:id','PUT','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,1),(66,'/content/media/:id','DELETE','3a7123ec-63f0-5e46-1234-e6ca1af6fe4e',0,2),(67,'/cas/user/','POST','759a2ee4-147a-4169-ba89-15c0c692bc16',0,0),(68,'/cas/user/','DELETE','759a2ee4-147a-4169-ba89-15c0c692bc16',0,1),(69,'/cas/user/','GET','759a2ee4-147a-4169-ba89-15c0c692bc16',0,1);
 /*!40000 ALTER TABLE `authority_acl` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -164,13 +164,13 @@ DROP TABLE IF EXISTS `common_fileregistry`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `common_fileregistry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `accesstoken` text NOT NULL,
+  `filetoken` text NOT NULL,
   `filename` text NOT NULL,
   `filepath` text NOT NULL,
   `uploaddate` datetime NOT NULL,
   `reserveflag` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -179,6 +179,7 @@ CREATE TABLE `common_fileregistry` (
 
 LOCK TABLES `common_fileregistry` WRITE;
 /*!40000 ALTER TABLE `common_fileregistry` DISABLE KEYS */;
+INSERT INTO `common_fileregistry` VALUES (31,'d3fxpiq6igoo5scvukeiafsqgxcr3f2h','kubernetes指南.pdf','static/upload/d3fxpiq6igoo5scvukeiafsqgxcr3f2h/kubernetes指南.pdf','2018-07-06 16:39:30',0),(32,'v4ggbcusyxknglegfm9lepwrmxxxskil','当mongodb遇见iot.pdf','static/upload/v4ggbcusyxknglegfm9lepwrmxxxskil/当mongodb遇见iot.pdf','2018-07-06 17:08:41',0),(33,'1udryvloas0inuslpgtxxaagipolcadk','4江骏.pdf','static/upload/1udryvloas0inuslpgtxxaagipolcadk/4江骏.pdf','2018-07-06 17:08:47',0);
 /*!40000 ALTER TABLE `common_fileregistry` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -195,7 +196,7 @@ CREATE TABLE `common_option` (
   `value` text NOT NULL,
   `owner` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,7 +205,7 @@ CREATE TABLE `common_option` (
 
 LOCK TABLES `common_option` WRITE;
 /*!40000 ALTER TABLE `common_option` DISABLE KEYS */;
-INSERT INTO `common_option` VALUES (3,'@system_mailServer','smtp.126.com:25','SystemInternalConfig'),(4,'@system_mailAccount','rangh@126.com','SystemInternalConfig'),(5,'@system_mailPassword','hRangh@13924','SystemInternalConfig'),(6,'@application_logo','http://localhost:8888/api/system/','SystemInternalConfig'),(13,'@application_name','magicCenter','SystemInternalConfig'),(14,'@application_description','rangh\'s magicCenter','SystemInternalConfig'),(15,'@application_domain','muidea.com','SystemInternalConfig'),(16,'@system_uploadPath','upload','SystemInternalConfig'),(17,'@system_staticPath','./static/','SystemInternalConfig'),(35,'@application_startupData','startup_TimeStamp:2018-06-23 10:52:28','SystemInternalConfig');
+INSERT INTO `common_option` VALUES (3,'@system_mailServer','smtp.126.com:25','SystemInternalConfig'),(4,'@system_mailAccount','rangh@126.com','SystemInternalConfig'),(5,'@system_mailPassword','hRangh@13924','SystemInternalConfig'),(6,'@application_logo','http://localhost:8888/api/system/','SystemInternalConfig'),(13,'@application_name','magicCenter','SystemInternalConfig'),(14,'@application_description','rangh\'s magicCenter','SystemInternalConfig'),(15,'@application_domain','muidea.com','SystemInternalConfig'),(16,'@system_uploadPath','upload','SystemInternalConfig'),(17,'@system_staticPath','./static/','SystemInternalConfig'),(37,'@application_startupData','startup_TimeStamp:2018-07-04 14:58:43','SystemInternalConfig');
 /*!40000 ALTER TABLE `common_option` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +234,7 @@ CREATE TABLE `common_resource` (
 
 LOCK TABLES `common_resource` WRITE;
 /*!40000 ALTER TABLE `common_resource` DISABLE KEYS */;
-INSERT INTO `common_resource` VALUES (0,0,'默认Content分组','默认分组的描述','catalog','2018-03-01 00:00:00',0),(7,2,'magicBlog','magicBlog 分组','catalog','2018-04-23 23:10:50',1),(9,1,'测试文章','这里一些测试内容','article','2018-05-01 22:24:29',0),(15,3,'About','个人介绍','article','2018-05-05 18:14:32',0),(16,4,'Contact','交流信息','article','2018-05-05 22:21:36',0),(17,8,'Catalog','分类信息','catalog','2018-05-05 22:26:21',0),(18,9,'Index','主页信息','catalog','2018-05-05 22:30:08',0),(19,5,'404','404页面','article','2018-05-05 22:31:11',0),(20,10,'技术文章','这是技术文章的描述','catalog','2018-05-06 13:41:35',0),(42,10,'测试内容,这是一篇测试文章','rules: [ { required: true }, ],','article','2018-06-09 09:42:13',0);
+INSERT INTO `common_resource` VALUES (0,0,'默认Content分组','默认分组的描述','catalog','2018-03-01 00:00:00',0),(7,2,'magicBlog','magicBlog 分组','catalog','2018-04-23 23:10:50',1),(9,1,'测试文章','这里一些测试内容','article','2018-05-01 22:24:29',0),(15,3,'About','个人介绍','article','2018-05-05 18:14:32',0),(16,4,'Contact','交流信息','article','2018-05-05 22:21:36',0),(17,8,'Catalog','分类信息','catalog','2018-05-05 22:26:21',0),(18,9,'Index','主页信息','catalog','2018-05-05 22:30:08',0),(19,5,'404','404页面','article','2018-05-05 22:31:11',0),(20,10,'技术文章','这是技术文章的描述','catalog','2018-05-06 13:41:35',0),(42,10,'测试内容,这是一篇测试文章','rules: [ { required: true }, ],','article','2018-06-09 09:42:13',0),(44,11,'ts','','catalog','2018-07-04 16:06:35',0),(45,12,'aaa','','catalog','2018-07-04 16:08:31',0),(46,13,'aa','','catalog','2018-07-04 16:11:17',0),(47,14,'12','','catalog','2018-07-04 16:13:38',0),(50,15,'ca','','catalog','2018-07-04 16:36:34',0),(52,16,'bb','','catalog','2018-07-04 16:37:35',0),(54,17,'gg','','catalog','2018-07-04 16:38:00',0),(57,18,'测试','','catalog','2018-07-04 16:55:48',0),(58,19,'a','','catalog','2018-07-06 11:09:07',0),(61,20,'啊','','catalog','2018-07-06 13:36:29',0),(62,21,'111','','catalog','2018-07-06 14:37:33',0),(65,22,'测试内容','','catalog','2018-07-06 16:37:08',0),(68,5,'kubernetes指南.pdf','大放送','media','2018-07-06 16:39:41',0),(69,23,'分类','','catalog','2018-07-06 17:09:09',0),(70,6,'当mongodb遇见iot.pdf','看看分类效果','media','2018-07-06 17:09:09',0),(71,7,'4江骏.pdf','看看分类效果','media','2018-07-06 17:09:09',0);
 /*!40000 ALTER TABLE `common_resource` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,7 +250,7 @@ CREATE TABLE `common_resource_relative` (
   `src` int(11) NOT NULL,
   `dst` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +259,7 @@ CREATE TABLE `common_resource_relative` (
 
 LOCK TABLES `common_resource_relative` WRITE;
 /*!40000 ALTER TABLE `common_resource_relative` DISABLE KEYS */;
-INSERT INTO `common_resource_relative` VALUES (52,17,7),(55,18,7),(63,20,17),(64,20,18),(80,9,17),(81,9,18),(154,15,7),(155,16,7),(156,19,7),(159,42,17),(160,42,18);
+INSERT INTO `common_resource_relative` VALUES (52,17,7),(55,18,7),(63,20,17),(64,20,18),(80,9,17),(81,9,18),(154,15,7),(155,16,7),(156,19,7),(159,42,17),(160,42,18),(161,44,0),(162,45,0),(163,46,0),(164,47,0),(167,50,0),(169,52,0),(171,54,0),(174,57,0),(177,58,0),(182,61,0),(186,62,0),(189,65,0),(192,68,57),(193,69,0),(194,70,57),(195,70,69),(196,71,57),(197,71,69);
 /*!40000 ALTER TABLE `common_resource_relative` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,7 +313,7 @@ CREATE TABLE `content_catalog` (
 
 LOCK TABLES `content_catalog` WRITE;
 /*!40000 ALTER TABLE `content_catalog` DISABLE KEYS */;
-INSERT INTO `content_catalog` VALUES (0,'默认Content分组','系统默认的Content分组','2018-03-01 00:00:00',0),(2,'magicBlog','MagicBlog catalog description','2018-06-10 21:33:15',0),(8,'Catalog','Catalog分类','2018-05-05 22:26:21',0),(9,'Index','Index','2018-05-05 22:30:08',0),(10,'技术文章','技术文章','2018-05-06 13:41:35',0);
+INSERT INTO `content_catalog` VALUES (0,'默认Content分组','系统默认的Content分组','2018-03-01 00:00:00',0),(2,'magicBlog','MagicBlog catalog description','2018-06-10 21:33:15',0),(8,'Catalog','Catalog分类','2018-05-05 22:26:21',0),(9,'Index','Index','2018-05-05 22:30:08',0),(10,'技术文章','技术文章','2018-05-06 13:41:35',0),(11,'ts','','2018-07-04 16:06:35',0),(12,'aaa','','2018-07-04 16:08:31',0),(13,'aa','','2018-07-04 16:11:17',0),(14,'12','','2018-07-04 16:13:38',0),(15,'ca','','2018-07-04 16:36:34',0),(16,'bb','','2018-07-04 16:37:35',0),(17,'gg','','2018-07-04 16:38:00',0),(18,'测试','','2018-07-04 16:55:48',0),(19,'a','','2018-07-06 11:09:07',0),(20,'啊','','2018-07-06 13:36:29',0),(21,'111','','2018-07-06 14:37:33',0),(22,'测试内容','','2018-07-06 16:37:08',0),(23,'分类','','2018-07-06 17:09:09',0);
 /*!40000 ALTER TABLE `content_catalog` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -355,7 +356,7 @@ CREATE TABLE `content_media` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
   `description` text NOT NULL,
-  `url` text NOT NULL,
+  `fileToken` text NOT NULL,
   `createdate` datetime NOT NULL,
   `creater` int(11) NOT NULL,
   `expiration` int(11) NOT NULL,
@@ -369,6 +370,7 @@ CREATE TABLE `content_media` (
 
 LOCK TABLES `content_media` WRITE;
 /*!40000 ALTER TABLE `content_media` DISABLE KEYS */;
+INSERT INTO `content_media` VALUES (5,'kubernetes指南.pdf','大放送','d3fxpiq6igoo5scvukeiafsqgxcr3f2h','2018-07-06 16:39:41',0,10),(6,'当mongodb遇见iot.pdf','看看分类效果','v4ggbcusyxknglegfm9lepwrmxxxskil','2018-07-06 17:09:09',0,10),(7,'4江骏.pdf','看看分类效果','1udryvloas0inuslpgtxxaagipolcadk','2018-07-06 17:09:09',0,10);
 /*!40000 ALTER TABLE `content_media` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -381,4 +383,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-06-23 15:54:04
+-- Dump completed on 2018-07-06 23:37:03
