@@ -40,5 +40,5 @@ func (i *staticResRoute) AuthGroup() int {
 func (i *staticResRoute) getStaticResHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("getStaticResHandler, path:%s", r.URL.Path)
 
-	i.staticHandler.HandleResource("default", w, r)
+	i.staticHandler.HandleResource(w, r)
 }

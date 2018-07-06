@@ -9,8 +9,8 @@ import (
 )
 
 // InsertACL 新增ACL记录
-func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int, authGroups int) (model.ACL, bool) {
-	acl := model.ACL{URL: url, Method: method, Status: status, Module: module, AuthGroup: authGroups}
+func InsertACL(helper dbhelper.DBHelper, url, method, module string, status int, authGroup int) (model.ACL, bool) {
+	acl := model.ACL{URL: url, Method: method, Status: status, Module: module, AuthGroup: authGroup}
 	sql := fmt.Sprintf("insert into authority_acl (url, method, module, status, authgroup) values ('%s','%s','%s',%d,%d)", url, method, module, status, acl.AuthGroup)
 	num, ok := helper.Execute(sql)
 	if !ok || num != 1 {

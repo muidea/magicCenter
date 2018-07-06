@@ -8,7 +8,6 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/authority/dal"
 	common_def "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
 
@@ -34,6 +33,9 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 	entryPoint = accountModule.EntryPoint()
 	i.accountHandler = entryPoint.(common.AccountHandler)
 
+	i.aclHandler = createACLHandler(dbhelper)
+	i.aclHandler.loadACL()
+
 	return &i
 }
 
@@ -43,6 +45,7 @@ type impl struct {
 	sessionRegistry common.SessionRegistry
 	casHandler      common.CASHandler
 	accountHandler  common.AccountHandler
+	aclHandler      *aclHandler
 }
 
 func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
@@ -65,13 +68,10 @@ func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
 1、先获取当前route对应的授权组
 */
 func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool {
-	path, id := net.SplitRESTAPI(req.URL.Path)
-	pattern := net.FormatRoutePattern(path, id)
-	method := req.Method
 
-	acl, ok := dal.FilterACL(i.dbhelper, pattern, method)
+	acl, ok := i.aclHandler.filterACL(req)
 	if !ok {
-		log.Printf("can't find acl, pattern:%s, method:%s", pattern, method)
+		log.Printf("can't find acl, pattern:%s, method:%s", req.URL.Path, req.Method)
 		// 找不到对应的ACL，则认为没有权限
 		return false
 	}

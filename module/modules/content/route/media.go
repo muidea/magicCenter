@@ -326,7 +326,7 @@ type mediaBatchCreateParam struct {
 	Description string          `json:"description"`
 	Expiration  int             `json:"expiration"`
 	Catalog     []model.Catalog `json:"catalog"`
-	Privacy     int             `json:"privacy"`
+	Privacy     model.Unit      `json:"privacy"`
 }
 
 type mediaBatchCreateResult struct {

@@ -107,7 +107,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			break
 		}
 
-		filePath := path.Join(fileToken, fileName)
+		filePath := path.Join(s.uploadPath, fileToken, fileName)
 		fileSummary := model.FileSummary{FileName: fileName, FilePath: filePath}
 		fileSummary.FileToken = fileToken
 		fileSummary.UploadDate = time.Now().Format("2006-01-02 15:04:05")

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -37,8 +38,8 @@ type impl struct {
 	fileRegistryHandler common.FileRegistryHandler
 }
 
-func (i *impl) HandleResource(basePath string, w http.ResponseWriter, r *http.Request) {
-	fullPath := util.MergePath(i.rootPath, basePath, r.URL.Path)
+func (i *impl) HandleResource(w http.ResponseWriter, r *http.Request) {
+	fullPath := util.MergePath(i.rootPath, r.URL.Path)
 	source := r.URL.Query().Get("source")
 	if len(source) > 0 {
 		rootPath, fileInfo, ok := i.fileRegistryHandler.FindFile(source)
@@ -64,6 +65,7 @@ func (i *impl) HandleResource(basePath string, w http.ResponseWriter, r *http.Re
 
 		http.ServeContent(w, r, fullPath, fi.ModTime(), file)
 	} else {
+		log.Printf("no found resource, path:%s", fullPath)
 		http.Redirect(w, r, "/404.html", 404)
 	}
 }
