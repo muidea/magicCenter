@@ -54,6 +54,22 @@ func (s *impl) FindFile(fileToken string) (string, model.FileSummary, bool) {
 	return s.uploadPath, fileSummary, ok
 }
 
+func (s *impl) RemoveFile(fileToken string) {
+	fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
+	if ok {
+		dal.RemoveFileSummary(s.dbhelper, fileToken)
+
+		fullPath := path.Join(s.uploadPath, fileSummary.FilePath)
+		os.Remove(fullPath)
+
+		filePath, _ := path.Split(fullPath)
+		_, err := os.Stat(filePath)
+		if err == nil {
+			os.Remove(filePath)
+		}
+	}
+}
+
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 	result := uploadFileResult{}
 	for {
