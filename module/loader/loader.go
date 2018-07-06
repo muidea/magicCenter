@@ -27,6 +27,11 @@ func CreateLoader() common.ModuleLoader {
 
 // LoadAllModules 加载所有Module
 func (instance *impl) LoadAllModules(configuration common.Configuration, sessionRegistry common.SessionRegistry, moduleHub common.ModuleHub) {
+
+	fileregistry.LoadModule(configuration, sessionRegistry, moduleHub)
+
+	static.LoadModule(configuration, sessionRegistry, moduleHub)
+
 	system.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	module.LoadModule(configuration, sessionRegistry, moduleHub)
@@ -42,8 +47,4 @@ func (instance *impl) LoadAllModules(configuration common.Configuration, session
 	cas.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	authority.LoadModule(configuration, sessionRegistry, moduleHub)
-
-	fileregistry.LoadModule(configuration, sessionRegistry, moduleHub)
-
-	static.LoadModule(configuration, sessionRegistry, moduleHub)
 }

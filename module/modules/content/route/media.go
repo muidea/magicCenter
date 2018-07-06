@@ -18,7 +18,7 @@ import (
 )
 
 // AppendMediaRoute 追加User Route
-func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
+func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, fileRegistryHandler common.FileRegistryHandler, sessionRegistry common.SessionRegistry) []common.Route {
 
 	rt := CreateGetMediaByIDRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
@@ -35,7 +35,7 @@ func AppendMediaRoute(routes []common.Route, contentHandler common.ContentHandle
 	rt = CreateUpdateMediaRoute(contentHandler, accountHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt = CreateDestroyMediaRoute(contentHandler, accountHandler, sessionRegistry)
+	rt = CreateDestroyMediaRoute(contentHandler, accountHandler, fileRegistryHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
@@ -72,8 +72,8 @@ func CreateUpdateMediaRoute(contentHandler common.ContentHandler, accountHandler
 }
 
 // CreateDestroyMediaRoute DestroyMediaRoute Route
-func CreateDestroyMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := mediaDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, sessionRegistry: sessionRegistry}
+func CreateDestroyMediaRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler, fileRegistryHandler common.FileRegistryHandler, sessionRegistry common.SessionRegistry) common.Route {
+	i := mediaDestroyRoute{contentHandler: contentHandler, accountHandler: accountHandler, fileRegistryHandler: fileRegistryHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
@@ -516,9 +516,10 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 }
 
 type mediaDestroyRoute struct {
-	contentHandler  common.ContentHandler
-	accountHandler  common.AccountHandler
-	sessionRegistry common.SessionRegistry
+	contentHandler      common.ContentHandler
+	accountHandler      common.AccountHandler
+	fileRegistryHandler common.FileRegistryHandler
+	sessionRegistry     common.SessionRegistry
 }
 
 type mediaDestroyResult struct {
@@ -561,12 +562,22 @@ func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Re
 			break
 		}
 
-		ok := i.contentHandler.DestroyMedia(id)
+		media, ok := i.contentHandler.GetMediaByID(id)
+		if !ok {
+			result.ErrorCode = common_result.NoExist
+			result.Reason = "对象不存在"
+			break
+		}
+
+		ok = i.contentHandler.DestroyMedia(id)
 		if !ok {
 			result.ErrorCode = common_result.Failed
 			result.Reason = "删除失败"
 			break
 		}
+
+		i.fileRegistryHandler.RemoveFile(media.FileToken)
+
 		result.ErrorCode = common_result.Success
 		break
 	}

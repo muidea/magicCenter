@@ -59,7 +59,8 @@ func (s *impl) RemoveFile(fileToken string) {
 	if ok {
 		dal.RemoveFileSummary(s.dbhelper, fileToken)
 
-		fullPath := path.Join(s.uploadPath, fileSummary.FilePath)
+		fullPath := path.Join(fileSummary.FilePath)
+
 		os.Remove(fullPath)
 
 		filePath, _ := path.Split(fullPath)

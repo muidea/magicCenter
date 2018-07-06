@@ -19,13 +19,16 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 	accountModule, _ := moduleHub.FindModule(common.AccountModuleID)
 	accountHandler := accountModule.EntryPoint().(common.AccountHandler)
 
+	fileRegistryModule, _ := moduleHub.FindModule(common.FileRegistryModuleID)
+	fileRegistryHandler := fileRegistryModule.EntryPoint().(common.FileRegistryHandler)
+
 	instance := &content{contentHandler: handler.CreateContentHandler(), accountHandler: accountHandler}
 
 	instance.routes = route.AppendSummaryRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendArticleRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
-	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
+	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, instance.accountHandler, fileRegistryHandler, sessionRegistry)
 
 	moduleHub.RegisterModule(instance)
 }
