@@ -168,22 +168,14 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 
 // DeleteUser 删除用户，根据用户ID
 func DeleteUser(helper dbhelper.DBHelper, id int) bool {
-	if id <= 0 {
-		return false
-	}
-
-	sql := fmt.Sprintf("delete from account_user where id =%d", id)
+	sql := fmt.Sprintf("delete from account_user where id =%d and reserve != 1", id)
 	_, ret := helper.Execute(sql)
 	return ret
 }
 
 // DeleteUserByAccount 删除用户，根据用户账号&密码
 func DeleteUserByAccount(helper dbhelper.DBHelper, account, password string) bool {
-	if account == "admin" {
-		return false
-	}
-
-	sql := fmt.Sprintf("delete from account_user where account ='%s' and password='%s'", account, password)
+	sql := fmt.Sprintf("delete from account_user where account ='%s' and password='%s' and reserve != 1", account, password)
 	_, ret := helper.Execute(sql)
 	return ret
 }

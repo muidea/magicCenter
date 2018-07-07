@@ -66,6 +66,10 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 
 // QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
+	if id == common_def.BuildinContentCatalog.ID {
+		return common_def.BuildinContentCatalog, true
+	}
+
 	catalog := model.CatalogDetail{}
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
 	helper.Query(sql)
@@ -194,7 +198,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 				ids = append(ids, detail.ID)
 			} else {
-				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_def.DefaultContentCatalog.ID}, updater, true)
+				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_def.BuildinContentCatalog.ID}, updater, true)
 				if ok {
 					ids = append(ids, detail.ID)
 				} else {

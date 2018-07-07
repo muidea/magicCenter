@@ -170,10 +170,7 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 
 // DeleteGroup 删除分组
 func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
-	if id < 3 {
-		return false
-	}
-	sql := fmt.Sprintf("delete from account_group where id =%d", id)
+	sql := fmt.Sprintf("delete from account_group where id =%d and reserve != 1", id)
 	_, result := helper.Execute(sql)
 
 	return result
