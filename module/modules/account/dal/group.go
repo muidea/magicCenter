@@ -110,6 +110,10 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 
 // QueryGroupByID 查询指定分组
 func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.GroupDetail, bool) {
+	if id == 0 {
+		return common_def.BuildinUserGroup, true
+	}
+
 	group := model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description,catalog from account_group where id=%d", id)
 	helper.Query(sql)
@@ -166,6 +170,9 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 
 // DeleteGroup 删除分组
 func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
+	if id < 3 {
+		return false
+	}
 	sql := fmt.Sprintf("delete from account_group where id =%d", id)
 	_, result := helper.Execute(sql)
 
