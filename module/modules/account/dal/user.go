@@ -134,7 +134,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.UserDetail {
 	userList := []model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where groups like '%d' union select id, account from `account_user` where groups like '%d,%%' union select id, account from `account_user` where groups like '%%,%d,%%' union select id, account from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where groups like '%d' union select id, account, email, groups, status, registertime from `account_user` where groups like '%d,%%' union select id, account, email, groups, status, registertime from `account_user` where groups like '%%,%d,%%' union select id, account, email, groups, status, registertime from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
 	helper.Query(sql)
 	defer helper.Finish()
 
