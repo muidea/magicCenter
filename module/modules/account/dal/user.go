@@ -131,16 +131,18 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 }
 
 // QueryUserByGroup 查询指定分组下的用户信息
-func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.User {
-	userList := []model.User{}
+func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.UserDetail {
+	userList := []model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account from `account_user` where groups like '%d' union select id, account from `account_user` where groups like '%d,%%' union select id, account from `account_user` where groups like '%%,%d,%%' union select id, account from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where groups like '%d' union select id, account from `account_user` where groups like '%d,%%' union select id, account from `account_user` where groups like '%%,%d,%%' union select id, account from `account_user` where groups like '%%,%d'", groupID, groupID, groupID, groupID)
 	helper.Query(sql)
 	defer helper.Finish()
 
 	for helper.Next() {
-		user := model.User{}
-		helper.GetValue(&user.ID, &user.Name)
+		user := model.UserDetail{}
+		groups := ""
+		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
+		user.Group, _ = util.Str2IntArray(groups)
 		userList = append(userList, user)
 	}
 

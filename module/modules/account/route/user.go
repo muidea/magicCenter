@@ -107,6 +107,7 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			result.User.UserDetail = user
 			result.User.Group = i.accountHandler.GetGroups(user.Group)
+			result.User.Status = common_def.GetStatus(user.Status)
 			result.ErrorCode = common_result.Success
 		} else {
 			result.ErrorCode = common_result.Failed
@@ -156,14 +157,35 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 		filter := &common_def.PageFilter{}
 		filter.Parse(r)
 
-		allUsers := i.accountHandler.GetAllUserDetail(filter)
-		for _, val := range allUsers {
-			user := common_model.UserDetailView{}
-			user.UserDetail = val
-			user.Group = i.accountHandler.GetGroups(val.Group)
+		group := r.URL.Query().Get("group")
+		if len(group) > 0 {
+			gid, err := strconv.Atoi(group)
+			if err != nil {
+				result.ErrorCode = common_result.IllegalParam
+				result.Reason = "无效参数"
+				break
+			}
+			allUsers := i.accountHandler.FindUserByGroup(gid)
+			for _, val := range allUsers {
+				user := common_model.UserDetailView{}
+				user.UserDetail = val
+				user.Group = i.accountHandler.GetGroups(val.Group)
+				user.Status = common_def.GetStatus(val.Status)
 
-			result.User = append(result.User, user)
+				result.User = append(result.User, user)
+			}
+		} else {
+			allUsers := i.accountHandler.GetAllUserDetail(filter)
+			for _, val := range allUsers {
+				user := common_model.UserDetailView{}
+				user.UserDetail = val
+				user.Group = i.accountHandler.GetGroups(val.Group)
+				user.Status = common_def.GetStatus(val.Status)
+
+				result.User = append(result.User, user)
+			}
 		}
+
 		result.ErrorCode = common_result.Success
 		break
 	}

@@ -35,7 +35,7 @@ func (i *userActionHandler) findUserByID(id int) (model.UserDetail, bool) {
 	return dal.QueryUserByID(i.dbhelper, id)
 }
 
-func (i *userActionHandler) findUserByGroup(groupID int) []model.User {
+func (i *userActionHandler) findUserByGroup(groupID int) []model.UserDetail {
 	return dal.QueryUserByGroup(i.dbhelper, groupID)
 }
 

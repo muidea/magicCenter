@@ -12,7 +12,7 @@ type AccountHandler interface {
 	GetAllUserDetail(filter *common.PageFilter) []model.UserDetail
 	GetUsers(ids []int) []model.User
 	FindUserByID(id int) (model.UserDetail, bool)
-	FindUserByGroup(groupID int) []model.User
+	FindUserByGroup(groupID int) []model.UserDetail
 	FindUserByAccount(account, password string) (model.UserDetail, bool)
 	CreateUser(account, password, email string, groups []int) (model.UserDetail, bool)
 	SaveUser(user model.UserDetail) (model.UserDetail, bool)

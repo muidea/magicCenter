@@ -40,7 +40,7 @@ func (i *impl) FindUserByID(id int) (model.UserDetail, bool) {
 	return i.userHandler.findUserByID(id)
 }
 
-func (i *impl) FindUserByGroup(groupID int) []model.User {
+func (i *impl) FindUserByGroup(groupID int) []model.UserDetail {
 	return i.userHandler.findUserByGroup(groupID)
 }
 
