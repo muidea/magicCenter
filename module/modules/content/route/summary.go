@@ -60,7 +60,7 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 	result := summaryGetResult{Summary: []model.SummaryView{}}
 	for true {
 		catalogStr := r.URL.Query().Get("catalog")
-		if len(catalogStr) >= 0 {
+		if len(catalogStr) > 0 {
 			id, err := strconv.Atoi(catalogStr)
 			if err != nil {
 				result.ErrorCode = common_result.Failed
@@ -85,8 +85,46 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 			}
 
 			result.ErrorCode = 0
+			break
 		}
 
+		userStr, ok := r.URL.Query()["user[]"]
+		if ok {
+			uids := []int{}
+			for _, val := range userStr {
+				id, err := strconv.Atoi(val)
+				if err == nil {
+					uids = append(uids, id)
+				}
+			}
+			if len(uids) != len(userStr) {
+				result.ErrorCode = common_result.IllegalParam
+				result.Reason = "无效参数"
+				break
+			}
+
+			summarys := i.contentHandler.GetSummaryByUser(uids)
+			for _, v := range summarys {
+				view := model.SummaryView{}
+				view.Summary = v
+				view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
+
+				user, ok := i.accountHandler.FindUserByID(v.Creater)
+				if ok {
+					view.Creater = user.User
+				} else {
+					view.Creater = model.User{ID: -1, Name: "未知用户"}
+				}
+
+				result.Summary = append(result.Summary, view)
+			}
+
+			result.ErrorCode = 0
+			break
+		}
+
+		result.ErrorCode = common_result.IllegalParam
+		result.Reason = "无效参数"
 		break
 	}
 

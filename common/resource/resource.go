@@ -158,7 +158,7 @@ func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, b
 func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 	resList := []simpleRes{}
 
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s'`, rType)
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type`, rType)
 	helper.Query(sql)
 	for helper.Next() {
 		res := simpleRes{}
@@ -184,7 +184,7 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 
 	UserStr := util.IntArray2Str(uids)
 
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in ('%s')`, UserStr)
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in ('%s') order by type`, UserStr)
 	helper.Query(sql)
 	for helper.Next() {
 		res := simpleRes{}
