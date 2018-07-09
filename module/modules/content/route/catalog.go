@@ -236,11 +236,11 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 			for _, val := range catalogs {
 				catalog := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
-				catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+				parentCatalog := i.contentHandler.GetCatalogs(val.Catalog)
 
 				catalog.Summary = val
 				catalog.Creater = user.User
-				catalog.Catalog = catalogs
+				catalog.Catalog = parentCatalog
 
 				result.Catalog = append(result.Catalog, catalog)
 			}
@@ -259,11 +259,11 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 		for _, val := range catalogs {
 			catalog := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
-			catalogs := i.contentHandler.GetCatalogs(val.Catalog)
+			parentCatalog := i.contentHandler.GetCatalogs(val.Catalog)
 
 			catalog.Summary = val
 			catalog.Creater = user.User
-			catalog.Catalog = catalogs
+			catalog.Catalog = parentCatalog
 
 			result.Catalog = append(result.Catalog, catalog)
 		}

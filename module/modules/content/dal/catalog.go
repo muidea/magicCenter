@@ -3,6 +3,7 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
@@ -30,10 +31,15 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 
 	ress := resource.QueryResourceByType(helper, model.CATALOG)
 	for _, v := range ress {
-		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), Catalog: []int{}, CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
 		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_def.BuildinContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -61,6 +67,12 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 		catalogList = append(catalogList, summary)
 	}
 
+	for _, val := range ids {
+		if val == common_def.BuildinContentCatalog.ID {
+			catalogList = append(catalogList, model.Catalog{ID: common_def.BuildinContentCatalog.ID, Name: common_def.BuildinContentCatalog.Name})
+		}
+	}
+
 	return catalogList
 }
 
@@ -70,7 +82,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 		return common_def.BuildinContentCatalog, true
 	}
 
-	catalog := model.CatalogDetail{}
+	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
 	helper.Query(sql)
 
@@ -87,13 +99,16 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 		for _, r := range ress {
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
+		if len(catalog.Catalog) == 0 {
+			catalog.Catalog = append(catalog.Catalog, common_def.BuildinContentCatalog.ID)
+		}
 	}
 	return catalog, result
 }
 
 // QueryCatalogByName 查询指定Name的Catalog
 func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDetail, bool) {
-	catalog := model.CatalogDetail{}
+	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where name = '%s'`, name)
 	helper.Query(sql)
 
@@ -110,6 +125,10 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDet
 		for _, r := range ress {
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
+
+		if len(catalog.Catalog) == 0 {
+			catalog.Catalog = append(catalog.Catalog, common_def.BuildinContentCatalog.ID)
+		}
 	}
 	return catalog, result
 }
@@ -120,7 +139,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), Catalog: []int{}, CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
 
@@ -129,6 +148,10 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_def.BuildinContentCatalog.ID)
 		}
 	}
 
@@ -192,6 +215,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 					detail.CreateDate = updateDate
 					_, result = SaveCatalog(helper, detail, true)
 					if !result {
+						log.Printf("UpdateCatalog, saveCatalog failed.")
 						break
 					}
 				}
@@ -202,6 +226,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 				if ok {
 					ids = append(ids, detail.ID)
 				} else {
+					log.Printf("UpdateCatalog, createCatalog failed.")
 					result = false
 				}
 			}
@@ -233,6 +258,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		sql := fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
 		helper.Query(sql)
 		if helper.Next() {
+			log.Printf("catalog is exist, name:%s", name)
 			// 说明对应的Catalog已经存在，返回Create失败
 			helper.Finish()
 			break
@@ -243,18 +269,22 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		sql = fmt.Sprintf(`insert into content_catalog (id, name, description, createdate, creater) values (%d, '%s','%s','%s',%d)`, id, name, description, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
+			log.Printf("insert catalog to db failed,sql:%s", sql)
 			break
 		}
 
 		catalog.ID = id
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
-			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-			if ok {
-				res.AppendRelative(ca)
-			} else {
-				result = false
-				break
+			if c != common_def.BuildinContentCatalog.ID {
+				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					log.Printf("QueryResource failed,%d, catalog:%s", c, model.CATALOG)
+					result = false
+					break
+				}
 			}
 		}
 
@@ -298,9 +328,11 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
+				if c != common_def.BuildinContentCatalog.ID {
+					ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+					if ok {
+						res.AppendRelative(ca)
+					}
 				}
 			}
 			result = resource.SaveResource(helper, res, true)
