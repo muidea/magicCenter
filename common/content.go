@@ -39,7 +39,7 @@ type ContentHandler interface {
 	GetMediaByID(id int) (model.MediaDetail, bool)
 	GetMediaByCatalog(catalog int) []model.Summary
 	CreateMedia(name, desc, fileToken, createDate string, catalog []int, expiration, creater int) (model.Summary, bool)
-	BatchCreateMedia(medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool)
+	BatchCreateMedia(medias []model.MediaItem, description, createDate string, creater int) ([]model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 
