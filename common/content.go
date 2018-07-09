@@ -45,6 +45,8 @@ type ContentHandler interface {
 
 	GetSummaryByCatalog(id int) []model.Summary
 
+	GetSummaryByUser(uids []int) []model.Summary
+
 	GetContentSummary() model.ContentSummary
 	GetLastContent(count int) []model.ContentUnit
 }

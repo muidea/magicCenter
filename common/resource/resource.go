@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/common/dbhelper"
+	"muidea.com/magicCommon/foundation/util"
 )
 
 func loadResourceOID(helper dbhelper.DBHelper) int {
@@ -158,6 +159,32 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 	resList := []simpleRes{}
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s'`, rType)
+	helper.Query(sql)
+	for helper.Next() {
+		res := simpleRes{}
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
+
+		resList = append(resList, res)
+	}
+
+	retVal := []Resource{}
+	for idx := range resList {
+		cur := resList[idx]
+		cur.relative = relativeResource(helper, cur.oid)
+
+		retVal = append(retVal, &cur)
+	}
+
+	return retVal
+}
+
+// QueryResourceByUser 查询指定用户的资源
+func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
+	resList := []simpleRes{}
+
+	UserStr := util.IntArray2Str(uids)
+
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in ('%s')`, UserStr)
 	helper.Query(sql)
 	for helper.Next() {
 		res := simpleRes{}

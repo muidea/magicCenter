@@ -191,6 +191,25 @@ func (i *impl) GetSummaryByCatalog(id int) []model.Summary {
 	return summaryList
 }
 
+func (i *impl) GetSummaryByUser(uids []int) []model.Summary {
+	summaryList := []model.Summary{}
+	resList := resource.QueryResourceByUser(i.dbhelper, uids)
+	for _, r := range resList {
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
+	}
+
+	for index, value := range summaryList {
+		summary := &summaryList[index]
+		ress := resource.QueryRelativeResource(i.dbhelper, value.ID, value.Type)
+		for _, r := range ress {
+			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+	}
+
+	return summaryList
+}
+
 func (i *impl) GetContentSummary() model.ContentSummary {
 	result := model.ContentSummary{}
 
