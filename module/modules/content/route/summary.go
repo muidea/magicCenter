@@ -11,21 +11,100 @@ import (
 	common_def "muidea.com/magicCommon/common"
 	common_result "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
 // AppendSummaryRoute 追加Summary Route
 func AppendSummaryRoute(routes []common.Route, contentHandler common.ContentHandler, accountHandler common.AccountHandler, sessionRegistry common.SessionRegistry) []common.Route {
-	rt := CreateGetSummaryRoute(contentHandler, accountHandler)
+	rt := CreateQuerySummaryRoute(contentHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreateGetSummaryRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
 	return routes
+}
+
+// CreateQuerySummaryRoute 查询指定名称的Summary
+func CreateQuerySummaryRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := summaryQueryRoute{contentHandler: contentHandler, accountHandler: accountHandler}
+	return &i
 }
 
 // CreateGetSummaryRoute 查询指定分类的Summary
 func CreateGetSummaryRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
 	i := summaryGetRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
+}
+
+type summaryQueryRoute struct {
+	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
+}
+
+type summaryQueryResult struct {
+	common_result.Result
+	Summary model.SummaryView `json:"summary"`
+}
+
+func (i *summaryQueryRoute) Method() string {
+	return common.GET
+}
+
+func (i *summaryQueryRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QuerySummary)
+}
+
+func (i *summaryQueryRoute) Handler() interface{} {
+	return i.querySummaryHandler
+}
+
+func (i *summaryQueryRoute) AuthGroup() int {
+	return common_def.UserAuthGroup.ID
+}
+
+func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("querySummaryHandler")
+
+	result := summaryQueryResult{Summary: model.SummaryView{}}
+	for true {
+		summaryName := r.URL.Query().Get("name")
+		summaryType := r.URL.Query().Get("type")
+		if len(summaryName) == 0 || len(summaryType) == 0 {
+			result.ErrorCode = common_result.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal contentType param, summaryName:%s, summaryType:%s", summaryName, summaryType)
+			break
+		}
+
+		summary, ok := i.contentHandler.QuerySummaryByName(summaryName, summaryType)
+		if ok {
+			result.Summary.Summary = summary
+			result.Summary.Catalog = i.contentHandler.GetCatalogs(summary.Catalog)
+
+			user, ok := i.accountHandler.FindUserByID(summary.Creater)
+			if ok {
+				result.Summary.Creater = user.User
+			} else {
+				result.Summary.Creater = model.User{ID: -1, Name: "未知用户"}
+			}
+
+			result.ErrorCode = 0
+			break
+		}
+
+		result.ErrorCode = common_result.NoExist
+		result.Reason = "对象不存在"
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
 }
 
 type summaryGetRoute struct {
@@ -43,7 +122,7 @@ func (i *summaryGetRoute) Method() string {
 }
 
 func (i *summaryGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetSummary)
+	return net.JoinURL(def.URL, def.GetSummaryContent)
 }
 
 func (i *summaryGetRoute) Handler() interface{} {
@@ -59,38 +138,25 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 
 	result := summaryGetResult{Summary: []model.SummaryView{}}
 	for true {
-		catalogStr := r.URL.Query().Get("catalog")
-		if len(catalogStr) > 0 {
-			id, err := strconv.Atoi(catalogStr)
-			if err != nil {
-				result.ErrorCode = common_result.Failed
-				result.Reason = "无效参数"
-				break
-			}
-
-			summarys := i.contentHandler.GetSummaryByCatalog(id)
-			for _, v := range summarys {
-				view := model.SummaryView{}
-				view.Summary = v
-				view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
-
-				user, ok := i.accountHandler.FindUserByID(v.Creater)
-				if ok {
-					view.Creater = user.User
-				} else {
-					view.Creater = model.User{ID: -1, Name: "未知用户"}
-				}
-
-				result.Summary = append(result.Summary, view)
-			}
-
-			result.ErrorCode = 0
+		_, str := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(str)
+		if err != nil {
+			result.ErrorCode = common_result.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal id param, id:%s", str)
+			break
+		}
+		contentType := r.URL.Query().Get("type")
+		if len(contentType) == 0 {
+			result.ErrorCode = common_result.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal contentType param, contentType:%s", contentType)
 			break
 		}
 
+		uids := []int{}
 		userStr, ok := r.URL.Query()["user[]"]
 		if ok {
-			uids := []int{}
 			for _, val := range userStr {
 				id, err := strconv.Atoi(val)
 				if err == nil {
@@ -99,32 +165,35 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 			}
 			if len(uids) != len(userStr) {
 				result.ErrorCode = common_result.IllegalParam
-				result.Reason = "无效参数"
+				result.Reason = "非法参数"
+				log.Printf("illegal user filter param, user:%s", userStr)
 				break
 			}
-
-			summarys := i.contentHandler.GetSummaryByUser(uids)
-			for _, v := range summarys {
-				view := model.SummaryView{}
-				view.Summary = v
-				view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
-
-				user, ok := i.accountHandler.FindUserByID(v.Creater)
-				if ok {
-					view.Creater = user.User
-				} else {
-					view.Creater = model.User{ID: -1, Name: "未知用户"}
-				}
-
-				result.Summary = append(result.Summary, view)
-			}
-
-			result.ErrorCode = 0
-			break
 		}
 
-		result.ErrorCode = common_result.IllegalParam
-		result.Reason = "无效参数"
+		summarys := i.contentHandler.GetSummaryContent(id, contentType)
+		for _, v := range summarys {
+			if len(uids) > 0 {
+				if !util.ExistIntArray(v.Creater, uids) {
+					continue
+				}
+			}
+
+			view := model.SummaryView{}
+			view.Summary = v
+			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
+
+			user, ok := i.accountHandler.FindUserByID(v.Creater)
+			if ok {
+				view.Creater = user.User
+			} else {
+				view.Creater = model.User{ID: -1, Name: "未知用户"}
+			}
+
+			result.Summary = append(result.Summary, view)
+		}
+
+		result.ErrorCode = 0
 		break
 	}
 

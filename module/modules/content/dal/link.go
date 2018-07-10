@@ -116,7 +116,7 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 		sql := fmt.Sprintf(`delete from content_link where id =%d`, id)
 		_, result = helper.Execute(sql)
 		if result {
-			res, ok := resource.QueryResource(helper, id, model.LINK)
+			res, ok := resource.QueryResourceByID(helper, id, model.LINK)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
 			} else {
@@ -155,7 +155,7 @@ func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDa
 		lnk.ID = id
 		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.Description, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
-			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 			if ok {
 				res.AppendRelative(ca)
 			} else {
@@ -192,7 +192,7 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 		_, result = helper.Execute(sql)
 
 		if result {
-			res, ok := resource.QueryResource(helper, lnk.ID, model.LINK)
+			res, ok := resource.QueryResourceByID(helper, lnk.ID, model.LINK)
 			if !ok {
 				result = false
 				break
@@ -200,7 +200,7 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 
 			res.ResetRelative()
 			for _, c := range lnk.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
 				} else {

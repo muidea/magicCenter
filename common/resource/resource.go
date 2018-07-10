@@ -134,9 +134,29 @@ func (s *simpleRes) setID(id int) {
 	s.oid = id
 }
 
-// QueryResource 查询资源
-func QueryResource(helper dbhelper.DBHelper, rid int, rType string) (Resource, bool) {
+// QueryResourceByID 查询资源
+func QueryResourceByID(helper dbhelper.DBHelper, rid int, rType string) (Resource, bool) {
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id =%d and type ='%s'`, rid, rType)
+	helper.Query(sql)
+
+	res := simpleRes{}
+	result := false
+	if helper.Next() {
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
+		result = true
+	}
+	helper.Finish()
+
+	if result {
+		res.relative = relativeResource(helper, res.oid)
+	}
+
+	return &res, result
+}
+
+// QueryResourceByName 查询资源
+func QueryResourceByName(helper dbhelper.DBHelper, name, rType string) (Resource, bool) {
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where name ='%s' and type ='%s'`, name, rType)
 	helper.Query(sql)
 
 	res := simpleRes{}
@@ -160,6 +180,7 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type`, rType)
 	helper.Query(sql)
+	defer helper.Finish()
 	for helper.Next() {
 		res := simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
@@ -186,6 +207,7 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in ('%s') order by type`, UserStr)
 	helper.Query(sql)
+	defer helper.Finish()
 	for helper.Next() {
 		res := simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)

@@ -172,9 +172,31 @@ func (i *impl) DestroyMedia(id int) bool {
 	return i.mediaHandler.destroyMedia(id)
 }
 
-func (i *impl) GetSummaryByCatalog(id int) []model.Summary {
+func (i *impl) QuerySummaryByName(name, summaryType string) (model.Summary, bool) {
+	summary := model.Summary{}
+	res, ok := resource.QueryResourceByName(i.dbhelper, name, summaryType)
+	if !ok {
+		return summary, ok
+	}
+
+	summary.ID = res.RId()
+	summary.Name = res.RName()
+	summary.Description = res.RDescription()
+	summary.Type = res.RType()
+	summary.CreateDate = res.RCreateDate()
+	summary.Creater = res.ROwner()
+
+	ress := resource.QueryRelativeResource(i.dbhelper, res.RId(), res.RType())
+	for _, r := range ress {
+		summary.Catalog = append(summary.Catalog, r.RId())
+	}
+
+	return summary, ok
+}
+
+func (i *impl) GetSummaryContent(id int, summaryType string) []model.Summary {
 	summaryList := []model.Summary{}
-	resList := resource.QueryReferenceResource(i.dbhelper, id, model.CATALOG, "")
+	resList := resource.QueryReferenceResource(i.dbhelper, id, summaryType, "")
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)

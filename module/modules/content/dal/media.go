@@ -117,7 +117,7 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 		sql := fmt.Sprintf(`delete from content_media where id =%d`, id)
 		_, result = helper.Execute(sql)
 		if result {
-			res, ok := resource.QueryResource(helper, id, model.MEDIA)
+			res, ok := resource.QueryResourceByID(helper, id, model.MEDIA)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
 			} else {
@@ -152,7 +152,7 @@ func createSingle(helper dbhelper.DBHelper, name, description, fileToken, create
 		media.ID = id
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.Description, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
-			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 			if ok {
 				res.AppendRelative(ca)
 			} else {
@@ -212,7 +212,7 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 		sql := fmt.Sprintf(`update content_media set name='%s', description='%s', fileToken ='%s', createdate='%s', creater=%d where id=%d`, media.Name, media.Description, media.FileToken, media.CreateDate, media.Creater, media.ID)
 		_, result = helper.Execute(sql)
 		if result {
-			res, ok := resource.QueryResource(helper, media.ID, model.MEDIA)
+			res, ok := resource.QueryResourceByID(helper, media.ID, model.MEDIA)
 			if !ok {
 				result = false
 				break
@@ -220,7 +220,7 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 
 			res.ResetRelative()
 			for _, c := range media.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
 				} else {

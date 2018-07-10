@@ -126,7 +126,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 		article.ID = id
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
-			ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 			if ok {
 				res.AppendRelative(ca)
 			} else {
@@ -163,7 +163,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 		_, result = helper.Execute(sql)
 
 		if result {
-			res, ok := resource.QueryResource(helper, article.ID, model.ARTICLE)
+			res, ok := resource.QueryResourceByID(helper, article.ID, model.ARTICLE)
 			if !ok {
 				result = false
 				break
@@ -175,7 +175,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 
 			res.ResetRelative()
 			for _, c := range article.Catalog {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
@@ -213,7 +213,7 @@ func DeleteArticle(helper dbhelper.DBHelper, id int) bool {
 
 		_, result = helper.Execute(sql)
 		if result {
-			res, ok := resource.QueryResource(helper, id, model.ARTICLE)
+			res, ok := resource.QueryResourceByID(helper, id, model.ARTICLE)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
 			} else {

@@ -168,7 +168,7 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 
 		_, result = helper.Execute(sql)
 		if result {
-			res, ok := resource.QueryResource(helper, id, model.CATALOG)
+			res, ok := resource.QueryResourceByID(helper, id, model.CATALOG)
 			if ok {
 				result = resource.DeleteResource(helper, res, true)
 			} else {
@@ -277,11 +277,11 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
 			if c != common_def.BuildinContentCatalog.ID {
-				ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
-					log.Printf("QueryResource failed,%d, catalog:%s", c, model.CATALOG)
+					log.Printf("QueryResourceByID failed,%d, catalog:%s", c, model.CATALOG)
 					result = false
 					break
 				}
@@ -320,7 +320,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 		_, result = helper.Execute(sql)
 
 		if result {
-			res, ok := resource.QueryResource(helper, catalog.ID, model.CATALOG)
+			res, ok := resource.QueryResourceByID(helper, catalog.ID, model.CATALOG)
 			if !ok {
 				result = false
 				break
@@ -329,7 +329,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
 				if c != common_def.BuildinContentCatalog.ID {
-					ca, ok := resource.QueryResource(helper, c, model.CATALOG)
+					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 					if ok {
 						res.AppendRelative(ca)
 					}

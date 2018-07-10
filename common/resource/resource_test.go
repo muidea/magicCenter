@@ -32,7 +32,7 @@ func TestResource(t *testing.T) {
 		return
 	}
 
-	res1, found := QueryResource(helper, res.RId(), res.RType())
+	res1, found := QueryResourceByID(helper, res.RId(), res.RType())
 	if !found {
 		t.Error("Query resource failed")
 		return

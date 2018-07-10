@@ -80,5 +80,8 @@ const DeleteMedia = "/media/:id"
 // GetMediaList 查询文件列表
 const GetMediaList = "/medias/"
 
-// GetSummary 查询指定Smmary
-const GetSummary = "/summary/"
+// QuerySummary 查询Smmary
+const QuerySummary = "/summary/"
+
+// GetSummaryContent 查询指定Smmary的内容
+const GetSummaryContent = "/summary/content/:id"
