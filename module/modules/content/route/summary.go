@@ -122,7 +122,7 @@ func (i *summaryGetRoute) Method() string {
 }
 
 func (i *summaryGetRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetSummaryContent)
+	return net.JoinURL(def.URL, def.GetSummaryDetail)
 }
 
 func (i *summaryGetRoute) Handler() interface{} {
@@ -154,31 +154,41 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 
-		uids := []int{}
-		userStr, ok := r.URL.Query()["user[]"]
-		if ok {
-			for _, val := range userStr {
-				id, err := strconv.Atoi(val)
-				if err == nil {
-					uids = append(uids, id)
-				}
-			}
-			if len(uids) != len(userStr) {
+		uid := -1
+		userStr := r.URL.Query().Get("user")
+		if len(userStr) > 0 {
+			uid, err = strconv.Atoi(userStr)
+			if err != nil {
 				result.ErrorCode = common_result.IllegalParam
 				result.Reason = "非法参数"
 				log.Printf("illegal user filter param, user:%s", userStr)
 				break
 			}
 		}
+		cid := -1
+		catalog := r.URL.Query().Get("catalog")
+		if len(catalog) > 0 {
+			cid, err = strconv.Atoi(catalog)
+			if err != nil {
+				result.ErrorCode = common_result.IllegalParam
+				result.Reason = "非法参数"
+				log.Printf("illegal user filter param, catalog:%s", catalog)
+				break
+			}
+		}
 
 		summarys := i.contentHandler.GetSummaryContent(id, contentType)
 		for _, v := range summarys {
-			if len(uids) > 0 {
-				if !util.ExistIntArray(v.Creater, uids) {
+			if len(userStr) > 0 {
+				if v.Creater != uid {
 					continue
 				}
 			}
-
+			if len(catalog) > 0 {
+				if !util.ExistIntArray(cid, v.Catalog) {
+					continue
+				}
+			}
 			view := model.SummaryView{}
 			view.Summary = v
 			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)

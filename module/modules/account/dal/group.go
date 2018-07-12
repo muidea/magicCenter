@@ -74,6 +74,10 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 // QuerySubGroups 查询指定分组的子分组
 func QuerySubGroups(helper dbhelper.DBHelper, id int) []model.Group {
 	groupList := []model.Group{}
+	if id == common_def.BuildinAccountGroup.ID {
+		return groupList
+	}
+
 	sql := fmt.Sprintf("select id, name from account_group where catalog =%d", id)
 	helper.Query(sql)
 	defer helper.Finish()
@@ -110,8 +114,8 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 
 // QueryGroupByID 查询指定分组
 func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.GroupDetail, bool) {
-	if id == 0 {
-		return common_def.BuildinUserGroup, true
+	if id == common_def.BuildinAccountGroup.ID {
+		return common_def.BuildinAccountGroup, true
 	}
 
 	group := model.GroupDetail{}
@@ -170,6 +174,10 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 
 // DeleteGroup 删除分组
 func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
+	if id == common_def.BuildinAccountGroup.ID {
+		return false
+	}
+
 	sql := fmt.Sprintf("delete from account_group where id =%d and reserve != 1", id)
 	_, result := helper.Execute(sql)
 

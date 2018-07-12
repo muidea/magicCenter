@@ -83,5 +83,5 @@ const GetMediaList = "/medias/"
 // QuerySummary 查询Smmary
 const QuerySummary = "/summary/"
 
-// GetSummaryContent 查询指定Smmary的内容
-const GetSummaryContent = "/summary/content/:id"
+// GetSummaryDetail 查询指定Smmary的内容
+const GetSummaryDetail = "/summary/detail/:id"
