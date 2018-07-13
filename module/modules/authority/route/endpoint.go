@@ -7,8 +7,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/authority/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
@@ -60,11 +60,6 @@ type endpointQueryRoute struct {
 	accountHandler   common.AccountHandler
 }
 
-type endpointQueryResult struct {
-	common_result.Result
-	Endpoint []model.EndpointView `json:"endpoint"`
-}
-
 func (i *endpointQueryRoute) Method() string {
 	return common.GET
 }
@@ -78,12 +73,12 @@ func (i *endpointQueryRoute) Handler() interface{} {
 }
 
 func (i *endpointQueryRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getHandler")
-	result := endpointQueryResult{}
+	result := common_def.QueryEndpointListResult{}
 
 	for {
 		endpoints := i.authorityHandler.QueryAllEndpoint()
@@ -94,7 +89,7 @@ func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) 
 
 			result.Endpoint = append(result.Endpoint, endpoint)
 		}
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 
 		break
 	}
@@ -112,11 +107,6 @@ type endpointQueryByIDRoute struct {
 	accountHandler   common.AccountHandler
 }
 
-type endpointQueryByIDResult struct {
-	common_result.Result
-	Endpoint model.EndpointView `json:"endpoint"`
-}
-
 func (i *endpointQueryByIDRoute) Method() string {
 	return common.GET
 }
@@ -130,12 +120,12 @@ func (i *endpointQueryByIDRoute) Handler() interface{} {
 }
 
 func (i *endpointQueryByIDRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getHandler")
-	result := endpointQueryByIDResult{}
+	result := common_def.QueryEndpointResult{}
 
 	for {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
@@ -143,9 +133,9 @@ func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Reque
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(endpoint.User)
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.NoExist
+			result.ErrorCode = common_def.NoExist
 			result.Reason = "对象不存在"
 		}
 
@@ -165,19 +155,6 @@ type endpointPostRoute struct {
 	accountHandler   common.AccountHandler
 }
 
-type endpointPostParam struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	User        []int  `json:"user"`
-	Status      int    `json:"status"`
-}
-
-type endpointPostResult struct {
-	common_result.Result
-	Endpoint model.EndpointView `json:"endpoint"`
-}
-
 func (i *endpointPostRoute) Method() string {
 	return common.POST
 }
@@ -191,18 +168,18 @@ func (i *endpointPostRoute) Handler() interface{} {
 }
 
 func (i *endpointPostRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("postHandler")
 
-	result := endpointPostResult{}
+	result := common_def.CreateEndpointResult{}
 	for true {
-		param := &endpointPostParam{}
+		param := &common_def.CreateEndpointParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "参数非法"
 			break
 		}
@@ -212,9 +189,9 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(param.User)
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "新建Endpoint失败"
 		}
 
@@ -234,10 +211,6 @@ type endpointDeleteRoute struct {
 	accountHandler   common.AccountHandler
 }
 
-type endpointDeleteResult struct {
-	common_result.Result
-}
-
 func (i *endpointDeleteRoute) Method() string {
 	return common.DELETE
 }
@@ -251,20 +224,20 @@ func (i *endpointDeleteRoute) Handler() interface{} {
 }
 
 func (i *endpointDeleteRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *endpointDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("deleteHandler")
 
-	result := endpointDeleteResult{}
+	result := common_def.DestroyEndpointResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		ok := i.authorityHandler.DeleteEndpoint(strID)
 		if ok {
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "删除Endpoint失败"
 		}
 
@@ -284,18 +257,6 @@ type endpointPutRoute struct {
 	accountHandler   common.AccountHandler
 }
 
-type endpointPutParam struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	User        []int  `json:"user"`
-	Status      int    `json:"status"`
-}
-
-type endpointPutResult struct {
-	common_result.Result
-	Endpoint model.EndpointView `json:"endpoint"`
-}
-
 func (i *endpointPutRoute) Method() string {
 	return common.PUT
 }
@@ -309,26 +270,26 @@ func (i *endpointPutRoute) Handler() interface{} {
 }
 
 func (i *endpointPutRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("putHandler")
 
-	result := endpointPutResult{}
+	result := common_def.UpdateEndpointResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
 			break
 		}
 
-		param := &endpointPutParam{}
+		param := &common_def.UpdateEndpointParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -340,11 +301,11 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 
 		endpoint, ok = i.authorityHandler.UpdateEndpoint(endpoint)
 		if ok {
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(param.User)
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Endpoint状态失败"
 		}
 
@@ -364,11 +325,6 @@ type endpointAuthRoute struct {
 	sessionRegistry  common.SessionRegistry
 }
 
-type endpointAuthResult struct {
-	common_result.Result
-	SessionID string `json:"sessionID"`
-}
-
 func (i *endpointAuthRoute) Method() string {
 	return common.GET
 }
@@ -382,33 +338,33 @@ func (i *endpointAuthRoute) Handler() interface{} {
 }
 
 func (i *endpointAuthRoute) AuthGroup() int {
-	return common_def.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("verifyHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := endpointAuthResult{}
+	result := common_def.VerifyEndpointResult{}
 	for {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
 			break
 		}
 
-		authToken := r.URL.Query().Get(common_def.AuthTokenID)
+		authToken := r.URL.Query().Get(common_const.AuthTokenID)
 		if endpoint.AuthToken != authToken {
-			result.ErrorCode = common_result.InvalidAuthority
+			result.ErrorCode = common_def.InvalidAuthority
 			result.Reason = "无效授权"
 			break
 		}
 
-		session.SetOption(common_def.AuthTokenID, authToken)
-		session.SetOption(common_def.ExpiryDate, -1)
-		result.ErrorCode = common_result.Success
+		session.SetOption(common_const.AuthTokenID, authToken)
+		session.SetOption(common_const.ExpiryDate, -1)
+		result.ErrorCode = common_def.Success
 		result.SessionID = session.ID()
 		break
 	}

@@ -8,8 +8,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
@@ -69,11 +69,6 @@ type groupGetRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type groupGetResult struct {
-	common_result.Result
-	Group model.GroupDetailView `json:"group"`
-}
-
 func (i *groupGetRoute) Method() string {
 	return common.GET
 }
@@ -87,18 +82,18 @@ func (i *groupGetRoute) Handler() interface{} {
 }
 
 func (i *groupGetRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getGroupHandler")
 
-	result := groupGetResult{}
+	result := common_def.GetGroupResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -111,9 +106,9 @@ func (i *groupGetRoute) getGroupHandler(w http.ResponseWriter, r *http.Request) 
 			result.Group.Catalog.ID = catalog.ID
 			result.Group.Catalog.Name = catalog.Name
 
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -131,11 +126,6 @@ type groupGetAllRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type groupGetAllResult struct {
-	common_result.Result
-	Group []model.GroupDetailView `json:"group"`
-}
-
 func (i *groupGetAllRoute) Method() string {
 	return common.GET
 }
@@ -149,13 +139,13 @@ func (i *groupGetAllRoute) Handler() interface{} {
 }
 
 func (i *groupGetAllRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getAllGroupHandler")
 
-	result := groupGetAllResult{}
+	result := common_def.GetGroupListResult{}
 	for true {
 		filter := &common_def.PageFilter{}
 		filter.Parse(r)
@@ -170,7 +160,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 			result.Group = append(result.Group, groupView)
 		}
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -186,17 +176,6 @@ type groupCreateRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type groupCreateParam struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Catalog     model.Group `json:"catalog"`
-}
-
-type groupCreateResult struct {
-	common_result.Result
-	Group model.GroupDetailView `json:"group"`
-}
-
 func (i *groupCreateRoute) Method() string {
 	return common.POST
 }
@@ -210,25 +189,25 @@ func (i *groupCreateRoute) Handler() interface{} {
 }
 
 func (i *groupCreateRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("createGroupHandler")
 
-	result := groupCreateResult{}
+	result := common_def.CreateGroupResult{}
 	for true {
-		param := &groupCreateParam{}
+		param := &common_def.CreateGroupParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		group, ok := i.accountHandler.CreateGroup(param.Name, param.Description, param.Catalog.ID)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -237,7 +216,7 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog.ID)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -253,17 +232,6 @@ type groupSaveRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type groupSaveParam struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Catalog     model.Group `json:"catalog"`
-}
-
-type groupSaveResult struct {
-	common_result.Result
-	Group model.GroupDetailView `json:"group"`
-}
-
 func (i *groupSaveRoute) Method() string {
 	return common.PUT
 }
@@ -277,26 +245,26 @@ func (i *groupSaveRoute) Handler() interface{} {
 }
 
 func (i *groupSaveRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("saveGroupHandler")
 
-	result := groupCreateResult{}
+	result := common_def.UpdateGroupResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
-		param := &groupSaveParam{}
+		param := &common_def.UpdateGroupParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -307,7 +275,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		group, ok := i.accountHandler.SaveGroup(group)
 
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "更新失败"
 			break
 		}
@@ -316,7 +284,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		catalog, _ := i.accountHandler.FindGroupByID(param.Catalog.ID)
 		result.Group.Catalog.ID = catalog.ID
 		result.Group.Catalog.Name = catalog.Name
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -332,10 +300,6 @@ type groupDestroyRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type groupDestroyResult struct {
-	common_result.Result
-}
-
 func (i *groupDestroyRoute) Method() string {
 	return common.DELETE
 }
@@ -349,30 +313,30 @@ func (i *groupDestroyRoute) Handler() interface{} {
 }
 
 func (i *groupDestroyRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *groupDestroyRoute) destroyGroupHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("destroyGroupHandler")
 
-	result := groupDestroyResult{}
+	result := common_def.DestroyGroupResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyGroup(id)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 

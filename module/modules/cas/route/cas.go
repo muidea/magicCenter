@@ -7,10 +7,9 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/cas/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
-	"muidea.com/magicCommon/model"
 )
 
 // AppendAccountRoute 追加account 路由
@@ -56,18 +55,6 @@ type accountLoginRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
-type accountLoginParam struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
-}
-
-type accountLoginResult struct {
-	common_result.Result
-	OnlineUser  model.AccountOnlineView `json:"onlineUser"`
-	SessionID   string                  `json:"sessionID"`
-	AuthTokenID string                  `json:"authToken"`
-}
-
 func (i *accountLoginRoute) Method() string {
 	return common.POST
 }
@@ -81,20 +68,20 @@ func (i *accountLoginRoute) Handler() interface{} {
 }
 
 func (i *accountLoginRoute) AuthGroup() int {
-	return common_def.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("loginHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := accountLoginResult{}
+	result := common_def.LoginAccountResult{}
 	for true {
-		param := &accountLoginParam{}
+		param := &common_def.LoginAccountParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
 			log.Printf("ParsePostJSON failed, err:%s", err.Error())
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
@@ -102,12 +89,12 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		remoteAddr := r.RemoteAddr
 		onlineUser, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "登入失败"
 			break
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
 		result.AuthTokenID = onlineUser.AuthToken
@@ -126,10 +113,6 @@ type accountLogoutRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
-type accountLogoutResult struct {
-	common_result.Result
-}
-
 func (i *accountLogoutRoute) Method() string {
 	return common.DELETE
 }
@@ -143,30 +126,30 @@ func (i *accountLogoutRoute) Handler() interface{} {
 }
 
 func (i *accountLogoutRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("logoutHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := accountLogoutResult{}
+	result := common_def.LogoutAccountResult{}
 	for true {
-		authToken, ok := session.GetOption(common_def.AuthTokenID)
+		authToken, ok := session.GetOption(common_const.AuthTokenID)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
 
 		if !i.casHandler.Logout(authToken.(string), r.RemoteAddr) {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
-		session.RemoveOption(common_def.AuthTokenID)
+		session.RemoveOption(common_const.AuthTokenID)
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -183,12 +166,6 @@ type accountStatusRoute struct {
 	sessionRegistry common.SessionRegistry
 }
 
-type accountStatusResult struct {
-	common_result.Result
-	OnlineUser model.AccountOnlineView `json:"onlineUser"`
-	SessionID  string                  `json:"sessionID"`
-}
-
 func (i *accountStatusRoute) Method() string {
 	return common.GET
 }
@@ -202,32 +179,32 @@ func (i *accountStatusRoute) Handler() interface{} {
 }
 
 func (i *accountStatusRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("statusHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	result := accountStatusResult{}
+	result := common_def.StatusAccountResult{}
 	for true {
-		authToken, ok := session.GetOption(common_def.AuthTokenID)
+		authToken, ok := session.GetOption(common_const.AuthTokenID)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
 
 		onlineUser, found := i.casHandler.VerifyToken(authToken.(string))
 		if !found {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效Token"
 			break
 		}
 
 		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 

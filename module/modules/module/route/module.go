@@ -6,8 +6,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/module/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
@@ -37,11 +37,6 @@ type getModulesRoute struct {
 	moduleHandler common.ModuleRegistryHandler
 }
 
-type getModulesResult struct {
-	common_result.Result
-	Module []model.ModuleDetailView `json:"module"`
-}
-
 func (i *getModulesRoute) Method() string {
 	return common.GET
 }
@@ -55,22 +50,22 @@ func (i *getModulesRoute) Handler() interface{} {
 }
 
 func (i *getModulesRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *getModulesRoute) getModulesHandler(w http.ResponseWriter, r *http.Request) {
-	result := getModulesResult{}
+	result := common_def.GetModuleListResult{}
 
 	modules := i.moduleHandler.GetModuleDetailList()
 	for _, v := range modules {
 		detail := model.ModuleDetailView{}
 		detail.ModuleDetail = v
-		detail.Type = common_def.GetModuleType(v.Type)
-		detail.Status = common_def.GetStatus(v.Status)
+		detail.Type = common_const.GetModuleType(v.Type)
+		detail.Status = common_const.GetStatus(v.Status)
 
 		result.Module = append(result.Module, detail)
 	}
-	result.ErrorCode = common_result.Success
+	result.ErrorCode = common_def.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -85,7 +80,7 @@ type getModuleByIDRoute struct {
 }
 
 type getModuleByIDResult struct {
-	common_result.Result
+	common_def.Result
 	Module model.ModuleDetailView `json:"module"`
 }
 
@@ -102,7 +97,7 @@ func (i *getModuleByIDRoute) Handler() interface{} {
 }
 
 func (i *getModuleByIDRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *getModuleByIDRoute) getModuleByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,11 +108,11 @@ func (i *getModuleByIDRoute) getModuleByIDHandler(w http.ResponseWriter, r *http
 		detail, ok := i.moduleHandler.QueryModuleByID(id)
 		if ok {
 			result.Module.ModuleDetail = detail
-			result.Module.Type = common_def.GetModuleType(detail.Type)
-			result.Module.Status = common_def.GetStatus(detail.Status)
-			result.ErrorCode = common_result.Success
+			result.Module.Type = common_const.GetModuleType(detail.Type)
+			result.Module.Status = common_const.GetStatus(detail.Status)
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.NoExist
+			result.ErrorCode = common_def.NoExist
 		}
 
 		break

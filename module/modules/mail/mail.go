@@ -4,7 +4,7 @@ import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/mail/def"
 	"muidea.com/magicCenter/module/modules/mail/handler"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -42,11 +42,11 @@ func (instance *mail) Group() string {
 }
 
 func (instance *mail) Type() int {
-	return common_def.KERNEL
+	return common_const.KERNEL
 }
 
 func (instance *mail) Status() int {
-	return common_def.ACTIVE
+	return common_const.ACTIVE
 }
 
 func (instance *mail) EntryPoint() interface{} {

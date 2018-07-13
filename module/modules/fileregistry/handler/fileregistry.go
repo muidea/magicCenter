@@ -11,7 +11,7 @@ import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/fileregistry/dal"
-	common_result "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
@@ -33,20 +33,6 @@ type impl struct {
 	dbhelper        dbhelper.DBHelper
 	uploadPath      string
 	sessionRegistry common.SessionRegistry
-}
-
-type uploadFileResult struct {
-	common_result.Result
-	FileToken string `json:"fileToken"`
-}
-
-type downloadFileResult struct {
-	common_result.Result
-	RedirectURL string `json:"redirectUrl"`
-}
-
-type deleteFileResult struct {
-	common_result.Result
 }
 
 func (s *impl) FindFile(fileToken string) (string, model.FileSummary, bool) {
@@ -72,17 +58,17 @@ func (s *impl) RemoveFile(fileToken string) {
 }
 
 func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
-	result := uploadFileResult{}
+	result := common_def.UploadFileResult{}
 	for {
 		if req.Method != common.POST {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
 
 		keyName := req.URL.Query().Get("key-name")
 		if len(keyName) == 0 {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -90,7 +76,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		// max file size
 		err := req.ParseMultipartForm(32 << 20)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效请求数据"
 			break
 		}
@@ -98,7 +84,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		tempPath := "./"
 		dstFile, err := net.MultipartFormFile(req, keyName, tempPath)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "上传文件出错"
 			break
 		}
@@ -111,7 +97,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			err = os.MkdirAll(finalFilePath, os.ModePerm)
 		}
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
 		}
@@ -119,7 +105,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		finalFilePath = path.Join(finalFilePath, fileName)
 		err = os.Rename(dstFile, finalFilePath)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
 		}
@@ -132,9 +118,9 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		ret := dal.SaveFileSummary(s.dbhelper, fileSummary)
 		if ret {
 			result.FileToken = fileSummary.FileToken
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "保存文件信息失败"
 		}
 
@@ -150,28 +136,28 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
-	result := downloadFileResult{}
+	result := common_def.DownloadFileResult{}
 	for {
 		if req.Method != common.GET {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
 
 		fileToken := req.URL.Query().Get("fileToken")
 		if len(fileToken) == 0 {
-			result.ErrorCode = common_result.IllegalParam
+			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法请求"
 			break
 		}
 		fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "指定文件不存在"
 			break
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		result.RedirectURL = fileSummary.FilePath
 		break
 	}
@@ -185,10 +171,10 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
-	result := deleteFileResult{}
+	result := common_def.DeleteFileResult{}
 	for true {
 		if req.Method != common.DELETE {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
 		}
@@ -207,7 +193,7 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 

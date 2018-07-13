@@ -8,8 +8,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/content/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
@@ -43,11 +43,6 @@ type summaryQueryRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type summaryQueryResult struct {
-	common_result.Result
-	Summary model.SummaryView `json:"summary"`
-}
-
 func (i *summaryQueryRoute) Method() string {
 	return common.GET
 }
@@ -61,18 +56,18 @@ func (i *summaryQueryRoute) Handler() interface{} {
 }
 
 func (i *summaryQueryRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("querySummaryHandler")
 
-	result := summaryQueryResult{Summary: model.SummaryView{}}
+	result := common_def.QuerySummaryResult{Summary: model.SummaryView{}}
 	for true {
 		summaryName := r.URL.Query().Get("name")
 		summaryType := r.URL.Query().Get("type")
 		if len(summaryName) == 0 || len(summaryType) == 0 {
-			result.ErrorCode = common_result.IllegalParam
+			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
 			log.Printf("illegal contentType param, summaryName:%s, summaryType:%s", summaryName, summaryType)
 			break
@@ -94,7 +89,7 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		result.ErrorCode = common_result.NoExist
+		result.ErrorCode = common_def.NoExist
 		result.Reason = "对象不存在"
 		break
 	}
@@ -112,11 +107,6 @@ type summaryGetRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type summaryGetResult struct {
-	common_result.Result
-	Summary []model.SummaryView `json:"summary"`
-}
-
 func (i *summaryGetRoute) Method() string {
 	return common.GET
 }
@@ -130,25 +120,25 @@ func (i *summaryGetRoute) Handler() interface{} {
 }
 
 func (i *summaryGetRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getSummaryHandler")
 
-	result := summaryGetResult{Summary: []model.SummaryView{}}
+	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		_, str := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(str)
 		if err != nil {
-			result.ErrorCode = common_result.IllegalParam
+			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
 			log.Printf("illegal id param, id:%s", str)
 			break
 		}
 		contentType := r.URL.Query().Get("type")
 		if len(contentType) == 0 {
-			result.ErrorCode = common_result.IllegalParam
+			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
 			log.Printf("illegal contentType param, contentType:%s", contentType)
 			break
@@ -159,7 +149,7 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 		if len(userStr) > 0 {
 			uid, err = strconv.Atoi(userStr)
 			if err != nil {
-				result.ErrorCode = common_result.IllegalParam
+				result.ErrorCode = common_def.IllegalParam
 				result.Reason = "非法参数"
 				log.Printf("illegal user filter param, user:%s", userStr)
 				break
@@ -170,7 +160,7 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 		if len(catalog) > 0 {
 			cid, err = strconv.Atoi(catalog)
 			if err != nil {
-				result.ErrorCode = common_result.IllegalParam
+				result.ErrorCode = common_def.IllegalParam
 				result.Reason = "非法参数"
 				log.Printf("illegal user filter param, catalog:%s", catalog)
 				break

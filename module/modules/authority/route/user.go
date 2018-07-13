@@ -8,8 +8,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/authority/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
@@ -38,11 +38,6 @@ type userGetRoute struct {
 	moduleHub        common.ModuleHub
 }
 
-type userGetResult struct {
-	common_result.Result
-	User []model.UserModuleInfoView `json:"user"`
-}
-
 func (i *userGetRoute) Method() string {
 	return common.GET
 }
@@ -56,13 +51,13 @@ func (i *userGetRoute) Handler() interface{} {
 }
 
 func (i *userGetRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getHandler")
 
-	result := userGetResult{}
+	result := common_def.GetUserModuleInfoListResult{}
 	for true {
 		userModuleInfo := i.authorityHandler.QueryAllUserModule()
 		for _, val := range userModuleInfo {
@@ -82,7 +77,7 @@ func (i *userGetRoute) getHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -100,11 +95,6 @@ type userGetByIDRoute struct {
 	moduleHub        common.ModuleHub
 }
 
-type userGetByIDResult struct {
-	common_result.Result
-	User model.UserModuleAuthGroupView `json:"user"`
-}
-
 func (i *userGetByIDRoute) Method() string {
 	return common.GET
 }
@@ -118,18 +108,18 @@ func (i *userGetByIDRoute) Handler() interface{} {
 }
 
 func (i *userGetByIDRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getByIDHandler")
 
-	result := userGetByIDResult{}
+	result := common_def.GetUserAuthGroupInfoResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -148,12 +138,12 @@ func (i *userGetByIDRoute) getByIDHandler(w http.ResponseWriter, r *http.Request
 			mod, _ := i.moduleHub.FindModule(val.Module)
 			view.Module.ID = mod.ID()
 			view.Module.Name = mod.Name()
-			view.AuthGroup = common_def.GetAuthGroup(val.AuthGroup)
+			view.AuthGroup = common_const.GetAuthGroup(val.AuthGroup)
 
 			result.User.ModuleAuthGroup = append(result.User.ModuleAuthGroup, view)
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 
 		break
 	}
@@ -172,14 +162,6 @@ type userPutRoute struct {
 	moduleHub        common.ModuleHub
 }
 
-type userPutParam struct {
-	ModuleAuthGroup []model.ModuleAuthGroup `json:"moduleAuthGroup"`
-}
-
-type userPutResult struct {
-	common_result.Result
-}
-
 func (i *userPutRoute) Method() string {
 	return common.PUT
 }
@@ -193,39 +175,39 @@ func (i *userPutRoute) Handler() interface{} {
 }
 
 func (i *userPutRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("putHandler")
 
-	result := userPutResult{}
+	result := common_def.UpdateModuleAuthGroupResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
 		id, err := strconv.Atoi(strID)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
-		param := &userPutParam{}
+		param := &common_def.UpdateModuleAuthGroupParam{}
 		err = net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		ok := i.authorityHandler.UpdateUserModuleAuthGroup(id, param.ModuleAuthGroup)
 		if ok {
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "更新用户模块授权信息失败"
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 

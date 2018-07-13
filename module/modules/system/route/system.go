@@ -6,8 +6,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/system/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	"muidea.com/magicCommon/model"
 )
@@ -53,11 +53,6 @@ type getSystemConfigRoute struct {
 	systemHandler common.SystemHandler
 }
 
-type getSystemConfigResult struct {
-	common_result.Result
-	SystemProperty model.SystemProperty `json:"systemProperty"`
-}
-
 func (i *getSystemConfigRoute) Method() string {
 	return common.GET
 }
@@ -71,13 +66,13 @@ func (i *getSystemConfigRoute) Handler() interface{} {
 }
 
 func (i *getSystemConfigRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
-	result := getSystemConfigResult{}
+	result := common_def.QuerySystemConfigResult{}
 	result.SystemProperty = i.systemHandler.GetSystemProperty()
-	result.ErrorCode = common_result.Success
+	result.ErrorCode = common_def.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {
@@ -89,10 +84,6 @@ func (i *getSystemConfigRoute) getSystemConfigHandler(w http.ResponseWriter, r *
 
 type setSystemConfigRoute struct {
 	systemHandler common.SystemHandler
-}
-
-type setSystemConfigResult struct {
-	common_result.Result
 }
 
 func (i *setSystemConfigRoute) Method() string {
@@ -108,11 +99,11 @@ func (i *setSystemConfigRoute) Handler() interface{} {
 }
 
 func (i *setSystemConfigRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *http.Request) {
-	result := setSystemConfigResult{}
+	result := common_def.UpdateSystemConfigResult{}
 
 	for true {
 		r.ParseForm()
@@ -127,9 +118,9 @@ func (i *setSystemConfigRoute) setSystemConfigHandler(w http.ResponseWriter, r *
 		systemProperty.MailPassword = r.FormValue("mailpassword")
 
 		if i.systemHandler.UpdateSystemProperty(systemProperty) {
-			result.ErrorCode = common_result.Success
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "更新系统信息失败"
 		}
 
@@ -151,7 +142,7 @@ type getSystemMenuRoute struct {
 type getSystemMenuResult struct {
 	Menu string `json:"menu"`
 
-	common_result.Result
+	common_def.Result
 }
 
 func (i *getSystemMenuRoute) Method() string {
@@ -167,7 +158,7 @@ func (i *getSystemMenuRoute) Handler() interface{} {
 }
 
 func (i *getSystemMenuRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *getSystemMenuRoute) getSystemMenuHandler(w http.ResponseWriter, r *http.Request) {
@@ -176,9 +167,9 @@ func (i *getSystemMenuRoute) getSystemMenuHandler(w http.ResponseWriter, r *http
 	menu, ok := i.systemHandler.GetSystemMenu()
 	if ok {
 		result.Menu = menu
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 	} else {
-		result.ErrorCode = common_result.Failed
+		result.ErrorCode = common_def.Failed
 		result.Reason = "Get Menu failed"
 	}
 
@@ -196,7 +187,7 @@ type getSystemDashboardRoute struct {
 
 type getSystemDashboardResult struct {
 	model.StatisticsView
-	common_result.Result
+	common_def.Result
 }
 
 func (i *getSystemDashboardRoute) Method() string {
@@ -212,7 +203,7 @@ func (i *getSystemDashboardRoute) Handler() interface{} {
 }
 
 func (i *getSystemDashboardRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *getSystemDashboardRoute) getSystemDashboardHandler(w http.ResponseWriter, r *http.Request) {

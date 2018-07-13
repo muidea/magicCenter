@@ -7,7 +7,7 @@ import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/authority/dal"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -49,7 +49,7 @@ type impl struct {
 }
 
 func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
-	obj, ok := session.GetOption(common_def.AuthTokenID)
+	obj, ok := session.GetOption(common_const.AuthTokenID)
 	if !ok {
 		panic("")
 	}
@@ -77,11 +77,11 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	// 如果ACL的授权组为访客组，则直接认为有授权
-	if acl.AuthGroup == common_def.VisitorAuthGroup.ID {
+	if acl.AuthGroup == common_const.VisitorAuthGroup.ID {
 		return true
 	}
 
-	authToken := req.URL.Query().Get(common_def.AuthTokenID)
+	authToken := req.URL.Query().Get(common_const.AuthTokenID)
 	if len(authToken) == 0 {
 		// 没有提供AuthToken则认为没有授权
 		log.Printf("illegal authToken, empty authToken value.")
@@ -89,7 +89,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	session := i.sessionRegistry.GetSession(res, req)
-	sessionToken, ok := session.GetOption(common_def.AuthTokenID)
+	sessionToken, ok := session.GetOption(common_const.AuthTokenID)
 	if ok {
 		ok = sessionToken.(string) == authToken
 		if !ok {
@@ -118,7 +118,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	if avalibleFlag {
 		// 如果校验通过，则更新session里的相关信息
 		session.SetAccount(onlineAccount.User)
-		session.SetOption(common_def.AuthTokenID, authToken)
+		session.SetOption(common_const.AuthTokenID, authToken)
 	} else {
 		log.Printf("illegal account authGroup")
 	}
@@ -161,7 +161,7 @@ func (i *impl) QueryACLAuthGroup(id int) (model.AuthGroup, bool) {
 		return authGroup, ok
 	}
 
-	authGroup = common_def.GetAuthGroup(acl.AuthGroup)
+	authGroup = common_const.GetAuthGroup(acl.AuthGroup)
 
 	return authGroup, ok
 }
@@ -251,9 +251,9 @@ func (i *impl) QueryUserACL(user int) []model.ACL {
 func (i *impl) QueryAllAuthGroupDef() []model.AuthGroup {
 	authGroups := []model.AuthGroup{}
 
-	authGroups = append(authGroups, common_def.VisitorAuthGroup)
-	authGroups = append(authGroups, common_def.UserAuthGroup)
-	authGroups = append(authGroups, common_def.MaintainerAuthGroup)
+	authGroups = append(authGroups, common_const.VisitorAuthGroup)
+	authGroups = append(authGroups, common_const.UserAuthGroup)
+	authGroups = append(authGroups, common_const.MaintainerAuthGroup)
 
 	return authGroups
 }

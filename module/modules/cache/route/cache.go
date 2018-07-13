@@ -7,8 +7,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/cache/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 )
 
@@ -40,11 +40,6 @@ type queryCacheRoute struct {
 	cacheHandler common.CacheHandler
 }
 
-type cacheQueryResult struct {
-	common_result.Result
-	Cache interface{} `json:"cache"`
-}
-
 func (i *queryCacheRoute) Method() string {
 	return common.GET
 }
@@ -58,20 +53,20 @@ func (i *queryCacheRoute) Handler() interface{} {
 }
 
 func (i *queryCacheRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("queryCacheHandler")
 
-	result := cacheQueryResult{}
+	result := common_def.QueryCacheResult{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
 	obj, ok := i.cacheHandler.FetchOut(id)
 	if ok {
 		result.Cache = obj
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 	} else {
-		result.ErrorCode = common_result.Failed
+		result.ErrorCode = common_def.Failed
 		result.Reason = "对象不存在"
 	}
 	b, err := json.Marshal(result)
@@ -84,50 +79,40 @@ func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Reque
 
 // CreatePostCacheRoute 新建postCache 路由
 func CreatePostCacheRoute(cacheHandler common.CacheHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := postCacheRoute{
+	i := cacheCreateRoute{
 		cacheHandler: cacheHandler}
 	return &i
 }
 
-type postCacheRoute struct {
+type cacheCreateRoute struct {
 	cacheHandler common.CacheHandler
 }
 
-type cachePostParam struct {
-	Value string `json:"value"`
-	Age   int    `json:"age"`
-}
-
-type cachePostResult struct {
-	common_result.Result
-	Token string `json:"token"`
-}
-
-func (i *postCacheRoute) Method() string {
+func (i *cacheCreateRoute) Method() string {
 	return common.POST
 }
 
-func (i *postCacheRoute) Pattern() string {
+func (i *cacheCreateRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.PostItem)
 }
 
-func (i *postCacheRoute) Handler() interface{} {
+func (i *cacheCreateRoute) Handler() interface{} {
 	return i.postCacheHandler
 }
 
-func (i *postCacheRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+func (i *cacheCreateRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
 }
 
-func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request) {
+func (i *cacheCreateRoute) postCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("postCacheHandler")
 
-	result := cachePostResult{}
+	result := common_def.CreateCacheResult{}
 	for true {
-		param := &cachePostParam{}
+		param := &common_def.CreateCacheParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -137,7 +122,7 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		result.Token = i.cacheHandler.PutIn(param.Value, float64(param.Age))
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -151,42 +136,38 @@ func (i *postCacheRoute) postCacheHandler(w http.ResponseWriter, r *http.Request
 
 // CreateDeleteCacheRoute 新建postCache 路由
 func CreateDeleteCacheRoute(cacheHandler common.CacheHandler, sessionRegistry common.SessionRegistry) common.Route {
-	i := deleteCacheRoute{
+	i := cacheDestroyRoute{
 		cacheHandler: cacheHandler}
 	return &i
 }
 
-type deleteCacheRoute struct {
+type cacheDestroyRoute struct {
 	cacheHandler common.CacheHandler
 }
 
-type cacheDeleteResult struct {
-	common_result.Result
-}
-
-func (i *deleteCacheRoute) Method() string {
+func (i *cacheDestroyRoute) Method() string {
 	return common.DELETE
 }
 
-func (i *deleteCacheRoute) Pattern() string {
+func (i *cacheDestroyRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.DeleteItem)
 }
 
-func (i *deleteCacheRoute) Handler() interface{} {
+func (i *cacheDestroyRoute) Handler() interface{} {
 	return i.deleteCacheHandler
 }
 
-func (i *deleteCacheRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+func (i *cacheDestroyRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
 }
 
-func (i *deleteCacheRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Request) {
+func (i *cacheDestroyRoute) deleteCacheHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("deleteCacheHandler")
 
-	result := common_result.Result{}
+	result := common_def.DestroyCacheResult{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
 	i.cacheHandler.Remove(id)
-	result.ErrorCode = common_result.Success
+	result.ErrorCode = common_def.Success
 	result.Reason = "清除成功"
 
 	b, err := json.Marshal(result)

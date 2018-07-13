@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/common"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/model"
 )
 
@@ -76,7 +76,7 @@ func (s *sessionImpl) refresh() {
 }
 
 func (s *sessionImpl) timeOut() bool {
-	expiryDate, found := s.context[common_def.ExpiryDate]
+	expiryDate, found := s.context[common_const.ExpiryDate]
 	if found && expiryDate.(int) == -1 {
 		return false
 	}

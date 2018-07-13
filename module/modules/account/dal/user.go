@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/common/dbhelper"
-	common_def "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )

@@ -6,7 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/fileregistry/def"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/net"
 )
 
@@ -53,7 +53,7 @@ func (i *uploadFileRoute) Handler() interface{} {
 }
 
 func (i *uploadFileRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *uploadFileRoute) uploadFileHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func (i *downloadFileRoute) Handler() interface{} {
 }
 
 func (i *downloadFileRoute) AuthGroup() int {
-	return common_def.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *downloadFileRoute) downloadFileHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +105,7 @@ func (i *deleteFileRoute) Handler() interface{} {
 }
 
 func (i *deleteFileRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *deleteFileRoute) deleteFileHandler(w http.ResponseWriter, r *http.Request) {

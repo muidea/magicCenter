@@ -7,7 +7,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -39,7 +39,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_def.BuildinContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, common_const.BuildinContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -68,8 +68,8 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 	}
 
 	for _, val := range ids {
-		if val == common_def.BuildinContentCatalog.ID {
-			catalogList = append(catalogList, model.Catalog{ID: common_def.BuildinContentCatalog.ID, Name: common_def.BuildinContentCatalog.Name})
+		if val == common_const.BuildinContentCatalog.ID {
+			catalogList = append(catalogList, model.Catalog{ID: common_const.BuildinContentCatalog.ID, Name: common_const.BuildinContentCatalog.Name})
 		}
 	}
 
@@ -78,8 +78,8 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 
 // QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
-	if id == common_def.BuildinContentCatalog.ID {
-		return common_def.BuildinContentCatalog, true
+	if id == common_const.BuildinContentCatalog.ID {
+		return common_const.BuildinContentCatalog, true
 	}
 
 	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
@@ -100,7 +100,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
 		if len(catalog.Catalog) == 0 {
-			catalog.Catalog = append(catalog.Catalog, common_def.BuildinContentCatalog.ID)
+			catalog.Catalog = append(catalog.Catalog, common_const.BuildinContentCatalog.ID)
 		}
 	}
 	return catalog, result
@@ -127,7 +127,7 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDet
 		}
 
 		if len(catalog.Catalog) == 0 {
-			catalog.Catalog = append(catalog.Catalog, common_def.BuildinContentCatalog.ID)
+			catalog.Catalog = append(catalog.Catalog, common_const.BuildinContentCatalog.ID)
 		}
 	}
 	return catalog, result
@@ -151,7 +151,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 		}
 
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_def.BuildinContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, common_const.BuildinContentCatalog.ID)
 		}
 	}
 
@@ -222,7 +222,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 
 				ids = append(ids, detail.ID)
 			} else {
-				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_def.BuildinContentCatalog.ID}, updater, true)
+				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_const.BuildinContentCatalog.ID}, updater, true)
 				if ok {
 					ids = append(ids, detail.ID)
 				} else {
@@ -276,7 +276,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		catalog.ID = id
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
-			if c != common_def.BuildinContentCatalog.ID {
+			if c != common_const.BuildinContentCatalog.ID {
 				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
@@ -328,7 +328,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
-				if c != common_def.BuildinContentCatalog.ID {
+				if c != common_const.BuildinContentCatalog.ID {
 					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 					if ok {
 						res.AppendRelative(ca)

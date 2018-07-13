@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/common/dbhelper"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -74,7 +75,7 @@ func QueryAllGroup(helper dbhelper.DBHelper) []model.Group {
 // QuerySubGroups 查询指定分组的子分组
 func QuerySubGroups(helper dbhelper.DBHelper, id int) []model.Group {
 	groupList := []model.Group{}
-	if id == common_def.BuildinAccountGroup.ID {
+	if id == common_const.BuildinAccountGroup.ID {
 		return groupList
 	}
 
@@ -114,8 +115,8 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 
 // QueryGroupByID 查询指定分组
 func QueryGroupByID(helper dbhelper.DBHelper, id int) (model.GroupDetail, bool) {
-	if id == common_def.BuildinAccountGroup.ID {
-		return common_def.BuildinAccountGroup, true
+	if id == common_const.BuildinAccountGroup.ID {
+		return common_const.BuildinAccountGroup, true
 	}
 
 	group := model.GroupDetail{}
@@ -174,7 +175,7 @@ func CreateGroup(helper dbhelper.DBHelper, name, description string, catalog int
 
 // DeleteGroup 删除分组
 func DeleteGroup(helper dbhelper.DBHelper, id int) bool {
-	if id == common_def.BuildinAccountGroup.ID {
+	if id == common_const.BuildinAccountGroup.ID {
 		return false
 	}
 

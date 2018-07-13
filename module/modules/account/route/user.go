@@ -8,8 +8,8 @@ import (
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/account/def"
-	common_def "muidea.com/magicCommon/common"
-	common_result "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
+	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
 	common_model "muidea.com/magicCommon/model"
 )
@@ -55,7 +55,7 @@ func CreateCreateUserRoute(accountHandler common.AccountHandler) common.Route {
 
 // CreateSaveUserRoute 新建SaveUser Route
 func CreateSaveUserRoute(accountHandler common.AccountHandler) common.Route {
-	i := userSaveRoute{accountHandler: accountHandler}
+	i := userUpdateRoute{accountHandler: accountHandler}
 	return &i
 }
 
@@ -67,11 +67,6 @@ func CreateDestroyUserRoute(accountHandler common.AccountHandler) common.Route {
 
 type userGetRoute struct {
 	accountHandler common.AccountHandler
-}
-
-type userGetResult struct {
-	common_result.Result
-	User common_model.UserDetailView `json:"user"`
 }
 
 func (i *userGetRoute) Method() string {
@@ -87,18 +82,18 @@ func (i *userGetRoute) Handler() interface{} {
 }
 
 func (i *userGetRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getUserHandler")
 
-	result := userGetResult{}
+	result := common_def.GetUserResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
@@ -107,10 +102,10 @@ func (i *userGetRoute) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			result.User.UserDetail = user
 			result.User.Group = i.accountHandler.GetGroups(user.Group)
-			result.User.Status = common_def.GetStatus(user.Status)
-			result.ErrorCode = common_result.Success
+			result.User.Status = common_const.GetStatus(user.Status)
+			result.ErrorCode = common_def.Success
 		} else {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
 		}
 		break
@@ -128,11 +123,6 @@ type userGetAllRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type userGetAllResult struct {
-	common_result.Result
-	User []common_model.UserDetailView `json:"user"`
-}
-
 func (i *userGetAllRoute) Method() string {
 	return common.GET
 }
@@ -146,13 +136,13 @@ func (i *userGetAllRoute) Handler() interface{} {
 }
 
 func (i *userGetAllRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+	return common_const.UserAuthGroup.ID
 }
 
 func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getAllUserHandler")
 
-	result := userGetAllResult{}
+	result := common_def.GetUserListResult{}
 	for true {
 		filter := &common_def.PageFilter{}
 		filter.Parse(r)
@@ -161,7 +151,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 		if len(group) > 0 {
 			gid, err := strconv.Atoi(group)
 			if err != nil {
-				result.ErrorCode = common_result.IllegalParam
+				result.ErrorCode = common_def.IllegalParam
 				result.Reason = "无效参数"
 				break
 			}
@@ -170,7 +160,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 				user := common_model.UserDetailView{}
 				user.UserDetail = val
 				user.Group = i.accountHandler.GetGroups(val.Group)
-				user.Status = common_def.GetStatus(val.Status)
+				user.Status = common_const.GetStatus(val.Status)
 
 				result.User = append(result.User, user)
 			}
@@ -180,13 +170,13 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 				user := common_model.UserDetailView{}
 				user.UserDetail = val
 				user.Group = i.accountHandler.GetGroups(val.Group)
-				user.Status = common_def.GetStatus(val.Status)
+				user.Status = common_const.GetStatus(val.Status)
 
 				result.User = append(result.User, user)
 			}
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -202,18 +192,6 @@ type userCreateRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type userCreateParam struct {
-	Account  string               `json:"account"`
-	Password string               `json:"password"`
-	EMail    string               `json:"email"`
-	Group    []common_model.Group `json:"group"`
-}
-
-type userCreateResult struct {
-	common_result.Result
-	User common_model.UserDetailView `json:"user"`
-}
-
 func (i *userCreateRoute) Method() string {
 	return common.POST
 }
@@ -227,18 +205,18 @@ func (i *userCreateRoute) Handler() interface{} {
 }
 
 func (i *userCreateRoute) AuthGroup() int {
-	return common_def.VisitorAuthGroup.ID
+	return common_const.VisitorAuthGroup.ID
 }
 
 func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("createUserHandler")
 
-	result := userCreateResult{}
+	result := common_def.CreateUserResult{}
 	for true {
-		param := &userCreateParam{}
+		param := &common_def.CreateUserParam{}
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
@@ -249,15 +227,15 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 
 		user, ok := i.accountHandler.CreateUser(param.Account, param.Password, param.EMail, ids)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "创建新用户失败"
 			break
 		}
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.User.Status = common_def.GetStatus(user.Status)
-		result.ErrorCode = common_result.Success
+		result.User.Status = common_const.GetStatus(user.Status)
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -269,78 +247,67 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 	w.Write(b)
 }
 
-type userSaveRoute struct {
+type userUpdateRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type userSaveParam struct {
-	Email string               `json:"email"`
-	Group []common_model.Group `json:"group"`
-}
-
-type userSavePasswordParam struct {
-	Password string `json:"password"`
-}
-
-type userSaveResult userCreateResult
-
-func (i *userSaveRoute) Method() string {
+func (i *userUpdateRoute) Method() string {
 	return common.PUT
 }
 
-func (i *userSaveRoute) Pattern() string {
+func (i *userUpdateRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.PutUser)
 }
 
-func (i *userSaveRoute) Handler() interface{} {
-	return i.saveUserHandler
+func (i *userUpdateRoute) Handler() interface{} {
+	return i.updateUserHandler
 }
 
-func (i *userSaveRoute) AuthGroup() int {
-	return common_def.UserAuthGroup.ID
+func (i *userUpdateRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
 }
 
-func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("saveUserHandler")
+func (i *userUpdateRoute) updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("updateUserHandler")
 
-	result := userCreateResult{}
+	result := common_def.UpdateUserResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	action := r.URL.Query().Get("action")
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		user, ok := i.accountHandler.FindUserByID(id)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
 			break
 		}
 
 		if action == "change_password" {
-			param := &userSavePasswordParam{}
+			param := &common_def.UpdateUserPasswordParam{}
 			err = net.ParsePostJSON(r, param)
 			if err != nil {
-				result.ErrorCode = common_result.Failed
+				result.ErrorCode = common_def.Failed
 				result.Reason = "非法参数"
 				break
 			}
 			if param.Password == "" {
-				result.ErrorCode = common_result.Failed
+				result.ErrorCode = common_def.Failed
 				result.Reason = "非法参数"
 				break
 			}
 
 			user, ok = i.accountHandler.SaveUserWithPassword(user, param.Password)
 		} else {
-			param := &userSaveParam{}
+			param := &common_def.UpdateUserParam{}
 			err = net.ParsePostJSON(r, param)
 			if err != nil {
-				result.ErrorCode = common_result.Failed
+				result.ErrorCode = common_def.Failed
 				result.Reason = "非法参数"
 				break
 			}
@@ -361,15 +328,15 @@ func (i *userSaveRoute) saveUserHandler(w http.ResponseWriter, r *http.Request) 
 		}
 
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "更新失败"
 			break
 		}
 
 		result.User.UserDetail = user
 		result.User.Group = i.accountHandler.GetGroups(user.Group)
-		result.User.Status = common_def.GetStatus(user.Status)
-		result.ErrorCode = common_result.Success
+		result.User.Status = common_const.GetStatus(user.Status)
+		result.ErrorCode = common_def.Success
 		break
 	}
 
@@ -385,10 +352,6 @@ type userDestroyRoute struct {
 	accountHandler common.AccountHandler
 }
 
-type userDestroyResult struct {
-	common_result.Result
-}
-
 func (i *userDestroyRoute) Method() string {
 	return common.DELETE
 }
@@ -402,30 +365,30 @@ func (i *userDestroyRoute) Handler() interface{} {
 }
 
 func (i *userDestroyRoute) AuthGroup() int {
-	return common_def.MaintainerAuthGroup.ID
+	return common_const.MaintainerAuthGroup.ID
 }
 
 func (i *userDestroyRoute) destroyUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("destroyUserHandler")
 
-	result := userDestroyResult{}
+	result := common_def.DestroyUserResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
 		}
 
 		ok := i.accountHandler.DestroyUserByID(id)
 		if !ok {
-			result.ErrorCode = common_result.Failed
+			result.ErrorCode = common_def.Failed
 			result.Reason = "删除失败"
 			break
 		}
 
-		result.ErrorCode = common_result.Success
+		result.ErrorCode = common_def.Success
 		break
 	}
 

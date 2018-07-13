@@ -5,7 +5,7 @@ import (
 	"muidea.com/magicCenter/module/modules/cache/def"
 	"muidea.com/magicCenter/module/modules/cache/handler"
 	"muidea.com/magicCenter/module/modules/cache/route"
-	common_def "muidea.com/magicCommon/common"
+	common_const "muidea.com/magicCommon/common"
 )
 
 // LoadModule 加载Cache模块
@@ -38,11 +38,11 @@ func (s *cacheModule) Group() string {
 }
 
 func (s *cacheModule) Type() int {
-	return common_def.KERNEL
+	return common_const.KERNEL
 }
 
 func (s *cacheModule) Status() int {
-	return common_def.ACTIVE
+	return common_const.ACTIVE
 }
 
 func (s *cacheModule) EntryPoint() interface{} {
