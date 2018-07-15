@@ -198,7 +198,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 			result = true
 			detail := model.CatalogDetail{}
 			existFlag := false
-			if val.ID > 0 {
+			if val.ID >= 0 {
 				detail, existFlag = QueryCatalogByID(helper, val.ID)
 			} else {
 				detail, existFlag = QueryCatalogByName(helper, val.Name)
