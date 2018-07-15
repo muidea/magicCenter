@@ -106,31 +106,46 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 	return catalog, result
 }
 
-// QueryCatalogByName 查询指定Name的Catalog
-func QueryCatalogByName(helper dbhelper.DBHelper, name string) (model.CatalogDetail, bool) {
-	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
+// QueryCatalogByName 查询指定Cataloga里名字为Name的Catalog
+func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int) (model.CatalogDetail, bool) {
+	var retCatalog model.CatalogDetail
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where name = '%s'`, name)
 	helper.Query(sql)
 
+	catalogList := []*model.CatalogDetail{}
 	result := false
-	if helper.Next() {
+	for helper.Next() {
+		catalog := &model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
 		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
-		result = true
+		catalogList = append(catalogList, catalog)
 	}
 	helper.Finish()
 
-	if result {
-		ress := resource.QueryRelativeResource(helper, catalog.ID, model.CATALOG)
+	for _, val := range catalogList {
+		ress := resource.QueryRelativeResource(helper, val.ID, model.CATALOG)
 
+		found := false
 		for _, r := range ress {
-			catalog.Catalog = append(catalog.Catalog, r.RId())
+			if r.RId() == parentCatalog {
+				found = true
+			}
+			val.Catalog = append(val.Catalog, r.RId())
+		}
+		if len(val.Catalog) == 0 {
+			val.Catalog = append(val.Catalog, common_const.BuildinContentCatalog.ID)
+		}
+		if parentCatalog == common_const.BuildinContentCatalog.ID {
+			found = true
 		}
 
-		if len(catalog.Catalog) == 0 {
-			catalog.Catalog = append(catalog.Catalog, common_const.BuildinContentCatalog.ID)
+		if found {
+			retCatalog = *val
+			result = true
+			break
 		}
 	}
-	return catalog, result
+
+	return retCatalog, result
 }
 
 // QueryCatalogByCatalog 查询指定分类的子类
@@ -189,7 +204,7 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 }
 
 // UpdateCatalog 更新Catalog
-func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool) {
+func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCatalog int, updateDate string, updater int) ([]model.Catalog, bool) {
 	ids := []int{}
 	result := false
 	if len(catalogs) > 0 {
@@ -201,7 +216,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, updateDat
 			if val.ID >= 0 {
 				detail, existFlag = QueryCatalogByID(helper, val.ID)
 			} else {
-				detail, existFlag = QueryCatalogByName(helper, val.Name)
+				detail, existFlag = QueryCatalogByName(helper, val.Name, parentCatalog)
 			}
 
 			if existFlag {

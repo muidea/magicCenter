@@ -244,10 +244,19 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-
+		catalogID := common_const.BuildinContentCatalog.ID
+		catalog := r.URL.Query().Get("catalog")
+		if len(catalog) > 0 {
+			catalogID, err = strconv.Atoi(catalog)
+			if err != nil {
+				result.ErrorCode = common_def.IllegalParam
+				result.Reason = "非法参数"
+				break
+			}
+		}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, createDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
@@ -329,10 +338,19 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-
+		catalogID := common_const.BuildinContentCatalog.ID
+		catalog := r.URL.Query().Get("catalog")
+		if len(catalog) > 0 {
+			catalogID, err = strconv.Atoi(catalog)
+			if err != nil {
+				result.ErrorCode = common_def.IllegalParam
+				result.Reason = "非法参数"
+				break
+			}
+		}
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, updateDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, updateDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"

@@ -94,12 +94,12 @@ func (i *impl) DestroyCatalog(id int) bool {
 	return i.catalogHandler.destroyCatalog(id)
 }
 
-func (i *impl) UpdateCatalog(catalogs []model.Catalog, updateDate string, updater int) ([]model.Catalog, bool) {
-	return i.catalogHandler.updateCatalog(catalogs, updateDate, updater)
+func (i *impl) UpdateCatalog(catalogs []model.Catalog, parentCatalog int, updateDate string, updater int) ([]model.Catalog, bool) {
+	return i.catalogHandler.updateCatalog(catalogs, parentCatalog, updateDate, updater)
 }
 
-func (i *impl) QueryCatalogByName(name string) (model.CatalogDetail, bool) {
-	return i.catalogHandler.queryCatalogByName(name)
+func (i *impl) QueryCatalogByName(name string, parentCatalog int) (model.CatalogDetail, bool) {
+	return i.catalogHandler.queryCatalogByName(name, parentCatalog)
 }
 
 func (i *impl) GetAllLink() []model.Summary {
