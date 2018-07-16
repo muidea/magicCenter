@@ -228,6 +228,8 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 
 				if modifyFlag {
 					detail.CreateDate = updateDate
+					detail.Description = description
+
 					_, result = SaveCatalog(helper, detail, true)
 					if !result {
 						log.Printf("UpdateCatalog, saveCatalog failed.")
@@ -270,18 +272,8 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 	id := allocCatalogID()
 	result := false
 	for {
-		sql := fmt.Sprintf(`select id from content_catalog where name='%s'`, name)
-		helper.Query(sql)
-		if helper.Next() {
-			log.Printf("catalog is exist, name:%s", name)
-			// 说明对应的Catalog已经存在，返回Create失败
-			helper.Finish()
-			break
-		}
-		helper.Finish()
-
 		// insert
-		sql = fmt.Sprintf(`insert into content_catalog (id, name, description, createdate, creater) values (%d, '%s','%s','%s',%d)`, id, name, description, createDate, creater)
+		sql := fmt.Sprintf(`insert into content_catalog (id, name, description, createdate, creater) values (%d, '%s','%s','%s',%d)`, id, name, description, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
 			log.Printf("insert catalog to db failed,sql:%s", sql)
