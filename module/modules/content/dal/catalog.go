@@ -323,7 +323,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 	result := false
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_catalog set description='%s', createdate='%s', creater =%d where id=%d`, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
+		sql := fmt.Sprintf(`update content_catalog set name='%s', description='%s', createdate='%s', creater =%d where id=%d`, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater, catalog.ID)
 		_, result = helper.Execute(sql)
 
 		if result {
@@ -333,6 +333,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 				break
 			}
 
+			res.UpdateName(catalog.Name)
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
 				if c != common_const.BuildinContentCatalog.ID {
