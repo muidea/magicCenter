@@ -227,7 +227,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryCatalogListResult{}
 	for true {
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if catalog == "" {
 			catalogs := i.contentHandler.GetAllCatalog()
 			for _, val := range catalogs {
@@ -329,9 +329,10 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			}
 		}
 
+		description := "auto update catalog description"
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, parentID, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, parentID, description, createDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
@@ -425,9 +426,10 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			}
 		}
 
+		description := "auto update catalog description"
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, parentID, updateDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, parentID, description, updateDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"

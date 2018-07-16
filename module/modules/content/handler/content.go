@@ -94,8 +94,8 @@ func (i *impl) DestroyCatalog(id int) bool {
 	return i.catalogHandler.destroyCatalog(id)
 }
 
-func (i *impl) UpdateCatalog(catalogs []model.Catalog, parentCatalog int, updateDate string, updater int) ([]model.Catalog, bool) {
-	return i.catalogHandler.updateCatalog(catalogs, parentCatalog, updateDate, updater)
+func (i *impl) UpdateCatalog(catalogs []model.Catalog, parentCatalog int, description, updateDate string, updater int) ([]model.Catalog, bool) {
+	return i.catalogHandler.updateCatalog(catalogs, parentCatalog, description, updateDate, updater)
 }
 
 func (i *impl) QueryCatalogByName(name string, parentCatalog int) (model.CatalogDetail, bool) {

@@ -204,7 +204,7 @@ func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
 }
 
 // UpdateCatalog 更新Catalog
-func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCatalog int, updateDate string, updater int) ([]model.Catalog, bool) {
+func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCatalog int, description, updateDate string, updater int) ([]model.Catalog, bool) {
 	ids := []int{}
 	result := false
 	if len(catalogs) > 0 {
@@ -237,7 +237,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 
 				ids = append(ids, detail.ID)
 			} else {
-				detail, ok := CreateCatalog(helper, val.Name, "", updateDate, []int{common_const.BuildinContentCatalog.ID}, updater, true)
+				detail, ok := CreateCatalog(helper, val.Name, description, updateDate, []int{parentCatalog}, updater, true)
 				if ok {
 					ids = append(ids, detail.ID)
 				} else {

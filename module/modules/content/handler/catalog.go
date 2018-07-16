@@ -38,8 +38,8 @@ func (i *catalogActionHandler) destroyCatalog(id int) bool {
 	return dal.DeleteCatalog(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, parentCatalog int, updateDate string, updater int) ([]model.Catalog, bool) {
-	return dal.UpdateCatalog(i.dbhelper, catalogs, parentCatalog, updateDate, updater)
+func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, parentCatalog int, description, updateDate string, updater int) ([]model.Catalog, bool) {
+	return dal.UpdateCatalog(i.dbhelper, catalogs, parentCatalog, description, updateDate, updater)
 }
 
 func (i *catalogActionHandler) queryCatalogByName(name string, parentCatalog int) (model.CatalogDetail, bool) {

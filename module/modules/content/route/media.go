@@ -161,7 +161,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 	result := common_def.QueryMediaListResult{Media: []model.SummaryView{}}
 	for true {
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) < 1 {
 			medias := i.contentHandler.GetAllMedia()
 			for _, val := range medias {
@@ -253,7 +253,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 		catalogID := common_const.BuildinContentCatalog.ID
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
 			if err != nil {
@@ -262,9 +262,10 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 				break
 			}
 		}
+		description := "auto update catalog description"
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, description, createDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
@@ -339,7 +340,7 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 			break
 		}
 		catalogID := common_const.BuildinContentCatalog.ID
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
 			if err != nil {
@@ -348,9 +349,10 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 				break
 			}
 		}
+		description := "auto update catalog description"
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, description, createDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
@@ -442,7 +444,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 		catalogID := common_const.BuildinContentCatalog.ID
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
 			if err != nil {
@@ -451,9 +453,10 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 				break
 			}
 		}
+		description := "auto update catalog description"
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, updateDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, description, updateDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"

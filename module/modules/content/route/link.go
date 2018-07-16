@@ -153,7 +153,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 	result := common_def.QueryLinkListResult{}
 	for true {
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if catalog == "" {
 			links := i.contentHandler.GetAllLink()
 			for _, val := range links {
@@ -245,7 +245,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 		catalogID := common_const.BuildinContentCatalog.ID
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
 			if err != nil {
@@ -254,9 +254,11 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 				break
 			}
 		}
+
+		description := "auto update catalog description"
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, createDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, description, createDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
@@ -339,7 +341,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			break
 		}
 		catalogID := common_const.BuildinContentCatalog.ID
-		catalog := r.URL.Query().Get("catalog")
+		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
 			if err != nil {
@@ -348,9 +350,10 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 				break
 			}
 		}
+		description := "auto update catalog description"
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		catalogIds := []int{}
-		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, updateDate, user.ID)
+		catalogs, ok := i.contentHandler.UpdateCatalog(param.Catalog, catalogID, description, updateDate, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "更新Catalog失败"
