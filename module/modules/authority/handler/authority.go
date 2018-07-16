@@ -49,7 +49,7 @@ type impl struct {
 }
 
 func (i *impl) refreshUserStatus(session common.Session, remoteAddr string) {
-	obj, ok := session.GetOption(common_const.AuthTokenID)
+	obj, ok := session.GetOption(common_const.AuthToken)
 	if !ok {
 		panic("")
 	}
@@ -81,7 +81,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return true
 	}
 
-	authToken := req.URL.Query().Get(common_const.AuthTokenID)
+	authToken := req.URL.Query().Get(common_const.AuthToken)
 	if len(authToken) == 0 {
 		// 没有提供AuthToken则认为没有授权
 		log.Printf("illegal authToken, empty authToken value.")
@@ -89,7 +89,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	}
 
 	session := i.sessionRegistry.GetSession(res, req)
-	sessionToken, ok := session.GetOption(common_const.AuthTokenID)
+	sessionToken, ok := session.GetOption(common_const.AuthToken)
 	if ok {
 		ok = sessionToken.(string) == authToken
 		if !ok {
@@ -118,7 +118,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	if avalibleFlag {
 		// 如果校验通过，则更新session里的相关信息
 		session.SetAccount(onlineAccount.User)
-		session.SetOption(common_const.AuthTokenID, authToken)
+		session.SetOption(common_const.AuthToken, authToken)
 	} else {
 		log.Printf("illegal account authGroup")
 	}

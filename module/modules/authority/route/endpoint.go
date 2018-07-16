@@ -355,14 +355,14 @@ func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		authToken := r.URL.Query().Get(common_const.AuthTokenID)
+		authToken := r.URL.Query().Get(common_const.AuthToken)
 		if endpoint.AuthToken != authToken {
 			result.ErrorCode = common_def.InvalidAuthority
 			result.Reason = "无效授权"
 			break
 		}
 
-		session.SetOption(common_const.AuthTokenID, authToken)
+		session.SetOption(common_const.AuthToken, authToken)
 		session.SetOption(common_const.ExpiryDate, -1)
 		result.ErrorCode = common_def.Success
 		result.SessionID = session.ID()

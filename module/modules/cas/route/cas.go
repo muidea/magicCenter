@@ -97,7 +97,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		result.ErrorCode = common_def.Success
 		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()
-		result.AuthTokenID = onlineUser.AuthToken
+		result.AuthToken = onlineUser.AuthToken
 		break
 	}
 	b, err := json.Marshal(result)
@@ -135,7 +135,7 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.LogoutAccountResult{}
 	for true {
-		authToken, ok := session.GetOption(common_const.AuthTokenID)
+		authToken, ok := session.GetOption(common_const.AuthToken)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
@@ -147,7 +147,7 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			result.Reason = "非法请求"
 			break
 		}
-		session.RemoveOption(common_const.AuthTokenID)
+		session.RemoveOption(common_const.AuthToken)
 
 		result.ErrorCode = common_def.Success
 		break
@@ -188,7 +188,7 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.StatusAccountResult{}
 	for true {
-		authToken, ok := session.GetOption(common_const.AuthTokenID)
+		authToken, ok := session.GetOption(common_const.AuthToken)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
