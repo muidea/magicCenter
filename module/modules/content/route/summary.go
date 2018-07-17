@@ -11,7 +11,6 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
-	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -155,27 +154,11 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 				break
 			}
 		}
-		cid := -1
-		catalog := r.URL.Query().Get("catalog")
-		if len(catalog) > 0 {
-			cid, err = strconv.Atoi(catalog)
-			if err != nil {
-				result.ErrorCode = common_def.IllegalParam
-				result.Reason = "非法参数"
-				log.Printf("illegal user filter param, catalog:%s", catalog)
-				break
-			}
-		}
 
 		summarys := i.contentHandler.GetSummaryContent(id, contentType)
 		for _, v := range summarys {
 			if len(userStr) > 0 {
 				if v.Creater != uid {
-					continue
-				}
-			}
-			if len(catalog) > 0 {
-				if !util.ExistIntArray(cid, v.Catalog) {
 					continue
 				}
 			}

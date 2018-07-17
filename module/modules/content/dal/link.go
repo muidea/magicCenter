@@ -198,6 +198,8 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 				break
 			}
 
+			res.UpdateName(lnk.Name)
+			res.UpdateDescription(lnk.Description)
 			res.ResetRelative()
 			for _, c := range lnk.Catalog {
 				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)

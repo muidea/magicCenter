@@ -218,6 +218,8 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 				break
 			}
 
+			res.UpdateName(media.Name)
+			res.UpdateDescription(media.Description)
 			res.ResetRelative()
 			for _, c := range media.Catalog {
 				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)

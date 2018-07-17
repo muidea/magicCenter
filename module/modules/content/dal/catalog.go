@@ -334,6 +334,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 			}
 
 			res.UpdateName(catalog.Name)
+			res.UpdateDescription(catalog.Description)
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
 				if c != common_const.BuildinContentCatalog.ID {
