@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -76,6 +77,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		// max file size
 		err := req.ParseMultipartForm(32 << 20)
 		if err != nil {
+			log.Printf("ParseMultipartForm failed, err:%s", err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效请求数据"
 			break
@@ -84,6 +86,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		tempPath := "./"
 		dstFile, err := net.MultipartFormFile(req, keyName, tempPath)
 		if err != nil {
+			log.Printf("net.MultipartFormFile failed, err:%s", err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "上传文件出错"
 			break
@@ -97,6 +100,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 			err = os.MkdirAll(finalFilePath, os.ModePerm)
 		}
 		if err != nil {
+			log.Printf("Stat file failed, filePath:%s, err:%s", finalFilePath, err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
@@ -105,6 +109,7 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		finalFilePath = path.Join(finalFilePath, fileName)
 		err = os.Rename(dstFile, finalFilePath)
 		if err != nil {
+			log.Printf("rename file failed, rawFile:%s, filePath:%s, err:%s", dstFile, finalFilePath, err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
