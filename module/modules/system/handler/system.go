@@ -54,7 +54,7 @@ func (s *impl) GetSystemMenu() (string, bool) {
 }
 
 func (s *impl) GetSystemStatistics() model.StatisticsView {
-	info := model.StatisticsView{SystemSummary: []model.UnitSummary{}, SystemTrend: []model.UnitTrend{}, LastContent: []model.ContentUnit{}, LastAccount: []model.AccountUnit{}}
+	info := model.StatisticsView{SystemSummary: []model.UnitSummary{}, LastContent: []model.ContentUnit{}, LastAccount: []model.AccountUnit{}}
 	contentModule, ok := s.moduleHub.FindModule(common.CotentModuleID)
 	if ok {
 		contentHandler := contentModule.EntryPoint().(common.ContentHandler)
@@ -70,6 +70,22 @@ func (s *impl) GetSystemStatistics() model.StatisticsView {
 
 		accountSummary := accountHandler.GetAccountSummary()
 		info.SystemSummary = append(info.SystemSummary, accountSummary...)
+	}
+
+	authorityModule, ok := s.moduleHub.FindModule(common.AuthorityModuleID)
+	if ok {
+		authorityHandler := authorityModule.EntryPoint().(common.AuthorityHandler)
+
+		authoritySummary := authorityHandler.GetSummary()
+		info.SystemSummary = append(info.SystemSummary, authoritySummary...)
+	}
+
+	casModule, ok := s.moduleHub.FindModule(common.CASModuleID)
+	if ok {
+		casHandler := casModule.EntryPoint().(common.CASHandler)
+
+		casSummary := casHandler.GetSummary()
+		info.SystemSummary = append(info.SystemSummary, casSummary...)
 	}
 
 	return info

@@ -249,3 +249,12 @@ func (i *impl) QueryAllAuthGroupDef() []model.AuthGroup {
 
 	return authGroups
 }
+
+func (i *impl) GetSummary() model.AuthoritySummary {
+	result := model.AuthoritySummary{}
+	allEndpoint := i.QueryAllEndpoint()
+	endpointItem := model.UnitSummary{Name: "终端", Type: "endpoint", Count: len(allEndpoint)}
+	result = append(result, endpointItem)
+
+	return result
+}

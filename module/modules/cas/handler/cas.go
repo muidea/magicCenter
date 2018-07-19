@@ -87,3 +87,11 @@ func (i *impl) VerifyToken(authToken string) (model.AccountOnlineView, bool) {
 func (i *impl) AllocStaticToken(id string, expiration int64) (string, bool) {
 	return "", true
 }
+
+func (i *impl) GetSummary() model.CasSummary {
+	result := model.CasSummary{}
+	onlineItem := model.UnitSummary{Name: "在线", Type: "online", Count: len(i.token2IDMap)}
+	result = append(result, onlineItem)
+
+	return result
+}

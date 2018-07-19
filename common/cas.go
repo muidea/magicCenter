@@ -27,4 +27,7 @@ type CASHandler interface {
 
 	// 生成一个静态Token
 	AllocStaticToken(id string, expiration int64) (string, bool)
+
+	// 查询Cas信息摘要
+	GetSummary() model.CasSummary
 }

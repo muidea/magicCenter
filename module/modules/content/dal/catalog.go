@@ -220,17 +220,6 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 			}
 
 			if existFlag {
-				if detail.Creater == updater {
-					detail.CreateDate = updateDate
-					detail.Description = description
-
-					_, result = SaveCatalog(helper, detail, true)
-					if !result {
-						log.Printf("UpdateCatalog, saveCatalog failed.")
-						break
-					}
-				}
-
 				ids = append(ids, detail.ID)
 			} else {
 				detail, ok := CreateCatalog(helper, val.Name, description, updateDate, []int{parentCatalog}, updater, true)

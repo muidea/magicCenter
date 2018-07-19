@@ -65,4 +65,7 @@ type AuthorityHandler interface {
 
 	// 查询所有授权组定义
 	QueryAllAuthGroupDef() []model.AuthGroup
+
+	// 查询授权信息摘要
+	GetSummary() model.AuthoritySummary
 }
