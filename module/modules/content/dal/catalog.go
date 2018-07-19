@@ -220,13 +220,7 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 			}
 
 			if existFlag {
-				modifyFlag := false
-				if detail.Creater != updater {
-					detail.Creater = updater
-					modifyFlag = true
-				}
-
-				if modifyFlag {
+				if detail.Creater == updater {
 					detail.CreateDate = updateDate
 					detail.Description = description
 
