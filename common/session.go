@@ -20,10 +20,13 @@ type Session interface {
 	ClearAccount()
 
 	OptionKey() []string
+
+	Flush()
 }
 
 // SessionRegistry 会话仓库
 type SessionRegistry interface {
 	GetSession(w http.ResponseWriter, r *http.Request) Session
 	UpdateSession(session Session) bool
+	FlushSession(session Session)
 }

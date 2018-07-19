@@ -115,14 +115,6 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		}
 	}
 
-	if avalibleFlag {
-		// 如果校验通过，则更新session里的相关信息
-		session.SetAccount(onlineAccount.User)
-		session.SetOption(common_const.AuthToken, authToken)
-	} else {
-		log.Printf("illegal account authGroup")
-	}
-
 	return avalibleFlag
 }
 

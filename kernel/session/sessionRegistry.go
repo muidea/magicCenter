@@ -93,6 +93,10 @@ func (sm *sessionRegistryImpl) UpdateSession(session common.Session) bool {
 	return sm.commandChan.update(cur)
 }
 
+func (sm *sessionRegistryImpl) FlushSession(session common.Session) {
+	sm.commandChan.flush(session.ID())
+}
+
 func (sm *sessionRegistryImpl) checkTimer() {
 	timeOutTimer := time.NewTicker(5 * time.Second)
 	for {
@@ -139,6 +143,7 @@ const (
 	find
 	checkTimeOut
 	length
+	flush
 	end
 )
 
@@ -194,6 +199,13 @@ func (right commandChanImpl) count() int {
 	return result
 }
 
+func (right commandChanImpl) flush(id string) {
+	reply := make(chan interface{})
+	right <- commandData{action: flush, value: id, result: reply}
+
+	<-reply
+}
+
 func (right commandChanImpl) run() {
 	sessionContextMap := make(map[string]interface{})
 	for command := range right {
@@ -235,6 +247,8 @@ func (right commandChanImpl) run() {
 			}
 		case length:
 			command.result <- len(sessionContextMap)
+		case flush:
+			command.result <- true
 		case end:
 			close(right)
 			command.data <- sessionContextMap

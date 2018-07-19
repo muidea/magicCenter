@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"sync"
+	"time"
+
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/content/dal"
 	"muidea.com/magicCommon/model"
@@ -8,6 +11,10 @@ import (
 
 type mediaActionHandler struct {
 	dbhelper dbhelper.DBHelper
+
+	routesLock         sync.RWMutex
+	preCheckTimeStamp  *time.Time
+	mediaExpirationMap map[int]time.Time
 }
 
 func (i *mediaActionHandler) getAllMedia() []model.Summary {
@@ -27,17 +34,75 @@ func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.Summary {
 }
 
 func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
-	return dal.CreateMedia(i.dbhelper, name, desc, fileToken, createDate, expiration, author, catalog)
+	result, ok := dal.CreateMedia(i.dbhelper, name, desc, fileToken, createDate, expiration, author, catalog)
+
+	i.loadAllMediaExpiration()
+
+	return result, ok
 }
 
 func (i *mediaActionHandler) batchCreateMedia(medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool) {
-	return dal.BatchCreateMedia(i.dbhelper, medias, createDate, creater)
+	result, ok := dal.BatchCreateMedia(i.dbhelper, medias, createDate, creater)
+
+	i.loadAllMediaExpiration()
+
+	return result, ok
 }
 
 func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, bool) {
-	return dal.SaveMedia(i.dbhelper, media)
+	result, ok := dal.SaveMedia(i.dbhelper, media)
+
+	i.loadAllMediaExpiration()
+
+	return result, ok
 }
 
 func (i *mediaActionHandler) destroyMedia(id int) bool {
-	return dal.DeleteMediaByID(i.dbhelper, id)
+	result := dal.DeleteMediaByID(i.dbhelper, id)
+
+	i.routesLock.Lock()
+	defer i.routesLock.Unlock()
+	delete(i.mediaExpirationMap, id)
+
+	return result
+}
+
+func (i *mediaActionHandler) expirationCheck() {
+
+	current := time.Now()
+	if i.preCheckTimeStamp == nil {
+		i.preCheckTimeStamp = &current
+		i.loadAllMediaExpiration()
+
+		return
+	}
+
+	if current.Sub(*(i.preCheckTimeStamp)).Hours() < 1 {
+		return
+	}
+
+	i.preCheckTimeStamp = &current
+
+	allMediaExpirationMap := map[int]time.Time{}
+	{
+		i.routesLock.RLock()
+		defer i.routesLock.RUnlock()
+
+		for k, v := range i.mediaExpirationMap {
+			allMediaExpirationMap[k] = v
+		}
+	}
+
+	for k, v := range allMediaExpirationMap {
+		if current.Sub(v) >= 0 {
+			dal.DeleteMediaByID(i.dbhelper, k)
+		}
+	}
+}
+
+func (i *mediaActionHandler) loadAllMediaExpiration() {
+	i.routesLock.Lock()
+	defer i.routesLock.Unlock()
+
+	i.mediaExpirationMap = dal.LoadMediaExpiration(i.dbhelper)
 }

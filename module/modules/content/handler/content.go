@@ -2,6 +2,7 @@ package handler
 
 import (
 	"muidea.com/magicCenter/common"
+	"muidea.com/magicCenter/common/daemon"
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	"muidea.com/magicCommon/model"
@@ -10,14 +11,16 @@ import (
 // CreateContentHandler 新建ContentHandler
 func CreateContentHandler() common.ContentHandler {
 	dbhelper, _ := dbhelper.NewHelper()
-	i := impl{
+	i := &impl{
 		dbhelper:       dbhelper,
 		articleHandler: articleActionHandler{dbhelper: dbhelper},
 		catalogHandler: catalogActionHandler{dbhelper: dbhelper},
 		linkHandler:    linkActionHandler{dbhelper: dbhelper},
 		mediaHandler:   mediaActionHandler{dbhelper: dbhelper}}
 
-	return &i
+	daemon.RegisterTimerHandler(i)
+
+	return i
 }
 
 type impl struct {
@@ -263,4 +266,8 @@ func (i *impl) GetLastContent(count int) []model.ContentUnit {
 		resultList = append(resultList, item)
 	}
 	return resultList
+}
+
+func (i *impl) Handle() {
+	i.mediaHandler.expirationCheck()
 }

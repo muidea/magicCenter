@@ -3,6 +3,7 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
@@ -88,12 +89,12 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) {
 	media := model.MediaDetail{}
 
-	sql := fmt.Sprintf(`select id, name, description, fileToken, createdate, creater from content_media where id = %d`, id)
+	sql := fmt.Sprintf(`select id, name, description, fileToken, createdate, creater, expiration from content_media where id = %d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&media.ID, &media.Name, &media.Description, &media.FileToken, &media.CreateDate, &media.Creater)
+		helper.GetValue(&media.ID, &media.Name, &media.Description, &media.FileToken, &media.CreateDate, &media.Creater, &media.Expiration)
 		result = true
 	}
 	helper.Finish()
@@ -245,4 +246,30 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 	}
 
 	return summary, result
+}
+
+// LoadMediaExpiration 加载所有Media有效期
+func LoadMediaExpiration(helper dbhelper.DBHelper) map[int]time.Time {
+	expirationMap := map[int]time.Time{}
+
+	sql := fmt.Sprintf(`select id, createdate, expiration from content_media`)
+	helper.Query(sql)
+	defer helper.Finish()
+
+	for helper.Next() {
+		id := -1
+		createDate := ""
+		expiration := -1
+		helper.GetValue(&id, &createDate, &expiration)
+
+		layout := "2006-01-02 15:04:05"
+		cd, err := time.Parse(layout, createDate)
+		if err != nil {
+			cd, _ = time.Parse(layout, "1970-01-01 00:00:01")
+		}
+
+		expirationMap[id] = cd.Add(time.Duration(expiration*24) * time.Hour)
+	}
+
+	return expirationMap
 }

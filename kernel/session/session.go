@@ -71,6 +71,10 @@ func (s *sessionImpl) OptionKey() []string {
 	return keys
 }
 
+func (s *sessionImpl) Flush() {
+	s.registry.FlushSession(s)
+}
+
 func (s *sessionImpl) refresh() {
 	s.context["$$refreshTime"] = time.Now()
 }

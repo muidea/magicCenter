@@ -94,6 +94,10 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
+		session.SetAccount(onlineUser.User)
+		session.SetOption(common_const.AuthToken, onlineUser.AuthToken)
+		session.Flush()
+
 		result.ErrorCode = common_def.Success
 		result.OnlineUser = onlineUser
 		result.SessionID = session.ID()

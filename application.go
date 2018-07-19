@@ -2,6 +2,7 @@ package application
 
 import (
 	"muidea.com/magicCenter/common/configuration"
+	"muidea.com/magicCenter/common/daemon"
 	"muidea.com/magicCenter/kernel"
 	"muidea.com/magicCenter/module/loader"
 )
@@ -31,6 +32,10 @@ func (instance *application) Run() {
 
 	sys := kernel.NewKernel(loader, configuration)
 	sys.StartUp()
+	defer sys.ShutDown()
+
+	daemon.Start()
+	defer daemon.Stop()
+
 	sys.Run()
-	sys.ShutDown()
 }
