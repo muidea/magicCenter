@@ -11,6 +11,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -19,7 +20,10 @@ func AppendSummaryRoute(routes []common.Route, contentHandler common.ContentHand
 	rt := CreateQuerySummaryRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetSummaryRoute(contentHandler, accountHandler)
+	rt = CreateGetSummaryDetailRoute(contentHandler, accountHandler)
+	routes = append(routes, rt)
+
+	rt = CreateQuerySummaryDetailRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
 	return routes
@@ -31,9 +35,15 @@ func CreateQuerySummaryRoute(contentHandler common.ContentHandler, accountHandle
 	return &i
 }
 
-// CreateGetSummaryRoute 查询指定分类的Summary
-func CreateGetSummaryRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
-	i := summaryGetRoute{contentHandler: contentHandler, accountHandler: accountHandler}
+// CreateGetSummaryDetailRoute 查询指定分类的Summary
+func CreateGetSummaryDetailRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := summaryDetailGetRoute{contentHandler: contentHandler, accountHandler: accountHandler}
+	return &i
+}
+
+// CreateQuerySummaryDetailRoute 查询指定分类的Summary
+func CreateQuerySummaryDetailRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := summaryDetailQueryRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
@@ -101,29 +111,29 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 	w.Write(b)
 }
 
-type summaryGetRoute struct {
+type summaryDetailGetRoute struct {
 	contentHandler common.ContentHandler
 	accountHandler common.AccountHandler
 }
 
-func (i *summaryGetRoute) Method() string {
+func (i *summaryDetailGetRoute) Method() string {
 	return common.GET
 }
 
-func (i *summaryGetRoute) Pattern() string {
+func (i *summaryDetailGetRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetSummaryDetail)
 }
 
-func (i *summaryGetRoute) Handler() interface{} {
-	return i.getSummaryHandler
+func (i *summaryDetailGetRoute) Handler() interface{} {
+	return i.getSummaryDetailHandler
 }
 
-func (i *summaryGetRoute) AuthGroup() int {
+func (i *summaryDetailGetRoute) AuthGroup() int {
 	return common_const.UserAuthGroup.ID
 }
 
-func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getSummaryHandler")
+func (i *summaryDetailGetRoute) getSummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("getSummaryDetailHandler")
 
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
@@ -162,6 +172,76 @@ func (i *summaryGetRoute) getSummaryHandler(w http.ResponseWriter, r *http.Reque
 					continue
 				}
 			}
+			view := model.SummaryView{}
+			view.Summary = v
+			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
+
+			user, ok := i.accountHandler.FindUserByID(v.Creater)
+			if ok {
+				view.Creater = user.User
+			} else {
+				view.Creater = model.User{ID: -1, Name: "未知用户"}
+			}
+
+			result.Summary = append(result.Summary, view)
+		}
+
+		result.ErrorCode = 0
+		break
+	}
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type summaryDetailQueryRoute struct {
+	contentHandler common.ContentHandler
+	accountHandler common.AccountHandler
+}
+
+func (i *summaryDetailQueryRoute) Method() string {
+	return common.GET
+}
+
+func (i *summaryDetailQueryRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QuerySummaryDetail)
+}
+
+func (i *summaryDetailQueryRoute) Handler() interface{} {
+	return i.querySummaryDetailHandler
+}
+
+func (i *summaryDetailQueryRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
+}
+
+func (i *summaryDetailQueryRoute) querySummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("querySummaryDetailHandler")
+
+	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
+	for true {
+		userStr := r.URL.Query().Get("user[]")
+		if len(userStr) == 0 {
+			result.ErrorCode = common_def.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal user filter param, user:%s", userStr)
+			break
+		}
+
+		uids, ok := util.Str2IntArray(userStr)
+		if !ok {
+			result.ErrorCode = common_def.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal user filter param, user:%s", userStr)
+			break
+		}
+
+		summarys := i.contentHandler.GetSummaryByUser(uids)
+		for _, v := range summarys {
 			view := model.SummaryView{}
 			view.Summary = v
 			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)

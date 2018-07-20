@@ -85,3 +85,6 @@ const QuerySummary = "/summary/"
 
 // GetSummaryDetail 查询指定Smmary的内容
 const GetSummaryDetail = "/summary/detail/:id"
+
+// QuerySummaryDetail 查询指定Smmary的内容
+const QuerySummaryDetail = "/summary/detail/"
