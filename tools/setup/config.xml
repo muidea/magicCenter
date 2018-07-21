@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<app name="demo">
+    <account>
+        <groups>
+            <group name="demo_group" description="demo description"/>
+        </groups>
+        <users>
+            <user name="demo" passowrd="123" email="demo@muidea.com" group="demo_group"/>
+        </users>
+    </account>
+    <content>
+        <catalogs>
+            <catalog name="a" description="A description"/>
+            <catalog name="b" description="B,description" catalog="a"/>
+        </catalogs>
+        <articles>
+            <article name="C" description="C description" catalog="a,b,c"/>
+        </articles>
+    </content>
+</app>
