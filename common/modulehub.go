@@ -5,6 +5,8 @@ const (
 	AuthorityModuleID = "158e11b7-adee-4b0d-afc9-0b47145195bd"
 	// CASModuleID CAS模块ID
 	CASModuleID = "759a2ee4-147a-4169-ba89-15c0c692bc16"
+	// EndpointModuleID Endpoint管理模块ID
+	EndpointModuleID = "fa404076-ebf1-4ad6-bedf-2fd6d114ab05"
 	// CotentModuleID 内容管理模块ID
 	CotentModuleID = "3a7123ec-63f0-5e46-1234-e6ca1af6fe4e"
 	// AccountModuleID 账号管理模块ID

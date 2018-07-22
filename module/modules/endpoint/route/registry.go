@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/authority/def"
+	"muidea.com/magicCenter/module/modules/endpoint/def"
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
@@ -15,49 +15,49 @@ import (
 )
 
 // CreateQueryEndpointRoute QueryEndpoint
-func CreateQueryEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+func CreateQueryEndpointRoute(endpointHandler common.EndpointHandler, accountHandler common.AccountHandler) common.Route {
 
-	i := endpointQueryRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+	i := endpointQueryRoute{endpointHandler: endpointHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateQueryByIDEndpointRoute QueryByIDEndpoint
-func CreateQueryByIDEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+func CreateQueryByIDEndpointRoute(endpointHandler common.EndpointHandler, accountHandler common.AccountHandler) common.Route {
 
-	i := endpointQueryByIDRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+	i := endpointQueryByIDRoute{endpointHandler: endpointHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreatePostEndpointRoute CreateEndpoint
-func CreatePostEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+func CreatePostEndpointRoute(endpointHandler common.EndpointHandler, accountHandler common.AccountHandler) common.Route {
 
-	i := endpointPostRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+	i := endpointPostRoute{endpointHandler: endpointHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateDeleteEndpointRoute DeleteEndpoint
-func CreateDeleteEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
-	i := endpointDeleteRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+func CreateDeleteEndpointRoute(endpointHandler common.EndpointHandler, accountHandler common.AccountHandler) common.Route {
+	i := endpointDeleteRoute{endpointHandler: endpointHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreatePutEndpointRoute UpdateEndpoint
-func CreatePutEndpointRoute(authorityHandler common.AuthorityHandler, accountHandler common.AccountHandler) common.Route {
+func CreatePutEndpointRoute(endpointHandler common.EndpointHandler, accountHandler common.AccountHandler) common.Route {
 
-	i := endpointPutRoute{authorityHandler: authorityHandler, accountHandler: accountHandler}
+	i := endpointPutRoute{endpointHandler: endpointHandler, accountHandler: accountHandler}
 	return &i
 }
 
 // CreateGetEndpointAuthRoute VerifyEndpointAuth
-func CreateGetEndpointAuthRoute(authorityHandler common.AuthorityHandler, sessionRegistry common.SessionRegistry) common.Route {
+func CreateGetEndpointAuthRoute(endpointHandler common.EndpointHandler, sessionRegistry common.SessionRegistry) common.Route {
 
-	i := endpointAuthRoute{authorityHandler: authorityHandler, sessionRegistry: sessionRegistry}
+	i := endpointAuthRoute{endpointHandler: endpointHandler, sessionRegistry: sessionRegistry}
 	return &i
 }
 
 type endpointQueryRoute struct {
-	authorityHandler common.AuthorityHandler
-	accountHandler   common.AccountHandler
+	endpointHandler common.EndpointHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *endpointQueryRoute) Method() string {
@@ -81,7 +81,7 @@ func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) 
 	result := common_def.QueryEndpointListResult{}
 
 	for {
-		endpoints := i.authorityHandler.QueryAllEndpoint()
+		endpoints := i.endpointHandler.QueryAllEndpoint()
 		for _, val := range endpoints {
 			endpoint := model.EndpointView{}
 			endpoint.Endpoint = val
@@ -103,8 +103,8 @@ func (i *endpointQueryRoute) getHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 type endpointQueryByIDRoute struct {
-	authorityHandler common.AuthorityHandler
-	accountHandler   common.AccountHandler
+	endpointHandler common.EndpointHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *endpointQueryByIDRoute) Method() string {
@@ -129,7 +129,7 @@ func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Reque
 
 	for {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
-		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
+		endpoint, ok := i.endpointHandler.QueryEndpointByID(strID)
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(endpoint.User)
@@ -151,8 +151,8 @@ func (i *endpointQueryByIDRoute) getHandler(w http.ResponseWriter, r *http.Reque
 }
 
 type endpointPostRoute struct {
-	authorityHandler common.AuthorityHandler
-	accountHandler   common.AccountHandler
+	endpointHandler common.EndpointHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *endpointPostRoute) Method() string {
@@ -185,7 +185,7 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 		}
 
 		authToken := util.RandomAlphanumeric(32)
-		endpoint, ok := i.authorityHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, authToken)
+		endpoint, ok := i.endpointHandler.InsertEndpoint(param.ID, param.Name, param.Description, param.User, param.Status, authToken)
 		if ok {
 			result.Endpoint.Endpoint = endpoint
 			result.Endpoint.User = i.accountHandler.GetUsers(param.User)
@@ -207,8 +207,8 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 type endpointDeleteRoute struct {
-	authorityHandler common.AuthorityHandler
-	accountHandler   common.AccountHandler
+	endpointHandler common.EndpointHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *endpointDeleteRoute) Method() string {
@@ -233,7 +233,7 @@ func (i *endpointDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Reque
 	result := common_def.DestroyEndpointResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
-		ok := i.authorityHandler.DeleteEndpoint(strID)
+		ok := i.endpointHandler.DeleteEndpoint(strID)
 		if ok {
 			result.ErrorCode = common_def.Success
 		} else {
@@ -253,8 +253,8 @@ func (i *endpointDeleteRoute) deleteHandler(w http.ResponseWriter, r *http.Reque
 }
 
 type endpointPutRoute struct {
-	authorityHandler common.AuthorityHandler
-	accountHandler   common.AccountHandler
+	endpointHandler common.EndpointHandler
+	accountHandler  common.AccountHandler
 }
 
 func (i *endpointPutRoute) Method() string {
@@ -279,7 +279,7 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 	result := common_def.UpdateEndpointResult{}
 	for true {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
-		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
+		endpoint, ok := i.endpointHandler.QueryEndpointByID(strID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
@@ -299,7 +299,7 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		endpoint.User = param.User
 		endpoint.Status = param.Status
 
-		endpoint, ok = i.authorityHandler.UpdateEndpoint(endpoint)
+		endpoint, ok = i.endpointHandler.UpdateEndpoint(endpoint)
 		if ok {
 			result.ErrorCode = common_def.Success
 			result.Endpoint.Endpoint = endpoint
@@ -321,8 +321,8 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type endpointAuthRoute struct {
-	authorityHandler common.AuthorityHandler
-	sessionRegistry  common.SessionRegistry
+	endpointHandler common.EndpointHandler
+	sessionRegistry common.SessionRegistry
 }
 
 func (i *endpointAuthRoute) Method() string {
@@ -348,7 +348,7 @@ func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request
 	result := common_def.VerifyEndpointResult{}
 	for {
 		_, strID := net.SplitRESTAPI(r.URL.Path)
-		endpoint, ok := i.authorityHandler.QueryEndpointByID(strID)
+		endpoint, ok := i.endpointHandler.QueryEndpointByID(strID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "对象不存在"
@@ -364,6 +364,8 @@ func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request
 
 		session.SetOption(common_const.AuthToken, authToken)
 		session.SetOption(common_const.ExpiryDate, -1)
+		session.Flush()
+
 		result.ErrorCode = common_def.Success
 		result.SessionID = session.ID()
 		break

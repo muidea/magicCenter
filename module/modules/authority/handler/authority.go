@@ -211,26 +211,6 @@ func (i *impl) UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.Modu
 	return dal.UpdateUserModuleAuthGroup(i.dbhelper, user, moduleAuthGroups)
 }
 
-func (i *impl) QueryAllEndpoint() []model.Endpoint {
-	return dal.QueryAllEndpoint(i.dbhelper)
-}
-
-func (i *impl) QueryEndpointByID(id string) (model.Endpoint, bool) {
-	return dal.QueryEndpointByID(i.dbhelper, id)
-}
-
-func (i *impl) InsertEndpoint(id, name, description string, user []int, status int, authToken string) (model.Endpoint, bool) {
-	return dal.InsertEndpoint(i.dbhelper, id, name, description, user, status, authToken)
-}
-
-func (i *impl) UpdateEndpoint(endpoint model.Endpoint) (model.Endpoint, bool) {
-	return dal.UpdateEndpoint(i.dbhelper, endpoint)
-}
-
-func (i *impl) DeleteEndpoint(id string) bool {
-	return dal.DeleteEndpoint(i.dbhelper, id)
-}
-
 func (i *impl) QueryUserACL(user int) []model.ACL {
 	acls := []model.ACL{}
 
@@ -248,13 +228,4 @@ func (i *impl) QueryAllAuthGroupDef() []model.AuthGroup {
 	authGroups = append(authGroups, common_const.MaintainerAuthGroup)
 
 	return authGroups
-}
-
-func (i *impl) GetSummary() model.AuthoritySummary {
-	result := model.AuthoritySummary{}
-	allEndpoint := i.QueryAllEndpoint()
-	endpointItem := model.UnitSummary{Name: "终端", Type: "endpoint", Count: len(allEndpoint)}
-	result = append(result, endpointItem)
-
-	return result
 }

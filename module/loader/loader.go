@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/module/modules/cache"
 	"muidea.com/magicCenter/module/modules/cas"
 	"muidea.com/magicCenter/module/modules/content"
+	"muidea.com/magicCenter/module/modules/endpoint"
 	"muidea.com/magicCenter/module/modules/fileregistry"
 	"muidea.com/magicCenter/module/modules/mail"
 	"muidea.com/magicCenter/module/modules/module"
@@ -47,4 +48,6 @@ func (instance *impl) LoadAllModules(configuration common.Configuration, session
 	cas.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	authority.LoadModule(configuration, sessionRegistry, moduleHub)
+
+	endpoint.LoadModule(configuration, sessionRegistry, moduleHub)
 }

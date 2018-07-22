@@ -72,12 +72,12 @@ func (s *impl) GetSystemStatistics() model.StatisticsView {
 		info.SystemSummary = append(info.SystemSummary, accountSummary...)
 	}
 
-	authorityModule, ok := s.moduleHub.FindModule(common.AuthorityModuleID)
+	endpointModule, ok := s.moduleHub.FindModule(common.EndpointModuleID)
 	if ok {
-		authorityHandler := authorityModule.EntryPoint().(common.AuthorityHandler)
+		endpointHandler := endpointModule.EntryPoint().(common.EndpointHandler)
 
-		authoritySummary := authorityHandler.GetSummary()
-		info.SystemSummary = append(info.SystemSummary, authoritySummary...)
+		endpointSummary := endpointHandler.GetSummary()
+		info.SystemSummary = append(info.SystemSummary, endpointSummary...)
 	}
 
 	casModule, ok := s.moduleHub.FindModule(common.CASModuleID)
