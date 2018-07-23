@@ -67,10 +67,8 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 		catalogList = append(catalogList, summary)
 	}
 
-	for _, val := range ids {
-		if val == common_const.SystemContentCatalog.ID {
-			catalogList = append(catalogList, common_const.SystemContentCatalog)
-		}
+	if util.ExistIntArray(common_const.SystemContentCatalog.ID, ids) {
+		catalogList = append(catalogList, model.Catalog{ID: common_const.SystemContentCatalog.ID, Name: common_const.SystemContentCatalog.Name})
 	}
 
 	return catalogList
@@ -79,6 +77,10 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 // QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
 	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
+	if id == common_const.SystemContentCatalog.ID {
+		return common_const.SystemContentCatalog, true
+	}
+
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
 	helper.Query(sql)
 
@@ -91,10 +93,10 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 
 	if result {
 		ress := resource.QueryRelativeResource(helper, id, model.CATALOG)
-
 		for _, r := range ress {
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
+
 		if len(catalog.Catalog) == 0 {
 			catalog.Catalog = append(catalog.Catalog, common_const.SystemContentCatalog.ID)
 		}
@@ -104,6 +106,10 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 
 // QueryCatalogByName 查询指定Cataloga里名字为Name, 父分类有parentCatalog的Catalog
 func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int) (model.CatalogDetail, bool) {
+	if name == common_const.SystemContentCatalog.Name && util.ExistIntArray(parentCatalog, common_const.SystemContentCatalog.Catalog) {
+		return common_const.SystemContentCatalog, true
+	}
+
 	var retCatalog model.CatalogDetail
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where name = '%s'`, name)
 	helper.Query(sql)
@@ -148,21 +154,38 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int
 func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
-	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), Catalog: []int{}, CreateDate: r.RCreateDate(), Creater: r.ROwner()}
-		summaryList = append(summaryList, summary)
-	}
+	if id == common_const.SystemContentCatalog.ID {
+		ress := resource.QueryResourceByType(helper, model.CATALOG)
+		for _, v := range ress {
+			summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), Catalog: []int{}, CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
-	for index, value := range summaryList {
-		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
-		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			for _, r := range v.Relative() {
+				summary.Catalog = append(summary.Catalog, r.RId())
+			}
+
+			// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+			if len(summary.Catalog) == 0 {
+				summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+				summaryList = append(summaryList, summary)
+			}
+		}
+	} else {
+		resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.CATALOG)
+		for _, r := range resList {
+			summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), Catalog: []int{}, CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+			summaryList = append(summaryList, summary)
 		}
 
-		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+		for index, value := range summaryList {
+			summary := &summaryList[index]
+			ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
+			for _, r := range ress {
+				summary.Catalog = append(summary.Catalog, r.RId())
+			}
+
+			if len(summary.Catalog) == 0 {
+				summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			}
 		}
 	}
 
@@ -171,6 +194,10 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 
 // DeleteCatalog 删除指定类
 func DeleteCatalog(helper dbhelper.DBHelper, id int) bool {
+	if id == common_const.SystemContentCatalog.ID {
+		return false
+	}
+
 	result := false
 	helper.BeginTransaction()
 
@@ -243,6 +270,9 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 // CreateCatalog 新建分类
 func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate string, parent []int, creater int, enableTransaction bool) (model.Summary, bool) {
 	catalog := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.CATALOG, Catalog: parent, CreateDate: createDate, Creater: creater}
+	if name == common_const.SystemContentCatalog.Name && util.SameIntArray(parent, common_const.SystemContentCatalog.Catalog) {
+		return catalog, false
+	}
 
 	if !enableTransaction {
 		helper.BeginTransaction()
@@ -294,10 +324,18 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 
 // SaveCatalog 保存分类
 func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTransaction bool) (model.Summary, bool) {
+	summary := model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Type: model.CATALOG, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}
+	if catalog.ID == common_const.SystemContentCatalog.ID {
+		return summary, false
+	}
+
+	if catalog.Name == common_const.SystemContentCatalog.Name && util.SameIntArray(catalog.Catalog, common_const.SystemContentCatalog.Catalog) {
+		return summary, false
+	}
+
 	if !enableTransaction {
 		helper.BeginTransaction()
 	}
-	summary := model.Summary{Unit: model.Unit{ID: catalog.ID, Name: catalog.Name}, Type: model.CATALOG, Catalog: catalog.Catalog, CreateDate: catalog.CreateDate, Creater: catalog.Creater}
 
 	result := false
 	for {

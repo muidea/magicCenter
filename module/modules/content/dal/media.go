@@ -7,6 +7,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -34,6 +35,11 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 
 		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -80,6 +86,11 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+		}
 	}
 
 	return summaryList
@@ -103,6 +114,11 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 		ress := resource.QueryRelativeResource(helper, id, model.MEDIA)
 		for _, r := range ress {
 			media.Catalog = append(media.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(media.Catalog) == 0 {
+			media.Catalog = append(media.Catalog, common_const.SystemContentCatalog.ID)
 		}
 	}
 
@@ -153,12 +169,14 @@ func createSingle(helper dbhelper.DBHelper, name, description, fileToken, create
 		media.ID = id
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.Description, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
-			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-			if ok {
-				res.AppendRelative(ca)
-			} else {
-				result = false
-				break
+			if c != common_const.SystemContentCatalog.ID {
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
 			}
 		}
 
@@ -223,12 +241,14 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 			res.UpdateDescription(media.Description)
 			res.ResetRelative()
 			for _, c := range media.Catalog {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
+				if c != common_const.SystemContentCatalog.ID {
+					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+					if ok {
+						res.AppendRelative(ca)
+					} else {
+						result = false
+						break
+					}
 				}
 			}
 

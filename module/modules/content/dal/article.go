@@ -6,6 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -33,6 +34,10 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 
 		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -82,6 +87,11 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 		for _, r := range ress {
 			ar.Catalog = append(ar.Catalog, r.RId())
 		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(ar.Catalog) == 0 {
+			ar.Catalog = append(ar.Catalog, common_const.SystemContentCatalog.ID)
+		}
 	}
 
 	return ar, result
@@ -101,6 +111,11 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 	}
 
@@ -126,12 +141,14 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 		article.ID = id
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
-			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-			if ok {
-				res.AppendRelative(ca)
-			} else {
-				result = false
-				break
+			if c != common_const.SystemContentCatalog.ID {
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
 			}
 		}
 
@@ -175,12 +192,14 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 
 			res.ResetRelative()
 			for _, c := range article.Catalog {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
+				if c != common_const.SystemContentCatalog.ID {
+					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+					if ok {
+						res.AppendRelative(ca)
+					} else {
+						result = false
+						break
+					}
 				}
 			}
 

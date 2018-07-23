@@ -6,6 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
+	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -33,6 +34,11 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 
 		for _, r := range v.Relative() {
 			summary.Catalog = append(summary.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -79,6 +85,11 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, r.RId())
 		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+		}
 	}
 
 	return summaryList
@@ -101,6 +112,11 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 		ress := resource.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
 			link.Catalog = append(link.Catalog, r.RId())
+		}
+
+		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
+		if len(link.Catalog) == 0 {
+			link.Catalog = append(link.Catalog, common_const.SystemContentCatalog.ID)
 		}
 	}
 
@@ -155,12 +171,14 @@ func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDa
 		lnk.ID = id
 		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.Description, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
-			ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-			if ok {
-				res.AppendRelative(ca)
-			} else {
-				result = false
-				break
+			if c != common_const.SystemContentCatalog.ID {
+				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
+				}
 			}
 		}
 
@@ -202,12 +220,14 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 			res.UpdateDescription(lnk.Description)
 			res.ResetRelative()
 			for _, c := range lnk.Catalog {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
+				if c != common_const.SystemContentCatalog.ID {
+					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+					if ok {
+						res.AppendRelative(ca)
+					} else {
+						result = false
+						break
+					}
 				}
 			}
 			if result {

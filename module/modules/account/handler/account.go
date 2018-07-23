@@ -3,6 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/dbhelper"
+	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/model"
 )
@@ -37,6 +38,10 @@ func (i *impl) GetUsers(ids []int) []model.User {
 }
 
 func (i *impl) FindUserByID(id int) (model.UserDetail, bool) {
+	if id == common_const.SystemAccountUser.ID {
+		return common_const.SystemAccountUser, true
+	}
+
 	return i.userHandler.findUserByID(id)
 }
 
@@ -49,10 +54,22 @@ func (i *impl) FindUserByAccount(account, password string) (model.UserDetail, bo
 }
 
 func (i *impl) CreateUser(account, password, email string, groups []int) (model.UserDetail, bool) {
+	if account == common_const.SystemAccountUser.Name {
+		return model.UserDetail{}, false
+	}
+
 	return i.userHandler.createUser(account, password, email, groups)
 }
 
 func (i *impl) SaveUser(user model.UserDetail) (model.UserDetail, bool) {
+	if user.Name == common_const.SystemAccountUser.Name {
+		return user, false
+	}
+
+	if user.ID == common_const.SystemAccountUser.ID {
+		return user, false
+	}
+
 	return i.userHandler.saveUser(user)
 }
 
@@ -61,6 +78,10 @@ func (i *impl) SaveUserWithPassword(user model.UserDetail, password string) (mod
 }
 
 func (i *impl) DestroyUserByID(id int) bool {
+	if id == common_const.SystemAccountUser.ID {
+		return false
+	}
+
 	return i.userHandler.destroyUserByID(id)
 }
 
@@ -81,6 +102,10 @@ func (i *impl) GetGroups(ids []int) []model.Group {
 }
 
 func (i *impl) FindGroupByID(id int) (model.GroupDetail, bool) {
+	if id == common_const.SystemAccountGroup.ID {
+		return common_const.SystemAccountGroup, true
+	}
+
 	return i.groupHandler.findGroupByID(id)
 }
 
@@ -89,18 +114,36 @@ func (i *impl) FindSubGroup(id int) []model.Group {
 }
 
 func (i *impl) FindGroupByName(name string) (model.GroupDetail, bool) {
+	if name == common_const.SystemAccountGroup.Name {
+		return common_const.SystemAccountGroup, true
+	}
+
 	return i.groupHandler.findGroupByName(name)
 }
 
 func (i *impl) CreateGroup(name, description string, catalog int) (model.GroupDetail, bool) {
+	if name == common_const.SystemAccountGroup.Name {
+		return model.GroupDetail{}, false
+	}
+
 	return i.groupHandler.createGroup(name, description, catalog)
 }
 
 func (i *impl) SaveGroup(group model.GroupDetail) (model.GroupDetail, bool) {
+	if group.ID == common_const.SystemAccountGroup.ID {
+		return group, false
+	}
+	if group.Name == common_const.SystemAccountGroup.Name {
+		return group, false
+	}
+
 	return i.groupHandler.saveGroup(group)
 }
 
 func (i *impl) DestroyGroup(id int) bool {
+	if id == common_const.SystemAccountGroup.ID {
+		return false
+	}
 
 	subGroups := i.groupHandler.findSubGroup(id)
 	groupUsers := i.userHandler.findUserByGroup(id)
