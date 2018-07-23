@@ -245,7 +245,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
@@ -342,7 +342,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)

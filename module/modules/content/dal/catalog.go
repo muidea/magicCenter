@@ -39,7 +39,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.BuildinContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 
 		summaryList = append(summaryList, summary)
@@ -68,8 +68,8 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 	}
 
 	for _, val := range ids {
-		if val == common_const.BuildinContentCatalog.ID {
-			catalogList = append(catalogList, model.Catalog{ID: common_const.BuildinContentCatalog.ID, Name: common_const.BuildinContentCatalog.Name})
+		if val == common_const.SystemContentCatalog.ID {
+			catalogList = append(catalogList, common_const.SystemContentCatalog)
 		}
 	}
 
@@ -78,10 +78,6 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 
 // QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
-	if id == common_const.BuildinContentCatalog.ID {
-		return common_const.BuildinContentCatalog, true
-	}
-
 	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where id = %d`, id)
 	helper.Query(sql)
@@ -100,13 +96,13 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 			catalog.Catalog = append(catalog.Catalog, r.RId())
 		}
 		if len(catalog.Catalog) == 0 {
-			catalog.Catalog = append(catalog.Catalog, common_const.BuildinContentCatalog.ID)
+			catalog.Catalog = append(catalog.Catalog, common_const.SystemContentCatalog.ID)
 		}
 	}
 	return catalog, result
 }
 
-// QueryCatalogByName 查询指定Cataloga里名字为Name的Catalog
+// QueryCatalogByName 查询指定Cataloga里名字为Name, 父分类有parentCatalog的Catalog
 func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int) (model.CatalogDetail, bool) {
 	var retCatalog model.CatalogDetail
 	sql := fmt.Sprintf(`select id, name, description, createdate, creater from content_catalog where name = '%s'`, name)
@@ -126,15 +122,15 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int
 
 		found := false
 		for _, r := range ress {
+			val.Catalog = append(val.Catalog, r.RId())
+
 			if r.RId() == parentCatalog {
 				found = true
 			}
-			val.Catalog = append(val.Catalog, r.RId())
 		}
-		if len(val.Catalog) == 0 {
-			val.Catalog = append(val.Catalog, common_const.BuildinContentCatalog.ID)
-		}
-		if parentCatalog == common_const.BuildinContentCatalog.ID {
+
+		if parentCatalog == common_const.SystemContentCatalog.ID {
+			val.Catalog = append(val.Catalog, common_const.SystemContentCatalog.ID)
 			found = true
 		}
 
@@ -166,7 +162,7 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 		}
 
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.BuildinContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
 		}
 	}
 
@@ -266,7 +262,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 		catalog.ID = id
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
 		for _, c := range parent {
-			if c != common_const.BuildinContentCatalog.ID {
+			if c != common_const.SystemContentCatalog.ID {
 				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 				if ok {
 					res.AppendRelative(ca)
@@ -320,7 +316,7 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 			res.UpdateDescription(catalog.Description)
 			res.ResetRelative()
 			for _, c := range catalog.Catalog {
-				if c != common_const.BuildinContentCatalog.ID {
+				if c != common_const.SystemContentCatalog.ID {
 					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
 					if ok {
 						res.AppendRelative(ca)

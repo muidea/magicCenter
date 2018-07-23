@@ -164,7 +164,7 @@ func (i *catalogQueryByNameRoute) queryCatalogByNameHandler(w http.ResponseWrite
 			result.Reason = "无效参数"
 			break
 		}
-		parentID := common_const.BuildinContentCatalog.ID
+		parentID := common_const.SystemContentCatalog.ID
 		parentCatalog := r.URL.Query().Get("catalog")
 		if len(parentCatalog) > 0 {
 			id, err := strconv.Atoi(parentCatalog)
@@ -318,8 +318,8 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		parentID := common_const.BuildinContentCatalog.ID
-		parentCatalog := r.URL.Query().Get("catalog")
+		parentID := common_const.SystemContentCatalog.ID
+		parentCatalog := r.URL.Query().Get("strictCatalog")
 		if len(parentCatalog) > 0 {
 			parentID, err = strconv.Atoi(parentCatalog)
 			if err != nil {
@@ -415,8 +415,8 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		parentID := common_const.BuildinContentCatalog.ID
-		parentCatalog := r.URL.Query().Get("catalog")
+		parentID := common_const.SystemContentCatalog.ID
+		parentCatalog := r.URL.Query().Get("strictCatalog")
 		if len(parentCatalog) > 0 {
 			parentID, err = strconv.Atoi(parentCatalog)
 			if err != nil {

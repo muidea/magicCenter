@@ -252,7 +252,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
@@ -339,7 +339,7 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 			result.Reason = "无效参数"
 			break
 		}
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
@@ -443,7 +443,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)

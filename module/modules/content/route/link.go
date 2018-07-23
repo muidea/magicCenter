@@ -244,7 +244,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)
@@ -340,7 +340,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		catalogID := common_const.BuildinContentCatalog.ID
+		catalogID := common_const.SystemContentCatalog.ID
 		catalog := r.URL.Query().Get("strictCatalog")
 		if len(catalog) > 0 {
 			catalogID, err = strconv.Atoi(catalog)

@@ -31,6 +31,7 @@ func CreateAccountLoginRoute(casHandler common.CASHandler, sessionRegistry commo
 	i := accountLoginRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
+
 	return &i, true
 }
 
@@ -151,7 +152,9 @@ func (i *accountLogoutRoute) logoutHandler(w http.ResponseWriter, r *http.Reques
 			result.Reason = "非法请求"
 			break
 		}
+		session.ClearAccount()
 		session.RemoveOption(common_const.AuthToken)
+		session.Flush()
 
 		result.ErrorCode = common_def.Success
 		break
