@@ -28,6 +28,3 @@ const PutEndpoint = "/registry/:id"
 
 // DeleteEndpoint 删除指定Endpoint
 const DeleteEndpoint = "/registry/:id"
-
-// GetEndpointAuth 终端认证
-const GetEndpointAuth = "/verify/:id"

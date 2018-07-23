@@ -22,8 +22,5 @@ func AppendEndpointRoute(routes []common.Route, endpointHandler common.EndpointH
 	rt = CreatePutEndpointRoute(endpointHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetEndpointAuthRoute(endpointHandler, sessionRegistry)
-	routes = append(routes, rt)
-
 	return routes
 }

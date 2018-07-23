@@ -48,13 +48,6 @@ func CreatePutEndpointRoute(endpointHandler common.EndpointHandler, accountHandl
 	return &i
 }
 
-// CreateGetEndpointAuthRoute VerifyEndpointAuth
-func CreateGetEndpointAuthRoute(endpointHandler common.EndpointHandler, sessionRegistry common.SessionRegistry) common.Route {
-
-	i := endpointAuthRoute{endpointHandler: endpointHandler, sessionRegistry: sessionRegistry}
-	return &i
-}
-
 type endpointQueryRoute struct {
 	endpointHandler common.EndpointHandler
 	accountHandler  common.AccountHandler
@@ -312,64 +305,6 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 
-	b, err := json.Marshal(result)
-	if err != nil {
-		panic("json.Marshal, failed, err:" + err.Error())
-	}
-
-	w.Write(b)
-}
-
-type endpointAuthRoute struct {
-	endpointHandler common.EndpointHandler
-	sessionRegistry common.SessionRegistry
-}
-
-func (i *endpointAuthRoute) Method() string {
-	return common.GET
-}
-
-func (i *endpointAuthRoute) Pattern() string {
-	return net.JoinURL(def.URL, def.GetEndpointAuth)
-}
-
-func (i *endpointAuthRoute) Handler() interface{} {
-	return i.verifyHandler
-}
-
-func (i *endpointAuthRoute) AuthGroup() int {
-	return common_const.VisitorAuthGroup.ID
-}
-
-func (i *endpointAuthRoute) verifyHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("verifyHandler")
-
-	session := i.sessionRegistry.GetSession(w, r)
-	result := common_def.VerifyEndpointResult{}
-	for {
-		_, strID := net.SplitRESTAPI(r.URL.Path)
-		endpoint, ok := i.endpointHandler.QueryEndpointByID(strID)
-		if !ok {
-			result.ErrorCode = common_def.Failed
-			result.Reason = "对象不存在"
-			break
-		}
-
-		authToken := r.URL.Query().Get(common_const.AuthToken)
-		if endpoint.AuthToken != authToken {
-			result.ErrorCode = common_def.InvalidAuthority
-			result.Reason = "无效授权"
-			break
-		}
-
-		session.SetOption(common_const.AuthToken, authToken)
-		session.SetOption(common_const.ExpiryDate, -1)
-		session.Flush()
-
-		result.ErrorCode = common_def.Success
-		result.SessionID = session.ID()
-		break
-	}
 	b, err := json.Marshal(result)
 	if err != nil {
 		panic("json.Marshal, failed, err:" + err.Error())

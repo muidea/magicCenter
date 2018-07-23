@@ -22,3 +22,6 @@ const DeleteUserLogout = "/user/"
 
 // GetUserStatus 用户状态
 const GetUserStatus = "/user/"
+
+// VerifyEndpoint 终端登录
+const VerifyEndpoint = "/endpoint/"
