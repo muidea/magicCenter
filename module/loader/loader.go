@@ -45,9 +45,10 @@ func (instance *impl) LoadAllModules(configuration common.Configuration, session
 
 	content.LoadModule(configuration, sessionRegistry, moduleHub)
 
+	endpoint.LoadModule(configuration, sessionRegistry, moduleHub)
+
 	cas.LoadModule(configuration, sessionRegistry, moduleHub)
 
 	authority.LoadModule(configuration, sessionRegistry, moduleHub)
 
-	endpoint.LoadModule(configuration, sessionRegistry, moduleHub)
 }

@@ -37,7 +37,7 @@ func (i *endpointLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request
 	log.Print("loginHandler")
 
 	session := i.sessionRegistry.GetSession(w, r)
-	param := common_def.LoginEndpointParam{}
+	param := &common_def.LoginEndpointParam{}
 	result := common_def.LoginEndpointResult{}
 	for {
 		err := net.ParsePostJSON(r, param)
