@@ -99,15 +99,18 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return ok
 	}
 
-	onlineAccount, ok := i.casHandler.VerifyToken(authToken)
+	onlineEntry, _, ok := i.casHandler.VerifyToken(authToken)
 	if !ok {
 		// 如果提供了authToken，但是校验不通过，则认为没有权限
 		log.Printf("invalid authToken, authToken:%s", authToken)
 		return false
 	}
+	if onlineEntry.User.ID == common_const.SystemAccountUser.ID {
+		return true
+	}
 
 	avalibleFlag := false
-	moduleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineAccount.User.ID)
+	moduleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineEntry.User.ID)
 	for _, val := range moduleAuthGroup {
 		if val.Module == acl.Module && val.AuthGroup >= acl.AuthGroup {
 			avalibleFlag = true

@@ -49,21 +49,21 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 		}
 
 		remoteAddr := r.RemoteAddr
-		onlineUser, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
+		onlineEntry, authToken, ok := i.casHandler.LoginAccount(param.Account, param.Password, remoteAddr)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "登入失败"
 			break
 		}
 
-		session.SetAccount(onlineUser.User)
-		session.SetOption(common_const.AuthToken, onlineUser.AuthToken)
+		session.SetAccount(onlineEntry.User)
+		session.SetOption(common_const.AuthToken, authToken)
 		session.Flush()
 
-		result.ErrorCode = common_def.Success
-		result.OnlineUser = onlineUser
+		result.OnlineEntry = onlineEntry
 		result.SessionID = session.ID()
-		result.AuthToken = onlineUser.AuthToken
+		result.AuthToken = authToken
+		result.ErrorCode = common_def.Success
 		break
 	}
 	b, err := json.Marshal(result)
@@ -163,14 +163,15 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 			break
 		}
 
-		onlineUser, found := i.casHandler.VerifyToken(authToken.(string))
+		onlineEntry, token, found := i.casHandler.VerifyToken(authToken.(string))
 		if !found {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效Token"
 			break
 		}
 
-		result.OnlineUser = onlineUser
+		result.OnlineEntry = onlineEntry
+		result.AuthToken = token
 		result.SessionID = session.ID()
 		result.ErrorCode = common_def.Success
 		break

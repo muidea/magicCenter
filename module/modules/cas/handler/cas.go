@@ -24,7 +24,7 @@ func CreateCASHandler(moduleHub common.ModuleHub) common.CASHandler {
 	i := impl{
 		accountManager:  accountManager,
 		endpointManager: endpointManager,
-		onlineUser:      make(map[string]model.AccountOnlineView)}
+		onlineEntry:     make(map[string]model.OnlineEntryView)}
 
 	return &i
 }
@@ -32,7 +32,7 @@ func CreateCASHandler(moduleHub common.ModuleHub) common.CASHandler {
 type impl struct {
 	accountManager  accountManager
 	endpointManager endpointManager
-	onlineUser      map[string]model.AccountOnlineView
+	onlineEntry     map[string]model.OnlineEntryView
 }
 
 func (i *impl) getTokenPrefix(authToken string) (string, error) {
@@ -65,42 +65,42 @@ func (i *impl) getIP(remoteAddr string) string {
 	return ip
 }
 
-func (i *impl) LoginAccount(account, password, remoteAddr string) (model.AccountOnlineView, bool) {
+func (i *impl) LoginAccount(account, password, remoteAddr string) (model.OnlineEntryView, string, bool) {
 	token := i.allocAuthToken(userPrefix)
-	onlineUser, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr), token)
+	onlineEntry, ok := i.accountManager.userLogin(account, password, i.getIP(remoteAddr))
 	if ok {
-		i.onlineUser[onlineUser.AuthToken] = onlineUser
+		i.onlineEntry[token] = onlineEntry
 	}
 
-	return onlineUser, ok
+	return onlineEntry, token, ok
 }
 
-func (i *impl) LoginEndpoint(identifyID, authToken, remoteAddr string) (model.AccountOnlineView, bool) {
+func (i *impl) LoginEndpoint(identifyID, authToken, remoteAddr string) (model.OnlineEntryView, string, bool) {
 	token := i.allocAuthToken(endpointPrefix)
-	onlineUser, ok := i.endpointManager.endpointLogin(identifyID, authToken, i.getIP(remoteAddr), token)
+	onlineEntry, ok := i.endpointManager.endpointLogin(identifyID, authToken, i.getIP(remoteAddr))
 	if ok {
-		i.onlineUser[onlineUser.AuthToken] = onlineUser
+		i.onlineEntry[token] = onlineEntry
 	}
 
-	return onlineUser, ok
+	return onlineEntry, token, ok
 }
 
 func (i *impl) Logout(authToken, remoteAddr string) bool {
-	delete(i.onlineUser, authToken)
+	delete(i.onlineEntry, authToken)
 
 	return true
 }
 
-func (i *impl) VerifyToken(authToken string) (model.AccountOnlineView, bool) {
-	info, ok := i.onlineUser[authToken]
-	return info, ok
+func (i *impl) VerifyToken(authToken string) (model.OnlineEntryView, string, bool) {
+	info, ok := i.onlineEntry[authToken]
+	return info, authToken, ok
 }
 
 func (i *impl) RefreshToken(authToken, remoteAddr string) bool {
-	info, ok := i.onlineUser[authToken]
+	info, ok := i.onlineEntry[authToken]
 	if ok {
 		info.UpdateTime = time.Now().Unix()
-		i.onlineUser[authToken] = info
+		i.onlineEntry[authToken] = info
 	} else {
 		log.Printf("illegal authToken[%s] refresh, not login, address:%s", authToken, remoteAddr)
 	}
@@ -110,7 +110,7 @@ func (i *impl) RefreshToken(authToken, remoteAddr string) bool {
 
 func (i *impl) GetSummary() model.CasSummary {
 	result := model.CasSummary{}
-	onlineItem := model.UnitSummary{Name: "在线", Type: "online", Count: len(i.onlineUser)}
+	onlineItem := model.UnitSummary{Name: "在线", Type: "online", Count: len(i.onlineEntry)}
 	result = append(result, onlineItem)
 
 	return result

@@ -29,8 +29,8 @@ func createEndpointManager(moduleHub common.ModuleHub) (endpointManager, bool) {
 }
 
 // bool 是否登陆成功
-func (s *endpointManager) endpointLogin(endpointID, authToken, remoteAddr, token string) (model.AccountOnlineView, bool) {
-	info := model.AccountOnlineView{}
+func (s *endpointManager) endpointLogin(endpointID, authToken, remoteAddr string) (model.OnlineEntryView, bool) {
+	info := model.OnlineEntryView{}
 
 	endpoint, ok := s.endpointHandler.QueryEndpointByID(endpointID)
 	if !ok {
@@ -46,7 +46,7 @@ func (s *endpointManager) endpointLogin(endpointID, authToken, remoteAddr, token
 	info.Address = remoteAddr
 	info.LoginTime = time.Now().Unix()
 	info.UpdateTime = info.LoginTime
-	info.AuthToken = token
+	info.IdentifyID = endpointID
 
 	return info, true
 }

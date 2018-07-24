@@ -14,8 +14,8 @@ class Cas:
         params = {'account': account, 'password': password}
         val = self.session.post('/cas/user/', params)
         if val and val['errorCode'] == 0:
-            self.authority_token = val['onlineUser']['authToken']
-            self.current_user = val['onlineUser']
+            self.authority_token = val['onlineEntry']['authToken']
+            self.current_user = val['onlineEntry']
             return True
         return False
 
@@ -30,7 +30,7 @@ class Cas:
         'status'
         val = self.session.get('/cas/user/?authToken=%s'%auth_token)
         if val and val['errorCode'] == 0:
-            return val['onlineUser']
+            return val['onlineEntry']
         return None
 
 def main():

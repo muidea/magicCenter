@@ -15,7 +15,13 @@ func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, ses
 	rt, _ = CreateAccountStatusRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
-	rt, _ = CreateEndpointVerifyRoute(casHandler, sessionRegistry)
+	rt, _ = CreateEndpointLoginRoute(casHandler, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateEndpointLogoutRoute(casHandler, sessionRegistry)
+	routes = append(routes, rt)
+
+	rt, _ = CreateEndpointStatusRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
 	return routes
@@ -46,9 +52,25 @@ func CreateAccountStatusRoute(casHandler common.CASHandler, sessionRegistry comm
 	return &i, true
 }
 
-// CreateEndpointVerifyRoute 创建EndpointVerify Route
-func CreateEndpointVerifyRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
-	i := endpointVerifyRoute{
+// CreateEndpointLoginRoute 创建EndpointVerify Route
+func CreateEndpointLoginRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := endpointLoginRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
+}
+
+// CreateEndpointLogoutRoute 创建EndpointLogout Route
+func CreateEndpointLogoutRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := endpointLogoutRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
+}
+
+// CreateEndpointStatusRoute 创建EndpointStatus Route
+func CreateEndpointStatusRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := endpointStatusRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
 	return &i, true

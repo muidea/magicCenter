@@ -29,8 +29,8 @@ func createAccountManager(moduleHub common.ModuleHub) (accountManager, bool) {
 
 // model.UserDetail 登陆用户
 // bool 是否登陆成功
-func (s *accountManager) userLogin(account, password, remoteAddr, authToken string) (model.AccountOnlineView, bool) {
-	info := model.AccountOnlineView{}
+func (s *accountManager) userLogin(account, password, remoteAddr string) (model.OnlineEntryView, bool) {
+	info := model.OnlineEntryView{}
 
 	user, ok := s.accountHandler.FindUserByAccount(account, password)
 	if !ok {
@@ -42,6 +42,7 @@ func (s *accountManager) userLogin(account, password, remoteAddr, authToken stri
 	info.Address = remoteAddr
 	info.LoginTime = time.Now().Unix()
 	info.UpdateTime = info.LoginTime
-	info.AuthToken = authToken
+	info.IdentifyID = account
+
 	return info, true
 }
