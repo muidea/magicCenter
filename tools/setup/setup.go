@@ -37,7 +37,7 @@ func main() {
 	}
 
 	agent := agent.New()
-	sessionID, ok := agent.Start(centerServer, endpointID, authToken)
+	authToken, sessionID, ok := agent.Start(centerServer, endpointID, authToken)
 	if !ok {
 		log.Printf("illegal runtime param, centerServer:%s, endpointID:%s, authToken:%s", centerServer, endpointID, authToken)
 		return
@@ -49,7 +49,7 @@ func main() {
 		return
 	}
 
-	catalog := model.Catalog{ID: common_const.BuildinContentCatalog.ID, Name: common_const.BuildinContentCatalog.Name}
+	catalog := model.Catalog{ID: common_const.SystemContentCatalog.ID, Name: common_const.SystemContentCatalog.Name}
 	rootView, ok := agent.CreateCatalog(endpointName, "auto setup catalog description", []model.Catalog{catalog}, authToken, sessionID)
 	if !ok {
 		log.Printf("create root catalog failed")

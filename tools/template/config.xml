@@ -15,7 +15,7 @@
             <catalog name="b" description="B,description" catalog="a"/>
         </catalogs>
         <articles>
-            <article name="C" description="C description" catalog="a,b,c"/>
+            <article name="C" description="C description" catalog="a,b"/>
         </articles>
     </content>
 </app>
