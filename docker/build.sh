@@ -39,6 +39,13 @@ function buildBin()
     else
         echo "buildBin success."
     fi
+    go install muidea.com/magicCenter/tools/setupTool
+    if [ $? -ne 0 ]; then
+        echo "buildBin failed."
+        exit 1
+    else
+        echo "buildBin success."
+    fi
 }
 
 function prepareFile()
