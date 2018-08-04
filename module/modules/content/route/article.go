@@ -269,7 +269,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			catalogIds = append(catalogIds, val.ID)
 		}
 
-		article, ok := i.contentHandler.CreateArticle(param.Name, param.Content, createDate, catalogIds, user.ID)
+		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, catalogIds, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "新建失败"
@@ -369,7 +369,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 
 		article := model.ArticleDetail{}
 		article.ID = id
-		article.Name = param.Name
+		article.Title = param.Title
 		article.Content = param.Content
 		article.Catalog = catalogIds
 		article.CreateDate = updateDate

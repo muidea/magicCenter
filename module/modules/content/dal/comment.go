@@ -48,12 +48,12 @@ func QueryCommentByCatalog(helper dbhelper.DBHelper, idValue int, typeValue stri
 // QueryCommentByID 查询指定Comment
 func QueryCommentByID(helper dbhelper.DBHelper, id int) (model.CommentDetail, bool) {
 	comment := model.CommentDetail{}
-	sql := fmt.Sprintf(`select id, subject, comment, createdate, creater from content_comment where id =%d`, id)
+	sql := fmt.Sprintf(`select id, subject, content, createdate, creater from content_comment where id =%d`, id)
 	helper.Query(sql)
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&comment.ID, &comment.Name, &comment.Comment, &comment.CreateDate, &comment.Creater)
+		helper.GetValue(&comment.ID, &comment.Subject, &comment.Content, &comment.CreateDate, &comment.Creater)
 		result = true
 	}
 	helper.Finish()
@@ -72,6 +72,16 @@ func QueryCommentByID(helper dbhelper.DBHelper, id int) (model.CommentDetail, bo
 	}
 
 	return comment, result
+}
+
+// DisableCommentByID 禁止指定Comment
+func DisableCommentByID(helper dbhelper.DBHelper, id int) bool {
+	result := false
+
+	sql := fmt.Sprintf(`update content_comment set flag=1 where id =%d`, id)
+	_, result = helper.Execute(sql)
+
+	return result
 }
 
 // DeleteCommentByID 删除指定Comment
@@ -104,8 +114,8 @@ func DeleteCommentByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateComment 新建Comment
-func CreateComment(helper dbhelper.DBHelper, subject, comment, createDate string, creater int, catalogs []int) (model.Summary, bool) {
-	desc := util.ExtractSummary(comment)
+func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+	desc := util.ExtractSummary(content)
 	cmt := model.Summary{Unit: model.Unit{Name: subject}, Description: desc, Type: model.COMMENT, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocCommentID()
@@ -114,7 +124,7 @@ func CreateComment(helper dbhelper.DBHelper, subject, comment, createDate string
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_comment (id, subject, comment, createDate, creater) values (%d,'%s','%s','%s', %d)`, id, subject, comment, createDate, creater)
+		sql := fmt.Sprintf(`insert into content_comment (id, subject, content, createDate, creater) values (%d,'%s','%s','%s', %d)`, id, subject, content, createDate, creater)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
@@ -152,14 +162,14 @@ func CreateComment(helper dbhelper.DBHelper, subject, comment, createDate string
 
 // SaveComment 保存Comment
 func SaveComment(helper dbhelper.DBHelper, cmt model.CommentDetail) (model.Summary, bool) {
-	desc := util.ExtractSummary(cmt.Comment)
-	summary := model.Summary{Unit: model.Unit{ID: cmt.ID, Name: cmt.Name}, Description: desc, Type: model.COMMENT, Catalog: cmt.Catalog, CreateDate: cmt.CreateDate, Creater: cmt.Creater}
+	desc := util.ExtractSummary(cmt.Content)
+	summary := model.Summary{Unit: model.Unit{ID: cmt.ID, Name: cmt.Subject}, Description: desc, Type: model.COMMENT, Catalog: cmt.Catalog, CreateDate: cmt.CreateDate, Creater: cmt.Creater}
 	result := false
 	helper.BeginTransaction()
 
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_comment set subject ='%s', comment ='%s', createdate='%s', creater=%d where id=%d`, cmt.Name, cmt.Comment, cmt.CreateDate, cmt.Creater, cmt.ID)
+		sql := fmt.Sprintf(`update content_comment set subject ='%s', content ='%s', createdate='%s', creater=%d where id=%d`, cmt.Subject, cmt.Content, cmt.CreateDate, cmt.Creater, cmt.ID)
 		_, result = helper.Execute(sql)
 
 		if result {
@@ -169,7 +179,7 @@ func SaveComment(helper dbhelper.DBHelper, cmt model.CommentDetail) (model.Summa
 				break
 			}
 
-			res.UpdateName(cmt.Name)
+			res.UpdateName(cmt.Subject)
 			res.UpdateDescription(desc)
 			res.ResetRelative()
 			for _, c := range cmt.Catalog {

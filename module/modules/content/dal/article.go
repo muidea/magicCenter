@@ -59,10 +59,10 @@ func QueryArticles(helper dbhelper.DBHelper, ids []int) []model.Article {
 	defer helper.Finish()
 
 	for helper.Next() {
-		summary := model.Article{}
-		helper.GetValue(&summary.ID, &summary.Name)
+		article := model.Article{}
+		helper.GetValue(&article.ID, &article.Title)
 
-		articleList = append(articleList, summary)
+		articleList = append(articleList, article)
 	}
 
 	return articleList
@@ -77,7 +77,7 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 
 	result := false
 	if helper.Next() {
-		helper.GetValue(&ar.ID, &ar.Name, &ar.Content, &ar.Creater, &ar.CreateDate)
+		helper.GetValue(&ar.ID, &ar.Title, &ar.Content, &ar.Creater, &ar.CreateDate)
 		result = true
 	}
 	helper.Finish()
@@ -171,13 +171,13 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
 	desc := util.ExtractSummary(article.Content)
-	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Description: desc, Type: model.ARTICLE, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
+	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Title}, Description: desc, Type: model.ARTICLE, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
 	result := false
 
 	helper.BeginTransaction()
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Name, article.Content, article.Creater, article.CreateDate, article.ID)
+		sql := fmt.Sprintf(`update content_article set title ='%s', content ='%s', creater =%d, createdate ='%s' where id=%d`, article.Title, article.Content, article.Creater, article.CreateDate, article.ID)
 		_, result = helper.Execute(sql)
 
 		if result {
@@ -187,7 +187,7 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 				break
 			}
 
-			res.UpdateName(article.Name)
+			res.UpdateName(article.Title)
 			res.UpdateDescription(desc)
 
 			res.ResetRelative()
