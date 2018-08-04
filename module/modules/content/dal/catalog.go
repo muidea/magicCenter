@@ -76,7 +76,7 @@ func QueryCatalogs(helper dbhelper.DBHelper, ids []int) []model.Catalog {
 
 // QueryCatalogByID 查询指定ID的Catalog
 func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bool) {
-	catalog := model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
+	catalog := model.CatalogDetail{Catalog: []int{}}
 	if id == common_const.SystemContentCatalog.ID {
 		return common_const.SystemContentCatalog, true
 	}
@@ -117,7 +117,7 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog int
 	catalogList := []*model.CatalogDetail{}
 	result := false
 	for helper.Next() {
-		catalog := &model.CatalogDetail{Summary: model.Summary{Catalog: []int{}}}
+		catalog := &model.CatalogDetail{Catalog: []int{}}
 		helper.GetValue(&catalog.ID, &catalog.Name, &catalog.Description, &catalog.CreateDate, &catalog.Creater)
 		catalogList = append(catalogList, catalog)
 	}

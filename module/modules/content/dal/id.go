@@ -10,6 +10,7 @@ type idHolder struct {
 	catalogID int
 	linkID    int
 	mediaID   int
+	commentID int
 }
 
 func (s *idHolder) Handle() {
@@ -42,6 +43,11 @@ func (s *idHolder) AllocMediaID() int {
 	return s.mediaID
 }
 
+func (s *idHolder) AllocCommentID() int {
+	s.commentID++
+	return s.commentID
+}
+
 var holder = &idHolder{}
 
 func init() {
@@ -62,4 +68,8 @@ func allocLinkID() int {
 
 func allocMediaID() int {
 	return holder.AllocMediaID()
+}
+
+func allocCommentID() int {
+	return holder.AllocCommentID()
 }

@@ -124,7 +124,8 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 
 // CreateArticle 保存文章
 func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
-	article := model.Summary{Unit: model.Unit{Name: title}, Type: model.ARTICLE, Catalog: catalogs, CreateDate: createDate, Creater: creater}
+	desc := util.ExtractSummary(content)
+	article := model.Summary{Unit: model.Unit{Name: title}, Description: desc, Type: model.ARTICLE, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocArticleID()
 	result := false
@@ -137,7 +138,6 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 			break
 		}
 
-		desc := util.ExtractSummary(content)
 		article.ID = id
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
@@ -170,7 +170,8 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 
 // SaveArticle 保存文章
 func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.Summary, bool) {
-	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Type: model.ARTICLE, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
+	desc := util.ExtractSummary(article.Content)
+	summary := model.Summary{Unit: model.Unit{ID: article.ID, Name: article.Name}, Description: desc, Type: model.ARTICLE, Catalog: article.Catalog, CreateDate: article.CreateDate, Creater: article.Creater}
 	result := false
 
 	helper.BeginTransaction()
@@ -187,7 +188,6 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 			}
 
 			res.UpdateName(article.Name)
-			desc := util.ExtractSummary(article.Content)
 			res.UpdateDescription(desc)
 
 			res.ResetRelative()
