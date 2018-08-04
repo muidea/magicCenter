@@ -17,14 +17,14 @@ func TestArticle(t *testing.T) {
 	defer helper.Release()
 
 	ar := model.ArticleDetail{}
-	ar.Name = "testing"
+	ar.Title = "testing"
 	ar.Content = "123456789"
 	ar.Creater = 0
 	ar.CreateDate = "2016-08-08 00:00:00"
 	ar.Catalog = append(ar.Catalog, 8)
 	ar.ID = 10
 
-	summary, ret := CreateArticle(helper, ar.Name, ar.Content, ar.Catalog, ar.Creater, ar.CreateDate)
+	summary, ret := CreateArticle(helper, ar.Title, ar.Content, ar.Catalog, ar.Creater, ar.CreateDate)
 	if !ret {
 		t.Error("CreateArticle failed")
 		return

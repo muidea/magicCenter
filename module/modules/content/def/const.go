@@ -80,6 +80,18 @@ const DeleteMedia = "/media/:id"
 // GetMediaList 查询文件列表
 const GetMediaList = "/medias/"
 
+// PostComment 新建Comment
+const PostComment = "/comment/"
+
+// PutComment 更新Comment
+const PutComment = "/comment/:id"
+
+// DeleteComment 删除Comment
+const DeleteComment = "/comment/:id"
+
+// GetCommentList 查询链接列表
+const GetCommentList = "/comments/"
+
 // QuerySummary 查询Smmary
 const QuerySummary = "/summary/"
 

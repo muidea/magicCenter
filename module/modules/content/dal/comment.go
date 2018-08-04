@@ -25,53 +25,29 @@ func loadCommentID(helper dbhelper.DBHelper) int {
 }
 
 // QueryCommentByCatalog 查询指定分类下的Comment
-func QueryCommentByCatalog(helper dbhelper.DBHelper, idValue int, typeValue string) []model.Summary {
-	summaryList := []model.Summary{}
+func QueryCommentByCatalog(helper dbhelper.DBHelper, idValue int, typeValue string) []model.CommentDetail {
+	commentList := []model.CommentDetail{}
 
+	ids := []int{}
 	resList := resource.QueryReferenceResource(helper, idValue, typeValue, model.COMMENT)
 	for _, r := range resList {
-		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
-		summaryList = append(summaryList, summary)
+		ids = append(ids, r.RId())
 	}
 
-	for index, value := range summaryList {
-		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
-		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
-		}
+	if len(ids) == 0 {
+		return commentList
 	}
 
-	return summaryList
-}
-
-// QueryCommentByID 查询指定Comment
-func QueryCommentByID(helper dbhelper.DBHelper, id int) (model.CommentDetail, bool) {
-	comment := model.CommentDetail{}
-	sql := fmt.Sprintf(`select id, subject, content, createdate, creater from content_comment where id =%d`, id)
+	sql := fmt.Sprintf(`select id, subject, content, createdate, creater, flag from content_comment where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
+	for helper.Next() {
+		comment := model.CommentDetail{}
+		helper.GetValue(&comment.ID, &comment.Subject, &comment.Content, &comment.CreateDate, &comment.Creater, &comment.Flag)
 
-	result := false
-	if helper.Next() {
-		helper.GetValue(&comment.ID, &comment.Subject, &comment.Content, &comment.CreateDate, &comment.Creater)
-		result = true
-	}
-	helper.Finish()
-
-	if result {
-		ress := resource.QueryRelativeResource(helper, comment.ID, model.COMMENT)
-		for _, r := range ress {
-			comment.Catalog = append(comment.Catalog, r.RId())
-		}
-
-		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
-		// unexpected
-		//if len(comment.Catalog) == 0 {
-		//comment.Catalog = append(comment.Catalog, common_const.SystemContentCatalog.ID)
-		//}
+		commentList = append(commentList, comment)
 	}
 
-	return comment, result
+	return commentList
 }
 
 // DisableCommentByID 禁止指定Comment
