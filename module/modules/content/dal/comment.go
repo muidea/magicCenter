@@ -25,11 +25,11 @@ func loadCommentID(helper dbhelper.DBHelper) int {
 }
 
 // QueryCommentByCatalog 查询指定分类下的Comment
-func QueryCommentByCatalog(helper dbhelper.DBHelper, idValue int, typeValue string) []model.CommentDetail {
+func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.CommentDetail {
 	commentList := []model.CommentDetail{}
 
 	ids := []int{}
-	resList := resource.QueryReferenceResource(helper, idValue, typeValue, model.COMMENT)
+	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.COMMENT)
 	for _, r := range resList {
 		ids = append(ids, r.RId())
 	}
@@ -90,7 +90,7 @@ func DeleteCommentByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateComment 新建Comment
-func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string, creater int, catalogs []model.CatalogUnit) (model.Summary, bool) {
 	desc := util.ExtractSummary(content)
 	cmt := model.Summary{Unit: model.Unit{Name: subject}, Description: desc, Type: model.COMMENT, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
@@ -109,8 +109,8 @@ func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string
 		cmt.ID = id
 		res := resource.CreateSimpleRes(cmt.ID, model.COMMENT, cmt.Name, cmt.Description, cmt.CreateDate, cmt.Creater)
 		for _, c := range cmt.Catalog {
-			if c != common_const.SystemContentCatalog.ID {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
@@ -159,8 +159,8 @@ func SaveComment(helper dbhelper.DBHelper, cmt model.CommentDetail) (model.Summa
 			res.UpdateDescription(desc)
 			res.ResetRelative()
 			for _, c := range cmt.Catalog {
-				if c != common_const.SystemContentCatalog.ID {
-					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 					if ok {
 						res.AppendRelative(ca)
 					} else {

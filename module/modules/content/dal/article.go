@@ -33,11 +33,11 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
 		for _, r := range v.Relative() {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 
 		summaryList = append(summaryList, summary)
@@ -85,12 +85,12 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 	if result {
 		ress := resource.QueryRelativeResource(helper, ar.ID, model.ARTICLE)
 		for _, r := range ress {
-			ar.Catalog = append(ar.Catalog, r.RId())
+			ar.Catalog = append(ar.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(ar.Catalog) == 0 {
-			ar.Catalog = append(ar.Catalog, common_const.SystemContentCatalog.ID)
+			ar.Catalog = append(ar.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -98,9 +98,9 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 }
 
 // QueryArticleSummaryByCatalog 查询指定分类下的所有文章摘要
-func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
+func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
 	summaryList := []model.Summary{}
-	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.ARTICLE)
+	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.ARTICLE)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -110,12 +110,12 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 		summary := &summaryList[index]
 		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -123,7 +123,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog int) []model
 }
 
 // CreateArticle 保存文章
-func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []int, creater int, createDate string) (model.Summary, bool) {
+func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []model.CatalogUnit, creater int, createDate string) (model.Summary, bool) {
 	desc := util.ExtractSummary(content)
 	article := model.Summary{Unit: model.Unit{Name: title}, Description: desc, Type: model.ARTICLE, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
@@ -141,8 +141,8 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []i
 		article.ID = id
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
 		for _, c := range article.Catalog {
-			if c != common_const.SystemContentCatalog.ID {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
@@ -192,8 +192,8 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 
 			res.ResetRelative()
 			for _, c := range article.Catalog {
-				if c != common_const.SystemContentCatalog.ID {
-					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 					if ok {
 						res.AppendRelative(ca)
 					} else {

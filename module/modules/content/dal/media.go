@@ -34,12 +34,12 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
 		for _, r := range v.Relative() {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 
 		summaryList = append(summaryList, summary)
@@ -71,10 +71,10 @@ func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
 }
 
 // QueryMediaByCatalog 查询指定分类的图像
-func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
+func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, id, model.CATALOG, model.MEDIA)
+	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.MEDIA)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -84,12 +84,12 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, id int) []model.Summary {
 		summary := &summaryList[index]
 		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -113,12 +113,12 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 	if result {
 		ress := resource.QueryRelativeResource(helper, id, model.MEDIA)
 		for _, r := range ress {
-			media.Catalog = append(media.Catalog, r.RId())
+			media.Catalog = append(media.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(media.Catalog) == 0 {
-			media.Catalog = append(media.Catalog, common_const.SystemContentCatalog.ID)
+			media.Catalog = append(media.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -153,7 +153,7 @@ func DeleteMediaByID(helper dbhelper.DBHelper, id int) bool {
 	return result
 }
 
-func createSingle(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
+func createSingle(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []model.CatalogUnit) (model.Summary, bool) {
 	media := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocMediaID()
@@ -169,8 +169,8 @@ func createSingle(helper dbhelper.DBHelper, name, description, fileToken, create
 		media.ID = id
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.Description, media.CreateDate, media.Creater)
 		for _, c := range media.Catalog {
-			if c != common_const.SystemContentCatalog.ID {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
@@ -193,7 +193,7 @@ func createSingle(helper dbhelper.DBHelper, name, description, fileToken, create
 }
 
 // CreateMedia 新建文件
-func CreateMedia(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []int) (model.Summary, bool) {
+func CreateMedia(helper dbhelper.DBHelper, name, description, fileToken, createDate string, expiration, creater int, catalogs []model.CatalogUnit) (model.Summary, bool) {
 	media := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.MEDIA, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 	result := false
 	helper.BeginTransaction()
@@ -241,8 +241,8 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 			res.UpdateDescription(media.Description)
 			res.ResetRelative()
 			for _, c := range media.Catalog {
-				if c != common_const.SystemContentCatalog.ID {
-					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 					if ok {
 						res.AppendRelative(ca)
 					} else {

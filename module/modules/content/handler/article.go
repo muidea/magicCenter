@@ -22,11 +22,11 @@ func (i *articleActionHandler) findArticleByID(id int) (model.ArticleDetail, boo
 	return dal.QueryArticleByID(i.dbhelper, id)
 }
 
-func (i *articleActionHandler) findArticleByCatalog(catalog int) []model.Summary {
+func (i *articleActionHandler) findArticleByCatalog(catalog model.CatalogUnit) []model.Summary {
 	return dal.QueryArticleSummaryByCatalog(i.dbhelper, catalog)
 }
 
-func (i *articleActionHandler) createArticle(title, content, createDate string, catalog []int, author int) (model.Summary, bool) {
+func (i *articleActionHandler) createArticle(title, content, createDate string, catalog []model.CatalogUnit, author int) (model.Summary, bool) {
 	return dal.CreateArticle(i.dbhelper, title, content, catalog, author, createDate)
 }
 

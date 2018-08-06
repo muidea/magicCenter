@@ -22,11 +22,11 @@ func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, boo
 	return dal.QueryCatalogByID(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) findCatalogByCatalog(id int) []model.Summary {
-	return dal.QueryCatalogByCatalog(i.dbhelper, id)
+func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit) []model.Summary {
+	return dal.QueryCatalogByCatalog(i.dbhelper, catalog)
 }
 
-func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []int, author int) (model.Summary, bool) {
+func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []model.CatalogUnit, author int) (model.Summary, bool) {
 	return dal.CreateCatalog(i.dbhelper, name, description, createDate, parent, author, false)
 }
 
@@ -38,10 +38,10 @@ func (i *catalogActionHandler) destroyCatalog(id int) bool {
 	return dal.DeleteCatalog(i.dbhelper, id)
 }
 
-func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, parentCatalog int, description, updateDate string, updater int) ([]model.Catalog, bool) {
+func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, parentCatalog model.CatalogUnit, description, updateDate string, updater int) ([]model.Summary, bool) {
 	return dal.UpdateCatalog(i.dbhelper, catalogs, parentCatalog, description, updateDate, updater)
 }
 
-func (i *catalogActionHandler) queryCatalogByName(name string, parentCatalog int) (model.CatalogDetail, bool) {
+func (i *catalogActionHandler) queryCatalogByName(name string, parentCatalog model.CatalogUnit) (model.CatalogDetail, bool) {
 	return dal.QueryCatalogByName(i.dbhelper, name, parentCatalog)
 }

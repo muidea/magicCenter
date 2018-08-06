@@ -6,6 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCommon/foundation/util"
+	"muidea.com/magicCommon/model"
 )
 
 func loadResourceOID(helper dbhelper.DBHelper) int {
@@ -47,6 +48,8 @@ type Resource interface {
 	ResetRelative()
 	// AppendRelative 追加关联资源
 	AppendRelative(r Resource)
+
+	CatalogUnit() *model.CatalogUnit
 }
 
 // CreateSimpleRes 创建新的资源
@@ -130,6 +133,10 @@ func (s *simpleRes) AppendRelative(r Resource) {
 	s.relative = append(s.relative, r)
 }
 
+func (s *simpleRes) CatalogUnit() *model.CatalogUnit {
+	return &model.CatalogUnit{ID: s.rid, Type: s.rType}
+}
+
 func (s *simpleRes) setID(id int) {
 	s.oid = id
 }
@@ -199,13 +206,43 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 	return retVal
 }
 
+// QueryResourceByIDs 查询指定类型的资源
+func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string) []Resource {
+	retVal := []Resource{}
+	if len(rIDs) == 0 {
+		return retVal
+	}
+
+	ids := util.IntArray2Str(rIDs)
+
+	resList := []simpleRes{}
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
+	helper.Query(sql)
+	defer helper.Finish()
+	for helper.Next() {
+		res := simpleRes{}
+		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
+
+		resList = append(resList, res)
+	}
+
+	for idx := range resList {
+		cur := resList[idx]
+		cur.relative = relativeResource(helper, cur.oid)
+
+		retVal = append(retVal, &cur)
+	}
+
+	return retVal
+}
+
 // QueryResourceByUser 查询指定用户的资源
 func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 	resList := []simpleRes{}
 
-	UserStr := util.IntArray2Str(uids)
+	userStr := util.IntArray2Str(uids)
 
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in ('%s') order by type`, UserStr)
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type`, userStr)
 	helper.Query(sql)
 	defer helper.Finish()
 	for helper.Next() {

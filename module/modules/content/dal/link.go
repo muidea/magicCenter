@@ -33,12 +33,12 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
 		for _, r := range v.Relative() {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 
 		summaryList = append(summaryList, summary)
@@ -70,10 +70,10 @@ func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 }
 
 // QueryLinkByCatalog 查询指定分类下的Link
-func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
+func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, catalog, model.CATALOG, model.LINK)
+	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.LINK)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -83,12 +83,12 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog int) []model.Summary {
 		summary := &summaryList[index]
 		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
 		for _, r := range ress {
-			summary.Catalog = append(summary.Catalog, r.RId())
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(summary.Catalog) == 0 {
-			summary.Catalog = append(summary.Catalog, common_const.SystemContentCatalog.ID)
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -111,12 +111,12 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 	if result {
 		ress := resource.QueryRelativeResource(helper, link.ID, model.LINK)
 		for _, r := range ress {
-			link.Catalog = append(link.Catalog, r.RId())
+			link.Catalog = append(link.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
 		if len(link.Catalog) == 0 {
-			link.Catalog = append(link.Catalog, common_const.SystemContentCatalog.ID)
+			link.Catalog = append(link.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
@@ -153,7 +153,7 @@ func DeleteLinkByID(helper dbhelper.DBHelper, id int) bool {
 }
 
 // CreateLink 新建Link
-func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDate string, creater int, catalogs []int) (model.Summary, bool) {
+func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDate string, creater int, catalogs []model.CatalogUnit) (model.Summary, bool) {
 	lnk := model.Summary{Unit: model.Unit{Name: name}, Description: description, Type: model.LINK, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocLinkID()
@@ -171,8 +171,8 @@ func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDa
 		lnk.ID = id
 		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.Description, lnk.CreateDate, lnk.Creater)
 		for _, c := range lnk.Catalog {
-			if c != common_const.SystemContentCatalog.ID {
-				ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 				if ok {
 					res.AppendRelative(ca)
 				} else {
@@ -220,8 +220,8 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 			res.UpdateDescription(lnk.Description)
 			res.ResetRelative()
 			for _, c := range lnk.Catalog {
-				if c != common_const.SystemContentCatalog.ID {
-					ca, ok := resource.QueryResourceByID(helper, c, model.CATALOG)
+				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
+					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
 					if ok {
 						res.AppendRelative(ca)
 					} else {

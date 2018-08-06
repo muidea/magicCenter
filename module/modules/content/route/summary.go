@@ -85,7 +85,7 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 		summary, ok := i.contentHandler.QuerySummaryByName(summaryName, summaryType)
 		if ok {
 			result.Summary.Summary = summary
-			result.Summary.Catalog = i.contentHandler.GetCatalogs(summary.Catalog)
+			result.Summary.Catalog = i.contentHandler.GetSummaryByIDs(summary.Catalog)
 
 			user, ok := i.accountHandler.FindUserByID(summary.Creater)
 			if ok {
@@ -165,7 +165,7 @@ func (i *summaryDetailGetRoute) getSummaryDetailHandler(w http.ResponseWriter, r
 			}
 		}
 
-		summarys := i.contentHandler.GetSummaryContent(id, contentType)
+		summarys := i.contentHandler.QuerySummaryContent(id, contentType)
 		for _, v := range summarys {
 			if len(userStr) > 0 {
 				if v.Creater != uid {
@@ -174,7 +174,7 @@ func (i *summaryDetailGetRoute) getSummaryDetailHandler(w http.ResponseWriter, r
 			}
 			view := model.SummaryView{}
 			view.Summary = v
-			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
+			view.Catalog = i.contentHandler.GetSummaryByIDs(v.Catalog)
 
 			user, ok := i.accountHandler.FindUserByID(v.Creater)
 			if ok {
@@ -244,7 +244,7 @@ func (i *summaryDetailQueryRoute) querySummaryDetailHandler(w http.ResponseWrite
 		for _, v := range summarys {
 			view := model.SummaryView{}
 			view.Summary = v
-			view.Catalog = i.contentHandler.GetCatalogs(v.Catalog)
+			view.Catalog = i.contentHandler.GetSummaryByIDs(v.Catalog)
 
 			user, ok := i.accountHandler.FindUserByID(v.Creater)
 			if ok {

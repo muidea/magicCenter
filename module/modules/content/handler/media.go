@@ -29,11 +29,11 @@ func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
 	return dal.QueryMediaByID(i.dbhelper, id)
 }
 
-func (i *mediaActionHandler) findMediaByCatalog(catalog int) []model.Summary {
+func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit) []model.Summary {
 	return dal.QueryMediaByCatalog(i.dbhelper, catalog)
 }
 
-func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []int, expiration, author int) (model.Summary, bool) {
+func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []model.CatalogUnit, expiration, author int) (model.Summary, bool) {
 	result, ok := dal.CreateMedia(i.dbhelper, name, desc, fileToken, createDate, expiration, author, catalog)
 
 	i.loadAllMediaExpiration()
