@@ -5,6 +5,8 @@ import (
 	"muidea.com/magicCenter/common/daemon"
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
+	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -230,6 +232,10 @@ func (i *impl) GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
+	if util.ExistIntArray(common_const.SystemContentCatalog.ID, catalogIds) {
+		summaryList = append(summaryList, *common_const.SystemContentCatalog.Summary())
+	}
+
 	links := resource.QueryResourceByIDs(i.dbhelper, linkIds, model.LINK)
 	for _, r := range links {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
