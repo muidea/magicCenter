@@ -23,7 +23,7 @@ func TestLink(t *testing.T) {
 	lnk.URL = "test url"
 	lnk.Logo = "test link logo"
 	lnk.Creater = 10
-	lnk.Catalog = append(lnk.Catalog, 8)
+	lnk.Catalog = append(lnk.Catalog, model.CatalogUnit{ID: 8, Type: "catalog"})
 
 	_, ret := SaveLink(helper, lnk)
 	if !ret {
@@ -31,7 +31,7 @@ func TestLink(t *testing.T) {
 		return
 	}
 
-	lnkList := QueryLinkByCatalog(helper, 8)
+	lnkList := QueryLinkByCatalog(helper, model.CatalogUnit{ID: 8, Type: "catalog"})
 	if len(lnkList) != 1 {
 		t.Error("QueryLinkByCatalog failed")
 		return

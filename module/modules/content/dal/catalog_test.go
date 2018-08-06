@@ -21,7 +21,7 @@ func TestCatalog(t *testing.T) {
 	ca.ID = 12
 	ca.Name = "testCatalog"
 	ca.Creater = 3
-	ca.Catalog = append(ca.Catalog, 10)
+	ca.Catalog = append(ca.Catalog, model.CatalogUnit{ID: 10, Type: "catalog"})
 	catalog, ret := SaveCatalog(helper, ca, true)
 	if !ret {
 		t.Error("SaveCatalog failed")
@@ -36,8 +36,8 @@ func TestCatalog(t *testing.T) {
 		t.Error("QueryCatalogByID failed")
 	}
 
-	ca.Catalog = append(ca.Catalog, 8)
-	ca.Catalog = append(ca.Catalog, 9)
+	ca.Catalog = append(ca.Catalog, model.CatalogUnit{ID: 8, Type: "catalog"})
+	ca.Catalog = append(ca.Catalog, model.CatalogUnit{ID: 9, Type: "catalog"})
 
 	catalog, ret = SaveCatalog(helper, ca, true)
 	if !ret {

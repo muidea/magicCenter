@@ -145,7 +145,7 @@ func SaveComment(helper dbhelper.DBHelper, cmt model.CommentDetail) (model.Summa
 
 	for {
 		// modify
-		sql := fmt.Sprintf(`update content_comment set subject ='%s', content ='%s', createdate='%s', creater=%d where id=%d`, cmt.Subject, cmt.Content, cmt.CreateDate, cmt.Creater, cmt.ID)
+		sql := fmt.Sprintf(`update content_comment set subject ='%s', content ='%s', createdate='%s', creater=%d, flag=%d where id=%d`, cmt.Subject, cmt.Content, cmt.CreateDate, cmt.Creater, cmt.Flag, cmt.ID)
 		_, result = helper.Execute(sql)
 
 		if result {

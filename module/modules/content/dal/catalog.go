@@ -288,7 +288,7 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 				if ok {
 					res.AppendRelative(ca)
 				} else {
-					log.Printf("QueryResourceByID failed,%d, catalog:%s", c, model.CATALOG)
+					log.Printf("QueryResourceByID failed,id:%d, catalog:%s", c.ID, c.Type)
 					result = false
 					break
 				}

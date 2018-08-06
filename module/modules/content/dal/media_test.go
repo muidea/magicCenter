@@ -23,7 +23,7 @@ func TestMedia(t *testing.T) {
 	img.FileToken = "test image fileToken"
 	img.Description = "test image descr"
 	img.Creater = 10
-	img.Catalog = append(img.Catalog, 10)
+	img.Catalog = append(img.Catalog, model.CatalogUnit{ID: 10, Type: "catalog"})
 
 	_, ret := SaveMedia(helper, img)
 	if !ret {
@@ -31,7 +31,7 @@ func TestMedia(t *testing.T) {
 		return
 	}
 
-	imgList := QueryMediaByCatalog(helper, 10)
+	imgList := QueryMediaByCatalog(helper, model.CatalogUnit{ID: 10, Type: "catalog"})
 	if len(imgList) != 1 {
 		t.Error("QueryMediaByCatalog failed")
 		return

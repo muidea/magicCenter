@@ -21,7 +21,7 @@ func TestArticle(t *testing.T) {
 	ar.Content = "123456789"
 	ar.Creater = 0
 	ar.CreateDate = "2016-08-08 00:00:00"
-	ar.Catalog = append(ar.Catalog, 8)
+	ar.Catalog = append(ar.Catalog, model.CatalogUnit{ID: 8, Type: "catalog"})
 	ar.ID = 10
 
 	summary, ret := CreateArticle(helper, ar.Title, ar.Content, ar.Catalog, ar.Creater, ar.CreateDate)
