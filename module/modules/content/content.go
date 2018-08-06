@@ -29,6 +29,7 @@ func LoadModule(configuration common.Configuration, sessionRegistry common.Sessi
 	instance.routes = route.AppendCatalogRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendLinkRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 	instance.routes = route.AppendMediaRoute(instance.routes, instance.contentHandler, instance.accountHandler, fileRegistryHandler, sessionRegistry)
+	instance.routes = route.AppendCommentRoute(instance.routes, instance.contentHandler, instance.accountHandler, sessionRegistry)
 
 	moduleHub.RegisterModule(instance)
 }

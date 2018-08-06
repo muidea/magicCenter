@@ -153,7 +153,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 	result := common_def.QueryLinkListResult{}
 	for true {
-		catalog, err := common_def.DecodeCatalog(r)
+		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
 			links := i.contentHandler.GetAllLink()
 			for _, val := range links {
@@ -241,7 +241,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -345,7 +345,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"

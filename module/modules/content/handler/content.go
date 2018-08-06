@@ -338,6 +338,10 @@ func (i *impl) GetLastContent(count int) []model.ContentUnit {
 	resultList := []model.ContentUnit{}
 	res := resource.GetLastResource(i.dbhelper, count)
 	for _, v := range res {
+		if v.RType() == model.COMMENT {
+			continue
+		}
+
 		item := model.ContentUnit{Title: v.RName(), Type: v.RType(), CreateDate: v.RCreateDate()}
 
 		resultList = append(resultList, item)

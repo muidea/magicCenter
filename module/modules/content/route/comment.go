@@ -85,7 +85,7 @@ func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryCommentListResult{}
 	for true {
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil || strictCatalog == nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -158,7 +158,7 @@ func (i *commentCreateRoute) createCommentHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil || strictCatalog == nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -167,21 +167,7 @@ func (i *commentCreateRoute) createCommentHandler(w http.ResponseWriter, r *http
 
 		catalogUnits := []model.CatalogUnit{}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog([]model.Catalog{param.Catalog}, *strictCatalog, description, createDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			catalogUnits = append(catalogUnits, model.CatalogUnit{ID: param.Catalog.ID, Type: strictCatalog.Type})
-		}
+		catalogUnits = append(catalogUnits, model.CatalogUnit{ID: strictCatalog.ID, Type: strictCatalog.Type})
 
 		comment, ok := i.contentHandler.CreateComment(param.Subject, param.Content, createDate, catalogUnits, user.ID)
 		if !ok {
@@ -256,7 +242,7 @@ func (i *commentUpdateRoute) updateCommentHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil || strictCatalog == nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -265,21 +251,7 @@ func (i *commentUpdateRoute) updateCommentHandler(w http.ResponseWriter, r *http
 
 		catalogUnits := []model.CatalogUnit{}
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog([]model.Catalog{param.Catalog}, *strictCatalog, description, updateDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			catalogUnits = append(catalogUnits, model.CatalogUnit{ID: param.Catalog.ID, Type: strictCatalog.Type})
-		}
+		catalogUnits = append(catalogUnits, model.CatalogUnit{ID: strictCatalog.ID, Type: strictCatalog.Type})
 
 		comment := model.CommentDetail{}
 		comment.ID = id

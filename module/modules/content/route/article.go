@@ -104,10 +104,10 @@ func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.R
 		article, ok := i.contentHandler.GetArticleByID(id)
 		if ok {
 			user, _ := i.accountHandler.FindUserByID(article.Creater)
-			catalogSummarys := i.contentHandler.GetSummaryByIDs(article.Catalog)
+			strictCatalogSummarys := i.contentHandler.GetSummaryByIDs(article.Catalog)
 
 			result.Article.ArticleDetail = article
-			result.Article.Catalog = catalogSummarys
+			result.Article.Catalog = strictCatalogSummarys
 			result.Article.Creater = user.User
 			result.ErrorCode = common_def.Success
 		} else {
@@ -151,16 +151,16 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryArticleListResult{}
 	for true {
-		catalog, err := common_def.DecodeCatalog(r)
-		if catalog == nil && err == nil {
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
+		if strictCatalog == nil && err == nil {
 			articles := i.contentHandler.GetAllArticle()
 			for _, val := range articles {
 				article := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
-				catalogSummarys := i.contentHandler.GetSummaryByIDs(val.Catalog)
+				strictCatalogSummarys := i.contentHandler.GetSummaryByIDs(val.Catalog)
 
 				article.Summary = val
-				article.Catalog = catalogSummarys
+				article.Catalog = strictCatalogSummarys
 				article.Creater = user.User
 
 				result.Article = append(result.Article, article)
@@ -174,14 +174,14 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		articles := i.contentHandler.GetArticleByCatalog(*catalog)
+		articles := i.contentHandler.GetArticleByCatalog(*strictCatalog)
 		for _, val := range articles {
 			article := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
-			catalogSummarys := i.contentHandler.GetSummaryByIDs(val.Catalog)
+			strictCatalogSummarys := i.contentHandler.GetSummaryByIDs(val.Catalog)
 
 			article.Summary = val
-			article.Catalog = catalogSummarys
+			article.Catalog = strictCatalogSummarys
 			article.Creater = user.User
 
 			result.Article = append(result.Article, article)
@@ -242,7 +242,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -253,38 +253,38 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
 		}
 
-		catalogUnits := []model.CatalogUnit{}
+		strictCatalogUnits := []model.CatalogUnit{}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
 		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, createDate, user.ID)
+			description := "auto update strictCatalog description"
+			strictCatalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, createDate, user.ID)
 			if !ok {
 				result.ErrorCode = common_def.Failed
 				result.Reason = "更新Catalog失败"
 				break
 			}
 
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
+			for _, val := range strictCatalogSummarys {
+				strictCatalogUnits = append(strictCatalogUnits, *val.CatalogUnit())
 			}
 		} else {
 			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
+				strictCatalogUnits = append(strictCatalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
 			}
 		}
 
-		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, catalogUnits, user.ID)
+		article, ok := i.contentHandler.CreateArticle(param.Title, param.Content, createDate, strictCatalogUnits, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "新建失败"
 			break
 		}
 
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		strictCatalogSummarys := i.contentHandler.GetSummaryByIDs(strictCatalogUnits)
 
 		result.Article.Summary = article
 		result.Article.Creater = user
-		result.Article.Catalog = catalogSummarys
+		result.Article.Catalog = strictCatalogSummarys
 		result.ErrorCode = common_def.Success
 		break
 	}
@@ -348,7 +348,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -359,23 +359,23 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
 		}
 
-		catalogUnits := []model.CatalogUnit{}
+		strictCatalogUnits := []model.CatalogUnit{}
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
 		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, updateDate, user.ID)
+			description := "auto update strictCatalog description"
+			strictCatalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, updateDate, user.ID)
 			if !ok {
 				result.ErrorCode = common_def.Failed
 				result.Reason = "更新Catalog失败"
 				break
 			}
 
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
+			for _, val := range strictCatalogSummarys {
+				strictCatalogUnits = append(strictCatalogUnits, *val.CatalogUnit())
 			}
 		} else {
 			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
+				strictCatalogUnits = append(strictCatalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
 			}
 		}
 
@@ -383,7 +383,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		article.ID = id
 		article.Title = param.Title
 		article.Content = param.Content
-		article.Catalog = catalogUnits
+		article.Catalog = strictCatalogUnits
 		article.CreateDate = updateDate
 		article.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveArticle(article)
@@ -393,10 +393,10 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		strictCatalogSummarys := i.contentHandler.GetSummaryByIDs(strictCatalogUnits)
 		result.Article.Summary = summmary
 		result.Article.Creater = user
-		result.Article.Catalog = catalogSummarys
+		result.Article.Catalog = strictCatalogSummarys
 		result.ErrorCode = common_def.Success
 		break
 	}

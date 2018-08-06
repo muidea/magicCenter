@@ -164,7 +164,7 @@ func (i *catalogQueryByNameRoute) queryCatalogByNameHandler(w http.ResponseWrite
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -225,7 +225,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryCatalogListResult{}
 	for true {
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if strictCatalog == nil && err == nil {
 			catalogs := i.contentHandler.GetAllCatalog()
 			for _, val := range catalogs {
@@ -316,7 +316,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 			break
 		}
 
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -421,7 +421,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"

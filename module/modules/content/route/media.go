@@ -161,7 +161,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 	result := common_def.QueryMediaListResult{Media: []model.SummaryView{}}
 	for true {
-		catalog, err := common_def.DecodeCatalog(r)
+		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
 			medias := i.contentHandler.GetAllMedia()
 			for _, val := range medias {
@@ -249,7 +249,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -345,7 +345,7 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
@@ -458,7 +458,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeCatalog(r)
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
