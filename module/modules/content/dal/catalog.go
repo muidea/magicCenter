@@ -253,9 +253,9 @@ func UpdateCatalog(helper dbhelper.DBHelper, catalogs []model.Catalog, parentCat
 
 		if result {
 			helper.Commit()
+		} else {
+			helper.Rollback()
 		}
-
-		helper.Rollback()
 	}
 
 	return summaryList, result
@@ -282,17 +282,18 @@ func CreateCatalog(helper dbhelper.DBHelper, name, description, createDate strin
 
 		catalog.ID = id
 		res := resource.CreateSimpleRes(catalog.ID, model.CATALOG, catalog.Name, catalog.Description, catalog.CreateDate, catalog.Creater)
+
+		constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 		for _, c := range parent {
-			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					log.Printf("QueryResourceByID failed,id:%d, catalog:%s", c.ID, c.Type)
-					result = false
-					break
-				}
-			} else if name == common_const.SystemContentCatalog.Name {
+			if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+				continue
+			}
+
+			ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				log.Printf("QueryResourceByID failed,id:%d, catalog:%s", c.ID, c.Type)
 				result = false
 				break
 			}
@@ -343,12 +344,19 @@ func SaveCatalog(helper dbhelper.DBHelper, catalog model.CatalogDetail, enableTr
 			res.UpdateName(catalog.Name)
 			res.UpdateDescription(catalog.Description)
 			res.ResetRelative()
+			constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 			for _, c := range catalog.Catalog {
-				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-					if ok {
-						res.AppendRelative(ca)
-					}
+				if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+					continue
+				}
+
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					log.Printf("QueryResourceByID failed,id:%d, catalog:%s", c.ID, c.Type)
+					result = false
+					break
 				}
 			}
 			result = resource.SaveResource(helper, res, true)

@@ -170,15 +170,18 @@ func CreateLink(helper dbhelper.DBHelper, name, description, url, logo, createDa
 
 		lnk.ID = id
 		res := resource.CreateSimpleRes(lnk.ID, model.LINK, lnk.Name, lnk.Description, lnk.CreateDate, lnk.Creater)
+		constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 		for _, c := range lnk.Catalog {
-			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
+			if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+				continue
+			}
+
+			ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				result = false
+				break
 			}
 		}
 
@@ -219,15 +222,18 @@ func SaveLink(helper dbhelper.DBHelper, lnk model.LinkDetail) (model.Summary, bo
 			res.UpdateName(lnk.Name)
 			res.UpdateDescription(lnk.Description)
 			res.ResetRelative()
+			constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 			for _, c := range lnk.Catalog {
-				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-					if ok {
-						res.AppendRelative(ca)
-					} else {
-						result = false
-						break
-					}
+				if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+					continue
+				}
+
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
 				}
 			}
 			if result {

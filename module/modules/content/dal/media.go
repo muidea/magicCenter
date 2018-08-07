@@ -168,15 +168,18 @@ func createSingle(helper dbhelper.DBHelper, name, description, fileToken, create
 
 		media.ID = id
 		res := resource.CreateSimpleRes(media.ID, model.MEDIA, media.Name, media.Description, media.CreateDate, media.Creater)
+		constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 		for _, c := range media.Catalog {
-			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
+			if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+				continue
+			}
+
+			ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				result = false
+				break
 			}
 		}
 
@@ -240,15 +243,18 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 			res.UpdateName(media.Name)
 			res.UpdateDescription(media.Description)
 			res.ResetRelative()
+			constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 			for _, c := range media.Catalog {
-				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-					if ok {
-						res.AppendRelative(ca)
-					} else {
-						result = false
-						break
-					}
+				if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+					continue
+				}
+
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
 				}
 			}
 

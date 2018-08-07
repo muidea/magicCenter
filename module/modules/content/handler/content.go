@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/common/daemon"
 	"muidea.com/magicCenter/common/dbhelper"
@@ -102,6 +104,8 @@ func (i *impl) DestroyCatalog(id int) bool {
 }
 
 func (i *impl) UpdateCatalog(catalogs []model.Catalog, parentCatalog model.CatalogUnit, description, updateDate string, updater int) ([]model.Summary, bool) {
+	log.Print(parentCatalog)
+
 	return i.catalogHandler.updateCatalog(catalogs, parentCatalog, description, updateDate, updater)
 }
 

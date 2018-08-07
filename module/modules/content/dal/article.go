@@ -140,15 +140,18 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []m
 
 		article.ID = id
 		res := resource.CreateSimpleRes(article.ID, model.ARTICLE, article.Name, desc, article.CreateDate, article.Creater)
+		constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 		for _, c := range article.Catalog {
-			if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-				if ok {
-					res.AppendRelative(ca)
-				} else {
-					result = false
-					break
-				}
+			if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+				continue
+			}
+
+			ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+			if ok {
+				res.AppendRelative(ca)
+			} else {
+				result = false
+				break
 			}
 		}
 
@@ -191,15 +194,18 @@ func SaveArticle(helper dbhelper.DBHelper, article model.ArticleDetail) (model.S
 			res.UpdateDescription(desc)
 
 			res.ResetRelative()
+			constCatalogUnit := common_const.SystemContentCatalog.CatalogUnit()
 			for _, c := range article.Catalog {
-				if c.ID != common_const.SystemContentCatalog.ID && c.Type != model.CATALOG {
-					ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
-					if ok {
-						res.AppendRelative(ca)
-					} else {
-						result = false
-						break
-					}
+				if c.ID == constCatalogUnit.ID && c.Type == constCatalogUnit.Type {
+					continue
+				}
+
+				ca, ok := resource.QueryResourceByID(helper, c.ID, c.Type)
+				if ok {
+					res.AppendRelative(ca)
+				} else {
+					result = false
+					break
 				}
 			}
 
