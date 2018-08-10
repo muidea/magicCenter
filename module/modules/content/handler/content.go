@@ -277,6 +277,10 @@ func (i *impl) QuerySummaryByName(summaryName, summaryType string, catalog model
 				break
 			}
 		}
+		if len(subRes) == 0 && common_const.IsSystemContentCatalog(catalog) {
+			res = val
+			found = true
+		}
 
 		if found {
 			break

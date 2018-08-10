@@ -174,75 +174,72 @@ func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string) []Resour
 	}
 	helper.Finish()
 
-	retVal := []Resource{}
-	for idx := range resList {
-		cur := resList[idx]
-		cur.relative = relativeResource(helper, cur.oid)
+	resultList := []Resource{}
+	for _, val := range resList {
+		val.relative = relativeResource(helper, val.oid)
 
-		retVal = append(retVal, cur)
+		resultList = append(resultList, val)
 	}
 
-	return retVal
+	return resultList
 }
 
 // QueryResourceByType 查询指定类型的资源
 func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
-	resList := []simpleRes{}
+	resList := []*simpleRes{}
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type`, rType)
 	helper.Query(sql)
 	defer helper.Finish()
 	for helper.Next() {
-		res := simpleRes{}
+		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
 
-	retVal := []Resource{}
-	for idx := range resList {
-		cur := resList[idx]
-		cur.relative = relativeResource(helper, cur.oid)
+	resultList := []Resource{}
+	for _, val := range resList {
+		val.relative = relativeResource(helper, val.oid)
 
-		retVal = append(retVal, &cur)
+		resultList = append(resultList, val)
 	}
 
-	return retVal
+	return resultList
 }
 
 // QueryResourceByIDs 查询指定类型的资源
 func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string) []Resource {
-	retVal := []Resource{}
+	resultList := []Resource{}
 	if len(rIDs) == 0 {
-		return retVal
+		return resultList
 	}
 
 	ids := util.IntArray2Str(rIDs)
 
-	resList := []simpleRes{}
+	resList := []*simpleRes{}
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
 	helper.Query(sql)
 	defer helper.Finish()
 	for helper.Next() {
-		res := simpleRes{}
+		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
 
-	for idx := range resList {
-		cur := resList[idx]
-		cur.relative = relativeResource(helper, cur.oid)
+	for _, val := range resList {
+		val.relative = relativeResource(helper, val.oid)
 
-		retVal = append(retVal, &cur)
+		resultList = append(resultList, val)
 	}
 
-	return retVal
+	return resultList
 }
 
 // QueryResourceByUser 查询指定用户的资源
 func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
-	resList := []simpleRes{}
+	resList := []*simpleRes{}
 
 	userStr := util.IntArray2Str(uids)
 
@@ -250,21 +247,20 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 	helper.Query(sql)
 	defer helper.Finish()
 	for helper.Next() {
-		res := simpleRes{}
+		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
 
-	retVal := []Resource{}
-	for idx := range resList {
-		cur := resList[idx]
-		cur.relative = relativeResource(helper, cur.oid)
+	resultList := []Resource{}
+	for _, val := range resList {
+		val.relative = relativeResource(helper, val.oid)
 
-		retVal = append(retVal, &cur)
+		resultList = append(resultList, val)
 	}
 
-	return retVal
+	return resultList
 }
 
 // relativeResource 查询关联的资源,即以oid的子资源
@@ -318,10 +314,17 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 	defer helper.Finish()
 
 	resultList := []Resource{}
+	resList := []*simpleRes{}
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
-		resultList = append(resultList, res)
+		resList = append(resList, res)
+	}
+
+	for _, val := range resList {
+		val.relative = relativeResource(helper, val.oid)
+
+		resultList = append(resultList, val)
 	}
 
 	return resultList
