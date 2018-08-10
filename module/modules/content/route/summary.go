@@ -20,10 +20,10 @@ func AppendSummaryRoute(routes []common.Route, contentHandler common.ContentHand
 	rt := CreateQuerySummaryRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateGetSummaryDetailRoute(contentHandler, accountHandler)
+	rt = CreateQuerySummaryContentRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
-	rt = CreateQuerySummaryDetailRoute(contentHandler, accountHandler)
+	rt = CreateQuerySummaryContentByUserRoute(contentHandler, accountHandler)
 	routes = append(routes, rt)
 
 	return routes
@@ -35,15 +35,15 @@ func CreateQuerySummaryRoute(contentHandler common.ContentHandler, accountHandle
 	return &i
 }
 
-// CreateGetSummaryDetailRoute 查询指定分类的Summary
-func CreateGetSummaryDetailRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
-	i := summaryDetailGetRoute{contentHandler: contentHandler, accountHandler: accountHandler}
+// CreateQuerySummaryContentRoute 查询指定分类的Summary
+func CreateQuerySummaryContentRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := summaryContentQueryRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
-// CreateQuerySummaryDetailRoute 查询指定分类的Summary
-func CreateQuerySummaryDetailRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
-	i := summaryDetailQueryRoute{contentHandler: contentHandler, accountHandler: accountHandler}
+// CreateQuerySummaryContentByUserRoute 查询指定分类的Summary
+func CreateQuerySummaryContentByUserRoute(contentHandler common.ContentHandler, accountHandler common.AccountHandler) common.Route {
+	i := summaryContentQueryByUserRoute{contentHandler: contentHandler, accountHandler: accountHandler}
 	return &i
 }
 
@@ -73,6 +73,17 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 
 	result := common_def.QuerySummaryResult{Summary: model.SummaryView{}}
 	for true {
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
+		if err != nil {
+			result.ErrorCode = common_def.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal strictCatalog")
+			break
+		}
+		if strictCatalog == nil {
+			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
+		}
+
 		summaryName := r.URL.Query().Get("name")
 		summaryType := r.URL.Query().Get("type")
 		if len(summaryName) == 0 || len(summaryType) == 0 {
@@ -82,7 +93,7 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		summary, ok := i.contentHandler.QuerySummaryByName(summaryName, summaryType)
+		summary, ok := i.contentHandler.QuerySummaryByName(summaryName, summaryType, *strictCatalog)
 		if ok {
 			result.Summary.Summary = summary
 			result.Summary.Catalog = i.contentHandler.GetSummaryByIDs(summary.Catalog)
@@ -111,67 +122,52 @@ func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.R
 	w.Write(b)
 }
 
-type summaryDetailGetRoute struct {
+type summaryContentQueryRoute struct {
 	contentHandler common.ContentHandler
 	accountHandler common.AccountHandler
 }
 
-func (i *summaryDetailGetRoute) Method() string {
+func (i *summaryContentQueryRoute) Method() string {
 	return common.GET
 }
 
-func (i *summaryDetailGetRoute) Pattern() string {
+func (i *summaryContentQueryRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.GetSummaryDetail)
 }
 
-func (i *summaryDetailGetRoute) Handler() interface{} {
+func (i *summaryContentQueryRoute) Handler() interface{} {
 	return i.getSummaryDetailHandler
 }
 
-func (i *summaryDetailGetRoute) AuthGroup() int {
+func (i *summaryContentQueryRoute) AuthGroup() int {
 	return common_const.UserAuthGroup.ID
 }
 
-func (i *summaryDetailGetRoute) getSummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
+func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getSummaryDetailHandler")
 
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		_, str := net.SplitRESTAPI(r.URL.Path)
-		id, err := strconv.Atoi(str)
+		summaryID, err := strconv.Atoi(str)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
 			log.Printf("illegal id param, id:%s", str)
 			break
 		}
-		contentType := r.URL.Query().Get("type")
-		if len(contentType) == 0 {
+
+		summaryType := r.URL.Query().Get("type")
+		if len(summaryType) == 0 {
 			result.ErrorCode = common_def.IllegalParam
 			result.Reason = "非法参数"
-			log.Printf("illegal contentType param, contentType:%s", contentType)
+			log.Printf("illegal contentType param, summaryType is null")
 			break
 		}
 
-		uid := -1
-		userStr := r.URL.Query().Get("user")
-		if len(userStr) > 0 {
-			uid, err = strconv.Atoi(userStr)
-			if err != nil {
-				result.ErrorCode = common_def.IllegalParam
-				result.Reason = "非法参数"
-				log.Printf("illegal user filter param, user:%s", userStr)
-				break
-			}
-		}
-
-		summarys := i.contentHandler.QuerySummaryContent(id, contentType)
+		summary := model.CatalogUnit{ID: summaryID, Type: summaryType}
+		summarys := i.contentHandler.QuerySummaryContent(summary)
 		for _, v := range summarys {
-			if len(userStr) > 0 {
-				if v.Creater != uid {
-					continue
-				}
-			}
 			view := model.SummaryView{}
 			view.Summary = v
 			view.Catalog = i.contentHandler.GetSummaryByIDs(v.Catalog)
@@ -198,32 +194,40 @@ func (i *summaryDetailGetRoute) getSummaryDetailHandler(w http.ResponseWriter, r
 	w.Write(b)
 }
 
-type summaryDetailQueryRoute struct {
+type summaryContentQueryByUserRoute struct {
 	contentHandler common.ContentHandler
 	accountHandler common.AccountHandler
 }
 
-func (i *summaryDetailQueryRoute) Method() string {
+func (i *summaryContentQueryByUserRoute) Method() string {
 	return common.GET
 }
 
-func (i *summaryDetailQueryRoute) Pattern() string {
+func (i *summaryContentQueryByUserRoute) Pattern() string {
 	return net.JoinURL(def.URL, def.QuerySummaryDetail)
 }
 
-func (i *summaryDetailQueryRoute) Handler() interface{} {
+func (i *summaryContentQueryByUserRoute) Handler() interface{} {
 	return i.querySummaryDetailHandler
 }
 
-func (i *summaryDetailQueryRoute) AuthGroup() int {
+func (i *summaryContentQueryByUserRoute) AuthGroup() int {
 	return common_const.UserAuthGroup.ID
 }
 
-func (i *summaryDetailQueryRoute) querySummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
+func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("querySummaryDetailHandler")
 
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
+		strictCatalog, err := common_def.DecodeStrictCatalog(r)
+		if err != nil {
+			result.ErrorCode = common_def.IllegalParam
+			result.Reason = "非法参数"
+			log.Printf("illegal strictCatalog")
+			break
+		}
+
 		userStr := r.URL.Query().Get("user[]")
 		if len(userStr) == 0 {
 			result.ErrorCode = common_def.IllegalParam
@@ -242,6 +246,19 @@ func (i *summaryDetailQueryRoute) querySummaryDetailHandler(w http.ResponseWrite
 
 		summarys := i.contentHandler.GetSummaryByUser(uids)
 		for _, v := range summarys {
+			if strictCatalog != nil {
+				existFlag := false
+				for _, sv := range v.Catalog {
+					if sv.ID == strictCatalog.ID && sv.Type == strictCatalog.Type {
+						existFlag = true
+						break
+					}
+				}
+				if !existFlag {
+					continue
+				}
+			}
+
 			view := model.SummaryView{}
 			view.Summary = v
 			view.Catalog = i.contentHandler.GetSummaryByIDs(v.Catalog)

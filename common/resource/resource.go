@@ -162,23 +162,27 @@ func QueryResourceByID(helper dbhelper.DBHelper, rid int, rType string) (Resourc
 }
 
 // QueryResourceByName 查询资源
-func QueryResourceByName(helper dbhelper.DBHelper, name, rType string) (Resource, bool) {
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where name ='%s' and type ='%s'`, name, rType)
+func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string) []Resource {
+	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where name ='%s' and type ='%s'`, rName, rType)
 	helper.Query(sql)
 
-	res := simpleRes{}
-	result := false
-	if helper.Next() {
+	resList := []*simpleRes{}
+	for helper.Next() {
+		res := simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
-		result = true
+		resList = append(resList, &res)
 	}
 	helper.Finish()
 
-	if result {
-		res.relative = relativeResource(helper, res.oid)
+	retVal := []Resource{}
+	for idx := range resList {
+		cur := resList[idx]
+		cur.relative = relativeResource(helper, cur.oid)
+
+		retVal = append(retVal, cur)
 	}
 
-	return &res, result
+	return retVal
 }
 
 // QueryResourceByType 查询指定类型的资源

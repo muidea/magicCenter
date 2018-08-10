@@ -50,8 +50,8 @@ type ContentHandler interface {
 	DestroyComment(id int) bool
 
 	GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary
-	QuerySummaryByName(name, summaryType string) (model.Summary, bool)
-	QuerySummaryContent(id int, summaryType string) []model.Summary
+	QuerySummaryByName(summaryName, summaryType string, catalog model.CatalogUnit) (model.Summary, bool)
+	QuerySummaryContent(summary model.CatalogUnit) []model.Summary
 	GetSummaryByUser(uids []int) []model.Summary
 
 	GetContentSummary() model.ContentSummary
