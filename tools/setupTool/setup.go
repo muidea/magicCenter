@@ -44,13 +44,13 @@ func main() {
 	}
 	defer agent.Stop()
 
-	_, ok = agent.FetchSummary(endpointName, model.CATALOG, authToken, sessionID)
+	_, ok = agent.FetchSummary(endpointName, model.CATALOG, authToken, sessionID, nil)
 	if ok {
 		return
 	}
 
 	catalog := model.Catalog{ID: common_const.SystemContentCatalog.ID, Name: common_const.SystemContentCatalog.Name}
-	rootView, ok := agent.CreateCatalog(endpointName, "auto setup catalog description", []model.Catalog{catalog}, authToken, sessionID)
+	rootView, ok := agent.CreateCatalog(endpointName, "auto setup catalog description", []model.Catalog{catalog}, authToken, sessionID, nil)
 	if !ok {
 		log.Printf("create root catalog failed")
 		return
@@ -64,7 +64,7 @@ func main() {
 			catalogs = append(catalogs, model.Catalog{ID: rootView.ID, Name: rootView.Name})
 		}
 
-		sub, ok := agent.CreateCatalog(c.Name, c.Description, catalogs, authToken, sessionID)
+		sub, ok := agent.CreateCatalog(c.Name, c.Description, catalogs, authToken, sessionID, nil)
 		if !ok {
 			log.Printf("create catalog failed, name:%s", c.Name)
 			return
@@ -78,7 +78,7 @@ func main() {
 			catalogs = append(catalogs, model.Catalog{ID: rootView.ID, Name: rootView.Name})
 		}
 
-		sub, ok := agent.CreateArticle(c.Name, c.Description, catalogs, authToken, sessionID)
+		sub, ok := agent.CreateArticle(c.Name, c.Description, catalogs, authToken, sessionID, nil)
 		if !ok {
 			log.Printf("create article failed, name:%s", c.Name)
 			return
