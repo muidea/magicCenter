@@ -190,13 +190,13 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type`, rType)
 	helper.Query(sql)
-	defer helper.Finish()
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
+	helper.Finish()
 
 	resultList := []Resource{}
 	for _, val := range resList {
@@ -220,13 +220,13 @@ func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string) []Re
 	resList := []*simpleRes{}
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
 	helper.Query(sql)
-	defer helper.Finish()
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
+	helper.Finish()
 
 	for _, val := range resList {
 		val.relative = relativeResource(helper, val.oid)
@@ -245,13 +245,13 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 
 	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type`, userStr)
 	helper.Query(sql)
-	defer helper.Finish()
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 
 		resList = append(resList, res)
 	}
+	helper.Finish()
 
 	resultList := []Resource{}
 	for _, val := range resList {
@@ -311,7 +311,6 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s'`, oid, referenceType)
 	}
 	helper.Query(sql)
-	defer helper.Finish()
 
 	resultList := []Resource{}
 	resList := []*simpleRes{}
@@ -320,6 +319,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 		resList = append(resList, res)
 	}
+	helper.Finish()
 
 	for _, val := range resList {
 		val.relative = relativeResource(helper, val.oid)
@@ -494,7 +494,6 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
 	sql := fmt.Sprintf(`select id, name, description, type, createtime, owner from common_resource order by createtime desc limit %d`, count)
 	helper.Query(sql)
-	defer helper.Finish()
 
 	resList := []simpleRes{}
 	for helper.Next() {
@@ -502,6 +501,7 @@ func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
 		helper.GetValue(&res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 		resList = append(resList, res)
 	}
+	helper.Finish()
 
 	retVal := []Resource{}
 	for _, v := range resList {
