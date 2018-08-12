@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 	"time"
@@ -94,22 +95,32 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 
 		fileToken := strings.ToLower(util.RandomAlphanumeric(32))
 		_, fileName := path.Split(dstFile)
-		finalFilePath := path.Join(s.uploadPath, fileToken)
-		_, err = os.Stat(finalFilePath)
+		wd, err := os.Getwd()
 		if err != nil {
-			err = os.MkdirAll(finalFilePath, os.ModePerm)
+			log.Printf("get current working path failed, err:%s", err.Error())
+			result.ErrorCode = common_def.Failed
+			result.Reason = "上传文件出错"
+			break
+		}
+		finalFilePath := path.Join(s.uploadPath, fileToken)
+
+		finalFullPath := path.Join(wd, finalFilePath)
+		_, err = os.Stat(finalFullPath)
+		if err != nil {
+			err = os.MkdirAll(finalFullPath, os.ModePerm)
 		}
 		if err != nil {
-			log.Printf("Stat file failed, filePath:%s, err:%s", finalFilePath, err.Error())
+			log.Printf("Stat file failed, filePath:%s, err:%s", finalFullPath, err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
 		}
 
-		finalFilePath = path.Join(finalFilePath, fileName)
-		err = os.Rename(dstFile, finalFilePath)
+		finalFullPath = path.Join(finalFullPath, fileName)
+		cmd := exec.Command("mv", dstFile, finalFullPath)
+		err = cmd.Run()
 		if err != nil {
-			log.Printf("rename file failed, rawFile:%s, filePath:%s, err:%s", dstFile, finalFilePath, err.Error())
+			log.Printf("move file failed, rawFile:%s, filePath:%s, err:%s", dstFile, finalFullPath, err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "处理文件出错"
 			break
