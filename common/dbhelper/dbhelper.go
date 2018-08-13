@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"muidea.com/magicCommon/foundation/dao"
 )
@@ -32,7 +33,7 @@ type DBHelper interface {
 	Release()
 }
 
-type impl struct {
+type helper struct {
 	dao dao.Dao
 }
 
@@ -43,11 +44,40 @@ type databaseConfigInfo struct {
 	Password string
 }
 
+const (
+	putInHelper = iota
+	fetchOutHelper
+	releaseHelper
+	timerCheck
+)
+
+const maxIdleSize = 10
+
+type helperAction struct {
+	actionCode int
+	dao        dao.Dao
+	reply      chan dao.Dao
+}
+
+type helperRegistry struct {
+	databaseInfo *databaseConfigInfo
+
+	idleDaoList   []dao.Dao
+	actionChannel chan *helperAction
+}
+
 var databaseInfo *databaseConfigInfo
+
+var dbHelperRegistry *helperRegistry
 
 // InitDB 初始化数据库
 func InitDB(server, name, account, password string) {
 	databaseInfo = &databaseConfigInfo{Server: server, Name: name, Account: account, Password: password}
+
+	dbHelperRegistry = &helperRegistry{databaseInfo: databaseInfo, idleDaoList: []dao.Dao{}, actionChannel: make(chan *helperAction)}
+
+	go dbHelperRegistry.run()
+	go dbHelperRegistry.checkTimer()
 }
 
 // ParseError 解析错误信息
@@ -76,49 +106,108 @@ func NewHelper() (DBHelper, error) {
 		return nil, errors.New("illegal database config info")
 	}
 
-	m := &impl{}
-	dao, err := dao.Fetch(databaseInfo.Account, databaseInfo.Password, databaseInfo.Server, databaseInfo.Name)
-	if err != nil {
+	dao := dbHelperRegistry.FetchOut()
+	if dao == nil {
+		err := errors.New("can't fetchout dao")
 		log.Print("fetch database failed, err:" + err.Error())
 		return nil, err
 	}
 
-	m.dao = dao
-	return m, err
+	m := &helper{dao: dao}
+	return m, nil
 }
 
-func (db *impl) BeginTransaction() {
+func (db *helper) BeginTransaction() {
 	db.dao.BeginTransaction()
 }
 
-func (db *impl) Commit() {
+func (db *helper) Commit() {
 	db.dao.Commit()
 }
 
-func (db *impl) Rollback() {
+func (db *helper) Rollback() {
 	db.dao.Rollback()
 }
 
-func (db *impl) Query(sql string) {
+func (db *helper) Query(sql string) {
 	db.dao.Query(sql)
 }
 
-func (db *impl) Next() bool {
+func (db *helper) Next() bool {
 	return db.dao.Next()
 }
 
-func (db *impl) Finish() {
+func (db *helper) Finish() {
 	db.dao.Finish()
 }
 
-func (db *impl) GetValue(val ...interface{}) {
+func (db *helper) GetValue(val ...interface{}) {
 	db.dao.GetField(val...)
 }
 
-func (db *impl) Execute(sql string) (int64, bool) {
+func (db *helper) Execute(sql string) (int64, bool) {
 	return db.dao.Execute(sql)
 }
 
-func (db *impl) Release() {
-	db.dao.Release()
+func (db *helper) Release() {
+	dbHelperRegistry.PutIn(db.dao)
+}
+
+func (s *helperRegistry) FetchOut() dao.Dao {
+	reply := make(chan dao.Dao)
+	defer close(reply)
+
+	action := &helperAction{actionCode: fetchOutHelper, reply: reply}
+
+	s.actionChannel <- action
+
+	ret := <-reply
+	return ret
+}
+
+func (s *helperRegistry) PutIn(dao dao.Dao) {
+	action := &helperAction{actionCode: putInHelper, dao: dao}
+
+	s.actionChannel <- action
+}
+
+func (s *helperRegistry) run() {
+	for {
+		action := <-s.actionChannel
+		switch action.actionCode {
+		case putInHelper:
+			s.idleDaoList = append(s.idleDaoList, action.dao)
+		case fetchOutHelper:
+			if len(s.idleDaoList) == 0 {
+				dao, err := dao.Fetch(databaseInfo.Account, databaseInfo.Password, databaseInfo.Server, databaseInfo.Name)
+				if err != nil {
+					log.Print("fetch database failed, err:" + err.Error())
+				}
+				action.reply <- dao
+			} else {
+				dao := s.idleDaoList[0]
+				s.idleDaoList = s.idleDaoList[1:]
+				action.reply <- dao
+			}
+		case timerCheck:
+			if len(s.idleDaoList) > maxIdleSize {
+				releaseList := s.idleDaoList[maxIdleSize:]
+				s.idleDaoList = s.idleDaoList[:maxIdleSize-1]
+				for _, val := range releaseList {
+					val.Release()
+				}
+			}
+		}
+	}
+}
+
+func (s *helperRegistry) checkTimer() {
+	timeOutTimer := time.NewTicker(5 * time.Minute)
+	for {
+		select {
+		case <-timeOutTimer.C:
+			action := &helperAction{actionCode: timerCheck}
+			s.actionChannel <- action
+		}
+	}
 }

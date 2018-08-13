@@ -7,33 +7,74 @@ import (
 )
 
 type articleActionHandler struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *articleActionHandler) getAllArticleSummary() []model.Summary {
-	return dal.QueryAllArticleSummary(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllArticleSummary(dbhelper)
 }
 
 func (i *articleActionHandler) getArticles(ids []int) []model.Article {
-	return dal.QueryArticles(i.dbhelper, ids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryArticles(dbhelper, ids)
 }
 
 func (i *articleActionHandler) findArticleByID(id int) (model.ArticleDetail, bool) {
-	return dal.QueryArticleByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryArticleByID(dbhelper, id)
 }
 
 func (i *articleActionHandler) findArticleByCatalog(catalog model.CatalogUnit) []model.Summary {
-	return dal.QueryArticleSummaryByCatalog(i.dbhelper, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryArticleSummaryByCatalog(dbhelper, catalog)
 }
 
 func (i *articleActionHandler) createArticle(title, content, createDate string, catalog []model.CatalogUnit, author int) (model.Summary, bool) {
-	return dal.CreateArticle(i.dbhelper, title, content, catalog, author, createDate)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.CreateArticle(dbhelper, title, content, catalog, author, createDate)
 }
 
 func (i *articleActionHandler) saveArticle(article model.ArticleDetail) (model.Summary, bool) {
-	return dal.SaveArticle(i.dbhelper, article)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveArticle(dbhelper, article)
 }
 
 func (i *articleActionHandler) destroyArticle(id int) bool {
-	return dal.DeleteArticle(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteArticle(dbhelper, id)
 }

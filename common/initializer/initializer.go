@@ -24,7 +24,8 @@ func Initialize(bindPort, server, name, account, password string) error {
 
 	dbhelper.InitDB(server, name, account, password)
 
-	_, err := dbhelper.NewHelper()
+	helper, err := dbhelper.NewHelper()
+	defer helper.Release()
 	if err != nil {
 		errCode, _ := dbhelper.ParseError(err.Error())
 		if errCode == 1049 {

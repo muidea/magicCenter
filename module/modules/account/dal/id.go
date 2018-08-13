@@ -11,7 +11,10 @@ type idHolder struct {
 }
 
 func (s *idHolder) Handle() {
-	dbhelper, _ := dbhelper.NewHelper()
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
 	defer dbhelper.Release()
 
 	s.userID = loadUserID(dbhelper)

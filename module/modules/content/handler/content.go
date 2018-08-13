@@ -14,14 +14,12 @@ import (
 
 // CreateContentHandler 新建ContentHandler
 func CreateContentHandler() common.ContentHandler {
-	dbhelper, _ := dbhelper.NewHelper()
 	i := &impl{
-		dbhelper:       dbhelper,
-		articleHandler: articleActionHandler{dbhelper: dbhelper},
-		catalogHandler: catalogActionHandler{dbhelper: dbhelper},
-		linkHandler:    linkActionHandler{dbhelper: dbhelper},
-		mediaHandler:   mediaActionHandler{dbhelper: dbhelper},
-		commentHandler: commentActionHandler{dbhelper: dbhelper}}
+		articleHandler: articleActionHandler{},
+		catalogHandler: catalogActionHandler{},
+		linkHandler:    linkActionHandler{},
+		mediaHandler:   mediaActionHandler{},
+		commentHandler: commentActionHandler{}}
 
 	daemon.RegisterTimerHandler(i)
 
@@ -29,7 +27,6 @@ func CreateContentHandler() common.ContentHandler {
 }
 
 type impl struct {
-	dbhelper       dbhelper.DBHelper
 	articleHandler articleActionHandler
 	catalogHandler catalogActionHandler
 	linkHandler    linkActionHandler
@@ -62,7 +59,13 @@ func (i *impl) SaveArticle(article model.ArticleDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyArticle(id int) bool {
-	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.ARTICLE, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	referenceRes := resource.QueryReferenceResource(dbhelper, id, model.ARTICLE, "")
 	if len(referenceRes) > 0 {
 		return false
 	}
@@ -95,7 +98,13 @@ func (i *impl) SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyCatalog(id int) bool {
-	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.CATALOG, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	referenceRes := resource.QueryReferenceResource(dbhelper, id, model.CATALOG, "")
 	if len(referenceRes) > 0 {
 		return false
 	}
@@ -138,7 +147,13 @@ func (i *impl) SaveLink(link model.LinkDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyLink(id int) bool {
-	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.LINK, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	referenceRes := resource.QueryReferenceResource(dbhelper, id, model.LINK, "")
 	if len(referenceRes) > 0 {
 		return false
 	}
@@ -175,7 +190,13 @@ func (i *impl) SaveMedia(media model.MediaDetail) (model.Summary, bool) {
 }
 
 func (i *impl) DestroyMedia(id int) bool {
-	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.MEDIA, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	referenceRes := resource.QueryReferenceResource(dbhelper, id, model.MEDIA, "")
 	if len(referenceRes) > 0 {
 		return false
 	}
@@ -200,7 +221,13 @@ func (i *impl) DisableComment(id int) bool {
 }
 
 func (i *impl) DestroyComment(id int) bool {
-	referenceRes := resource.QueryReferenceResource(i.dbhelper, id, model.COMMENT, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	referenceRes := resource.QueryReferenceResource(dbhelper, id, model.COMMENT, "")
 	if len(referenceRes) > 0 {
 		return false
 	}
@@ -226,12 +253,19 @@ func (i *impl) GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary {
 			mediaIds = append(mediaIds, val.ID)
 		}
 	}
-	articles := resource.QueryResourceByIDs(i.dbhelper, articleIds, model.ARTICLE)
+
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	articles := resource.QueryResourceByIDs(dbhelper, articleIds, model.ARTICLE)
 	for _, r := range articles {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
-	catalogs := resource.QueryResourceByIDs(i.dbhelper, catalogIds, model.CATALOG)
+	catalogs := resource.QueryResourceByIDs(dbhelper, catalogIds, model.CATALOG)
 	for _, r := range catalogs {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -240,12 +274,12 @@ func (i *impl) GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary {
 		summaryList = append(summaryList, *common_const.SystemContentCatalog.Summary())
 	}
 
-	links := resource.QueryResourceByIDs(i.dbhelper, linkIds, model.LINK)
+	links := resource.QueryResourceByIDs(dbhelper, linkIds, model.LINK)
 	for _, r := range links {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
-	medias := resource.QueryResourceByIDs(i.dbhelper, mediaIds, model.MEDIA)
+	medias := resource.QueryResourceByIDs(dbhelper, mediaIds, model.MEDIA)
 	for _, r := range medias {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -253,7 +287,7 @@ func (i *impl) GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary {
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(i.dbhelper, value.ID, value.Type)
+		ress := resource.QueryRelativeResource(dbhelper, value.ID, value.Type)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
@@ -267,7 +301,13 @@ func (i *impl) QuerySummaryByName(summaryName, summaryType string, catalog model
 
 	var res resource.Resource
 	found := false
-	ress := resource.QueryResourceByName(i.dbhelper, summaryName, summaryType)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	ress := resource.QueryResourceByName(dbhelper, summaryName, summaryType)
 	for _, val := range ress {
 		subRes := val.Relative()
 		for _, sv := range subRes {
@@ -306,7 +346,13 @@ func (i *impl) QuerySummaryByName(summaryName, summaryType string, catalog model
 
 func (i *impl) QuerySummaryContent(summary model.CatalogUnit) []model.Summary {
 	summaryList := []model.Summary{}
-	resList := resource.QueryReferenceResource(i.dbhelper, summary.ID, summary.Type, "")
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	resList := resource.QueryReferenceResource(dbhelper, summary.ID, summary.Type, "")
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		for _, v := range r.Relative() {
@@ -321,7 +367,13 @@ func (i *impl) QuerySummaryContent(summary model.CatalogUnit) []model.Summary {
 
 func (i *impl) GetSummaryByUser(uids []int) []model.Summary {
 	summaryList := []model.Summary{}
-	resList := resource.QueryResourceByUser(i.dbhelper, uids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	resList := resource.QueryResourceByUser(dbhelper, uids)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		for _, v := range r.Relative() {
@@ -358,7 +410,13 @@ func (i *impl) GetContentSummary() model.ContentSummary {
 
 func (i *impl) GetLastContent(count int) []model.ContentUnit {
 	resultList := []model.ContentUnit{}
-	res := resource.GetLastResource(i.dbhelper, count)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	res := resource.GetLastResource(dbhelper, count)
 	for _, v := range res {
 		if v.RType() == model.COMMENT {
 			continue

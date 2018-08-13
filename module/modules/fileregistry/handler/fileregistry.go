@@ -24,28 +24,37 @@ func CreateFileRegistryHandler(cfg common.Configuration, sessionRegistry common.
 	staticPath, _ := cfg.GetOption(model.StaticPath)
 	uploadPath, _ := cfg.GetOption(model.UploadPath)
 
-	dbhelper, _ := dbhelper.NewHelper()
-
-	i := impl{dbhelper: dbhelper, uploadPath: path.Join(staticPath, uploadPath), sessionRegistry: sessionRegistry}
+	i := impl{uploadPath: path.Join(staticPath, uploadPath), sessionRegistry: sessionRegistry}
 
 	return &i
 }
 
 type impl struct {
-	dbhelper        dbhelper.DBHelper
 	uploadPath      string
 	sessionRegistry common.SessionRegistry
 }
 
 func (s *impl) FindFile(fileToken string) (string, model.FileSummary, bool) {
-	fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	fileSummary, ok := dal.FindFileSummary(dbhelper, fileToken)
 	return s.uploadPath, fileSummary, ok
 }
 
 func (s *impl) RemoveFile(fileToken string) {
-	fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	fileSummary, ok := dal.FindFileSummary(dbhelper, fileToken)
 	if ok {
-		dal.RemoveFileSummary(s.dbhelper, fileToken)
+		dal.RemoveFileSummary(dbhelper, fileToken)
 
 		fullPath := path.Join(fileSummary.FilePath)
 
@@ -131,7 +140,12 @@ func (s *impl) UploadFile(res http.ResponseWriter, req *http.Request) {
 		fileSummary.FileToken = fileToken
 		fileSummary.UploadDate = time.Now().Format("2006-01-02 15:04:05")
 
-		ret := dal.SaveFileSummary(s.dbhelper, fileSummary)
+		dbhelper, err := dbhelper.NewHelper()
+		if err != nil {
+			panic(err)
+		}
+		defer dbhelper.Release()
+		ret := dal.SaveFileSummary(dbhelper, fileSummary)
 		if ret {
 			result.FileToken = fileSummary.FileToken
 			result.ErrorCode = common_def.Success
@@ -166,7 +180,13 @@ func (s *impl) DownloadFile(res http.ResponseWriter, req *http.Request) {
 			result.Reason = "非法请求"
 			break
 		}
-		fileSummary, ok := dal.FindFileSummary(s.dbhelper, fileToken)
+
+		dbhelper, err := dbhelper.NewHelper()
+		if err != nil {
+			panic(err)
+		}
+		defer dbhelper.Release()
+		fileSummary, ok := dal.FindFileSummary(dbhelper, fileToken)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "指定文件不存在"
@@ -196,9 +216,15 @@ func (s *impl) DeleteFile(res http.ResponseWriter, req *http.Request) {
 		}
 
 		_, id := net.SplitRESTAPI(req.URL.Path)
-		fileSummary, ok := dal.FindFileSummary(s.dbhelper, id)
+		dbhelper, err := dbhelper.NewHelper()
+		if err != nil {
+			panic(err)
+		}
+		defer dbhelper.Release()
+
+		fileSummary, ok := dal.FindFileSummary(dbhelper, id)
 		if ok {
-			dal.RemoveFileSummary(s.dbhelper, id)
+			dal.RemoveFileSummary(dbhelper, id)
 			finalFilePath := path.Join(s.uploadPath, fileSummary.FilePath)
 			_, err := os.Stat(finalFilePath)
 			if err == nil {

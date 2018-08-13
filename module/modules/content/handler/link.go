@@ -7,33 +7,74 @@ import (
 )
 
 type linkActionHandler struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *linkActionHandler) getAllLink() []model.Summary {
-	return dal.QueryAllLink(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllLink(dbhelper)
 }
 
 func (i *linkActionHandler) getLinks(ids []int) []model.Link {
-	return dal.QueryLinks(i.dbhelper, ids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryLinks(dbhelper, ids)
 }
 
 func (i *linkActionHandler) findLinkByID(id int) (model.LinkDetail, bool) {
-	return dal.QueryLinkByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryLinkByID(dbhelper, id)
 }
 
 func (i *linkActionHandler) findLinkByCatalog(catalog model.CatalogUnit) []model.Summary {
-	return dal.QueryLinkByCatalog(i.dbhelper, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryLinkByCatalog(dbhelper, catalog)
 }
 
 func (i *linkActionHandler) createLink(name, desc, url, logo, createDate string, catalog []model.CatalogUnit, author int) (model.Summary, bool) {
-	return dal.CreateLink(i.dbhelper, name, desc, url, logo, createDate, author, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.CreateLink(dbhelper, name, desc, url, logo, createDate, author, catalog)
 }
 
 func (i *linkActionHandler) saveLink(link model.LinkDetail) (model.Summary, bool) {
-	return dal.SaveLink(i.dbhelper, link)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveLink(dbhelper, link)
 }
 
 func (i *linkActionHandler) destroyLink(id int) bool {
-	return dal.DeleteLinkByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteLinkByID(dbhelper, id)
 }

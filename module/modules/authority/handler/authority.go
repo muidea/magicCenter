@@ -13,10 +13,7 @@ import (
 
 // CreateAuthorityHandler 新建CASHandler
 func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.SessionRegistry) common.AuthorityHandler {
-	dbhelper, _ := dbhelper.NewHelper()
-
 	i := impl{
-		dbhelper:        dbhelper,
 		moduleHub:       moduleHub,
 		sessionRegistry: sessionRegistry}
 
@@ -33,14 +30,13 @@ func CreateAuthorityHandler(moduleHub common.ModuleHub, sessionRegistry common.S
 	entryPoint = accountModule.EntryPoint()
 	i.accountHandler = entryPoint.(common.AccountHandler)
 
-	i.aclHandler = createACLHandler(dbhelper)
+	i.aclHandler = createACLHandler()
 	i.aclHandler.loadACL()
 
 	return &i
 }
 
 type impl struct {
-	dbhelper        dbhelper.DBHelper
 	moduleHub       common.ModuleHub
 	sessionRegistry common.SessionRegistry
 	casHandler      common.CASHandler
@@ -109,8 +105,14 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		return true
 	}
 
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
 	avalibleFlag := false
-	moduleAuthGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, onlineEntry.User.ID)
+	moduleAuthGroup := dal.QueryUserModuleAuthGroup(dbhelper, onlineEntry.User.ID)
 	for _, val := range moduleAuthGroup {
 		if val.Module == acl.Module && val.AuthGroup >= acl.AuthGroup {
 			avalibleFlag = true
@@ -122,36 +124,84 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 }
 
 func (i *impl) QueryAllACL() []model.ACL {
-	return dal.QueryAllACL(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllACL(dbhelper)
 }
 
 func (i *impl) QueryACLByModule(module string) []model.ACL {
-	return dal.QueryACLByModule(i.dbhelper, module)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryACLByModule(dbhelper, module)
 }
 
 func (i *impl) QueryACLByID(id int) (model.ACL, bool) {
-	return dal.QueryACLByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryACLByID(dbhelper, id)
 }
 
 func (i *impl) InsertACL(url, method, module string, status int, authGroup int) (model.ACL, bool) {
-	return dal.InsertACL(i.dbhelper, url, method, module, status, authGroup)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.InsertACL(dbhelper, url, method, module, status, authGroup)
 }
 
 func (i *impl) DeleteACL(id int) bool {
-	return dal.DeleteACL(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteACL(dbhelper, id)
 }
 
 func (i *impl) UpdateACL(acl model.ACL) bool {
-	return dal.UpdateACL(i.dbhelper, acl)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateACL(dbhelper, acl)
 }
 
 func (i *impl) UpdateACLStatus(enableList []int, disableList []int) bool {
-	return dal.UpdateACLStatus(i.dbhelper, enableList, disableList)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateACLStatus(dbhelper, enableList, disableList)
 }
 
 func (i *impl) QueryACLAuthGroup(id int) (model.AuthGroup, bool) {
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
 	authGroup := model.AuthGroup{}
-	acl, ok := dal.QueryACLByID(i.dbhelper, id)
+	acl, ok := dal.QueryACLByID(dbhelper, id)
 	if !ok {
 		return authGroup, ok
 	}
@@ -162,22 +212,34 @@ func (i *impl) QueryACLAuthGroup(id int) (model.AuthGroup, bool) {
 }
 
 func (i *impl) UpdateACLAuthGroup(id, authGroup int) bool {
-	acl, ok := dal.QueryACLByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	acl, ok := dal.QueryACLByID(dbhelper, id)
 	if !ok {
 		return ok
 	}
 
 	acl.AuthGroup = authGroup
-	return dal.UpdateACL(i.dbhelper, acl)
+	return dal.UpdateACL(dbhelper, acl)
 }
 
 func (i *impl) QueryAllModuleUser() []model.ModuleUserInfo {
 	moduleUserInfos := []model.ModuleUserInfo{}
 
 	ids := i.moduleHub.GetAllModuleIDs()
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
 	for _, v := range ids {
 		info := model.ModuleUserInfo{Module: v}
-		info.User = dal.QueryModuleUser(i.dbhelper, v)
+		info.User = dal.QueryModuleUser(dbhelper, v)
 		moduleUserInfos = append(moduleUserInfos, info)
 	}
 
@@ -185,20 +247,38 @@ func (i *impl) QueryAllModuleUser() []model.ModuleUserInfo {
 }
 
 func (i *impl) QueryModuleUserAuthGroup(module string) []model.UserAuthGroup {
-	return dal.QueryModuleUserAuthGroup(i.dbhelper, module)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryModuleUserAuthGroup(dbhelper, module)
 }
 
 func (i *impl) UpdateModuleUserAuthGroup(module string, userAuthGroups []model.UserAuthGroup) bool {
-	return dal.UpdateModuleUserAuthGroup(i.dbhelper, module, userAuthGroups)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateModuleUserAuthGroup(dbhelper, module, userAuthGroups)
 }
 
 func (i *impl) QueryAllUserModule() []model.UserModuleInfo {
 	userModuleInfos := []model.UserModuleInfo{}
 
 	allUsers := i.accountHandler.GetAllUserIDs()
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
 	for _, v := range allUsers {
 		info := model.UserModuleInfo{User: v}
-		info.Module = dal.QueryUserModule(i.dbhelper, v)
+		info.Module = dal.QueryUserModule(dbhelper, v)
 
 		userModuleInfos = append(userModuleInfos, info)
 	}
@@ -207,18 +287,30 @@ func (i *impl) QueryAllUserModule() []model.UserModuleInfo {
 }
 
 func (i *impl) QueryUserModuleAuthGroup(user int) []model.ModuleAuthGroup {
-	return dal.QueryUserModuleAuthGroup(i.dbhelper, user)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUserModuleAuthGroup(dbhelper, user)
 }
 
 func (i *impl) UpdateUserModuleAuthGroup(user int, moduleAuthGroups []model.ModuleAuthGroup) bool {
-	return dal.UpdateUserModuleAuthGroup(i.dbhelper, user, moduleAuthGroups)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateUserModuleAuthGroup(dbhelper, user, moduleAuthGroups)
 }
 
 func (i *impl) QueryUserACL(user int) []model.ACL {
 	acls := []model.ACL{}
 
-	//authGroup := dal.QueryUserModuleAuthGroup(i.dbhelper, user)
-	//acls = dal.QueryAvalibleACLByAuthGroup(i.dbhelper, authGroup)
+	//authGroup := dal.QueryUserModuleAuthGroup(dbhelper, user)
+	//acls = dal.QueryAvalibleACLByAuthGroup(dbhelper, authGroup)
 
 	return acls
 }

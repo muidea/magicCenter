@@ -10,31 +10,59 @@ import (
 )
 
 type mediaActionHandler struct {
-	dbhelper dbhelper.DBHelper
-
 	routesLock         sync.RWMutex
 	preCheckTimeStamp  *time.Time
 	mediaExpirationMap map[int]time.Time
 }
 
 func (i *mediaActionHandler) getAllMedia() []model.Summary {
-	return dal.QueryAllMedia(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllMedia(dbhelper)
 }
 
 func (i *mediaActionHandler) getMedias(ids []int) []model.Media {
-	return dal.QueryMedias(i.dbhelper, ids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryMedias(dbhelper, ids)
 }
 
 func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
-	return dal.QueryMediaByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryMediaByID(dbhelper, id)
 }
 
 func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit) []model.Summary {
-	return dal.QueryMediaByCatalog(i.dbhelper, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryMediaByCatalog(dbhelper, catalog)
 }
 
 func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []model.CatalogUnit, expiration, author int) (model.Summary, bool) {
-	result, ok := dal.CreateMedia(i.dbhelper, name, desc, fileToken, createDate, expiration, author, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	result, ok := dal.CreateMedia(dbhelper, name, desc, fileToken, createDate, expiration, author, catalog)
 
 	i.loadAllMediaExpiration()
 
@@ -42,7 +70,13 @@ func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate strin
 }
 
 func (i *mediaActionHandler) batchCreateMedia(medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool) {
-	result, ok := dal.BatchCreateMedia(i.dbhelper, medias, createDate, creater)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	result, ok := dal.BatchCreateMedia(dbhelper, medias, createDate, creater)
 
 	i.loadAllMediaExpiration()
 
@@ -50,7 +84,13 @@ func (i *mediaActionHandler) batchCreateMedia(medias []model.MediaItem, createDa
 }
 
 func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, bool) {
-	result, ok := dal.SaveMedia(i.dbhelper, media)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	result, ok := dal.SaveMedia(dbhelper, media)
 
 	i.loadAllMediaExpiration()
 
@@ -58,7 +98,13 @@ func (i *mediaActionHandler) saveMedia(media model.MediaDetail) (model.Summary, 
 }
 
 func (i *mediaActionHandler) destroyMedia(id int) bool {
-	result := dal.DeleteMediaByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	result := dal.DeleteMediaByID(dbhelper, id)
 
 	i.routesLock.Lock()
 	defer i.routesLock.Unlock()
@@ -93,9 +139,15 @@ func (i *mediaActionHandler) expirationCheck() {
 		}
 	}
 
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
 	for k, v := range allMediaExpirationMap {
 		if current.Sub(v) >= 0 {
-			dal.DeleteMediaByID(i.dbhelper, k)
+			dal.DeleteMediaByID(dbhelper, k)
 		}
 	}
 }
@@ -103,6 +155,11 @@ func (i *mediaActionHandler) expirationCheck() {
 func (i *mediaActionHandler) loadAllMediaExpiration() {
 	i.routesLock.Lock()
 	defer i.routesLock.Unlock()
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
 
-	i.mediaExpirationMap = dal.LoadMediaExpiration(i.dbhelper)
+	i.mediaExpirationMap = dal.LoadMediaExpiration(dbhelper)
 }

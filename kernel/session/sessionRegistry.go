@@ -41,6 +41,7 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	sessionID := r.URL.Query().Get(common_const.SessionID)
 	cookie, err := r.Cookie(sessionCookieID)
 	if err == nil {
+		log.Printf("url sessionID:%s, cookie sessionID:%s, sessionCookieID:%s", sessionID, cookie.Value, common_const.SessionID)
 		sessionID = cookie.Value
 	}
 

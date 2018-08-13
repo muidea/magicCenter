@@ -7,41 +7,94 @@ import (
 )
 
 type catalogActionHandler struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *catalogActionHandler) getAllCatalog() []model.Summary {
-	return dal.QueryAllCatalog(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllCatalog(dbhelper)
 }
 
 func (i *catalogActionHandler) getCatalogs(ids []int) []model.Catalog {
-	return dal.QueryCatalogs(i.dbhelper, ids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryCatalogs(dbhelper, ids)
 }
 
 func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, bool) {
-	return dal.QueryCatalogByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryCatalogByID(dbhelper, id)
 }
 
 func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit) []model.Summary {
-	return dal.QueryCatalogByCatalog(i.dbhelper, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryCatalogByCatalog(dbhelper, catalog)
 }
 
 func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []model.CatalogUnit, author int) (model.Summary, bool) {
-	return dal.CreateCatalog(i.dbhelper, name, description, createDate, parent, author, false)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.CreateCatalog(dbhelper, name, description, createDate, parent, author, false)
 }
 
 func (i *catalogActionHandler) saveCatalog(catalog model.CatalogDetail) (model.Summary, bool) {
-	return dal.SaveCatalog(i.dbhelper, catalog, false)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveCatalog(dbhelper, catalog, false)
 }
 
 func (i *catalogActionHandler) destroyCatalog(id int) bool {
-	return dal.DeleteCatalog(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteCatalog(dbhelper, id)
 }
 
 func (i *catalogActionHandler) updateCatalog(catalogs []model.Catalog, parentCatalog model.CatalogUnit, description, updateDate string, updater int) ([]model.Summary, bool) {
-	return dal.UpdateCatalog(i.dbhelper, catalogs, parentCatalog, description, updateDate, updater)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateCatalog(dbhelper, catalogs, parentCatalog, description, updateDate, updater)
 }
 
 func (i *catalogActionHandler) queryCatalogByName(name string, parentCatalog model.CatalogUnit) (model.CatalogDetail, bool) {
-	return dal.QueryCatalogByName(i.dbhelper, name, parentCatalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryCatalogByName(dbhelper, name, parentCatalog)
 }

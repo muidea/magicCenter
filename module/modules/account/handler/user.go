@@ -8,64 +8,147 @@ import (
 )
 
 type userActionHandler struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *userActionHandler) getUserCount() int {
-	return dal.QueryUserCount(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUserCount(dbhelper)
 }
 
 func (i *userActionHandler) getAllUserIDs() []int {
-	return dal.QueryAllUserIDs(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllUserIDs(dbhelper)
 }
 
 func (i *userActionHandler) getAllUser() []model.User {
-	return dal.QueryAllUser(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllUser(dbhelper)
 }
 
 func (i *userActionHandler) getAllUserDetail(filter *common_def.PageFilter) []model.UserDetail {
-	return dal.QueryAllUserDetail(i.dbhelper, filter)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllUserDetail(dbhelper, filter)
 }
 
 func (i *userActionHandler) getUsers(ids []int) []model.User {
-	return dal.QueryUsers(i.dbhelper, ids)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUsers(dbhelper, ids)
 }
 
 func (i *userActionHandler) findUserByID(id int) (model.UserDetail, bool) {
-	return dal.QueryUserByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUserByID(dbhelper, id)
 }
 
 func (i *userActionHandler) findUserByGroup(groupID int) []model.UserDetail {
-	return dal.QueryUserByGroup(i.dbhelper, groupID)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUserByGroup(dbhelper, groupID)
 }
 
 func (i *userActionHandler) findUserByAccount(account, password string) (model.UserDetail, bool) {
-	return dal.QueryUserByAccount(i.dbhelper, account, password)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryUserByAccount(dbhelper, account, password)
 }
 
 // 新建User
 func (i *userActionHandler) createUser(account, password, email string, groups []int) (model.UserDetail, bool) {
-	return dal.CreateUser(i.dbhelper, account, password, email, groups)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.CreateUser(dbhelper, account, password, email, groups)
 }
 
 // 保存User
 func (i *userActionHandler) saveUser(user model.UserDetail) (model.UserDetail, bool) {
-	return dal.SaveUser(i.dbhelper, user)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveUser(dbhelper, user)
 }
 
 func (i *userActionHandler) saveUserWithPassword(user model.UserDetail, password string) (model.UserDetail, bool) {
-	return dal.SaveUserWithPassword(i.dbhelper, user, password)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveUserWithPassword(dbhelper, user, password)
 }
 
 // 销毁User
 func (i *userActionHandler) destroyUserByID(id int) bool {
-	return dal.DeleteUser(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteUser(dbhelper, id)
 }
 
 func (i *userActionHandler) destroyUserByAccount(account, password string) bool {
-	return dal.DeleteUserByAccount(i.dbhelper, account, password)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteUserByAccount(dbhelper, account, password)
 }
 
 func (i *userActionHandler) GetLastRegisterUser(count int) []model.UserDetail {
-	return dal.GetLastRegisterUser(i.dbhelper, count)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.GetLastRegisterUser(dbhelper, count)
 }

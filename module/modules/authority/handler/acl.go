@@ -21,16 +21,21 @@ type aclItem struct {
 type aclItemList []*aclItem
 
 type aclHandler struct {
-	dbhelper   dbhelper.DBHelper
 	aclListMap map[string]aclItemList
 }
 
-func createACLHandler(dbhelper dbhelper.DBHelper) *aclHandler {
-	return &aclHandler{dbhelper: dbhelper, aclListMap: make(map[string]aclItemList)}
+func createACLHandler() *aclHandler {
+	return &aclHandler{aclListMap: make(map[string]aclItemList)}
 }
 
 func (s *aclHandler) loadACL() {
-	acls := dal.QueryAllACL(s.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	acls := dal.QueryAllACL(dbhelper)
 	for _, val := range acls {
 		pattern := routeReg1.ReplaceAllStringFunc(val.URL, func(m string) string {
 			return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:])

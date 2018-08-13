@@ -2,7 +2,6 @@ package handler
 
 import (
 	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/dbhelper"
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/model"
@@ -10,8 +9,7 @@ import (
 
 // CreateAccountHandler 创建Account处理器
 func CreateAccountHandler() common.AccountHandler {
-	dbhelper, _ := dbhelper.NewHelper()
-	i := impl{userHandler: userActionHandler{dbhelper: dbhelper}, groupHandler: groupActionHandler{dbhelper: dbhelper}}
+	i := impl{userHandler: userActionHandler{}, groupHandler: groupActionHandler{}}
 
 	return &i
 }

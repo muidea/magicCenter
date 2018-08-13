@@ -9,36 +9,63 @@ import (
 
 // CreateEndpointHandler 新建CASHandler
 func CreateEndpointHandler() common.EndpointHandler {
-	dbhelper, _ := dbhelper.NewHelper()
 
-	i := impl{
-		dbhelper: dbhelper}
+	i := impl{}
 
 	return &i
 }
 
 type impl struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *impl) QueryAllEndpoint() []model.Endpoint {
-	return dal.QueryAllEndpoint(i.dbhelper)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryAllEndpoint(dbhelper)
 }
 
 func (i *impl) QueryEndpointByID(id string) (model.Endpoint, bool) {
-	return dal.QueryEndpointByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryEndpointByID(dbhelper, id)
 }
 
 func (i *impl) InsertEndpoint(id, name, description string, user []int, status int, authToken string) (model.Endpoint, bool) {
-	return dal.InsertEndpoint(i.dbhelper, id, name, description, user, status, authToken)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.InsertEndpoint(dbhelper, id, name, description, user, status, authToken)
 }
 
 func (i *impl) UpdateEndpoint(endpoint model.Endpoint) (model.Endpoint, bool) {
-	return dal.UpdateEndpoint(i.dbhelper, endpoint)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.UpdateEndpoint(dbhelper, endpoint)
 }
 
 func (i *impl) DeleteEndpoint(id string) bool {
-	return dal.DeleteEndpoint(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteEndpoint(dbhelper, id)
 }
 
 func (i *impl) GetSummary() model.EndpointSummary {

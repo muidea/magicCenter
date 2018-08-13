@@ -7,25 +7,54 @@ import (
 )
 
 type commentActionHandler struct {
-	dbhelper dbhelper.DBHelper
 }
 
 func (i *commentActionHandler) findCommentByCatalog(catalog model.CatalogUnit) []model.CommentDetail {
-	return dal.QueryCommentByCatalog(i.dbhelper, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.QueryCommentByCatalog(dbhelper, catalog)
 }
 
 func (i *commentActionHandler) createComment(subject, content, createDate string, catalog []model.CatalogUnit, author int) (model.Summary, bool) {
-	return dal.CreateComment(i.dbhelper, subject, content, createDate, author, catalog)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.CreateComment(dbhelper, subject, content, createDate, author, catalog)
 }
 
 func (i *commentActionHandler) saveComment(comment model.CommentDetail) (model.Summary, bool) {
-	return dal.SaveComment(i.dbhelper, comment)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.SaveComment(dbhelper, comment)
 }
 
 func (i *commentActionHandler) disableComment(id int) bool {
-	return dal.DisableCommentByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DisableCommentByID(dbhelper, id)
 }
 
 func (i *commentActionHandler) destroyComment(id int) bool {
-	return dal.DeleteCommentByID(i.dbhelper, id)
+	dbhelper, err := dbhelper.NewHelper()
+	if err != nil {
+		panic(err)
+	}
+	defer dbhelper.Release()
+
+	return dal.DeleteCommentByID(dbhelper, id)
 }
