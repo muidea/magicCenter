@@ -38,11 +38,15 @@ func CreateSessionRegistry() common.SessionRegistry {
 func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request) common.Session {
 	var userSession common.Session
 
-	sessionID := r.URL.Query().Get(common_const.SessionID)
+	sessionID := ""
 	cookie, err := r.Cookie(sessionCookieID)
 	if err == nil {
 		log.Printf("url sessionID:%s, cookie sessionID:%s, sessionCookieID:%s", sessionID, cookie.Value, common_const.SessionID)
 		sessionID = cookie.Value
+	}
+	urlSession := r.URL.Query().Get(common_const.SessionID)
+	if len(urlSession) > 0 {
+		sessionID = urlSession
 	}
 
 	cur, found := sm.FindSession(sessionID)
