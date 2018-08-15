@@ -249,44 +249,14 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			break
-		}
-
-		if strictCatalog == nil {
-			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
-		}
-
-		catalogUnits := []model.CatalogUnit{}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, createDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
-			}
-		}
-
-		media, ok := i.contentHandler.CreateMedia(param.Name, param.Description, param.FileToken, createDate, catalogUnits, param.Expiration, user.ID)
+		media, ok := i.contentHandler.CreateMedia(param.Name, param.Description, param.FileToken, createDate, param.Catalog, param.Expiration, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		catalogSummarys := i.contentHandler.GetSummaryByIDs(param.Catalog)
 
 		result.Media.Summary = media
 		result.Media.Creater = user
@@ -345,40 +315,11 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			break
-		}
 
-		if strictCatalog == nil {
-			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
-		}
-
-		catalogUnits := []model.CatalogUnit{}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, createDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
-			}
-		}
-
 		mediaItems := []model.MediaItem{}
 		for _, val := range param.Medias {
-			item := model.MediaItem{Name: val.Name, FileToken: val.FileToken, Description: param.Description, Expiration: param.Expiration, Catalog: catalogUnits}
+			item := model.MediaItem{Name: val.Name, FileToken: val.FileToken, Description: param.Description, Expiration: param.Expiration, Catalog: param.Catalog}
 
 			mediaItems = append(mediaItems, item)
 		}
@@ -391,7 +332,7 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 		}
 
 		for _, val := range medias {
-			catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+			catalogSummarys := i.contentHandler.GetSummaryByIDs(param.Catalog)
 			view := model.SummaryView{Summary: val, Catalog: catalogSummarys, Creater: user}
 			result.Medias = append(result.Medias, view)
 		}
@@ -458,43 +399,13 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			break
-		}
-
-		if strictCatalog == nil {
-			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
-		}
-
-		catalogUnits := []model.CatalogUnit{}
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, updateDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
-			}
-		}
-
 		media := model.MediaDetail{}
 		media.ID = id
 		media.Name = param.Name
 		media.FileToken = param.FileToken
 		media.Description = param.Description
-		media.Catalog = catalogUnits
+		media.Catalog = param.Catalog
 		media.CreateDate = updateDate
 		media.Expiration = param.Expiration
 		media.Creater = user.ID
@@ -504,7 +415,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 			result.Reason = "更新失败"
 			break
 		}
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		catalogSummarys := i.contentHandler.GetSummaryByIDs(param.Catalog)
 
 		result.Media.Summary = summmary
 		result.Media.Creater = user

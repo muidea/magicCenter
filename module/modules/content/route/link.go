@@ -241,44 +241,15 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			break
-		}
-
-		if strictCatalog == nil {
-			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
-		}
-
-		catalogUnits := []model.CatalogUnit{}
 		createDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, createDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
 
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
-			}
-		}
-
-		link, ok := i.contentHandler.CreateLink(param.Name, param.Description, param.URL, param.Logo, createDate, catalogUnits, user.ID)
+		link, ok := i.contentHandler.CreateLink(param.Name, param.Description, param.URL, param.Logo, createDate, param.Catalog, user.ID)
 		if !ok {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "新建失败"
 			break
 		}
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		catalogSummarys := i.contentHandler.GetSummaryByIDs(param.Catalog)
 
 		result.Link.Summary = link
 		result.Link.Creater = user
@@ -345,44 +316,15 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "无效参数"
 			break
 		}
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			break
-		}
 
-		if strictCatalog == nil {
-			strictCatalog = common_const.SystemContentCatalog.CatalogUnit()
-		}
-
-		catalogUnits := []model.CatalogUnit{}
 		updateDate := time.Now().Format("2006-01-02 15:04:05")
-		if strictCatalog.Type == model.CATALOG {
-			description := "auto update catalog description"
-			catalogSummarys, ok := i.contentHandler.UpdateCatalog(param.Catalog, *strictCatalog, description, updateDate, user.ID)
-			if !ok {
-				result.ErrorCode = common_def.Failed
-				result.Reason = "更新Catalog失败"
-				break
-			}
-
-			for _, val := range catalogSummarys {
-				catalogUnits = append(catalogUnits, *val.CatalogUnit())
-			}
-		} else {
-			for _, val := range param.Catalog {
-				catalogUnits = append(catalogUnits, model.CatalogUnit{ID: val.ID, Type: strictCatalog.Type})
-			}
-		}
-
 		link := model.LinkDetail{}
 		link.ID = id
 		link.Name = param.Name
 		link.Description = param.Description
 		link.URL = param.URL
 		link.Logo = param.Logo
-		link.Catalog = catalogUnits
+		link.Catalog = param.Catalog
 		link.CreateDate = updateDate
 		link.Creater = user.ID
 		summmary, ok := i.contentHandler.SaveLink(link)
@@ -391,7 +333,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 			result.Reason = "更新失败"
 			break
 		}
-		catalogSummarys := i.contentHandler.GetSummaryByIDs(catalogUnits)
+		catalogSummarys := i.contentHandler.GetSummaryByIDs(param.Catalog)
 
 		result.Link.Summary = summmary
 		result.Link.Creater = user
