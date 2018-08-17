@@ -49,8 +49,8 @@ func main() {
 		return
 	}
 
-	catalog := model.Catalog{ID: common_const.SystemContentCatalog.ID, Name: common_const.SystemContentCatalog.Name}
-	rootView, ok := agent.CreateCatalog(endpointName, "auto setup catalog description", []model.Catalog{catalog}, authToken, sessionID, nil)
+	catalog := common_const.SystemContentCatalog.CatalogUnit()
+	rootView, ok := agent.CreateCatalog(endpointName, "auto setup catalog description", []model.CatalogUnit{*catalog}, authToken, sessionID)
 	if !ok {
 		log.Printf("create root catalog failed")
 		return
@@ -61,10 +61,10 @@ func main() {
 	for _, c := range cfg.Catalogs {
 		catalogs := findCatalog(c.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
-			catalogs = append(catalogs, model.Catalog{ID: rootView.ID, Name: rootView.Name})
+			catalogs = append(catalogs, *rootView.CatalogUnit())
 		}
 
-		sub, ok := agent.CreateCatalog(c.Name, c.Description, catalogs, authToken, sessionID, nil)
+		sub, ok := agent.CreateCatalog(c.Name, c.Description, catalogs, authToken, sessionID)
 		if !ok {
 			log.Printf("create catalog failed, name:%s", c.Name)
 			return
@@ -75,10 +75,10 @@ func main() {
 	for _, c := range cfg.Articles {
 		catalogs := findCatalog(c.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
-			catalogs = append(catalogs, model.Catalog{ID: rootView.ID, Name: rootView.Name})
+			catalogs = append(catalogs, *rootView.CatalogUnit())
 		}
 
-		sub, ok := agent.CreateArticle(c.Name, c.Description, catalogs, authToken, sessionID, nil)
+		sub, ok := agent.CreateArticle(c.Name, c.Description, catalogs, authToken, sessionID)
 		if !ok {
 			log.Printf("create article failed, name:%s", c.Name)
 			return
@@ -88,13 +88,13 @@ func main() {
 	}
 }
 
-func findCatalog(names []string, catalogInfo map[string]model.SummaryView) []model.Catalog {
-	rets := []model.Catalog{}
+func findCatalog(names []string, catalogInfo map[string]model.SummaryView) []model.CatalogUnit {
+	rets := []model.CatalogUnit{}
 
 	for _, v := range names {
 		catalog, ok := catalogInfo[v]
 		if ok {
-			rets = append(rets, model.Catalog{ID: catalog.ID, Name: catalog.Name})
+			rets = append(rets, *catalog.CatalogUnit())
 		}
 	}
 
