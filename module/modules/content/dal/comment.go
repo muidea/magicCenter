@@ -100,7 +100,7 @@ func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string
 
 	for {
 		// insert
-		sql := fmt.Sprintf(`insert into content_comment (id, subject, content, createDate, creater) values (%d,'%s','%s','%s', %d)`, id, subject, content, createDate, creater)
+		sql := fmt.Sprintf(`insert into content_comment (id, subject, content, createDate, creater, flag) values (%d,'%s','%s','%s', %d, %d)`, id, subject, content, createDate, creater, 0)
 		_, result = helper.Execute(sql)
 		if !result {
 			break
