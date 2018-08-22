@@ -1,6 +1,7 @@
 package initializer
 
 import (
+	"log"
 	"os"
 
 	"muidea.com/magicCenter/common/dbhelper"
@@ -38,6 +39,8 @@ func Initialize(bindPort, server, name, account, password string) error {
 					os.Remove(dbFile)
 				}
 			}
+		} else {
+			log.Printf("fetch dbhelper exception, errCode:%d, err:%s", errCode, err.Error())
 		}
 	}
 

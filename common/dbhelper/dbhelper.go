@@ -53,10 +53,15 @@ const (
 
 const maxIdleSize = 10
 
+type replyResult struct {
+	dao     dao.Dao
+	errInfo error
+}
+
 type helperAction struct {
 	actionCode int
 	dao        dao.Dao
-	reply      chan dao.Dao
+	reply      chan replyResult
 }
 
 type helperRegistry struct {
@@ -106,15 +111,13 @@ func NewHelper() (DBHelper, error) {
 		return nil, errors.New("illegal database config info")
 	}
 
-	dao := dbHelperRegistry.FetchOut()
-	if dao == nil {
-		err := errors.New("can't fetchout dao")
-		log.Print("fetch database failed, err:" + err.Error())
-		return nil, err
+	m := &helper{dao: nil}
+	dao, err := dbHelperRegistry.FetchOut()
+	if err == nil {
+		m.dao = dao
 	}
 
-	m := &helper{dao: dao}
-	return m, nil
+	return m, err
 }
 
 func (db *helper) BeginTransaction() {
@@ -150,11 +153,13 @@ func (db *helper) Execute(sql string) (int64, bool) {
 }
 
 func (db *helper) Release() {
-	dbHelperRegistry.PutIn(db.dao)
+	if db.dao != nil {
+		dbHelperRegistry.PutIn(db.dao)
+	}
 }
 
-func (s *helperRegistry) FetchOut() dao.Dao {
-	reply := make(chan dao.Dao)
+func (s *helperRegistry) FetchOut() (dao.Dao, error) {
+	reply := make(chan replyResult)
 	defer close(reply)
 
 	action := &helperAction{actionCode: fetchOutHelper, reply: reply}
@@ -162,7 +167,7 @@ func (s *helperRegistry) FetchOut() dao.Dao {
 	s.actionChannel <- action
 
 	ret := <-reply
-	return ret
+	return ret.dao, ret.errInfo
 }
 
 func (s *helperRegistry) PutIn(dao dao.Dao) {
@@ -183,11 +188,11 @@ func (s *helperRegistry) run() {
 				if err != nil {
 					log.Print("fetch database failed, err:" + err.Error())
 				}
-				action.reply <- dao
+				action.reply <- replyResult{dao: dao, errInfo: err}
 			} else {
 				dao := s.idleDaoList[0]
 				s.idleDaoList = s.idleDaoList[1:]
-				action.reply <- dao
+				action.reply <- replyResult{dao: dao, errInfo: nil}
 			}
 		case timerCheck:
 			if len(s.idleDaoList) > maxIdleSize {
