@@ -3,6 +3,7 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"muidea.com/magicCenter/common/dbhelper"
@@ -261,6 +262,8 @@ func SaveMedia(helper dbhelper.DBHelper, media model.MediaDetail) (model.Summary
 			if result {
 				result = resource.SaveResource(helper, res, true)
 			}
+		} else {
+			log.Printf("update content_media failed, sql:%s", sql)
 		}
 		break
 	}
