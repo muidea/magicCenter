@@ -24,6 +24,7 @@ func (s *idHolder) Handle() {
 	s.catalogID = loadCatalogID(dbhelper)
 	s.linkID = loadLinkID(dbhelper)
 	s.mediaID = loadMediaID(dbhelper)
+	s.commentID = loadCommentID(dbhelper)
 }
 
 func (s *idHolder) AllocArticleID() int {
