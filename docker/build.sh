@@ -70,6 +70,7 @@ function prepareFile()
     if [ $? -ne 0 ]; then
         echo "prepareFile failed, copy static exception"
     fi
+    rm -rf ./static/upload
     tar -caf resource.tar static
     if [ $? -ne 0 ]; then
         echo "prepare file failed, compress failed exception."
