@@ -3,19 +3,31 @@
 <app name="demo">
     <account>
         <groups>
-            <group name="demo_group" description="demo description"/>
+            <group id="1" name="demo_group" description="demo description"/>
         </groups>
         <users>
-            <user name="demo" passowrd="123" email="demo@muidea.com" group="demo_group"/>
+            <user id="1" name="demo" passowrd="123" email="demo@muidea.com" group="1"/>
         </users>
     </account>
+
     <content>
         <catalogs>
-            <catalog name="a" description="A description"/>
-            <catalog name="b" description="B,description" catalog="a"/>
+            <catalog id="1" name="district" description="区域信息"/>
+            <catalog id="2" name="partner" description="代理商信息"/>
+            <catalog id="3" name="product" description="产品信息"/>
+            <catalog id="4" name="offline" description="下线产品" catalog="3"/>
+            <catalog id="5" name="order" description="订单信息"/>
+            <catalog id="6" name="realtime" description="实时订单" catalog="5"/>
+            <catalog id="7" name="history" description="历史订单" catalog="5"/>
+            <catalog id="8" name="report" description="订单报表" catalog="5"/>
+            <catalog id="9" name="bill" description="账单信息"/>
+            <catalog id="10" name="realtime" description="实时账单" catalog="9"/>
+            <catalog id="11" name="history" description="历史账单" catalog="9"/>
+            <catalog id="12" name="report" description="账单报表" catalog="9"/>
+            <catalog id="13" name="setting" description="系统设置"/>
         </catalogs>
         <articles>
-            <article name="C" description="C description" catalog="a,b"/>
+            <article id="1" name="billPolicy" description="账单计算策略" content="" catalog="13"/>
         </articles>
     </content>
 </app>

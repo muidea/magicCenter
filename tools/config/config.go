@@ -15,7 +15,13 @@ type Catalog struct {
 }
 
 // Article Article信息
-type Article Catalog
+type Article struct {
+	Name        string
+	Description string
+	Catalog     []string
+
+	Content string
+}
 
 // Config config info
 type Config struct {
@@ -54,17 +60,14 @@ func (s *Config) parse(app *App) error {
 		} else {
 			catalog.Catalog = []string{}
 		}
-		_, ok := s.Catalogs[val.Name]
+
+		_, ok := s.Catalogs[val.ID]
 		if ok {
-			msg := fmt.Sprintf("[catalog] duplicate catalog, name:%s", val.Name)
+			msg := fmt.Sprintf("[catalog] duplicate catalog, id:%s, name:%s", val.ID, val.Name)
 			return errors.New(msg)
 		}
 
 		for _, c := range catalog.Catalog {
-			if c == app.Name {
-				continue
-			}
-
 			_, ok := s.Catalogs[c]
 			if !ok {
 				msg := fmt.Sprintf("[catalog] no exist parent catalog, name:%s, catalog:%s", val.Name, c)
@@ -76,24 +79,20 @@ func (s *Config) parse(app *App) error {
 	}
 
 	for _, val := range app.Content.Articles.Article {
-		article := &Article{Name: val.Name, Description: val.Description}
+		article := &Article{Name: val.Name, Description: val.Description, Content: val.Content}
 		if len(val.Catalog) > 0 {
 			article.Catalog = strings.Split(val.Catalog, ",")
 		} else {
 			article.Catalog = []string{}
 		}
 
-		_, ok := s.Articles[val.Name]
+		_, ok := s.Articles[val.ID]
 		if ok {
 			msg := fmt.Sprintf("[article] duplicate article, name:%s", val.Name)
 			return errors.New(msg)
 		}
 
 		for _, c := range article.Catalog {
-			if c == app.Name {
-				continue
-			}
-
 			_, ok := s.Catalogs[c]
 			if !ok {
 				msg := fmt.Sprintf("[article] no exist parent catalog, name:%s, catalog:%s", val.Name, c)
@@ -101,7 +100,7 @@ func (s *Config) parse(app *App) error {
 			}
 		}
 
-		s.Articles[val.Name] = article
+		s.Articles[val.ID] = article
 	}
 
 	return nil

@@ -57,41 +57,42 @@ func main() {
 	}
 	catalogInfo := map[string]model.SummaryView{}
 	articleInfo := map[string]model.SummaryView{}
-	catalogInfo[endpointName] = rootView
-	for _, c := range cfg.Catalogs {
-		catalogs := findCatalog(c.Catalog, catalogInfo)
+
+	for key, val := range cfg.Catalogs {
+		catalogs := findCatalog(val.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
 			catalogs = append(catalogs, *rootView.CatalogUnit())
 		}
 
-		sub, ok := agent.CreateCatalog(c.Name, c.Description, catalogs, authToken, sessionID)
+		sub, ok := agent.CreateCatalog(val.Name, val.Description, catalogs, authToken, sessionID)
 		if !ok {
-			log.Printf("create catalog failed, name:%s", c.Name)
+			log.Printf("create catalog failed, name:%s", val.Name)
 			return
 		}
-		catalogInfo[c.Name] = sub
+
+		catalogInfo[key] = sub
 	}
 
-	for _, c := range cfg.Articles {
-		catalogs := findCatalog(c.Catalog, catalogInfo)
+	for key, val := range cfg.Articles {
+		catalogs := findCatalog(val.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
 			catalogs = append(catalogs, *rootView.CatalogUnit())
 		}
 
-		sub, ok := agent.CreateArticle(c.Name, c.Description, catalogs, authToken, sessionID)
+		sub, ok := agent.CreateArticle(val.Name, val.Content, catalogs, authToken, sessionID)
 		if !ok {
-			log.Printf("create article failed, name:%s", c.Name)
+			log.Printf("create article failed, name:%s", val.Name)
 			return
 		}
 
-		articleInfo[c.Name] = sub
+		articleInfo[key] = sub
 	}
 }
 
-func findCatalog(names []string, catalogInfo map[string]model.SummaryView) []model.CatalogUnit {
+func findCatalog(ids []string, catalogInfo map[string]model.SummaryView) []model.CatalogUnit {
 	rets := []model.CatalogUnit{}
 
-	for _, v := range names {
+	for _, v := range ids {
 		catalog, ok := catalogInfo[v]
 		if ok {
 			rets = append(rets, *catalog.CatalogUnit())

@@ -9,9 +9,11 @@ import (
 
 // Item Item xml结构定义
 type Item struct {
+	ID          string `xml:"id,attr"`
 	Name        string `xml:"name,attr"`
 	Description string `xml:"description,attr"`
 	Catalog     string `xml:"catalog,attr"`
+	Content     string `xml:"content,attr"`
 }
 
 // Catalogs catalogs xml结构定义
