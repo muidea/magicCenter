@@ -8,6 +8,7 @@ import (
 )
 
 func TestGroup(t *testing.T) {
+
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")

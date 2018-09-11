@@ -1,12 +1,17 @@
 package dal
 
 import (
+	"log"
 	"testing"
 
 	"muidea.com/magicCenter/common/dbhelper"
 )
 
 func TestUser(t *testing.T) {
+
+	val := encryptionPassword("admin", "123")
+	log.Print(val)
+
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
