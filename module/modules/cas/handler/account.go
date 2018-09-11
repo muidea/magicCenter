@@ -46,3 +46,18 @@ func (s *accountManager) userLogin(account, password, remoteAddr string) (model.
 
 	return info, true
 }
+
+func (s *accountManager) userChangePassword(account int, oldPassword, newPassword string) bool {
+	user, ok := s.accountHandler.FindUserByID(account)
+	if !ok {
+		return ok
+	}
+
+	_, ok = s.accountHandler.FindUserByAccount(user.Name, oldPassword)
+	if !ok {
+		return ok
+	}
+
+	_, ok = s.accountHandler.SaveUserWithPassword(user, newPassword)
+	return ok
+}

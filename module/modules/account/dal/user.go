@@ -1,7 +1,9 @@
 package dal
 
 import (
+	"crypto/md5"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"time"
 
@@ -10,6 +12,14 @@ import (
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
+
+func encryptionPassword(account, password string) string {
+	md5Ctx := md5.New()
+	md5Ctx.Write([]byte(account))
+	md5Ctx.Write([]byte("rangh@foxmail.com"))
+	md5Ctx.Write([]byte(password))
+	return hex.EncodeToString(md5Ctx.Sum(nil))
+}
 
 func loadUserID(helper dbhelper.DBHelper) int {
 	var maxID sql.NullInt64
@@ -115,7 +125,8 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (model.UserDetail, bool) {
 	user := model.UserDetail{}
 
-	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where account='%s' and password='%s'", account, password)
+	encryptPassword := encryptionPassword(account, password)
+	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user where account='%s' and password='%s'", account, encryptPassword)
 	helper.Query(sql)
 	defer helper.Finish()
 
@@ -200,7 +211,7 @@ func CreateUser(helper dbhelper.DBHelper, account, password, email string, group
 
 	id := allocUserID()
 	// insert
-	sql = fmt.Sprintf("insert into account_user(id, account, password, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', %d, '%s')", id, account, password, email, gVal, 0, createTime)
+	sql = fmt.Sprintf("insert into account_user(id, account, password, email, groups, status, registertime) values (%d, '%s', '%s', '%s', '%s', %d, '%s')", id, account, encryptionPassword(account, password), email, gVal, 0, createTime)
 	_, result := helper.Execute(sql)
 	if !result {
 		return user, false
@@ -224,7 +235,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
 	gVal := util.IntArray2Str(user.Group)
 	// modify
-	sql := fmt.Sprintf("update account_user set password='%s', email='%s', groups='%s', status=%d where id =%d", password, user.Email, gVal, user.Status, user.ID)
+	sql := fmt.Sprintf("update account_user set password='%s', email='%s', groups='%s', status=%d where id =%d", encryptionPassword(user.Name, password), user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
 
 	return user, result && num == 1

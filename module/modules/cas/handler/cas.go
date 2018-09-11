@@ -75,6 +75,10 @@ func (i *impl) LoginAccount(account, password, remoteAddr string) (model.OnlineE
 	return onlineEntry, token, ok
 }
 
+func (i *impl) ChangeAccountPassword(accountID int, oldPassword, newPassword string) bool {
+	return i.accountManager.userChangePassword(accountID, oldPassword, newPassword)
+}
+
 func (i *impl) LoginEndpoint(identifyID, authToken, remoteAddr string) (model.OnlineEntryView, string, bool) {
 	token := i.allocAuthToken(endpointPrefix)
 	onlineEntry, ok := i.endpointManager.endpointLogin(identifyID, authToken, i.getIP(remoteAddr))

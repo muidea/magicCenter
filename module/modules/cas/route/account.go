@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"muidea.com/magicCenter/common"
 	"muidea.com/magicCenter/module/modules/cas/def"
@@ -177,6 +178,67 @@ func (i *accountStatusRoute) statusHandler(w http.ResponseWriter, r *http.Reques
 		break
 	}
 
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type accountChangePasswordRoute struct {
+	casHandler      common.CASHandler
+	sessionRegistry common.SessionRegistry
+}
+
+func (i *accountChangePasswordRoute) Method() string {
+	return common.PUT
+}
+
+func (i *accountChangePasswordRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.PutUserChangePassword)
+}
+
+func (i *accountChangePasswordRoute) Handler() interface{} {
+	return i.changePasswordHandler
+}
+
+func (i *accountChangePasswordRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
+}
+
+func (i *accountChangePasswordRoute) changePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("changePasswordHandler")
+
+	result := common_def.ChangeAccountPasswordResult{}
+	for true {
+		_, value := net.SplitRESTAPI(r.URL.Path)
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			result.ErrorCode = common_def.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
+		param := &common_def.ChangeAccountPasswordParam{}
+		err = net.ParsePostJSON(r, param)
+		if err != nil {
+			log.Printf("ParsePostJSON failed, err:%s", err.Error())
+			result.ErrorCode = common_def.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
+		ok := i.casHandler.ChangeAccountPassword(id, param.OldPassword, param.NewPassword)
+		if !ok {
+			result.ErrorCode = common_def.Failed
+			result.Reason = "更改密码失败"
+			break
+		}
+
+		result.ErrorCode = common_def.Success
+		break
+	}
 	b, err := json.Marshal(result)
 	if err != nil {
 		panic("json.Marshal, failed, err:" + err.Error())

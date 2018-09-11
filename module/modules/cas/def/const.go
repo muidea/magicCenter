@@ -23,6 +23,9 @@ const DeleteUserLogout = "/user/"
 // GetUserStatus 用户状态
 const GetUserStatus = "/user/"
 
+// PutUserChangePassword 更改密码
+const PutUserChangePassword = "/user/:id"
+
 // PostEndpointLogin 终端登录
 const PostEndpointLogin = "/endpoint/"
 

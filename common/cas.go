@@ -13,6 +13,9 @@ type CASHandler interface {
 	//@ret bool 是否登陆成功
 	LoginAccount(account, password, remoteAddr string) (model.OnlineEntryView, string, bool)
 
+	// 更改Account密码
+	ChangeAccountPassword(accountID int, oldPassword, newPassword string) bool
+
 	// 校验Endpoint
 	LoginEndpoint(identifyID, authToken, remoteAddr string) (model.OnlineEntryView, string, bool)
 

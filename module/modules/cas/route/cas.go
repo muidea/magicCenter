@@ -15,6 +15,9 @@ func AppendAccountRoute(routes []common.Route, casHandler common.CASHandler, ses
 	rt, _ = CreateAccountStatusRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
+	rt, _ = CreateAccountChangePasswordRoute(casHandler, sessionRegistry)
+	routes = append(routes, rt)
+
 	rt, _ = CreateEndpointLoginRoute(casHandler, sessionRegistry)
 	routes = append(routes, rt)
 
@@ -47,6 +50,14 @@ func CreateAccountLogoutRoute(casHandler common.CASHandler, sessionRegistry comm
 // CreateAccountStatusRoute 创建AccountStatus Route
 func CreateAccountStatusRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
 	i := accountStatusRoute{
+		casHandler:      casHandler,
+		sessionRegistry: sessionRegistry}
+	return &i, true
+}
+
+// CreateAccountChangePasswordRoute 创建AccountChangePassword Route
+func CreateAccountChangePasswordRoute(casHandler common.CASHandler, sessionRegistry common.SessionRegistry) (common.Route, bool) {
+	i := accountChangePasswordRoute{
 		casHandler:      casHandler,
 		sessionRegistry: sessionRegistry}
 	return &i, true
