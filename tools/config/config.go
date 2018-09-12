@@ -9,6 +9,7 @@ import (
 
 // Catalog Catalog信息
 type Catalog struct {
+	ID          string
 	Name        string
 	Description string
 	Catalog     []string
@@ -16,6 +17,7 @@ type Catalog struct {
 
 // Article Article信息
 type Article struct {
+	ID          string
 	Name        string
 	Description string
 	Catalog     []string
@@ -25,13 +27,13 @@ type Article struct {
 
 // Config config info
 type Config struct {
-	Catalogs map[string]*Catalog
-	Articles map[string]*Article
+	Catalogs []*Catalog
+	Articles []*Article
 }
 
 // New 新建Config
 func New() *Config {
-	cfg := &Config{Catalogs: map[string]*Catalog{}, Articles: map[string]*Article{}}
+	cfg := &Config{Catalogs: []*Catalog{}, Articles: []*Article{}}
 	return cfg
 }
 
@@ -52,55 +54,75 @@ func (s *Config) Load(fileName string) bool {
 	return true
 }
 
+func (s *Config) findCatalog(id string) bool {
+	for _, val := range s.Catalogs {
+		if val.ID == id {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s *Config) findArticle(id string) bool {
+	for _, val := range s.Articles {
+		if val.ID == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (s *Config) parse(app *App) error {
 	for _, val := range app.Content.Catalogs.Catalog {
-		catalog := &Catalog{Name: val.Name, Description: val.Description}
+		catalog := &Catalog{ID: val.ID, Name: val.Name, Description: val.Description}
 		if len(val.Catalog) > 0 {
 			catalog.Catalog = strings.Split(val.Catalog, ",")
 		} else {
 			catalog.Catalog = []string{}
 		}
 
-		_, ok := s.Catalogs[val.ID]
+		ok := s.findCatalog(val.ID)
 		if ok {
 			msg := fmt.Sprintf("[catalog] duplicate catalog, id:%s, name:%s", val.ID, val.Name)
 			return errors.New(msg)
 		}
 
 		for _, c := range catalog.Catalog {
-			_, ok := s.Catalogs[c]
+			ok := s.findCatalog(c)
 			if !ok {
 				msg := fmt.Sprintf("[catalog] no exist parent catalog, name:%s, catalog:%s", val.Name, c)
 				return errors.New(msg)
 			}
 		}
 
-		s.Catalogs[val.Name] = catalog
+		s.Catalogs = append(s.Catalogs, catalog)
 	}
 
 	for _, val := range app.Content.Articles.Article {
-		article := &Article{Name: val.Name, Description: val.Description, Content: val.Content}
+		article := &Article{ID: val.ID, Name: val.Name, Description: val.Description, Content: val.Content}
 		if len(val.Catalog) > 0 {
 			article.Catalog = strings.Split(val.Catalog, ",")
 		} else {
 			article.Catalog = []string{}
 		}
 
-		_, ok := s.Articles[val.ID]
+		ok := s.findArticle(val.ID)
 		if ok {
 			msg := fmt.Sprintf("[article] duplicate article, name:%s", val.Name)
 			return errors.New(msg)
 		}
 
 		for _, c := range article.Catalog {
-			_, ok := s.Catalogs[c]
+			ok := s.findCatalog(c)
 			if !ok {
 				msg := fmt.Sprintf("[article] no exist parent catalog, name:%s, catalog:%s", val.Name, c)
 				return errors.New(msg)
 			}
 		}
 
-		s.Articles[val.ID] = article
+		s.Articles = append(s.Articles, article)
 	}
 
 	return nil

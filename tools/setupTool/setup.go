@@ -58,7 +58,7 @@ func main() {
 	catalogInfo := map[string]model.SummaryView{}
 	articleInfo := map[string]model.SummaryView{}
 
-	for key, val := range cfg.Catalogs {
+	for _, val := range cfg.Catalogs {
 		catalogs := findCatalog(val.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
 			catalogs = append(catalogs, *rootView.CatalogUnit())
@@ -70,10 +70,10 @@ func main() {
 			return
 		}
 
-		catalogInfo[key] = sub
+		catalogInfo[val.ID] = sub
 	}
 
-	for key, val := range cfg.Articles {
+	for _, val := range cfg.Articles {
 		catalogs := findCatalog(val.Catalog, catalogInfo)
 		if len(catalogs) == 0 {
 			catalogs = append(catalogs, *rootView.CatalogUnit())
@@ -85,7 +85,7 @@ func main() {
 			return
 		}
 
-		articleInfo[key] = sub
+		articleInfo[val.ID] = sub
 	}
 }
 
