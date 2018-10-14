@@ -161,9 +161,12 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 	result := common_def.QueryMediaListResult{Media: []model.SummaryView{}}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
-			medias := i.contentHandler.GetAllMedia()
+			medias, total := i.contentHandler.GetAllMedia(filter.PageFilter)
 			for _, val := range medias {
 				media := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -175,6 +178,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 				result.Media = append(result.Media, media)
 			}
+			result.Total = total
 			result.ErrorCode = common_def.Success
 			break
 		} else if err != nil {
@@ -183,7 +187,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		medias := i.contentHandler.GetMediaByCatalog(*catalog)
+		medias, total := i.contentHandler.GetMediaByCatalog(*catalog, filter.PageFilter)
 		for _, val := range medias {
 			media := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -195,6 +199,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 			result.Media = append(result.Media, media)
 		}
+		result.Total = total
 		result.ErrorCode = common_def.Success
 		break
 	}

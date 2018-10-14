@@ -58,7 +58,7 @@ func (s *impl) GetSystemStatistics() model.StatisticsView {
 	contentModule, ok := s.moduleHub.FindModule(common.CotentModuleID)
 	if ok {
 		contentHandler := contentModule.EntryPoint().(common.ContentHandler)
-		info.LastContent = contentHandler.GetLastContent(10)
+		info.LastContent, _ = contentHandler.GetLastContent(10, nil)
 
 		contentSummary := contentHandler.GetContentSummary()
 		info.SystemSummary = append(info.SystemSummary, contentSummary...)

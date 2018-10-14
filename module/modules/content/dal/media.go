@@ -9,6 +9,7 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -27,10 +28,11 @@ func loadMediaID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllMedia 查询所有图像
-func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
+func QueryAllMedia(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	ress := resource.QueryResourceByType(helper, model.MEDIA)
+	filter := &def.Filter{PageFilter: pageFilter}
+	ress, resCount := resource.QueryResourceByType(helper, model.MEDIA, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
@@ -46,7 +48,7 @@ func QueryAllMedia(helper dbhelper.DBHelper) []model.Summary {
 		summaryList = append(summaryList, summary)
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryMedias 查询指定文章
@@ -72,10 +74,11 @@ func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
 }
 
 // QueryMediaByCatalog 查询指定分类的图像
-func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
+func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.MEDIA)
+	filter := &def.Filter{PageFilter: pageFilter}
+	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.MEDIA, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -83,7 +86,7 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
+		ress, _ := resource.QueryRelativeResource(helper, value.ID, value.Type, nil)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
@@ -94,7 +97,7 @@ func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []
 		}
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryMediaByID 查询指定的图像
@@ -112,7 +115,7 @@ func QueryMediaByID(helper dbhelper.DBHelper, id int) (model.MediaDetail, bool) 
 	helper.Finish()
 
 	if result {
-		ress := resource.QueryRelativeResource(helper, id, model.MEDIA)
+		ress, _ := resource.QueryRelativeResource(helper, id, model.MEDIA, nil)
 		for _, r := range ress {
 			media.Catalog = append(media.Catalog, *r.CatalogUnit())
 		}

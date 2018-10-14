@@ -85,6 +85,9 @@ func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryCommentListResult{}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil || strictCatalog == nil {
 			result.ErrorCode = common_def.IllegalParam
@@ -92,7 +95,7 @@ func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		comments := i.contentHandler.GetCommentByCatalog(*strictCatalog)
+		comments, total := i.contentHandler.GetCommentByCatalog(*strictCatalog, filter.PageFilter)
 		for _, val := range comments {
 			comment := model.CommentDetailView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -104,6 +107,7 @@ func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *ht
 
 			result.Comment = append(result.Comment, comment)
 		}
+		result.Total = total
 		result.ErrorCode = common_def.Success
 		break
 	}

@@ -3,20 +3,21 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/content/dal"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/model"
 )
 
 type catalogActionHandler struct {
 }
 
-func (i *catalogActionHandler) getAllCatalog() []model.Summary {
+func (i *catalogActionHandler) getAllCatalog(pageFilter *def.PageFilter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryAllCatalog(dbhelper)
+	return dal.QueryAllCatalog(dbhelper, pageFilter)
 }
 
 func (i *catalogActionHandler) getCatalogs(ids []int) []model.Catalog {
@@ -39,14 +40,14 @@ func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, boo
 	return dal.QueryCatalogByID(dbhelper, id)
 }
 
-func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit) []model.Summary {
+func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryCatalogByCatalog(dbhelper, catalog)
+	return dal.QueryCatalogByCatalog(dbhelper, catalog, pageFilter)
 }
 
 func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []model.CatalogUnit, author int) (model.Summary, bool) {

@@ -6,6 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/content/dal"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/model"
 )
 
@@ -15,14 +16,14 @@ type mediaActionHandler struct {
 	mediaExpirationMap map[int]time.Time
 }
 
-func (i *mediaActionHandler) getAllMedia() []model.Summary {
+func (i *mediaActionHandler) getAllMedia(pageFilter *def.PageFilter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryAllMedia(dbhelper)
+	return dal.QueryAllMedia(dbhelper, pageFilter)
 }
 
 func (i *mediaActionHandler) getMedias(ids []int) []model.Media {
@@ -45,14 +46,14 @@ func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
 	return dal.QueryMediaByID(dbhelper, id)
 }
 
-func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit) []model.Summary {
+func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryMediaByCatalog(dbhelper, catalog)
+	return dal.QueryMediaByCatalog(dbhelper, catalog, pageFilter)
 }
 
 func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []model.CatalogUnit, expiration, author int) (model.Summary, bool) {

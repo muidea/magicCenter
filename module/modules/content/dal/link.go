@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -25,10 +26,11 @@ func loadLinkID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllLink 查询全部Link
-func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
+func QueryAllLink(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	ress := resource.QueryResourceByType(helper, model.LINK)
+	filter := &def.Filter{PageFilter: pageFilter}
+	ress, resCount := resource.QueryResourceByType(helper, model.LINK, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
@@ -44,7 +46,7 @@ func QueryAllLink(helper dbhelper.DBHelper) []model.Summary {
 		summaryList = append(summaryList, summary)
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryLinks 查询指定链接
@@ -70,10 +72,11 @@ func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 }
 
 // QueryLinkByCatalog 查询指定分类下的Link
-func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
+func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.LINK)
+	filter := &def.Filter{PageFilter: pageFilter}
+	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.LINK, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -81,7 +84,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []m
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
+		ress, _ := resource.QueryRelativeResource(helper, value.ID, value.Type, nil)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
@@ -92,7 +95,7 @@ func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []m
 		}
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryLinkByID 查询指定Link
@@ -109,7 +112,7 @@ func QueryLinkByID(helper dbhelper.DBHelper, id int) (model.LinkDetail, bool) {
 	helper.Finish()
 
 	if result {
-		ress := resource.QueryRelativeResource(helper, link.ID, model.LINK)
+		ress, _ := resource.QueryRelativeResource(helper, link.ID, model.LINK, nil)
 		for _, r := range ress {
 			link.Catalog = append(link.Catalog, *r.CatalogUnit())
 		}

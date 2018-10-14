@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -25,10 +26,10 @@ func loadArticleID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllArticleSummary 查询所有文章摘要
-func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
+func QueryAllArticleSummary(helper dbhelper.DBHelper, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	ress := resource.QueryResourceByType(helper, model.ARTICLE)
+	ress, resCount := resource.QueryResourceByType(helper, model.ARTICLE, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
@@ -43,7 +44,7 @@ func QueryAllArticleSummary(helper dbhelper.DBHelper) []model.Summary {
 		summaryList = append(summaryList, summary)
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryArticles 查询指定文章
@@ -83,13 +84,13 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 	helper.Finish()
 
 	if result {
-		ress := resource.QueryRelativeResource(helper, ar.ID, model.ARTICLE)
+		ress, resCount := resource.QueryRelativeResource(helper, ar.ID, model.ARTICLE, nil)
 		for _, r := range ress {
 			ar.Catalog = append(ar.Catalog, *r.CatalogUnit())
 		}
 
 		// 如果Catalog没有父分类，则认为其父分类为BuildContentCatalog
-		if len(ar.Catalog) == 0 {
+		if resCount == 0 {
 			ar.Catalog = append(ar.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
@@ -98,9 +99,9 @@ func QueryArticleByID(helper dbhelper.DBHelper, id int) (model.ArticleDetail, bo
 }
 
 // QueryArticleSummaryByCatalog 查询指定分类下的所有文章摘要
-func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
+func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
-	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.ARTICLE)
+	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.ARTICLE, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
@@ -108,7 +109,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog model.Catalo
 
 	for index, value := range summaryList {
 		summary := &summaryList[index]
-		ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
+		ress, _ := resource.QueryRelativeResource(helper, value.ID, value.Type, nil)
 		for _, r := range ress {
 			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
@@ -119,7 +120,7 @@ func QueryArticleSummaryByCatalog(helper dbhelper.DBHelper, catalog model.Catalo
 		}
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // CreateArticle 保存文章

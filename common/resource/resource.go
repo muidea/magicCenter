@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/common/dbhelper"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -155,15 +156,35 @@ func QueryResourceByID(helper dbhelper.DBHelper, rid int, rType string) (Resourc
 	helper.Finish()
 
 	if result {
-		res.relative = relativeResource(helper, res.oid)
+		res.relative, _ = relativeResource(helper, res.oid, nil)
 	}
 
 	return &res, result
 }
 
 // QueryResourceByName 查询资源
-func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string) []Resource {
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where name ='%s' and type ='%s'`, rName, rType)
+func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string, filter *def.PageFilter) ([]Resource, int) {
+	totalCount := 0
+	resultList := []Resource{}
+
+	sql := fmt.Sprintf(`select count(oid) from common_resource where name ='%s' and type ='%s'`, rName, rType)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		limitVal = filter.PageSize
+		offsetVal = filter.PageSize * filter.PageNum
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
+
+	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where name ='%s' and type ='%s' order by createtime desc limit %d offset %d`, rName, rType, limitVal, offsetVal)
 	helper.Query(sql)
 
 	resList := []*simpleRes{}
@@ -174,21 +195,51 @@ func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string) []Resour
 	}
 	helper.Finish()
 
-	resultList := []Resource{}
 	for _, val := range resList {
-		val.relative = relativeResource(helper, val.oid)
+		val.relative, _ = relativeResource(helper, val.oid, nil)
 
 		resultList = append(resultList, val)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // QueryResourceByType 查询指定类型的资源
-func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
-	resList := []*simpleRes{}
+func QueryResourceByType(helper dbhelper.DBHelper, rType string, filter *def.Filter) ([]Resource, int) {
+	totalCount := 0
+	resultList := []Resource{}
 
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type`, rType)
+	sql := fmt.Sprintf(`select count(oid) from common_resource where type ='%s' order by type`, rType)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			sql = fmt.Sprintf(`select count(oid) from common_resource where type ='%s' and description like '%%%s%%' order by type`, rType, filter.ContentFilter.FilterValue)
+		}
+	}
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		if filter.PageFilter != nil {
+			limitVal = filter.PageFilter.PageSize
+			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+		}
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
+
+	resList := []*simpleRes{}
+	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type limit %d offset %d`, rType, limitVal, offsetVal)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' and description like '%%%s%%' order by type limit %d offset %d`, rType, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+		}
+	}
 	helper.Query(sql)
 	for helper.Next() {
 		res := &simpleRes{}
@@ -198,27 +249,43 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string) []Resource {
 	}
 	helper.Finish()
 
-	resultList := []Resource{}
 	for _, val := range resList {
-		val.relative = relativeResource(helper, val.oid)
+		val.relative, _ = relativeResource(helper, val.oid, nil)
 
 		resultList = append(resultList, val)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // QueryResourceByIDs 查询指定类型的资源
-func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string) []Resource {
+func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string, filter *def.PageFilter) ([]Resource, int) {
+	totalCount := 0
 	resultList := []Resource{}
 	if len(rIDs) == 0 {
-		return resultList
+		return resultList, totalCount
 	}
 
 	ids := util.IntArray2Str(rIDs)
+	sql := fmt.Sprintf(`select count(oid) from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		limitVal = filter.PageSize
+		offsetVal = filter.PageSize * filter.PageNum
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
 
 	resList := []*simpleRes{}
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
+	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where id in (%s) and type ='%s' order by type limit %d offset %d`, ids, rType, limitVal, offsetVal)
 	helper.Query(sql)
 	for helper.Next() {
 		res := &simpleRes{}
@@ -229,21 +296,40 @@ func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string) []Re
 	helper.Finish()
 
 	for _, val := range resList {
-		val.relative = relativeResource(helper, val.oid)
+		val.relative, _ = relativeResource(helper, val.oid, nil)
 
 		resultList = append(resultList, val)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // QueryResourceByUser 查询指定用户的资源
-func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
-	resList := []*simpleRes{}
+func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.PageFilter) ([]Resource, int) {
+	totalCount := 0
+	resultList := []Resource{}
 
 	userStr := util.IntArray2Str(uids)
 
-	sql := fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type`, userStr)
+	sql := fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) order by type`, userStr)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		limitVal = filter.PageSize
+		offsetVal = filter.PageSize * filter.PageNum
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
+
+	resList := []*simpleRes{}
+	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type limit %d offset %d`, userStr, limitVal, offsetVal)
 	helper.Query(sql)
 	for helper.Next() {
 		res := &simpleRes{}
@@ -253,34 +339,59 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int) []Resource {
 	}
 	helper.Finish()
 
-	resultList := []Resource{}
 	for _, val := range resList {
-		val.relative = relativeResource(helper, val.oid)
+		val.relative, _ = relativeResource(helper, val.oid, nil)
 
 		resultList = append(resultList, val)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // relativeResource 查询关联的资源,即以oid的子资源
-func relativeResource(helper dbhelper.DBHelper, oid int) []Resource {
-	sql := fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d`, oid)
+func relativeResource(helper dbhelper.DBHelper, oid int, filter *def.Filter) ([]Resource, int) {
+	totalCount := 0
+	resultList := []Resource{}
+
+	sql := fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d`, oid)
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		if filter.PageFilter != nil {
+			limitVal = filter.PageFilter.PageSize
+			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+		}
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
+
+	sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d order by r.createtime desc limit %d offset %d`, oid, limitVal, offsetVal)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d and r.description like '%%%s%%'  order by r.createtime desc limit %d offset %d`, oid, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+		}
+	}
 	helper.Query(sql)
 	defer helper.Finish()
 
-	resultList := []Resource{}
 	for helper.Next() {
 		res := &simpleRes{}
 		helper.GetValue(&res.oid, &res.rid, &res.rName, &res.rDescription, &res.rType, &res.rCreateDate, &res.rOwner)
 		resultList = append(resultList, res)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // QueryRelativeResource 查询关联的资源
-func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Resource {
+func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string, filter *def.Filter) ([]Resource, int) {
 	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rid, rType)
 	helper.Query(sql)
@@ -293,26 +404,60 @@ func QueryRelativeResource(helper dbhelper.DBHelper, rid int, rType string) []Re
 	helper.Finish()
 
 	if ok {
-		return relativeResource(helper, oid)
+		return relativeResource(helper, oid, filter)
 	}
 
-	return []Resource{}
+	return []Resource{}, 0
 }
 
 // referenceResource 查询引用了指定Res的资源列表
 // rID Res ID
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
-func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) []Resource {
+func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string, filter *def.Filter) ([]Resource, int) {
+	totalCount := 0
+	resultList := []Resource{}
+
 	sql := ""
 	if referenceType == "" {
-		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d`, oid)
+		sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d`, oid)
 	} else {
-		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s'`, oid, referenceType)
+		sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s'`, oid, referenceType)
+	}
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+
+	limitVal := totalCount
+	offsetVal := 0
+	if filter != nil {
+		if filter.PageFilter != nil {
+			limitVal = filter.PageFilter.PageSize
+			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+		}
+	}
+	if offsetVal >= totalCount {
+		return resultList, totalCount
+	}
+
+	if referenceType == "" {
+		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d order by r.createtime desc limit %d offset %d`, oid, limitVal, offsetVal)
+	} else {
+		sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' order by r.createtime desc limit %d offset %d`, oid, referenceType, limitVal, offsetVal)
+	}
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			if referenceType == "" {
+				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.description like '%%%s%%' order by r.createtime desc limit %d offset %d`, oid, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+			} else {
+				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' and r.description like '%%%s%%' order by r.createtime desc limit %d offset %d`, oid, referenceType, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+			}
+		}
 	}
 	helper.Query(sql)
 
-	resultList := []Resource{}
 	resList := []*simpleRes{}
 	for helper.Next() {
 		res := &simpleRes{}
@@ -322,19 +467,19 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string) 
 	helper.Finish()
 
 	for _, val := range resList {
-		val.relative = relativeResource(helper, val.oid)
+		val.relative, _ = relativeResource(helper, val.oid, nil)
 
 		resultList = append(resultList, val)
 	}
 
-	return resultList
+	return resultList, totalCount
 }
 
 // QueryReferenceResource 查询引用了指定Res的资源列表
 // rID Res ID
 // rType Res 类型
 // referenceType 待查询的资源类型，值为""表示查询所有类型
-func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string) []Resource {
+func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceType string, filter *def.Filter) ([]Resource, int) {
 	oid := -1
 	sql := fmt.Sprintf(`select oid from common_resource where id=%d and type='%s'`, rID, rType)
 	helper.Query(sql)
@@ -347,10 +492,10 @@ func QueryReferenceResource(helper dbhelper.DBHelper, rID int, rType, referenceT
 	helper.Finish()
 
 	if ok {
-		return referenceResource(helper, oid, referenceType)
+		return referenceResource(helper, oid, referenceType, filter)
 	}
 
-	return []Resource{}
+	return []Resource{}, 0
 }
 
 // CreateResource 新建资源
@@ -491,8 +636,29 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 }
 
 // GetLastResource 获取最新的资源
-func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
-	sql := fmt.Sprintf(`select id, name, description, type, createtime, owner from common_resource order by createtime desc limit %d`, count)
+// []Resource 当前页内容
+// int 总条数
+func GetLastResource(helper dbhelper.DBHelper, count int, pageFilger *def.PageFilter) ([]Resource, int) {
+	limitVal := count
+	offsetVal := 0
+	if pageFilger != nil {
+		limitVal = pageFilger.PageSize
+		offsetVal = pageFilger.PageSize * pageFilger.PageNum
+	}
+
+	retVal := []Resource{}
+	sql := fmt.Sprint("select count(id) from common_resource order by createtime desc")
+	totalCount := 0
+	helper.Query(sql)
+	if helper.Next() {
+		helper.GetValue(&totalCount)
+	}
+	helper.Finish()
+	if offsetVal >= totalCount {
+		return retVal, totalCount
+	}
+
+	sql = fmt.Sprintf(`select id, name, description, type, createtime, owner from common_resource order by createtime desc limit %d offset %d`, limitVal, offsetVal)
 	helper.Query(sql)
 
 	resList := []simpleRes{}
@@ -503,13 +669,12 @@ func GetLastResource(helper dbhelper.DBHelper, count int) []Resource {
 	}
 	helper.Finish()
 
-	retVal := []Resource{}
 	for _, v := range resList {
 		res := v
-		res.relative = relativeResource(helper, v.oid)
+		res.relative, _ = relativeResource(helper, v.oid, nil)
 
 		retVal = append(retVal, &res)
 	}
 
-	return retVal
+	return retVal, totalCount
 }

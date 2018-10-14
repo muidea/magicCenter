@@ -153,9 +153,12 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 	result := common_def.QueryLinkListResult{}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
-			links := i.contentHandler.GetAllLink()
+			links, total := i.contentHandler.GetAllLink(filter.PageFilter)
 			for _, val := range links {
 				link := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -167,6 +170,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 				result.Link = append(result.Link, link)
 			}
+			result.Total = total
 			result.ErrorCode = common_def.Success
 			break
 		} else if err != nil {
@@ -175,7 +179,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		links := i.contentHandler.GetLinkByCatalog(*catalog)
+		links, total := i.contentHandler.GetLinkByCatalog(*catalog, filter.PageFilter)
 		for _, val := range links {
 			link := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -187,6 +191,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 			result.Link = append(result.Link, link)
 		}
+		result.Total = total
 		result.ErrorCode = common_def.Success
 		break
 	}

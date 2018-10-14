@@ -148,6 +148,9 @@ func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter
 
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		_, str := net.SplitRESTAPI(r.URL.Path)
 		summaryID, err := strconv.Atoi(str)
 		if err != nil {
@@ -174,7 +177,7 @@ func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter
 		}
 
 		summary := model.CatalogUnit{ID: summaryID, Type: summaryType}
-		summarys := i.contentHandler.QuerySummaryContent(summary)
+		summarys, total := i.contentHandler.QuerySummaryContent(summary, filter)
 		for _, v := range summarys {
 			if strictCatalog != nil {
 				found := false
@@ -202,6 +205,7 @@ func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter
 
 			result.Summary = append(result.Summary, view)
 		}
+		result.Total = total
 
 		result.ErrorCode = 0
 		break
@@ -241,6 +245,9 @@ func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.Respon
 
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {
 			result.ErrorCode = common_def.IllegalParam
@@ -265,7 +272,7 @@ func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.Respon
 			break
 		}
 
-		summarys := i.contentHandler.GetSummaryByUser(uids)
+		summarys, total := i.contentHandler.GetSummaryByUser(uids, filter.PageFilter)
 		for _, v := range summarys {
 			if strictCatalog != nil {
 				existFlag := false
@@ -293,6 +300,7 @@ func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.Respon
 
 			result.Summary = append(result.Summary, view)
 		}
+		result.Total = total
 
 		result.ErrorCode = 0
 		break

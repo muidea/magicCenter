@@ -225,9 +225,12 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 	result := common_def.QueryCatalogListResult{}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if strictCatalog == nil && err == nil {
-			catalogs := i.contentHandler.GetAllCatalog()
+			catalogs, total := i.contentHandler.GetAllCatalog(filter.PageFilter)
 			for _, val := range catalogs {
 				catalog := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -239,6 +242,8 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 				result.Catalog = append(result.Catalog, catalog)
 			}
+			result.Total = total
+
 			result.ErrorCode = common_def.Success
 			break
 		}
@@ -249,7 +254,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		catalogs := i.contentHandler.GetCatalogByCatalog(*strictCatalog)
+		catalogs, total := i.contentHandler.GetCatalogByCatalog(*strictCatalog, filter.PageFilter)
 		for _, val := range catalogs {
 			catalog := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -261,6 +266,7 @@ func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *ht
 
 			result.Catalog = append(result.Catalog, catalog)
 		}
+		result.Total = total
 		result.ErrorCode = common_def.Success
 		break
 	}

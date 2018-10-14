@@ -8,6 +8,7 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -26,10 +27,11 @@ func loadCatalogID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllCatalog 查询所有分类
-func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
+func QueryAllCatalog(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	ress := resource.QueryResourceByType(helper, model.CATALOG)
+	filter := &def.Filter{PageFilter: pageFilter}
+	ress, resCount := resource.QueryResourceByType(helper, model.CATALOG, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), Catalog: []model.CatalogUnit{}, CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
@@ -45,7 +47,7 @@ func QueryAllCatalog(helper dbhelper.DBHelper) []model.Summary {
 		summaryList = append(summaryList, summary)
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // QueryCatalogs 查询指定分类
@@ -92,7 +94,7 @@ func QueryCatalogByID(helper dbhelper.DBHelper, id int) (model.CatalogDetail, bo
 	helper.Finish()
 
 	if result {
-		ress := resource.QueryRelativeResource(helper, id, model.CATALOG)
+		ress, _ := resource.QueryRelativeResource(helper, id, model.CATALOG, nil)
 		for _, r := range ress {
 			catalog.Catalog = append(catalog.Catalog, *r.CatalogUnit())
 		}
@@ -120,7 +122,7 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog mod
 	helper.Finish()
 
 	for _, val := range catalogList {
-		ress := resource.QueryRelativeResource(helper, val.ID, model.CATALOG)
+		ress, _ := resource.QueryRelativeResource(helper, val.ID, model.CATALOG, nil)
 
 		found := false
 		for _, r := range ress {
@@ -147,11 +149,12 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog mod
 }
 
 // QueryCatalogByCatalog 查询指定分类的子类
-func QueryCatalogByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.Summary {
+func QueryCatalogByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
+	filter := &def.Filter{PageFilter: pageFilter}
 	if catalog.ID == common_const.SystemContentCatalog.ID && catalog.Type == model.CATALOG {
-		ress := resource.QueryResourceByType(helper, model.CATALOG)
+		ress, resCount := resource.QueryResourceByType(helper, model.CATALOG, filter)
 		for _, v := range ress {
 			summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), Catalog: []model.CatalogUnit{}, CreateDate: v.RCreateDate(), Creater: v.ROwner()}
 
@@ -165,27 +168,29 @@ func QueryCatalogByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) 
 				summaryList = append(summaryList, summary)
 			}
 		}
-	} else {
-		resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.CATALOG)
-		for _, r := range resList {
-			summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), Catalog: []model.CatalogUnit{}, CreateDate: r.RCreateDate(), Creater: r.ROwner()}
-			summaryList = append(summaryList, summary)
+
+		return summaryList, resCount
+	}
+
+	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.CATALOG, filter)
+	for _, r := range resList {
+		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), Catalog: []model.CatalogUnit{}, CreateDate: r.RCreateDate(), Creater: r.ROwner()}
+		summaryList = append(summaryList, summary)
+	}
+
+	for index, value := range summaryList {
+		summary := &summaryList[index]
+		ress, _ := resource.QueryRelativeResource(helper, value.ID, value.Type, nil)
+		for _, r := range ress {
+			summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
 		}
 
-		for index, value := range summaryList {
-			summary := &summaryList[index]
-			ress := resource.QueryRelativeResource(helper, value.ID, value.Type)
-			for _, r := range ress {
-				summary.Catalog = append(summary.Catalog, *r.CatalogUnit())
-			}
-
-			if len(summary.Catalog) == 0 {
-				summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
-			}
+		if len(summary.Catalog) == 0 {
+			summary.Catalog = append(summary.Catalog, *common_const.SystemContentCatalog.CatalogUnit())
 		}
 	}
 
-	return summaryList
+	return summaryList, resCount
 }
 
 // DeleteCatalog 删除指定类

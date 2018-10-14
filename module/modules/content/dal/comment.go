@@ -7,6 +7,7 @@ import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
@@ -25,19 +26,22 @@ func loadCommentID(helper dbhelper.DBHelper) int {
 }
 
 // QueryCommentByCatalog 查询指定分类下的Comment
-func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) []model.CommentDetail {
+func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.CommentDetail, int) {
 	commentList := []model.CommentDetail{}
 
 	ids := []int{}
-	resList := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.COMMENT)
+
+	filter := &def.Filter{PageFilter: pageFilter}
+	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.COMMENT, filter)
 	for _, r := range resList {
 		ids = append(ids, r.RId())
 	}
 
-	if len(ids) == 0 {
-		return commentList
+	if resCount == 0 {
+		return commentList, resCount
 	}
 
+	resCount = 0
 	sql := fmt.Sprintf(`select id, subject, content, createdate, creater, flag from content_comment where id in(%s)`, util.IntArray2Str(ids))
 	helper.Query(sql)
 	for helper.Next() {
@@ -45,9 +49,11 @@ func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit) 
 		helper.GetValue(&comment.ID, &comment.Subject, &comment.Content, &comment.CreateDate, &comment.Creater, &comment.Flag)
 
 		commentList = append(commentList, comment)
+
+		resCount++
 	}
 
-	return commentList
+	return commentList, resCount
 }
 
 // DisableCommentByID 禁止指定Comment

@@ -3,20 +3,21 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/content/dal"
+	"muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/model"
 )
 
 type commentActionHandler struct {
 }
 
-func (i *commentActionHandler) findCommentByCatalog(catalog model.CatalogUnit) []model.CommentDetail {
+func (i *commentActionHandler) findCommentByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.CommentDetail, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryCommentByCatalog(dbhelper, catalog)
+	return dal.QueryCommentByCatalog(dbhelper, catalog, pageFilter)
 }
 
 func (i *commentActionHandler) createComment(subject, content, createDate string, catalog []model.CatalogUnit, author int) (model.Summary, bool) {

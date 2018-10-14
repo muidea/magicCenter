@@ -149,11 +149,14 @@ func (i *articleGetListRoute) AuthGroup() int {
 func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getArticleListHandler")
 
-	result := common_def.QueryArticleListResult{}
+	result := common_def.QueryArticleListResult{Article: []model.SummaryView{}}
 	for true {
+		filter := &common_def.Filter{}
+		filter.Parse(r)
+
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if strictCatalog == nil && err == nil {
-			articles := i.contentHandler.GetAllArticle()
+			articles, total := i.contentHandler.GetAllArticle(filter)
 			for _, val := range articles {
 				article := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -165,6 +168,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 
 				result.Article = append(result.Article, article)
 			}
+			result.Total = total
 
 			result.ErrorCode = common_def.Success
 			break
@@ -174,7 +178,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 			break
 		}
 
-		articles := i.contentHandler.GetArticleByCatalog(*strictCatalog)
+		articles, total := i.contentHandler.GetArticleByCatalog(*strictCatalog, filter)
 		for _, val := range articles {
 			article := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -186,6 +190,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 
 			result.Article = append(result.Article, article)
 		}
+		result.Total = total
 
 		result.ErrorCode = common_def.Success
 		break
