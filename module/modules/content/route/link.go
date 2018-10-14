@@ -151,7 +151,7 @@ func (i *linkGetListRoute) AuthGroup() int {
 func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getLinkListHandler")
 
-	result := common_def.QueryLinkListResult{}
+	result := common_def.QueryLinkListResult{Link: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
 		filter.Parse(r)

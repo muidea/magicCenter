@@ -83,7 +83,7 @@ func (i *commentGetListRoute) AuthGroup() int {
 func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getCommentListHandler")
 
-	result := common_def.QueryCommentListResult{}
+	result := common_def.QueryCommentListResult{Comment: []model.CommentDetailView{}}
 	for true {
 		filter := &common_def.Filter{}
 		filter.Parse(r)

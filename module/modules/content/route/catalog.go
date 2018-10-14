@@ -223,7 +223,7 @@ func (i *catalogGetListRoute) AuthGroup() int {
 func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("getCatalogListHandler")
 
-	result := common_def.QueryCatalogListResult{}
+	result := common_def.QueryCatalogListResult{Catalog: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
 		filter.Parse(r)
