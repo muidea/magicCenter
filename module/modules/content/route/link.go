@@ -158,7 +158,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
-			links, total := i.contentHandler.GetAllLink(filter.PageFilter)
+			links, total := i.contentHandler.GetAllLink(filter)
 			for _, val := range links {
 				link := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -179,7 +179,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 			break
 		}
 
-		links, total := i.contentHandler.GetLinkByCatalog(*catalog, filter.PageFilter)
+		links, total := i.contentHandler.GetLinkByCatalog(*catalog, filter)
 		for _, val := range links {
 			link := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)

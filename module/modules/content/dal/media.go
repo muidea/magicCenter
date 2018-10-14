@@ -28,10 +28,9 @@ func loadMediaID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllMedia 查询所有图像
-func QueryAllMedia(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryAllMedia(helper dbhelper.DBHelper, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	ress, resCount := resource.QueryResourceByType(helper, model.MEDIA, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
@@ -74,10 +73,9 @@ func QueryMedias(helper dbhelper.DBHelper, ids []int) []model.Media {
 }
 
 // QueryMediaByCatalog 查询指定分类的图像
-func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryMediaByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.MEDIA, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}

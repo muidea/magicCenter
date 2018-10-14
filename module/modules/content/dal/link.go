@@ -26,10 +26,9 @@ func loadLinkID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllLink 查询全部Link
-func QueryAllLink(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryAllLink(helper dbhelper.DBHelper, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	ress, resCount := resource.QueryResourceByType(helper, model.LINK, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), CreateDate: v.RCreateDate(), Creater: v.ROwner()}
@@ -72,10 +71,9 @@ func QueryLinks(helper dbhelper.DBHelper, ids []int) []model.Link {
 }
 
 // QueryLinkByCatalog 查询指定分类下的Link
-func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryLinkByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	resList, resCount := resource.QueryReferenceResource(helper, catalog.ID, catalog.Type, model.LINK, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}

@@ -305,13 +305,18 @@ func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string, filt
 }
 
 // QueryResourceByUser 查询指定用户的资源
-func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.PageFilter) ([]Resource, int) {
+func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.Filter) ([]Resource, int) {
 	totalCount := 0
 	resultList := []Resource{}
 
 	userStr := util.IntArray2Str(uids)
 
 	sql := fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) order by type`, userStr)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			sql = fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) and description like '%%%s%%' order by type`, userStr, filter.ContentFilter.FilterValue)
+		}
+	}
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&totalCount)
@@ -321,8 +326,10 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.PageF
 	limitVal := totalCount
 	offsetVal := 0
 	if filter != nil {
-		limitVal = filter.PageSize
-		offsetVal = filter.PageSize * filter.PageNum
+		if filter.PageFilter != nil {
+			limitVal = filter.PageFilter.PageSize
+			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+		}
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -330,6 +337,11 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.PageF
 
 	resList := []*simpleRes{}
 	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type limit %d offset %d`, userStr, limitVal, offsetVal)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) and description like '%%%s%%' order by type limit %d offset %d`, userStr, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+		}
+	}
 	helper.Query(sql)
 	for helper.Next() {
 		res := &simpleRes{}

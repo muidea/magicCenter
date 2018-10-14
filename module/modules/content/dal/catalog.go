@@ -27,10 +27,9 @@ func loadCatalogID(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllCatalog 查询所有分类
-func QueryAllCatalog(helper dbhelper.DBHelper, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryAllCatalog(helper dbhelper.DBHelper, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	ress, resCount := resource.QueryResourceByType(helper, model.CATALOG, filter)
 	for _, v := range ress {
 		summary := model.Summary{Unit: model.Unit{ID: v.RId(), Name: v.RName()}, Description: v.RDescription(), Type: v.RType(), Catalog: []model.CatalogUnit{}, CreateDate: v.RCreateDate(), Creater: v.ROwner()}
@@ -149,10 +148,9 @@ func QueryCatalogByName(helper dbhelper.DBHelper, name string, parentCatalog mod
 }
 
 // QueryCatalogByCatalog 查询指定分类的子类
-func QueryCatalogByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func QueryCatalogByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 
-	filter := &def.Filter{PageFilter: pageFilter}
 	if catalog.ID == common_const.SystemContentCatalog.ID && catalog.Type == model.CATALOG {
 		ress, resCount := resource.QueryResourceByType(helper, model.CATALOG, filter)
 		for _, v := range ress {

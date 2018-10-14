@@ -272,7 +272,7 @@ func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.Respon
 			break
 		}
 
-		summarys, total := i.contentHandler.GetSummaryByUser(uids, filter.PageFilter)
+		summarys, total := i.contentHandler.GetSummaryByUser(uids, filter)
 		for _, v := range summarys {
 			if strictCatalog != nil {
 				existFlag := false

@@ -16,14 +16,14 @@ type mediaActionHandler struct {
 	mediaExpirationMap map[int]time.Time
 }
 
-func (i *mediaActionHandler) getAllMedia(pageFilter *def.PageFilter) ([]model.Summary, int) {
+func (i *mediaActionHandler) getAllMedia(filter *def.Filter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryAllMedia(dbhelper, pageFilter)
+	return dal.QueryAllMedia(dbhelper, filter)
 }
 
 func (i *mediaActionHandler) getMedias(ids []int) []model.Media {
@@ -46,14 +46,14 @@ func (i *mediaActionHandler) findMediaByID(id int) (model.MediaDetail, bool) {
 	return dal.QueryMediaByID(dbhelper, id)
 }
 
-func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func (i *mediaActionHandler) findMediaByCatalog(catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryMediaByCatalog(dbhelper, catalog, pageFilter)
+	return dal.QueryMediaByCatalog(dbhelper, catalog, filter)
 }
 
 func (i *mediaActionHandler) createMedia(name, desc, fileToken, createDate string, catalog []model.CatalogUnit, expiration, author int) (model.Summary, bool) {

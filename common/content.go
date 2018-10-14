@@ -15,10 +15,10 @@ type ContentHandler interface {
 	SaveArticle(article model.ArticleDetail) (model.Summary, bool)
 	DestroyArticle(id int) bool
 
-	GetAllCatalog(pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetAllCatalog(filter *def.Filter) ([]model.Summary, int)
 	GetCatalogs(ids []int) []model.Catalog
 	GetCatalogByID(id int) (model.CatalogDetail, bool)
-	GetCatalogByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetCatalogByCatalog(catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int)
 	CreateCatalog(name, description, createDate string, catalog []model.CatalogUnit, creater int) (model.Summary, bool)
 	SaveCatalog(catalog model.CatalogDetail) (model.Summary, bool)
 	DestroyCatalog(id int) bool
@@ -28,24 +28,24 @@ type ContentHandler interface {
 	// 查询指定名称的Catalog
 	QueryCatalogByName(name string, parentCatalog model.CatalogUnit) (model.CatalogDetail, bool)
 
-	GetAllLink(pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetAllLink(filter *def.Filter) ([]model.Summary, int)
 	GetLinks(ids []int) []model.Link
 	GetLinkByID(id int) (model.LinkDetail, bool)
-	GetLinkByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetLinkByCatalog(catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int)
 	CreateLink(name, desc, url, logo, createDate string, catalog []model.CatalogUnit, creater int) (model.Summary, bool)
 	SaveLink(link model.LinkDetail) (model.Summary, bool)
 	DestroyLink(id int) bool
 
-	GetAllMedia(pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetAllMedia(filter *def.Filter) ([]model.Summary, int)
 	GetMedias(ids []int) []model.Media
 	GetMediaByID(id int) (model.MediaDetail, bool)
-	GetMediaByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetMediaByCatalog(catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int)
 	CreateMedia(name, desc, fileToken, createDate string, catalog []model.CatalogUnit, expiration, creater int) (model.Summary, bool)
 	BatchCreateMedia(medias []model.MediaItem, createDate string, creater int) ([]model.Summary, bool)
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 
-	GetCommentByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.CommentDetail, int)
+	GetCommentByCatalog(catalog model.CatalogUnit, filter *def.PageFilter) ([]model.CommentDetail, int)
 	CreateComment(subject, content, createDate string, catalog []model.CatalogUnit, creater int) (model.Summary, bool)
 	SaveComment(comment model.CommentDetail) (model.Summary, bool)
 	DestroyComment(id int) bool
@@ -53,8 +53,8 @@ type ContentHandler interface {
 	GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary
 	QuerySummaryByName(summaryName, summaryType string, catalog model.CatalogUnit) (model.Summary, bool)
 	QuerySummaryContent(summary model.CatalogUnit, filter *def.Filter) ([]model.Summary, int)
-	GetSummaryByUser(uids []int, pageFilter *def.PageFilter) ([]model.Summary, int)
+	GetSummaryByUser(uids []int, filter *def.Filter) ([]model.Summary, int)
 
 	GetContentSummary() model.ContentSummary
-	GetLastContent(count int, pageFilter *def.PageFilter) ([]model.ContentUnit, int)
+	GetLastContent(count int, filter *def.PageFilter) ([]model.ContentUnit, int)
 }

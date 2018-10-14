@@ -10,14 +10,14 @@ import (
 type catalogActionHandler struct {
 }
 
-func (i *catalogActionHandler) getAllCatalog(pageFilter *def.PageFilter) ([]model.Summary, int) {
+func (i *catalogActionHandler) getAllCatalog(filter *def.Filter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryAllCatalog(dbhelper, pageFilter)
+	return dal.QueryAllCatalog(dbhelper, filter)
 }
 
 func (i *catalogActionHandler) getCatalogs(ids []int) []model.Catalog {
@@ -40,14 +40,14 @@ func (i *catalogActionHandler) findCatalogByID(id int) (model.CatalogDetail, boo
 	return dal.QueryCatalogByID(dbhelper, id)
 }
 
-func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.Summary, int) {
+func (i *catalogActionHandler) findCatalogByCatalog(catalog model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)
 	}
 	defer dbhelper.Release()
 
-	return dal.QueryCatalogByCatalog(dbhelper, catalog, pageFilter)
+	return dal.QueryCatalogByCatalog(dbhelper, catalog, filter)
 }
 
 func (i *catalogActionHandler) createCatalog(name, description, createDate string, parent []model.CatalogUnit, author int) (model.Summary, bool) {

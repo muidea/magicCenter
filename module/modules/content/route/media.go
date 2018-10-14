@@ -166,7 +166,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {
-			medias, total := i.contentHandler.GetAllMedia(filter.PageFilter)
+			medias, total := i.contentHandler.GetAllMedia(filter)
 			for _, val := range medias {
 				media := model.SummaryView{}
 				user, _ := i.accountHandler.FindUserByID(val.Creater)
@@ -187,7 +187,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		medias, total := i.contentHandler.GetMediaByCatalog(*catalog, filter.PageFilter)
+		medias, total := i.contentHandler.GetMediaByCatalog(*catalog, filter)
 		for _, val := range medias {
 			media := model.SummaryView{}
 			user, _ := i.accountHandler.FindUserByID(val.Creater)
