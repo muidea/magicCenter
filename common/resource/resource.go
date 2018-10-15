@@ -212,7 +212,8 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string, filter *def.Fil
 	sql := fmt.Sprintf(`select count(oid) from common_resource where type ='%s' order by type`, rType)
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
-			sql = fmt.Sprintf(`select count(oid) from common_resource where type ='%s' and description like '%%%s%%' order by type`, rType, filter.ContentFilter.FilterValue)
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select count(oid) from common_resource where type ='%s' and (description like '%%%s%%' or name like '%%%s%%') order by type`, rType, filterValue, filterValue)
 		}
 	}
 	helper.Query(sql)
@@ -237,7 +238,8 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string, filter *def.Fil
 	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' order by type limit %d offset %d`, rType, limitVal, offsetVal)
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
-			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' and description like '%%%s%%' order by type limit %d offset %d`, rType, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where type ='%s' and (description like '%%%s%%' or name like '%%%s%%') order by type limit %d offset %d`, rType, filterValue, filterValue, limitVal, offsetVal)
 		}
 	}
 	helper.Query(sql)
@@ -314,7 +316,8 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.Filte
 	sql := fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) order by type`, userStr)
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
-			sql = fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) and description like '%%%s%%' order by type`, userStr, filter.ContentFilter.FilterValue)
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) and (description like '%%%s%%' or name like '%%%s%%') order by type`, userStr, filterValue, filterValue)
 		}
 	}
 	helper.Query(sql)
@@ -339,7 +342,8 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.Filte
 	sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) order by type limit %d offset %d`, userStr, limitVal, offsetVal)
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
-			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) and description like '%%%s%%' order by type limit %d offset %d`, userStr, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select oid, id, name, description, type, createtime, owner from common_resource where owner in (%s) and (description like '%%%s%%' or name like '%%%s%%') order by type limit %d offset %d`, userStr, filterValue, filterValue, limitVal, offsetVal)
 		}
 	}
 	helper.Query(sql)
@@ -366,6 +370,12 @@ func relativeResource(helper dbhelper.DBHelper, oid int, filter *def.Filter) ([]
 	resultList := []Resource{}
 
 	sql := fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d`, oid)
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d and (r.description like '%%%s%%' or r.name like '%%%s%%')`, oid, filterValue, filterValue)
+		}
+	}
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&totalCount)
@@ -387,7 +397,8 @@ func relativeResource(helper dbhelper.DBHelper, oid int, filter *def.Filter) ([]
 	sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d order by r.createtime desc limit %d offset %d`, oid, limitVal, offsetVal)
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
-			sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d and r.description like '%%%s%%'  order by r.createtime desc limit %d offset %d`, oid, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+			filterValue := filter.ContentFilter.FilterValue
+			sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.dst and rr.src =%d and (r.description like '%%%s%%' or r.name like '%%%s%%') order by r.createtime desc limit %d offset %d`, oid, filterValue, filterValue, limitVal, offsetVal)
 		}
 	}
 	helper.Query(sql)
@@ -436,6 +447,16 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string, 
 	} else {
 		sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s'`, oid, referenceType)
 	}
+	if filter != nil {
+		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			filterValue := filter.ContentFilter.FilterValue
+			if referenceType == "" {
+				sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and (r.description like '%%%s%% or r.name like '%%%s%%') `, oid, filterValue, filterValue)
+			} else {
+				sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' and (r.description like '%%%s%%' or r.name like '%%%s%%') `, oid, referenceType, filterValue, filterValue)
+			}
+		}
+	}
 	helper.Query(sql)
 	if helper.Next() {
 		helper.GetValue(&totalCount)
@@ -461,10 +482,11 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string, 
 	}
 	if filter != nil {
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
+			filterValue := filter.ContentFilter.FilterValue
 			if referenceType == "" {
-				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.description like '%%%s%%' order by r.createtime desc limit %d offset %d`, oid, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and (r.description like '%%%s%%' or r.name like '%%%s%%') order by r.createtime desc limit %d offset %d`, oid, filterValue, filterValue, limitVal, offsetVal)
 			} else {
-				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' and r.description like '%%%s%%' order by r.createtime desc limit %d offset %d`, oid, referenceType, filter.ContentFilter.FilterValue, limitVal, offsetVal)
+				sql = fmt.Sprintf(`select r.oid, r.id, r.name, r.description, r.type, r.createtime, r.owner from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' and (r.description like '%%%s%%' or r.name like '%%%s%%') order by r.createtime desc limit %d offset %d`, oid, referenceType, filterValue, filterValue, limitVal, offsetVal)
 			}
 		}
 	}
