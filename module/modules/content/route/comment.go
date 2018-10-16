@@ -86,7 +86,7 @@ func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *ht
 	result := common_def.QueryCommentListResult{Comment: []model.CommentDetailView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil || strictCatalog == nil {

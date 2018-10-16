@@ -162,7 +162,7 @@ func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.R
 	result := common_def.QueryMediaListResult{Media: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {

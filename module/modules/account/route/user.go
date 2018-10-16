@@ -145,7 +145,7 @@ func (i *userGetAllRoute) getAllUserHandler(w http.ResponseWriter, r *http.Reque
 	result := common_def.GetUserListResult{}
 	for true {
 		filter := &common_def.PageFilter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		group := r.URL.Query().Get("group")
 		if len(group) > 0 {

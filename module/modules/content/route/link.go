@@ -154,7 +154,7 @@ func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Req
 	result := common_def.QueryLinkListResult{Link: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		catalog, err := common_def.DecodeStrictCatalog(r)
 		if catalog == nil && err == nil {

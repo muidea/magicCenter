@@ -148,7 +148,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 	result := common_def.GetGroupListResult{}
 	for true {
 		filter := &common_def.PageFilter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		allGroups := i.accountHandler.GetAllGroupDetail(filter)
 		for _, val := range allGroups {

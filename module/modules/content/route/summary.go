@@ -149,7 +149,7 @@ func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		_, str := net.SplitRESTAPI(r.URL.Path)
 		summaryID, err := strconv.Atoi(str)
@@ -246,7 +246,7 @@ func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.Respon
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if err != nil {

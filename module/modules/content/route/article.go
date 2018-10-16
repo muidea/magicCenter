@@ -152,7 +152,7 @@ func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *ht
 	result := common_def.QueryArticleListResult{Article: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
-		filter.Parse(r)
+		filter.Decode(r)
 
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
 		if strictCatalog == nil && err == nil {
