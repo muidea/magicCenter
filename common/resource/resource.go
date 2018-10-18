@@ -451,7 +451,7 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string, 
 		if filter.ContentFilter != nil && filter.ContentFilter.FilterValue != "" {
 			filterValue := filter.ContentFilter.FilterValue
 			if referenceType == "" {
-				sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and (r.description like '%%%s%% or r.name like '%%%s%%') `, oid, filterValue, filterValue)
+				sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and (r.description like '%%%s%%' or r.name like '%%%s%%') `, oid, filterValue, filterValue)
 			} else {
 				sql = fmt.Sprintf(`select count(r.oid) from common_resource r, common_resource_relative rr where r.oid = rr.src and rr.dst = %d and r.type ='%s' and (r.description like '%%%s%%' or r.name like '%%%s%%') `, oid, referenceType, filterValue, filterValue)
 			}
