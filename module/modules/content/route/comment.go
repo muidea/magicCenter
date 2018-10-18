@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"log"
-
 	"strconv"
 
 	"muidea.com/magicCenter/common"
@@ -81,8 +79,6 @@ func (i *commentGetListRoute) AuthGroup() int {
 }
 
 func (i *commentGetListRoute) getCommentListHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getCommentListHandler")
-
 	result := common_def.QueryCommentListResult{Comment: []model.CommentDetailView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -143,8 +139,6 @@ func (i *commentCreateRoute) AuthGroup() int {
 }
 
 func (i *commentCreateRoute) createCommentHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createCommentHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.CreateCommentResult{}
 	for true {
@@ -219,8 +213,6 @@ func (i *commentUpdateRoute) AuthGroup() int {
 }
 
 func (i *commentUpdateRoute) updateCommentHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateCommentHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.UpdateCommentResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
@@ -310,8 +302,6 @@ func (i *commentDestroyRoute) AuthGroup() int {
 }
 
 func (i *commentDestroyRoute) deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteCommentHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.DestroyCommentResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)

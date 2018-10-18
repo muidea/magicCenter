@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"log"
-
 	"strconv"
 
 	"muidea.com/magicCenter/common"
@@ -89,8 +87,6 @@ func (i *articleGetByIDRoute) AuthGroup() int {
 }
 
 func (i *articleGetByIDRoute) getArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getArticleHandler")
-
 	result := common_def.QueryArticleResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
@@ -147,8 +143,6 @@ func (i *articleGetListRoute) AuthGroup() int {
 }
 
 func (i *articleGetListRoute) getArticleListHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getArticleListHandler")
-
 	result := common_def.QueryArticleListResult{Article: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -227,8 +221,6 @@ func (i *articleCreateRoute) AuthGroup() int {
 }
 
 func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createArticleHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.CreateArticleResult{}
 	for true {
@@ -296,8 +288,6 @@ func (i *articleUpdateRoute) AuthGroup() int {
 }
 
 func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateArticleHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.UpdateArticleResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
@@ -378,8 +368,6 @@ func (i *articleDestroyRoute) AuthGroup() int {
 }
 
 func (i *articleDestroyRoute) deleteArticleHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteArticleHandler")
-
 	result := common_def.DestoryArticleResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {

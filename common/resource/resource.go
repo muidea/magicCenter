@@ -178,7 +178,10 @@ func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string, filter *
 	offsetVal := 0
 	if filter != nil {
 		limitVal = filter.PageSize
-		offsetVal = filter.PageSize * filter.PageNum
+		offsetVal = filter.PageSize * (filter.PageNum - 1)
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -227,8 +230,11 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string, filter *def.Fil
 	if filter != nil {
 		if filter.PageFilter != nil {
 			limitVal = filter.PageFilter.PageSize
-			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+			offsetVal = filter.PageFilter.PageSize * (filter.PageFilter.PageNum - 1)
 		}
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -280,7 +286,10 @@ func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string, filt
 	offsetVal := 0
 	if filter != nil {
 		limitVal = filter.PageSize
-		offsetVal = filter.PageSize * filter.PageNum
+		offsetVal = filter.PageSize * (filter.PageNum - 1)
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -331,8 +340,11 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.Filte
 	if filter != nil {
 		if filter.PageFilter != nil {
 			limitVal = filter.PageFilter.PageSize
-			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+			offsetVal = filter.PageFilter.PageSize * (filter.PageFilter.PageNum - 1)
 		}
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -387,8 +399,11 @@ func relativeResource(helper dbhelper.DBHelper, oid int, filter *def.Filter) ([]
 	if filter != nil {
 		if filter.PageFilter != nil {
 			limitVal = filter.PageFilter.PageSize
-			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+			offsetVal = filter.PageFilter.PageSize * (filter.PageFilter.PageNum - 1)
 		}
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -468,8 +483,11 @@ func referenceResource(helper dbhelper.DBHelper, oid int, referenceType string, 
 	if filter != nil {
 		if filter.PageFilter != nil {
 			limitVal = filter.PageFilter.PageSize
-			offsetVal = filter.PageFilter.PageSize * filter.PageFilter.PageNum
+			offsetVal = filter.PageFilter.PageSize * (filter.PageFilter.PageNum - 1)
 		}
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
 	}
 	if offsetVal >= totalCount {
 		return resultList, totalCount
@@ -673,13 +691,6 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 // []Resource 当前页内容
 // int 总条数
 func GetLastResource(helper dbhelper.DBHelper, count int, pageFilger *def.PageFilter) ([]Resource, int) {
-	limitVal := count
-	offsetVal := 0
-	if pageFilger != nil {
-		limitVal = pageFilger.PageSize
-		offsetVal = pageFilger.PageSize * pageFilger.PageNum
-	}
-
 	retVal := []Resource{}
 	sql := fmt.Sprint("select count(id) from common_resource order by createtime desc")
 	totalCount := 0
@@ -688,6 +699,17 @@ func GetLastResource(helper dbhelper.DBHelper, count int, pageFilger *def.PageFi
 		helper.GetValue(&totalCount)
 	}
 	helper.Finish()
+
+	limitVal := count
+	offsetVal := 0
+	if pageFilger != nil {
+		limitVal = pageFilger.PageSize
+		offsetVal = pageFilger.PageSize * (pageFilger.PageNum - 1)
+	}
+	if offsetVal < 0 {
+		offsetVal = 0
+	}
+
 	if offsetVal >= totalCount {
 		return retVal, totalCount
 	}

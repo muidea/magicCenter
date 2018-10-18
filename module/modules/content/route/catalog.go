@@ -2,7 +2,6 @@ package route
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -96,8 +95,6 @@ func (i *catalogGetByIDRoute) AuthGroup() int {
 }
 
 func (i *catalogGetByIDRoute) getCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getCatalogHandler")
-
 	result := common_def.QueryCatalogResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
@@ -154,8 +151,6 @@ func (i *catalogQueryByNameRoute) AuthGroup() int {
 }
 
 func (i *catalogQueryByNameRoute) queryCatalogByNameHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("queryCatalogByNameHandler")
-
 	result := common_def.QueryCatalogResult{}
 	for true {
 		name := r.URL.Query().Get("name")
@@ -221,8 +216,6 @@ func (i *catalogGetListRoute) AuthGroup() int {
 }
 
 func (i *catalogGetListRoute) getCatalogListHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getCatalogListHandler")
-
 	result := common_def.QueryCatalogListResult{Catalog: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -302,8 +295,6 @@ func (i *catalogCreateRoute) AuthGroup() int {
 }
 
 func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createCatalogHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.CreateCatalogResult{}
 	for true {
@@ -370,8 +361,6 @@ func (i *catalogUpdateRoute) AuthGroup() int {
 }
 
 func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateCatalogHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.UpdateCatalogResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
@@ -452,8 +441,6 @@ func (i *catalogDestroyRoute) AuthGroup() int {
 }
 
 func (i *catalogDestroyRoute) deleteCatalogHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteCatalogHandler")
-
 	result := common_def.DestroyCatalogResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {

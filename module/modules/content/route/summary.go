@@ -69,8 +69,6 @@ func (i *summaryQueryRoute) AuthGroup() int {
 }
 
 func (i *summaryQueryRoute) querySummaryHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("querySummaryHandler")
-
 	result := common_def.QuerySummaryResult{Summary: model.SummaryView{}}
 	for true {
 		strictCatalog, err := common_def.DecodeStrictCatalog(r)
@@ -144,8 +142,6 @@ func (i *summaryContentQueryRoute) AuthGroup() int {
 }
 
 func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getSummaryDetailHandler")
-
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -241,8 +237,6 @@ func (i *summaryContentQueryByUserRoute) AuthGroup() int {
 }
 
 func (i *summaryContentQueryByUserRoute) querySummaryDetailHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("querySummaryDetailHandler")
-
 	result := common_def.QuerySummaryListResult{Summary: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}

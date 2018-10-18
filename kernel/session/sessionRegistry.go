@@ -41,7 +41,6 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 	sessionID := ""
 	cookie, err := r.Cookie(sessionCookieID)
 	if err == nil {
-		log.Printf("url sessionID:%s, cookie sessionID:%s, sessionCookieID:%s", sessionID, cookie.Value, common_const.SessionID)
 		sessionID = cookie.Value
 	}
 	urlSession := r.URL.Query().Get(common_const.SessionID)
@@ -51,11 +50,9 @@ func (sm *sessionRegistryImpl) GetSession(w http.ResponseWriter, r *http.Request
 
 	cur, found := sm.FindSession(sessionID)
 	if !found {
-		log.Printf("can\\'t find session,create new session, sessionID:%s", sessionID)
 		sessionID := createUUID()
 		userSession = sm.CreateSession(sessionID)
 	} else {
-		log.Printf("find exist session, sessionID:%s", sessionID)
 		userSession = cur
 	}
 
@@ -160,19 +157,14 @@ type findResult struct {
 type commandChanImpl chan commandData
 
 func (right commandChanImpl) insert(session sessionImpl) {
-	log.Printf("insert session, id:%s", session.id)
-
 	right <- commandData{action: insert, value: session}
 }
 
 func (right commandChanImpl) remove(id string) {
-	log.Printf("delete session, id:%s", id)
 	right <- commandData{action: remove, value: id}
 }
 
 func (right commandChanImpl) update(session sessionImpl) bool {
-	log.Printf("update session, id:%s", session.id)
-
 	reply := make(chan interface{})
 	right <- commandData{action: update, value: session, result: reply}
 
@@ -181,7 +173,6 @@ func (right commandChanImpl) update(session sessionImpl) bool {
 }
 
 func (right commandChanImpl) find(id string) (sessionImpl, bool) {
-	log.Printf("find session by id, id:%s", id)
 	reply := make(chan interface{})
 	right <- commandData{action: find, value: id, result: reply}
 
@@ -195,8 +186,6 @@ func (right commandChanImpl) find(id string) (sessionImpl, bool) {
 }
 
 func (right commandChanImpl) count() int {
-	log.Print("count session")
-
 	reply := make(chan interface{})
 	right <- commandData{action: length, result: reply}
 

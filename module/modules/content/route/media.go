@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"log"
-
 	"strconv"
 
 	"muidea.com/magicCenter/common"
@@ -99,8 +97,6 @@ func (i *mediaGetByIDRoute) AuthGroup() int {
 }
 
 func (i *mediaGetByIDRoute) getMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getMediaHandler")
-
 	result := common_def.QueryMediaResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
@@ -157,8 +153,6 @@ func (i *mediaGetListRoute) AuthGroup() int {
 }
 
 func (i *mediaGetListRoute) getMediaListHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getMediaListHandler")
-
 	result := common_def.QueryMediaListResult{Media: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -235,8 +229,6 @@ func (i *mediaCreateRoute) AuthGroup() int {
 }
 
 func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createMediaHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.CreateMediaResult{}
 	for true {
@@ -301,8 +293,6 @@ func (i *mediaBatchCreateRoute) AuthGroup() int {
 }
 
 func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createBatchMediaHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.BatchCreateMediaResult{Medias: []model.SummaryView{}}
 	for true {
@@ -377,8 +367,6 @@ func (i *mediaUpdateRoute) AuthGroup() int {
 }
 
 func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateMediaHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.UpdateMediaResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
@@ -461,8 +449,6 @@ func (i *mediaDestroyRoute) AuthGroup() int {
 }
 
 func (i *mediaDestroyRoute) deleteMediaHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteMediaHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.DestroyMediaResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)

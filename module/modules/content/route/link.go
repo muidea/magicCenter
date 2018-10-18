@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"log"
-
 	"strconv"
 
 	"muidea.com/magicCenter/common"
@@ -90,8 +88,6 @@ func (i *linkGetByIDRoute) AuthGroup() int {
 }
 
 func (i *linkGetByIDRoute) getLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getLinkHandler")
-
 	result := common_def.QueryLinkResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
 	for true {
@@ -149,8 +145,6 @@ func (i *linkGetListRoute) AuthGroup() int {
 }
 
 func (i *linkGetListRoute) getLinkListHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("getLinkListHandler")
-
 	result := common_def.QueryLinkListResult{Link: []model.SummaryView{}}
 	for true {
 		filter := &common_def.Filter{}
@@ -227,8 +221,6 @@ func (i *linkCreateRoute) AuthGroup() int {
 }
 
 func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("createLinkHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.CreateLinkResult{}
 	for true {
@@ -294,8 +286,6 @@ func (i *linkUpdateRoute) AuthGroup() int {
 }
 
 func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("updateLinkHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.UpdateLinkResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
@@ -378,8 +368,6 @@ func (i *linkDestroyRoute) AuthGroup() int {
 }
 
 func (i *linkDestroyRoute) deleteLinkHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("deleteLinkHandler")
-
 	session := i.sessionRegistry.GetSession(w, r)
 	result := common_def.DestroyLinkResult{}
 	_, value := net.SplitRESTAPI(r.URL.Path)
