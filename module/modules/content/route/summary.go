@@ -164,30 +164,10 @@ func (i *summaryContentQueryRoute) getSummaryDetailHandler(w http.ResponseWriter
 			break
 		}
 
-		strictCatalog, err := common_def.DecodeStrictCatalog(r)
-		if err != nil {
-			result.ErrorCode = common_def.IllegalParam
-			result.Reason = "非法参数"
-			log.Printf("illegal strictCatalog")
-			break
-		}
-
+		specialType := r.URL.Query().Get("specialType")
 		summary := model.CatalogUnit{ID: summaryID, Type: summaryType}
-		summarys, total := i.contentHandler.QuerySummaryContent(summary, filter)
+		summarys, total := i.contentHandler.QuerySummaryContent(summary, specialType, filter)
 		for _, v := range summarys {
-			if strictCatalog != nil {
-				found := false
-				for _, sv := range v.Catalog {
-					if sv.IsSame(strictCatalog) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					continue
-				}
-			}
-
 			view := model.SummaryView{}
 			view.Summary = v
 			view.Catalog = i.contentHandler.GetSummaryByIDs(v.Catalog)

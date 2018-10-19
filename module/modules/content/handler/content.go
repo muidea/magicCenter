@@ -345,7 +345,7 @@ func (i *impl) QuerySummaryByName(summaryName, summaryType string, catalog model
 	return summary, found
 }
 
-func (i *impl) QuerySummaryContent(summary model.CatalogUnit, filter *def.Filter) ([]model.Summary, int) {
+func (i *impl) QuerySummaryContent(summary model.CatalogUnit, specialType string, filter *def.Filter) ([]model.Summary, int) {
 	summaryList := []model.Summary{}
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
@@ -353,7 +353,7 @@ func (i *impl) QuerySummaryContent(summary model.CatalogUnit, filter *def.Filter
 	}
 	defer dbhelper.Release()
 
-	resList, resCount := resource.QueryReferenceResource(dbhelper, summary.ID, summary.Type, "", filter)
+	resList, resCount := resource.QueryReferenceResource(dbhelper, summary.ID, summary.Type, specialType, filter)
 	for _, r := range resList {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		for _, v := range r.Relative() {

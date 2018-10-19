@@ -95,8 +95,8 @@ const GetCommentList = "/comments/"
 // QuerySummary 查询Smmary
 const QuerySummary = "/summary/"
 
-// GetSummaryDetail 查询指定Smmary的内容
+// GetSummaryDetail 查询指定Summary的内容
 const GetSummaryDetail = "/summary/:id"
 
-// QuerySummaryDetail 查询指定Smmary的内容
+// QuerySummaryDetail 查询指定Summary的内容
 const QuerySummaryDetail = "/summarys/"

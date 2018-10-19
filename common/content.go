@@ -52,7 +52,7 @@ type ContentHandler interface {
 
 	GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary
 	QuerySummaryByName(summaryName, summaryType string, catalog model.CatalogUnit) (model.Summary, bool)
-	QuerySummaryContent(summary model.CatalogUnit, filter *def.Filter) ([]model.Summary, int)
+	QuerySummaryContent(summary model.CatalogUnit, specialType string, filter *def.Filter) ([]model.Summary, int)
 	GetSummaryByUser(uids []int, filter *def.Filter) ([]model.Summary, int)
 
 	GetContentSummary() model.ContentSummary
