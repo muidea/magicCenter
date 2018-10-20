@@ -48,7 +48,7 @@ func main() {
 
 	rootSumary, ok := agent.FetchSummary(endpointName, model.CATALOG, authToken, sessionID, nil)
 	if mode == "repair" && ok {
-		repairInitContent(&rootSumary, cfg, sessionID, agent)
+		repairInitContent(&rootSumary, cfg, authToken, sessionID, agent)
 		return
 	}
 
@@ -109,7 +109,7 @@ func findCatalog(ids []string, catalogInfo map[string]model.SummaryView) []model
 	return rets
 }
 
-func repairInitContent(rootView *model.SummaryView, cfg *config.Config, sessionID string, agent agent.Agent) {
+func repairInitContent(rootView *model.SummaryView, cfg *config.Config, authToken, sessionID string, agent agent.Agent) {
 	catalogInfo := map[string]model.SummaryView{}
 	articleInfo := map[string]model.SummaryView{}
 
