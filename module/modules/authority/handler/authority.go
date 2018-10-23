@@ -101,7 +101,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 		log.Printf("invalid authToken, authToken:%s", authToken)
 		return false
 	}
-	if onlineEntry.User.ID == common_const.SystemAccountUser.ID {
+	if onlineEntry.Unit.ID == common_const.SystemAccountUser.ID {
 		return true
 	}
 
@@ -112,7 +112,7 @@ func (i *impl) VerifyAuthority(res http.ResponseWriter, req *http.Request) bool 
 	defer dbhelper.Release()
 
 	avalibleFlag := false
-	moduleAuthGroup := dal.QueryUserModuleAuthGroup(dbhelper, onlineEntry.User.ID)
+	moduleAuthGroup := dal.QueryUserModuleAuthGroup(dbhelper, onlineEntry.Unit.ID)
 	for _, val := range moduleAuthGroup {
 		if val.Module == acl.Module && val.AuthGroup >= acl.AuthGroup {
 			avalibleFlag = true

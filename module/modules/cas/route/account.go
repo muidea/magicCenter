@@ -11,6 +11,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/model"
 )
 
 type accountLoginRoute struct {
@@ -57,7 +58,7 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 			break
 		}
 
-		session.SetAccount(onlineEntry.User)
+		session.SetAccount(model.User{ID: onlineEntry.Unit.ID, Name: onlineEntry.Unit.Name})
 		session.SetOption(common_const.AuthToken, authToken)
 		session.Flush()
 

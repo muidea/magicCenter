@@ -10,6 +10,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
+	"muidea.com/magicCommon/model"
 )
 
 type endpointLoginRoute struct {
@@ -55,7 +56,7 @@ func (i *endpointLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request
 			break
 		}
 
-		session.SetAccount(userInfo.User)
+		session.SetAccount(model.User{ID: userInfo.Unit.ID, Name: userInfo.Unit.Name})
 		session.SetOption(common_const.AuthToken, authToken)
 		session.SetOption(common_const.ExpiryDate, -1)
 		session.Flush()
