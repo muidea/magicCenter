@@ -3,6 +3,7 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/resource"
@@ -136,6 +137,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []m
 		sql := fmt.Sprintf(`insert into content_article (id, title,content,creater,createdate) values (%d, '%s','%s',%d,'%s')`, id, title, content, creater, createDate)
 		_, result = helper.Execute(sql)
 		if !result {
+			log.Printf("insert article failed, sql:%s", sql)
 			break
 		}
 
@@ -151,6 +153,7 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []m
 			if ok {
 				res.AppendRelative(ca)
 			} else {
+				log.Printf("query resource failed, id:%d, type:%s", c.ID, c.Type)
 				result = false
 				break
 			}
@@ -158,6 +161,9 @@ func CreateArticle(helper dbhelper.DBHelper, title, content string, catalogs []m
 
 		if result {
 			result = resource.CreateResource(helper, res, true)
+			if !result {
+				log.Printf("create resource failed, id:%d, type:%s", res.RId(), res.RType())
+			}
 		}
 
 		break
