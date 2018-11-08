@@ -1,6 +1,9 @@
 package common
 
-import "muidea.com/magicCommon/model"
+import (
+	"muidea.com/magicCommon/def"
+	"muidea.com/magicCommon/model"
+)
 
 // SystemHandler 系统管理接口
 type SystemHandler interface {
@@ -10,4 +13,7 @@ type SystemHandler interface {
 	GetSystemStatistics() model.StatisticsView
 
 	GetSystemMenu() (string, bool)
+
+	QuerySyslog(source string, filter *def.PageFilter) ([]*model.Syslog, int)
+	InsertSyslog(log *model.Syslog) bool
 }

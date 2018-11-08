@@ -28,3 +28,9 @@ const GetSystemMenu = "/menu/"
 
 // GetSystemDashboard 获取系统Dashboard
 const GetSystemDashboard = "/dashboard/"
+
+// QuerySyslog 查询Syslog
+const QuerySyslog = "/syslog/"
+
+// InsertSyslog 插入Syslog
+const InsertSyslog = "/syslog/"

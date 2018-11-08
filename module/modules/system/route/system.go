@@ -26,6 +26,12 @@ func AppendSystemRoute(routes []common.Route, systemHandler common.SystemHandler
 	rt = GetSystemDashboardRoute(systemHandler)
 	routes = append(routes, rt)
 
+	rt = QuerySyslogRoute(systemHandler)
+	routes = append(routes, rt)
+
+	rt = InsertSyslogRoute(systemHandler)
+	routes = append(routes, rt)
+
 	return routes
 }
 
@@ -47,6 +53,16 @@ func GetSystemMenuRoute(systemHandler common.SystemHandler) common.Route {
 // GetSystemDashboardRoute 新建获取SystemDashboard路由
 func GetSystemDashboardRoute(systemHandler common.SystemHandler) common.Route {
 	return &getSystemDashboardRoute{systemHandler: systemHandler}
+}
+
+// QuerySyslogRoute 新建查询Syslog路由
+func QuerySyslogRoute(systemHandler common.SystemHandler) common.Route {
+	return &querySyslogRoute{systemHandler: systemHandler}
+}
+
+// InsertSyslogRoute 新建插入日志路由
+func InsertSyslogRoute(systemHandler common.SystemHandler) common.Route {
+	return &insertSyslogRoute{systemHandler: systemHandler}
 }
 
 type getSystemConfigRoute struct {
@@ -210,6 +226,105 @@ func (i *getSystemDashboardRoute) getSystemDashboardHandler(w http.ResponseWrite
 	result := getSystemDashboardResult{}
 	result.ErrorCode = 0
 	result.StatisticsView = i.systemHandler.GetSystemStatistics()
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type querySyslogRoute struct {
+	systemHandler common.SystemHandler
+}
+
+type querySyslogResult struct {
+	common_def.Result
+	Total  int             `json:"total"`
+	Syslog []*model.Syslog `json:"syslog"`
+}
+
+func (i *querySyslogRoute) Method() string {
+	return common.GET
+}
+
+func (i *querySyslogRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.QuerySyslog)
+}
+
+func (i *querySyslogRoute) Handler() interface{} {
+	return i.querySyslogHandler
+}
+
+func (i *querySyslogRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
+}
+
+func (i *querySyslogRoute) querySyslogHandler(w http.ResponseWriter, r *http.Request) {
+	result := querySyslogResult{}
+
+	filter := &common_def.PageFilter{}
+	filter.Decode(r)
+
+	source := r.URL.Query().Get("sourceType")
+	result.Syslog, result.Total = i.systemHandler.QuerySyslog(source, filter)
+
+	b, err := json.Marshal(result)
+	if err != nil {
+		panic("json.Marshal, failed, err:" + err.Error())
+	}
+
+	w.Write(b)
+}
+
+type insertSyslogRoute struct {
+	systemHandler common.SystemHandler
+}
+
+type insertSyslogParam struct {
+	model.Syslog
+}
+
+type insertSyslogResult struct {
+	common_def.Result
+}
+
+func (i *insertSyslogRoute) Method() string {
+	return common.POST
+}
+
+func (i *insertSyslogRoute) Pattern() string {
+	return net.JoinURL(def.URL, def.InsertSyslog)
+}
+
+func (i *insertSyslogRoute) Handler() interface{} {
+	return i.insertSyslogHandler
+}
+
+func (i *insertSyslogRoute) AuthGroup() int {
+	return common_const.UserAuthGroup.ID
+}
+
+func (i *insertSyslogRoute) insertSyslogHandler(w http.ResponseWriter, r *http.Request) {
+	result := insertSyslogResult{}
+
+	param := &insertSyslogParam{}
+	for {
+		err := net.ParsePostJSON(r, param)
+		if err != nil {
+			result.ErrorCode = common_def.Failed
+			result.Reason = "无效参数"
+			break
+		}
+
+		if i.systemHandler.InsertSyslog(&param.Syslog) {
+			result.ErrorCode = common_def.Success
+		} else {
+			result.ErrorCode = common_def.Failed
+		}
+		break
+	}
 
 	b, err := json.Marshal(result)
 	if err != nil {
