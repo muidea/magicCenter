@@ -104,12 +104,12 @@ func (s *impl) QuerySyslog(source string, filter *def.PageFilter) ([]*model.Sysl
 	return syslog.QuerySyslog(helper, source, filter)
 }
 
-func (s *impl) InsertSyslog(log *model.Syslog) bool {
+func (s *impl) InsertSyslog(user, operation, datetime, source string) bool {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")
 	}
 	defer helper.Release()
 
-	return syslog.InsertSyslog(helper, log)
+	return syslog.InsertSyslog(helper, user, operation, datetime, source)
 }

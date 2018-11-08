@@ -15,5 +15,5 @@ type SystemHandler interface {
 	GetSystemMenu() (string, bool)
 
 	QuerySyslog(source string, filter *def.PageFilter) ([]*model.Syslog, int)
-	InsertSyslog(log *model.Syslog) bool
+	InsertSyslog(user, operation, datetime, source string) bool
 }

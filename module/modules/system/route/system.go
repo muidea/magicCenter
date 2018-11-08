@@ -239,12 +239,6 @@ type querySyslogRoute struct {
 	systemHandler common.SystemHandler
 }
 
-type querySyslogResult struct {
-	common_def.Result
-	Total  int             `json:"total"`
-	Syslog []*model.Syslog `json:"syslog"`
-}
-
 func (i *querySyslogRoute) Method() string {
 	return common.GET
 }
@@ -262,7 +256,7 @@ func (i *querySyslogRoute) AuthGroup() int {
 }
 
 func (i *querySyslogRoute) querySyslogHandler(w http.ResponseWriter, r *http.Request) {
-	result := querySyslogResult{}
+	result := common_def.QuerySyslogResult{}
 
 	filter := &common_def.PageFilter{}
 	filter.Decode(r)
@@ -282,14 +276,6 @@ type insertSyslogRoute struct {
 	systemHandler common.SystemHandler
 }
 
-type insertSyslogParam struct {
-	model.Syslog
-}
-
-type insertSyslogResult struct {
-	common_def.Result
-}
-
 func (i *insertSyslogRoute) Method() string {
 	return common.POST
 }
@@ -307,9 +293,9 @@ func (i *insertSyslogRoute) AuthGroup() int {
 }
 
 func (i *insertSyslogRoute) insertSyslogHandler(w http.ResponseWriter, r *http.Request) {
-	result := insertSyslogResult{}
+	result := common_def.InsertSyslogResult{}
 
-	param := &insertSyslogParam{}
+	param := &common_def.InsertSyslogParam{}
 	for {
 		err := net.ParsePostJSON(r, param)
 		if err != nil {
@@ -318,7 +304,7 @@ func (i *insertSyslogRoute) insertSyslogHandler(w http.ResponseWriter, r *http.R
 			break
 		}
 
-		if i.systemHandler.InsertSyslog(&param.Syslog) {
+		if i.systemHandler.InsertSyslog(param.User, param.Operation, param.DateTime, param.Source) {
 			result.ErrorCode = common_def.Success
 		} else {
 			result.ErrorCode = common_def.Failed

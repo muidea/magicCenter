@@ -53,12 +53,8 @@ func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter
 }
 
 // InsertSyslog 插入一条日志
-func InsertSyslog(helper dbhelper.DBHelper, log *model.Syslog) bool {
-	if log == nil {
-		return false
-	}
-
-	sql := fmt.Sprintf(`insert into common_syslog (user,operation,datetime,source) values ('%s','%s','%s','%s')`, log.User, log.Operation, log.DateTime, log.Source)
+func InsertSyslog(helper dbhelper.DBHelper, user, operation, datetime, source string) bool {
+	sql := fmt.Sprintf(`insert into common_syslog (user,operation,datetime,source) values ('%s','%s','%s','%s')`, user, operation, datetime, source)
 	num, ok := helper.Execute(sql)
 	return num == 1 && ok
 }
