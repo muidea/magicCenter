@@ -42,9 +42,9 @@ func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter
 	}
 
 	helper.Query(sql)
-	if helper.Next() {
+	for helper.Next() {
 		log := model.Syslog{}
-		helper.GetValue(&log.ID, &log.User, &log.Operation, &log.DateTime)
+		helper.GetValue(&log.ID, &log.User, &log.Operation, &log.DateTime, &log.Source)
 		sysLogs = append(sysLogs, log)
 	}
 	helper.Finish()
