@@ -263,6 +263,7 @@ func (i *querySyslogRoute) querySyslogHandler(w http.ResponseWriter, r *http.Req
 
 	source := r.URL.Query().Get("sourceType")
 	result.Syslog, result.Total = i.systemHandler.QuerySyslog(source, filter)
+	result.ErrorCode = common_def.Success
 
 	b, err := json.Marshal(result)
 	if err != nil {

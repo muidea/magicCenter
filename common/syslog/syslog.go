@@ -9,12 +9,12 @@ import (
 )
 
 // QuerySyslog 查询系统日志
-func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter) ([]*model.Syslog, int) {
+func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter) ([]model.Syslog, int) {
 	totalCount := 0
-	sysLogs := []*model.Syslog{}
-	sql := fmt.Sprintf(`select count(id) common_syslog`)
+	sysLogs := []model.Syslog{}
+	sql := fmt.Sprintf(`select count(id) from common_syslog`)
 	if source != "" {
-		sql = fmt.Sprintf(`select count(id) common_syslog where source ='%s'`, source)
+		sql = fmt.Sprintf(`select count(id) from common_syslog where source ='%s'`, source)
 	}
 
 	helper.Query(sql)
@@ -36,14 +36,14 @@ func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter
 		return sysLogs, totalCount
 	}
 
-	sql = fmt.Sprintf(`select id, user, operation, datetime from common_syslog order by datetime desc limit %d offset %d`, limitVal, offsetVal)
+	sql = fmt.Sprintf(`select id, user, operation, datetime, source from common_syslog order by datetime desc limit %d offset %d`, limitVal, offsetVal)
 	if source != "" {
-		sql = fmt.Sprintf(`select id, user, operation, datetime from common_syslog where source ='%s' order by datetime desc limit %d offset %d`, source, limitVal, offsetVal)
+		sql = fmt.Sprintf(`select id, user, operation, datetime, source from common_syslog where source ='%s' order by datetime desc limit %d offset %d`, source, limitVal, offsetVal)
 	}
 
 	helper.Query(sql)
 	if helper.Next() {
-		log := &model.Syslog{}
+		log := model.Syslog{}
 		helper.GetValue(&log.ID, &log.User, &log.Operation, &log.DateTime)
 		sysLogs = append(sysLogs, log)
 	}
