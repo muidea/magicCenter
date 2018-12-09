@@ -3,14 +3,14 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/content/dal"
-	"muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
 type commentActionHandler struct {
 }
 
-func (i *commentActionHandler) findCommentByCatalog(catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.CommentDetail, int) {
+func (i *commentActionHandler) findCommentByCatalog(catalog model.CatalogUnit, pageFilter *common_util.PageFilter) ([]model.CommentDetail, int) {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)

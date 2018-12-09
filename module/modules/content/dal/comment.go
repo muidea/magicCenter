@@ -8,7 +8,7 @@ import (
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -26,7 +26,7 @@ func loadCommentID(helper dbhelper.DBHelper) int {
 }
 
 // QueryCommentByCatalog 查询指定分类下的Comment
-func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *def.PageFilter) ([]model.CommentDetail, int) {
+func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, pageFilter *common_util.PageFilter) ([]model.CommentDetail, int) {
 	commentList := []model.CommentDetail{}
 
 	ids := []int{}
@@ -42,7 +42,7 @@ func QueryCommentByCatalog(helper dbhelper.DBHelper, catalog model.CatalogUnit, 
 	}
 
 	resCount = 0
-	sql := fmt.Sprintf(`select id, subject, content, createdate, creater, flag from content_comment where id in(%s)`, util.IntArray2Str(ids))
+	sql := fmt.Sprintf(`select id, subject, content, createdate, creater, flag from content_comment where id in(%s)`, common_util.IntArray2Str(ids))
 	helper.Query(sql)
 	for helper.Next() {
 		comment := model.CommentDetail{}
@@ -97,7 +97,7 @@ func DeleteCommentByID(helper dbhelper.DBHelper, id int) bool {
 
 // CreateComment 新建Comment
 func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string, creater int, catalogs []model.CatalogUnit) (model.Summary, bool) {
-	desc := util.ExtractSummary(content)
+	desc := common_util.ExtractSummary(content)
 	cmt := model.Summary{Unit: model.Unit{Name: subject}, Description: desc, Type: model.COMMENT, Catalog: catalogs, CreateDate: createDate, Creater: creater}
 
 	id := allocCommentID()
@@ -144,7 +144,7 @@ func CreateComment(helper dbhelper.DBHelper, subject, content, createDate string
 
 // SaveComment 保存Comment
 func SaveComment(helper dbhelper.DBHelper, cmt model.CommentDetail) (model.Summary, bool) {
-	desc := util.ExtractSummary(cmt.Content)
+	desc := common_util.ExtractSummary(cmt.Content)
 	summary := model.Summary{Unit: model.Unit{ID: cmt.ID, Name: cmt.Subject}, Description: desc, Type: model.COMMENT, Catalog: cmt.Catalog, CreateDate: cmt.CreateDate, Creater: cmt.Creater}
 	result := false
 	helper.BeginTransaction()

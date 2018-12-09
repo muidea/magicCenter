@@ -1,7 +1,7 @@
 package common
 
 import (
-	"muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -14,6 +14,6 @@ type SystemHandler interface {
 
 	GetSystemMenu() (string, bool)
 
-	QuerySyslog(source string, filter *def.PageFilter) ([]model.Syslog, int)
+	QuerySyslog(source string, filter *common_util.PageFilter) ([]model.Syslog, int)
 	InsertSyslog(user, operation, datetime, source string) bool
 }

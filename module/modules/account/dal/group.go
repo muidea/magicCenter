@@ -6,8 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	common_const "muidea.com/magicCommon/common"
-	common_def "muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -39,7 +38,7 @@ func QueryGroupCount(helper dbhelper.DBHelper) int {
 }
 
 // QueryAllGroupDetail 查询所有的分组
-func QueryAllGroupDetail(helper dbhelper.DBHelper, filter *common_def.PageFilter) []model.GroupDetail {
+func QueryAllGroupDetail(helper dbhelper.DBHelper, filter *common_util.PageFilter) []model.GroupDetail {
 	groupList := []model.GroupDetail{}
 	sql := fmt.Sprintf("select id, name, description, catalog from account_group")
 	helper.Query(sql)
@@ -97,7 +96,7 @@ func QueryGroups(helper dbhelper.DBHelper, ids []int) []model.Group {
 		return groupList
 	}
 
-	sql := fmt.Sprintf("select id, name from account_group where id in(%s)", util.IntArray2Str(ids))
+	sql := fmt.Sprintf("select id, name from account_group where id in(%s)", common_util.IntArray2Str(ids))
 	helper.Query(sql)
 
 	for helper.Next() {

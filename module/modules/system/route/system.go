@@ -9,6 +9,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -258,7 +259,7 @@ func (i *querySyslogRoute) AuthGroup() int {
 func (i *querySyslogRoute) querySyslogHandler(w http.ResponseWriter, r *http.Request) {
 	result := common_def.QuerySyslogResult{}
 
-	filter := &common_def.PageFilter{}
+	filter := &common_util.PageFilter{}
 	filter.Decode(r)
 
 	source := r.URL.Query().Get("sourceType")

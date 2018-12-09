@@ -9,7 +9,7 @@ import (
 	"muidea.com/magicCenter/common/resource"
 	common_const "muidea.com/magicCommon/common"
 	"muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -205,7 +205,7 @@ func (i *impl) DestroyMedia(id int) bool {
 	return i.mediaHandler.destroyMedia(id)
 }
 
-func (i *impl) GetCommentByCatalog(catalog model.CatalogUnit, filter *def.PageFilter) ([]model.CommentDetail, int) {
+func (i *impl) GetCommentByCatalog(catalog model.CatalogUnit, filter *common_util.PageFilter) ([]model.CommentDetail, int) {
 	return i.commentHandler.findCommentByCatalog(catalog, filter)
 }
 
@@ -271,7 +271,7 @@ func (i *impl) GetSummaryByIDs(ids []model.CatalogUnit) []model.Summary {
 		summary := model.Summary{Unit: model.Unit{ID: r.RId(), Name: r.RName()}, Description: r.RDescription(), Type: r.RType(), CreateDate: r.RCreateDate(), Creater: r.ROwner()}
 		summaryList = append(summaryList, summary)
 	}
-	if util.ExistIntArray(common_const.SystemContentCatalog.ID, catalogIds) {
+	if common_util.ExistIntArray(common_const.SystemContentCatalog.ID, catalogIds) {
 		summaryList = append(summaryList, *common_const.SystemContentCatalog.Summary())
 	}
 
@@ -409,7 +409,7 @@ func (i *impl) GetContentSummary() model.ContentSummary {
 	return result
 }
 
-func (i *impl) GetLastContent(count int, filter *def.PageFilter) ([]model.ContentUnit, int) {
+func (i *impl) GetLastContent(count int, filter *common_util.PageFilter) ([]model.ContentUnit, int) {
 	resultList := []model.ContentUnit{}
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {

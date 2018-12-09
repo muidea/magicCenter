@@ -11,6 +11,7 @@ import (
 	common_const "muidea.com/magicCommon/common"
 	common_def "muidea.com/magicCommon/def"
 	"muidea.com/magicCommon/foundation/net"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -147,7 +148,7 @@ func (i *groupGetAllRoute) getAllGroupHandler(w http.ResponseWriter, r *http.Req
 
 	result := common_def.GetGroupListResult{}
 	for true {
-		filter := &common_def.PageFilter{}
+		filter := &common_util.PageFilter{}
 		filter.Decode(r)
 
 		allGroups := i.accountHandler.GetAllGroupDetail(filter)

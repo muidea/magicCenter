@@ -1,7 +1,7 @@
 package common
 
 import (
-	common_def "muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -9,7 +9,7 @@ import (
 type AccountHandler interface {
 	GetAllUserIDs() []int
 	GetAllUser() []model.User
-	GetAllUserDetail(filter *common_def.PageFilter) []model.UserDetail
+	GetAllUserDetail(filter *common_util.PageFilter) []model.UserDetail
 	GetUsers(ids []int) []model.User
 	FindUserByID(id int) (model.UserDetail, bool)
 	FindUserByGroup(groupID int) []model.UserDetail
@@ -21,7 +21,7 @@ type AccountHandler interface {
 	DestroyUserByAccount(account, password string) bool
 
 	GetAllGroup() []model.Group
-	GetAllGroupDetail(filter *common_def.PageFilter) []model.GroupDetail
+	GetAllGroupDetail(filter *common_util.PageFilter) []model.GroupDetail
 	GetGroups(ids []int) []model.Group
 	FindGroupByID(id int) (model.GroupDetail, bool)
 	FindSubGroup(id int) []model.Group

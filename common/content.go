@@ -2,6 +2,7 @@ package common
 
 import (
 	"muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -45,7 +46,7 @@ type ContentHandler interface {
 	SaveMedia(media model.MediaDetail) (model.Summary, bool)
 	DestroyMedia(id int) bool
 
-	GetCommentByCatalog(catalog model.CatalogUnit, filter *def.PageFilter) ([]model.CommentDetail, int)
+	GetCommentByCatalog(catalog model.CatalogUnit, filter *common_util.PageFilter) ([]model.CommentDetail, int)
 	CreateComment(subject, content, createDate string, catalog []model.CatalogUnit, creater int) (model.Summary, bool)
 	SaveComment(comment model.CommentDetail) (model.Summary, bool)
 	DestroyComment(id int) bool
@@ -56,5 +57,5 @@ type ContentHandler interface {
 	GetSummaryByUser(uids []int, filter *def.Filter) ([]model.Summary, int)
 
 	GetContentSummary() model.ContentSummary
-	GetLastContent(count int, filter *def.PageFilter) ([]model.ContentUnit, int)
+	GetLastContent(count int, filter *common_util.PageFilter) ([]model.ContentUnit, int)
 }

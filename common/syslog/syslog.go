@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
 // QuerySyslog 查询系统日志
-func QuerySyslog(helper dbhelper.DBHelper, source string, filter *def.PageFilter) ([]model.Syslog, int) {
+func QuerySyslog(helper dbhelper.DBHelper, source string, filter *common_util.PageFilter) ([]model.Syslog, int) {
 	totalCount := 0
 	sysLogs := []model.Syslog{}
 	sql := fmt.Sprintf(`select count(id) from common_syslog`)

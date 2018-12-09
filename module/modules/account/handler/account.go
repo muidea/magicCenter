@@ -3,7 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/common"
 	common_const "muidea.com/magicCommon/common"
-	common_def "muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -27,7 +27,7 @@ func (i *impl) GetAllUser() []model.User {
 	return i.userHandler.getAllUser()
 }
 
-func (i *impl) GetAllUserDetail(filter *common_def.PageFilter) []model.UserDetail {
+func (i *impl) GetAllUserDetail(filter *common_util.PageFilter) []model.UserDetail {
 	return i.userHandler.getAllUserDetail(filter)
 }
 
@@ -91,7 +91,7 @@ func (i *impl) GetAllGroup() []model.Group {
 	return i.groupHandler.getAllGroup()
 }
 
-func (i *impl) GetAllGroupDetail(filter *common_def.PageFilter) []model.GroupDetail {
+func (i *impl) GetAllGroupDetail(filter *common_util.PageFilter) []model.GroupDetail {
 	return i.groupHandler.getAllGroupDetail(filter)
 }
 

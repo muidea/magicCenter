@@ -8,8 +8,7 @@ import (
 	"time"
 
 	"muidea.com/magicCenter/common/dbhelper"
-	common_def "muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -83,7 +82,7 @@ func QueryAllUser(helper dbhelper.DBHelper) []model.User {
 }
 
 //QueryAllUserDetail 查询全部用户信息
-func QueryAllUserDetail(helper dbhelper.DBHelper, filter *common_def.PageFilter) []model.UserDetail {
+func QueryAllUserDetail(helper dbhelper.DBHelper, filter *common_util.PageFilter) []model.UserDetail {
 	userList := []model.UserDetail{}
 	sql := fmt.Sprintf("select id, account, email, groups, status, registertime from account_user")
 	helper.Query(sql)
@@ -93,7 +92,7 @@ func QueryAllUserDetail(helper dbhelper.DBHelper, filter *common_def.PageFilter)
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user.Group, _ = common_util.Str2IntArray(groups)
 
 		userList = append(userList, user)
 	}
@@ -108,7 +107,7 @@ func QueryUsers(helper dbhelper.DBHelper, ids []int) []model.User {
 		return userList
 	}
 
-	sql := fmt.Sprintf("select id, account from account_user where id in(%s)", util.IntArray2Str(ids))
+	sql := fmt.Sprintf("select id, account from account_user where id in(%s)", common_util.IntArray2Str(ids))
 	helper.Query(sql)
 	defer helper.Finish()
 
@@ -134,7 +133,7 @@ func QueryUserByAccount(helper dbhelper.DBHelper, account, password string) (mod
 	if helper.Next() {
 		groups := ""
 		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user.Group, _ = common_util.Str2IntArray(groups)
 		result = true
 	}
 
@@ -153,7 +152,7 @@ func QueryUserByGroup(helper dbhelper.DBHelper, groupID int) []model.UserDetail 
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user.Group, _ = common_util.Str2IntArray(groups)
 		userList = append(userList, user)
 	}
 
@@ -172,7 +171,7 @@ func QueryUserByID(helper dbhelper.DBHelper, id int) (model.UserDetail, bool) {
 	if helper.Next() {
 		groups := ""
 		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user.Group, _ = common_util.Str2IntArray(groups)
 		result = true
 	}
 
@@ -205,7 +204,7 @@ func CreateUser(helper dbhelper.DBHelper, account, password, email string, group
 	}
 	helper.Finish()
 
-	gVal := util.IntArray2Str(groups)
+	gVal := common_util.IntArray2Str(groups)
 	createTime := time.Now().Format("2006-01-02 15:04:05")
 	user.RegisterTime = createTime
 
@@ -223,7 +222,7 @@ func CreateUser(helper dbhelper.DBHelper, account, password, email string, group
 
 // SaveUser 保存用户信息
 func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail, bool) {
-	gVal := util.IntArray2Str(user.Group)
+	gVal := common_util.IntArray2Str(user.Group)
 	// modify
 	sql := fmt.Sprintf("update account_user set email='%s', groups='%s', status=%d where id =%d", user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
@@ -233,7 +232,7 @@ func SaveUser(helper dbhelper.DBHelper, user model.UserDetail) (model.UserDetail
 
 // SaveUserWithPassword 保存用户信息
 func SaveUserWithPassword(helper dbhelper.DBHelper, user model.UserDetail, password string) (model.UserDetail, bool) {
-	gVal := util.IntArray2Str(user.Group)
+	gVal := common_util.IntArray2Str(user.Group)
 	// modify
 	sql := fmt.Sprintf("update account_user set password='%s', email='%s', groups='%s', status=%d where id =%d", encryptionPassword(user.Name, password), user.Email, gVal, user.Status, user.ID)
 	num, result := helper.Execute(sql)
@@ -252,7 +251,7 @@ func GetLastRegisterUser(helper dbhelper.DBHelper, count int) []model.UserDetail
 		user := model.UserDetail{}
 		groups := ""
 		helper.GetValue(&user.ID, &user.Name, &user.Email, &groups, &user.Status, &user.RegisterTime)
-		user.Group, _ = util.Str2IntArray(groups)
+		user.Group, _ = common_util.Str2IntArray(groups)
 
 		userList = append(userList, user)
 	}

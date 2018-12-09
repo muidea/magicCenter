@@ -10,7 +10,7 @@ import (
 	"muidea.com/magicCenter/common/configuration"
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/common/syslog"
-	"muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -94,7 +94,7 @@ func (s *impl) GetSystemStatistics() model.StatisticsView {
 	return info
 }
 
-func (s *impl) QuerySyslog(source string, filter *def.PageFilter) ([]model.Syslog, int) {
+func (s *impl) QuerySyslog(source string, filter *common_util.PageFilter) ([]model.Syslog, int) {
 	helper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic("construct helper failed")

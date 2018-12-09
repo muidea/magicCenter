@@ -3,7 +3,7 @@ package handler
 import (
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCenter/module/modules/account/dal"
-	common_def "muidea.com/magicCommon/def"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -30,7 +30,7 @@ func (i *groupActionHandler) getAllGroup() []model.Group {
 	return dal.QueryAllGroup(dbhelper)
 }
 
-func (i *groupActionHandler) getAllGroupDetail(filter *common_def.PageFilter) []model.GroupDetail {
+func (i *groupActionHandler) getAllGroupDetail(filter *common_util.PageFilter) []model.GroupDetail {
 	dbhelper, err := dbhelper.NewHelper()
 	if err != nil {
 		panic(err)

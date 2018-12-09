@@ -6,7 +6,7 @@ import (
 
 	"muidea.com/magicCenter/common/dbhelper"
 	"muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
+	common_util "muidea.com/magicCommon/foundation/util"
 	"muidea.com/magicCommon/model"
 )
 
@@ -163,7 +163,7 @@ func QueryResourceByID(helper dbhelper.DBHelper, rid int, rType string) (Resourc
 }
 
 // QueryResourceByName 查询资源
-func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string, filter *def.PageFilter) ([]Resource, int) {
+func QueryResourceByName(helper dbhelper.DBHelper, rName, rType string, filter *common_util.PageFilter) ([]Resource, int) {
 	totalCount := 0
 	resultList := []Resource{}
 
@@ -267,14 +267,14 @@ func QueryResourceByType(helper dbhelper.DBHelper, rType string, filter *def.Fil
 }
 
 // QueryResourceByIDs 查询指定类型的资源
-func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string, filter *def.PageFilter) ([]Resource, int) {
+func QueryResourceByIDs(helper dbhelper.DBHelper, rIDs []int, rType string, filter *common_util.PageFilter) ([]Resource, int) {
 	totalCount := 0
 	resultList := []Resource{}
 	if len(rIDs) == 0 {
 		return resultList, totalCount
 	}
 
-	ids := util.IntArray2Str(rIDs)
+	ids := common_util.IntArray2Str(rIDs)
 	sql := fmt.Sprintf(`select count(oid) from common_resource where id in (%s) and type ='%s' order by type`, ids, rType)
 	helper.Query(sql)
 	if helper.Next() {
@@ -320,7 +320,7 @@ func QueryResourceByUser(helper dbhelper.DBHelper, uids []int, filter *def.Filte
 	totalCount := 0
 	resultList := []Resource{}
 
-	userStr := util.IntArray2Str(uids)
+	userStr := common_util.IntArray2Str(uids)
 
 	sql := fmt.Sprintf(`select count(oid) from common_resource where owner in (%s) order by type`, userStr)
 	if filter != nil {
@@ -690,7 +690,7 @@ func deleteResourceRelative(helper dbhelper.DBHelper, res Resource) bool {
 // GetLastResource 获取最新的资源
 // []Resource 当前页内容
 // int 总条数
-func GetLastResource(helper dbhelper.DBHelper, count int, pageFilger *def.PageFilter) ([]Resource, int) {
+func GetLastResource(helper dbhelper.DBHelper, count int, pageFilger *common_util.PageFilter) ([]Resource, int) {
 	retVal := []Resource{}
 	sql := fmt.Sprint("select count(id) from common_resource order by createtime desc")
 	totalCount := 0
