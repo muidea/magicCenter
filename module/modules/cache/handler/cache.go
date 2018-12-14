@@ -14,12 +14,12 @@ type impl struct {
 	cache cache.Cache
 }
 
-func (s *impl) PutIn(data interface{}, maxAge float64) string {
-	return s.cache.PutIn(data, maxAge)
+func (s *impl) Put(data interface{}, maxAge float64) string {
+	return s.cache.Put(data, maxAge)
 }
 
-func (s *impl) FetchOut(id string) (interface{}, bool) {
-	return s.cache.FetchOut(id)
+func (s *impl) Fetch(id string) (interface{}, bool) {
+	return s.cache.Fetch(id)
 }
 
 func (s *impl) Remove(id string) {

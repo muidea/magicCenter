@@ -61,7 +61,7 @@ func (i *queryCacheRoute) queryCacheHandler(w http.ResponseWriter, r *http.Reque
 
 	result := common_def.QueryCacheResult{}
 	_, id := net.SplitRESTAPI(r.URL.Path)
-	obj, ok := i.cacheHandler.FetchOut(id)
+	obj, ok := i.cacheHandler.Fetch(id)
 	if ok {
 		result.Cache = obj
 		result.ErrorCode = common_def.Success
@@ -121,7 +121,7 @@ func (i *cacheCreateRoute) postCacheHandler(w http.ResponseWriter, r *http.Reque
 			param.Age = 10
 		}
 
-		result.Token = i.cacheHandler.PutIn(param.Value, float64(param.Age))
+		result.Token = i.cacheHandler.Put(param.Value, float64(param.Age))
 		result.ErrorCode = common_def.Success
 		break
 	}

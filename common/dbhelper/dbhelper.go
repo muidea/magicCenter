@@ -112,7 +112,7 @@ func NewHelper() (DBHelper, error) {
 	}
 
 	m := &helper{dao: nil}
-	dao, err := dbHelperRegistry.FetchOut()
+	dao, err := dbHelperRegistry.Fetch()
 	if err == nil {
 		m.dao = dao
 	}
@@ -154,11 +154,11 @@ func (db *helper) Execute(sql string) (int64, bool) {
 
 func (db *helper) Release() {
 	if db.dao != nil {
-		dbHelperRegistry.PutIn(db.dao)
+		dbHelperRegistry.Put(db.dao)
 	}
 }
 
-func (s *helperRegistry) FetchOut() (dao.Dao, error) {
+func (s *helperRegistry) Fetch() (dao.Dao, error) {
 	reply := make(chan replyResult)
 	defer close(reply)
 
@@ -170,7 +170,7 @@ func (s *helperRegistry) FetchOut() (dao.Dao, error) {
 	return ret.dao, ret.errInfo
 }
 
-func (s *helperRegistry) PutIn(dao dao.Dao) {
+func (s *helperRegistry) Put(dao dao.Dao) {
 	action := &helperAction{actionCode: putInHelper, dao: dao}
 
 	s.actionChannel <- action
