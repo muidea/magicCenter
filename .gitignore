@@ -3,3 +3,5 @@
 *.pyc
 *.cookie
 static/*
+magicCenter
+setupTool
