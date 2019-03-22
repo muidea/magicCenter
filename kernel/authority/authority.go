@@ -13,8 +13,8 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
-	"muidea.com/magicCenter/common"
-	common_def "muidea.com/magicCommon/def"
+	"github.com/muidea/magicCenter/common"
+	common_def "github.com/muidea/magicCommon/def"
 )
 
 // Authority 权限控制服务

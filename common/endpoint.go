@@ -1,7 +1,7 @@
 package common
 
 import (
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCommon/model"
 )
 
 // EndpointHandler 鉴权处理器

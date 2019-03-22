@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"muidea.com/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/dbhelper"
 )
 
 // Handler handler

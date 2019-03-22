@@ -1,6 +1,6 @@
 package common
 
-import "muidea.com/magicCommon/model"
+import "github.com/muidea/magicCommon/model"
 
 // ModuleRegistryHandler 模块仓库管理接口
 type ModuleRegistryHandler interface {

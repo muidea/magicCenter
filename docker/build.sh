@@ -2,7 +2,7 @@
 
 rootPath=$GOPATH
 projectName=magicCenter
-projectPath=$rootPath/src/muidea.com/$projectName
+projectPath=$rootPath/src/github.com/muidea/$projectName
 binPath=$rootPath/bin/$projectName
 imageID=""
 imageNamespace=muidea.ai/develop
@@ -32,14 +32,14 @@ function cleanUp()
 function buildBin()
 {
     echo "buildBin..."
-    go install muidea.com/magicCenter/cmd/magicCenter
+    go install github.com/muidea/magicCenter/cmd/magicCenter
     if [ $? -ne 0 ]; then
         echo "buildBin failed."
         exit 1
     else
         echo "buildBin success."
     fi
-    go install muidea.com/magicCenter/tools/setupTool
+    go install github.com/muidea/magicCenter/tools/setupTool
     if [ $? -ne 0 ]; then
         echo "buildBin failed."
         exit 1

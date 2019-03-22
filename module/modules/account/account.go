@@ -1,11 +1,11 @@
 package account
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/account/def"
-	"muidea.com/magicCenter/module/modules/account/handler"
-	"muidea.com/magicCenter/module/modules/account/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/account/def"
+	"github.com/muidea/magicCenter/module/modules/account/handler"
+	"github.com/muidea/magicCenter/module/modules/account/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 // LoadModule 加载模块

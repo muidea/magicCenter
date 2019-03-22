@@ -1,7 +1,7 @@
 package common
 
 import (
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCommon/model"
 )
 
 // 基本HTTP行为定义

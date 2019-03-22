@@ -3,7 +3,7 @@ package resource
 import (
 	"testing"
 
-	"muidea.com/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/dbhelper"
 )
 
 func TestResource(t *testing.T) {

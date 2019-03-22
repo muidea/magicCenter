@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"muidea.com/magicCenter/tools/config"
-	"muidea.com/magicCommon/agent"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/tools/config"
+	"github.com/muidea/magicCommon/agent"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 var centerServer = "127.0.0.1:8888"

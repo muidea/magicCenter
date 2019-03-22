@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"muidea.com/magicCenter/common"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/foundation/util"
+	"github.com/muidea/magicCenter/common"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/foundation/util"
 )
 
 var sessionCookieID = "session_id"

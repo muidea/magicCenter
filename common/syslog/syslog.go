@@ -3,9 +3,9 @@ package syslog
 import (
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // QuerySyslog 查询系统日志

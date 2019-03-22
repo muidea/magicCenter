@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/def"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/def"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 func loadResourceOID(helper dbhelper.DBHelper) int {

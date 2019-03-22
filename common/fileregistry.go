@@ -3,7 +3,7 @@ package common
 import (
 	"net/http"
 
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCommon/model"
 )
 
 // FileRegistryHandler 文件管理处理器

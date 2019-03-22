@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"muidea.com/magicCenter/common"
+	"github.com/muidea/magicCenter/common"
 
 	"github.com/go-martini/martini"
 )

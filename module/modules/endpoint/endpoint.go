@@ -1,11 +1,11 @@
 package endpoint
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/endpoint/def"
-	"muidea.com/magicCenter/module/modules/endpoint/handler"
-	"muidea.com/magicCenter/module/modules/endpoint/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/endpoint/def"
+	"github.com/muidea/magicCenter/module/modules/endpoint/handler"
+	"github.com/muidea/magicCenter/module/modules/endpoint/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 type endpoint struct {

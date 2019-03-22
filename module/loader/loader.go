@@ -1,18 +1,18 @@
 package loader
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/account"
-	"muidea.com/magicCenter/module/modules/authority"
-	"muidea.com/magicCenter/module/modules/cache"
-	"muidea.com/magicCenter/module/modules/cas"
-	"muidea.com/magicCenter/module/modules/content"
-	"muidea.com/magicCenter/module/modules/endpoint"
-	"muidea.com/magicCenter/module/modules/fileregistry"
-	"muidea.com/magicCenter/module/modules/mail"
-	"muidea.com/magicCenter/module/modules/module"
-	"muidea.com/magicCenter/module/modules/static"
-	"muidea.com/magicCenter/module/modules/system"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/account"
+	"github.com/muidea/magicCenter/module/modules/authority"
+	"github.com/muidea/magicCenter/module/modules/cache"
+	"github.com/muidea/magicCenter/module/modules/cas"
+	"github.com/muidea/magicCenter/module/modules/content"
+	"github.com/muidea/magicCenter/module/modules/endpoint"
+	"github.com/muidea/magicCenter/module/modules/fileregistry"
+	"github.com/muidea/magicCenter/module/modules/mail"
+	"github.com/muidea/magicCenter/module/modules/module"
+	"github.com/muidea/magicCenter/module/modules/static"
+	"github.com/muidea/magicCenter/module/modules/system"
 )
 
 // Impl ModuleLoader

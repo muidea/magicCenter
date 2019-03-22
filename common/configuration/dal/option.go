@@ -3,7 +3,7 @@ package dal
 import (
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/dbhelper"
 )
 
 //SetOption 保存配置项

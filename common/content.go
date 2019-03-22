@@ -1,9 +1,9 @@
 package common
 
 import (
-	"muidea.com/magicCommon/def"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCommon/def"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // ContentHandler 内容处理Handler

@@ -1,10 +1,10 @@
 package application
 
 import (
-	"muidea.com/magicCenter/common/configuration"
-	"muidea.com/magicCenter/common/daemon"
-	"muidea.com/magicCenter/kernel"
-	"muidea.com/magicCenter/module/loader"
+	"github.com/muidea/magicCenter/common/configuration"
+	"github.com/muidea/magicCenter/common/daemon"
+	"github.com/muidea/magicCenter/kernel"
+	"github.com/muidea/magicCenter/module/loader"
 )
 
 // Application 接口

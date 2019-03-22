@@ -1,8 +1,8 @@
 package resource
 
 import (
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/common/initializer"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/initializer"
 )
 
 type idHolder struct {

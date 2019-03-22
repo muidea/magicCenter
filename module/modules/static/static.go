@@ -1,11 +1,11 @@
 package static
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/static/def"
-	"muidea.com/magicCenter/module/modules/static/handler"
-	"muidea.com/magicCenter/module/modules/static/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/static/def"
+	"github.com/muidea/magicCenter/module/modules/static/handler"
+	"github.com/muidea/magicCenter/module/modules/static/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 type static struct {

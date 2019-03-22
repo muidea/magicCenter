@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"muidea.com/magicCommon/foundation/dao"
+	"github.com/muidea/magicCommon/foundation/dao"
 )
 
 // DBHelper 数据访问助手

@@ -1,11 +1,11 @@
 package content
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/content/def"
-	"muidea.com/magicCenter/module/modules/content/handler"
-	"muidea.com/magicCenter/module/modules/content/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/content/def"
+	"github.com/muidea/magicCenter/module/modules/content/handler"
+	"github.com/muidea/magicCenter/module/modules/content/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 type content struct {

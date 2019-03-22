@@ -1,11 +1,11 @@
 package system
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/system/def"
-	"muidea.com/magicCenter/module/modules/system/handler"
-	"muidea.com/magicCenter/module/modules/system/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/system/def"
+	"github.com/muidea/magicCenter/module/modules/system/handler"
+	"github.com/muidea/magicCenter/module/modules/system/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 type system struct {

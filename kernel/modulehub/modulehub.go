@@ -12,7 +12,7 @@ package modulehub
 import (
 	"log"
 
-	"muidea.com/magicCenter/common"
+	"github.com/muidea/magicCenter/common"
 )
 
 // impl ModuleHub 实现

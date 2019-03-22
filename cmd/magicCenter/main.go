@@ -4,9 +4,9 @@ import (
 	"flag"
 	"log"
 
-	"muidea.com/magicCenter/common/initializer"
+	"github.com/muidea/magicCenter/common/initializer"
 
-	"muidea.com/magicCenter"
+	"github.com/muidea/magicCenter"
 )
 
 var bindPort = "8080"

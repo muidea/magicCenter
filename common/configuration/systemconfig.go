@@ -7,8 +7,8 @@ package configuration
 */
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 var systemConfig common.Configuration

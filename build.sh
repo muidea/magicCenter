@@ -1,4 +1,4 @@
 #/bin/sh
 
-go build muidea.com/magicCenter/cmd/magicCenter
-go build muidea.com/magicCenter/tools/setupTool
+go build github.com/muidea/magicCenter/cmd/magicCenter
+go build github.com/muidea/magicCenter/tools/setupTool

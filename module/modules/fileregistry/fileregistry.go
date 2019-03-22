@@ -1,11 +1,11 @@
 package fileregistry
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/fileregistry/def"
-	"muidea.com/magicCenter/module/modules/fileregistry/handler"
-	"muidea.com/magicCenter/module/modules/fileregistry/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/fileregistry/def"
+	"github.com/muidea/magicCenter/module/modules/fileregistry/handler"
+	"github.com/muidea/magicCenter/module/modules/fileregistry/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 type fileRegistry struct {

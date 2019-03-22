@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/go-martini/martini"
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/kernel/authority"
-	"muidea.com/magicCenter/kernel/modulehub"
-	"muidea.com/magicCenter/kernel/router"
-	"muidea.com/magicCenter/kernel/session"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/kernel/authority"
+	"github.com/muidea/magicCenter/kernel/modulehub"
+	"github.com/muidea/magicCenter/kernel/router"
+	"github.com/muidea/magicCenter/kernel/session"
+	"github.com/muidea/magicCommon/model"
 )
 
 // Kernel MagicCenter系统接口

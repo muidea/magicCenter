@@ -1,11 +1,11 @@
 package cache
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/cache/def"
-	"muidea.com/magicCenter/module/modules/cache/handler"
-	"muidea.com/magicCenter/module/modules/cache/route"
-	common_const "muidea.com/magicCommon/common"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/cache/def"
+	"github.com/muidea/magicCenter/module/modules/cache/handler"
+	"github.com/muidea/magicCenter/module/modules/cache/route"
+	common_const "github.com/muidea/magicCommon/common"
 )
 
 // LoadModule 加载Cache模块

@@ -1,11 +1,11 @@
 package mail
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/mail/def"
-	"muidea.com/magicCenter/module/modules/mail/handler"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/mail/def"
+	"github.com/muidea/magicCenter/module/modules/mail/handler"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 // LoadModule 加载Mail模块

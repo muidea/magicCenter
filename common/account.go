@@ -1,8 +1,8 @@
 package common
 
 import (
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // AccountHandler 账号信息处理Handler

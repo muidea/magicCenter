@@ -7,8 +7,8 @@ package configuration
 */
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/configuration/bll"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/configuration/bll"
 )
 
 func init() {
