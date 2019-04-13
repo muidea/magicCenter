@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/authority/dal"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/authority/dal"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateAuthorityHandler 新建CASHandler

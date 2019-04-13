@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 const userPrefix = "user"

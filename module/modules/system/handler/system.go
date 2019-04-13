@@ -6,12 +6,12 @@ import (
 	"log"
 	"os"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/configuration"
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/common/syslog"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/configuration"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/syslog"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateSystemHandler 新建SystemHandler

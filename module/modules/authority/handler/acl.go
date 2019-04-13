@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"regexp"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/authority/dal"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/authority/dal"
+	"github.com/muidea/magicCommon/model"
 )
 
 var routeReg1 = regexp.MustCompile(`:[^/#?()\.\\]+`)

@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/account/def"
-	common_const "muidea.com/magicCommon/common"
-	common_def "muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/net"
-	common_util "muidea.com/magicCommon/foundation/util"
-	common_model "muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/account/def"
+	common_const "github.com/muidea/magicCommon/common"
+	common_def "github.com/muidea/magicCommon/def"
+	"github.com/muidea/magicCommon/foundation/net"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	common_model "github.com/muidea/magicCommon/model"
 )
 
 // AppendUserRoute 追加User Route

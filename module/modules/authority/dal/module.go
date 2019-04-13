@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/model"
 )
 
 // QueryAllModuleUser 获取全部模块用户信息

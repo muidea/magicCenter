@@ -3,8 +3,8 @@ package dal
 import (
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/model"
 )
 
 // SaveFileSummary 保存文件信息

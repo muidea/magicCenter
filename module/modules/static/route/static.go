@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/static/def"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/foundation/net"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/static/def"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/foundation/net"
 )
 
 // CreateStaticResRoute 新建静态资源路由

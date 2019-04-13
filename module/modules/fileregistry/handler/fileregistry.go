@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/fileregistry/dal"
-	common_def "muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/net"
-	"muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/fileregistry/dal"
+	common_def "github.com/muidea/magicCommon/def"
+	"github.com/muidea/magicCommon/foundation/net"
+	"github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateFileRegistryHandler 新建FileRegistryHandler

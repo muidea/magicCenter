@@ -1,7 +1,7 @@
 package route
 
 import (
-	"muidea.com/magicCenter/common"
+	"github.com/muidea/magicCenter/common"
 )
 
 // AppendEndpointRoute append endpoint route

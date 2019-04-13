@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/model"
 )
 
 func TestLink(t *testing.T) {

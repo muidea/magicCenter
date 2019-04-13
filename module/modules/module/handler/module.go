@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateModuleRegistryHandler 新建SystemHandler

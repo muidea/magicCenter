@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/static/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/static/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateStaticHandler 新建StaticHandler

@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/module/modules/system/def"
-	common_const "muidea.com/magicCommon/common"
-	common_def "muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/net"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/module/modules/system/def"
+	common_const "github.com/muidea/magicCommon/common"
+	common_def "github.com/muidea/magicCommon/def"
+	"github.com/muidea/magicCommon/foundation/net"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // AppendSystemRoute 追加SystemRoute

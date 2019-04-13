@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"muidea.com/magicCenter/common"
-	common_const "muidea.com/magicCommon/common"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	common_const "github.com/muidea/magicCommon/common"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateAccountHandler 创建Account处理器

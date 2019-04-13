@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/content/dal"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/content/dal"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 type commentActionHandler struct {

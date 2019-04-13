@@ -3,14 +3,14 @@ package handler
 import (
 	"log"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/daemon"
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/common/resource"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/def"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/daemon"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/resource"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/def"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateContentHandler 新建ContentHandler

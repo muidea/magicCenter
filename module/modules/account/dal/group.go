@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	common_const "muidea.com/magicCommon/common"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	common_const "github.com/muidea/magicCommon/common"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 func loadGroupID(helper dbhelper.DBHelper) int {

@@ -3,9 +3,9 @@ package dal
 import (
 	"fmt"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 // InsertACL 新增ACL记录

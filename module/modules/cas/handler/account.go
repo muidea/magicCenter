@@ -3,8 +3,8 @@ package handler
 import (
 	"time"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCommon/model"
 )
 
 type accountManager struct {

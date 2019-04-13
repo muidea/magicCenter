@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/endpoint/dal"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/endpoint/dal"
+	"github.com/muidea/magicCommon/model"
 )
 
 // CreateEndpointHandler 新建CASHandler

@@ -4,7 +4,7 @@ import (
 	"log"
 	"testing"
 
-	"muidea.com/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/dbhelper"
 )
 
 func TestUser(t *testing.T) {

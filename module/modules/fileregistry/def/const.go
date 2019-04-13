@@ -1,6 +1,6 @@
 package def
 
-import "muidea.com/magicCenter/common"
+import "github.com/muidea/magicCenter/common"
 
 // ID 模块ID
 const ID = common.FileRegistryModuleID

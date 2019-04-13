@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	common_util "muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	common_util "github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 func encryptionPassword(account, password string) string {

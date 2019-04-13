@@ -4,10 +4,10 @@ import (
 	"sync"
 	"time"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/module/modules/content/dal"
-	"muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/module/modules/content/dal"
+	"github.com/muidea/magicCommon/def"
+	"github.com/muidea/magicCommon/model"
 )
 
 type mediaActionHandler struct {

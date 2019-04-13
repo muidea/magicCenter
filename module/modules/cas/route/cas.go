@@ -1,7 +1,7 @@
 package route
 
 import (
-	"muidea.com/magicCenter/common"
+	"github.com/muidea/magicCenter/common"
 )
 
 // AppendAccountRoute 追加account 路由

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCenter/common/resource"
-	common_const "muidea.com/magicCommon/common"
-	"muidea.com/magicCommon/def"
-	"muidea.com/magicCommon/foundation/util"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCenter/common/resource"
+	common_const "github.com/muidea/magicCommon/common"
+	"github.com/muidea/magicCommon/def"
+	"github.com/muidea/magicCommon/foundation/util"
+	"github.com/muidea/magicCommon/model"
 )
 
 func loadArticleID(helper dbhelper.DBHelper) int {

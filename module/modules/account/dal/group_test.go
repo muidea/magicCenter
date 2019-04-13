@@ -3,8 +3,8 @@ package dal
 import (
 	"testing"
 
-	"muidea.com/magicCenter/common/dbhelper"
-	"muidea.com/magicCommon/model"
+	"github.com/muidea/magicCenter/common/dbhelper"
+	"github.com/muidea/magicCommon/model"
 )
 
 func TestGroup(t *testing.T) {

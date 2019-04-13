@@ -3,9 +3,9 @@ package handler
 import (
 	"log"
 
-	"muidea.com/magicCenter/common"
-	"muidea.com/magicCommon/model"
-	"muidea.com/magicCommon/foundation/net"
+	"github.com/muidea/magicCenter/common"
+	"github.com/muidea/magicCommon/model"
+	"github.com/muidea/magicCommon/foundation/net"
 )
 
 // CreateEMailHandler 新建MailHandler
