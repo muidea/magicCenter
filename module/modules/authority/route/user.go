@@ -192,7 +192,7 @@ func (i *userPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		param := &common_def.UpdateModuleAuthGroupParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"

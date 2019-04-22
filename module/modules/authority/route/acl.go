@@ -218,7 +218,7 @@ func (i *aclCreateRoute) postHandler(w http.ResponseWriter, r *http.Request) {
 	result := common_def.CreateACLResult{}
 	for true {
 		param := &common_def.CreateACLParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "参数非法"
@@ -347,7 +347,7 @@ func (i *aclUpdateRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		param := &common_def.UpdateACLParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
@@ -402,7 +402,7 @@ func (i *aclPutsRoute) putsHandler(w http.ResponseWriter, r *http.Request) {
 	result := common_def.UpdateACLStatusResult{}
 	for true {
 		param := &common_def.UpdateACLStatusParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
@@ -518,7 +518,7 @@ func (i *aclPutAuthGroupRoute) putAuthGroupHandler(w http.ResponseWriter, r *htt
 		}
 
 		param := &common_def.UpdateAuthGroupParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "参数非法"

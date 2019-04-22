@@ -306,7 +306,7 @@ func (i *catalogCreateRoute) createCatalogHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.CreateCatalogParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -380,7 +380,7 @@ func (i *catalogUpdateRoute) updateCatalogHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.UpdateCatalogParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

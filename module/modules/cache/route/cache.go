@@ -110,7 +110,7 @@ func (i *cacheCreateRoute) postCacheHandler(w http.ResponseWriter, r *http.Reque
 	result := common_def.CreateCacheResult{}
 	for true {
 		param := &common_def.CreateCacheParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"

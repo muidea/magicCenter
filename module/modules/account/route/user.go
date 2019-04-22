@@ -215,7 +215,7 @@ func (i *userCreateRoute) createUserHandler(w http.ResponseWriter, r *http.Reque
 	result := common_def.CreateUserResult{}
 	for true {
 		param := &common_def.CreateUserParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
@@ -291,7 +291,7 @@ func (i *userUpdateRoute) updateUserHandler(w http.ResponseWriter, r *http.Reque
 
 		if action == "change_password" {
 			param := &common_def.UpdateUserPasswordParam{}
-			err = net.ParsePostJSON(r, param)
+			err = net.ParseJSONBody(r, param)
 			if err != nil {
 				result.ErrorCode = common_def.Failed
 				result.Reason = "非法参数"
@@ -306,7 +306,7 @@ func (i *userUpdateRoute) updateUserHandler(w http.ResponseWriter, r *http.Reque
 			user, ok = i.accountHandler.SaveUserWithPassword(user, param.Password)
 		} else {
 			param := &common_def.UpdateUserParam{}
-			err = net.ParsePostJSON(r, param)
+			err = net.ParseJSONBody(r, param)
 			if err != nil {
 				result.ErrorCode = common_def.Failed
 				result.Reason = "非法参数"

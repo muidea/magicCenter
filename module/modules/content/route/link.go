@@ -232,7 +232,7 @@ func (i *linkCreateRoute) createLinkHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		param := &common_def.CreateLinkParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -305,7 +305,7 @@ func (i *linkUpdateRoute) updateLinkHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		param := &common_def.UpdateLinkParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

@@ -170,7 +170,7 @@ func (i *endpointPostRoute) postHandler(w http.ResponseWriter, r *http.Request) 
 	result := common_def.CreateEndpointResult{}
 	for true {
 		param := &common_def.CreateEndpointParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "参数非法"
@@ -280,7 +280,7 @@ func (i *endpointPutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		param := &common_def.UpdateEndpointParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"

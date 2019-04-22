@@ -179,7 +179,7 @@ func (i *modulePutRoute) putHandler(w http.ResponseWriter, r *http.Request) {
 		_, id := net.SplitRESTAPI(r.URL.Path)
 
 		param := &common_def.UpdateUserAuthGroupParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"

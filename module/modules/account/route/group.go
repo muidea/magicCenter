@@ -199,7 +199,7 @@ func (i *groupCreateRoute) createGroupHandler(w http.ResponseWriter, r *http.Req
 	result := common_def.CreateGroupResult{}
 	for true {
 		param := &common_def.CreateGroupParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"
@@ -263,7 +263,7 @@ func (i *groupSaveRoute) saveGroupHandler(w http.ResponseWriter, r *http.Request
 		}
 
 		param := &common_def.UpdateGroupParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法参数"

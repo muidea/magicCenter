@@ -41,9 +41,9 @@ func (i *endpointLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request
 	param := &common_def.LoginEndpointParam{}
 	result := common_def.LoginEndpointResult{}
 	for {
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
-			log.Printf("ParsePostJSON failed, err:%s", err.Error())
+			log.Printf("ParseJSONBody failed, err:%s", err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break

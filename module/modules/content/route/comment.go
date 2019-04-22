@@ -150,7 +150,7 @@ func (i *commentCreateRoute) createCommentHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.CreateCommentParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -232,7 +232,7 @@ func (i *commentUpdateRoute) updateCommentHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.UpdateCommentParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

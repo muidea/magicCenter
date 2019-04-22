@@ -232,7 +232,7 @@ func (i *articleCreateRoute) createArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.CreateArticleParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -307,7 +307,7 @@ func (i *articleUpdateRoute) updateArticleHandler(w http.ResponseWriter, r *http
 		}
 
 		param := &common_def.UpdateArticleParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

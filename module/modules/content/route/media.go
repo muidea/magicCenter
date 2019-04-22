@@ -240,7 +240,7 @@ func (i *mediaCreateRoute) createMediaHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		param := &common_def.CreateMediaParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -304,7 +304,7 @@ func (i *mediaBatchCreateRoute) createBatchMediaHandler(w http.ResponseWriter, r
 		}
 
 		param := &common_def.BatchCreateMediaParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
@@ -386,7 +386,7 @@ func (i *mediaUpdateRoute) updateMediaHandler(w http.ResponseWriter, r *http.Req
 		}
 
 		param := &common_def.UpdateMediaParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

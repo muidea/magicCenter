@@ -299,7 +299,7 @@ func (i *insertSyslogRoute) insertSyslogHandler(w http.ResponseWriter, r *http.R
 
 	param := &common_def.InsertSyslogParam{}
 	for {
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"

@@ -42,9 +42,9 @@ func (i *accountLoginRoute) loginHandler(w http.ResponseWriter, r *http.Request)
 	result := common_def.LoginAccountResult{}
 	for true {
 		param := &common_def.LoginAccountParam{}
-		err := net.ParsePostJSON(r, param)
+		err := net.ParseJSONBody(r, param)
 		if err != nil {
-			log.Printf("ParsePostJSON failed, err:%s", err.Error())
+			log.Printf("ParseJSONBody failed, err:%s", err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "非法请求"
 			break
@@ -222,9 +222,9 @@ func (i *accountChangePasswordRoute) changePasswordHandler(w http.ResponseWriter
 		}
 
 		param := &common_def.ChangeAccountPasswordParam{}
-		err = net.ParsePostJSON(r, param)
+		err = net.ParseJSONBody(r, param)
 		if err != nil {
-			log.Printf("ParsePostJSON failed, err:%s", err.Error())
+			log.Printf("ParseJSONBody failed, err:%s", err.Error())
 			result.ErrorCode = common_def.Failed
 			result.Reason = "无效参数"
 			break
