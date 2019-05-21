@@ -15,21 +15,16 @@ import (
 // DBHelper 数据访问助手
 type DBHelper interface {
 	BeginTransaction()
-
-	Commit()
-
-	Rollback()
-
+	CommitTransaction()
+	RollbackTransaction()
 	Query(string)
-
 	Next() bool
-
 	Finish()
-
 	GetValue(...interface{})
-
-	Execute(string) (int64, bool)
-
+	Insert(sql string) int64
+	Update(sql string) int64
+	Delete(sql string) int64
+	Execute(string) int64
 	Release()
 }
 
@@ -124,12 +119,12 @@ func (db *helper) BeginTransaction() {
 	db.dao.BeginTransaction()
 }
 
-func (db *helper) Commit() {
-	db.dao.Commit()
+func (db *helper) CommitTransaction() {
+	db.dao.CommitTransaction()
 }
 
-func (db *helper) Rollback() {
-	db.dao.Rollback()
+func (db *helper) RollbackTransaction() {
+	db.dao.RollbackTransaction()
 }
 
 func (db *helper) Query(sql string) {
@@ -148,7 +143,19 @@ func (db *helper) GetValue(val ...interface{}) {
 	db.dao.GetField(val...)
 }
 
-func (db *helper) Execute(sql string) (int64, bool) {
+func (db *helper) Insert(sql string) int64 {
+	return db.dao.Insert(sql)
+}
+
+func (db *helper) Update(sql string) int64 {
+	return db.dao.Update(sql)
+}
+
+func (db *helper) Delete(sql string) int64 {
+	return db.dao.Delete(sql)
+}
+
+func (db *helper) Execute(sql string) int64 {
 	return db.dao.Execute(sql)
 }
 
